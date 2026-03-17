@@ -20,7 +20,6 @@ const HeroSection = () => {
             Current focus: software products in finance, travel, and everyday utility
           </p>
         </div>
-        </p>
         <h1 className="text-4xl sm:text-5xl md:text-6xl leading-[1.1] text-foreground mb-6">
           Building useful digital products, one venture at a time.
         </h1>
