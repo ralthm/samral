@@ -14,7 +14,7 @@ const HeroSection = () => {
   return (
     <section className="min-h-[80vh] flex flex-col items-center pt-4 sm:pt-6 md:pt-8 pb-20 px-6">
       <div className="max-w-[800px] text-center">
-        <div className="mb-12">
+        <div className="mb-6">
           <img src={samralLogo} alt="Samral" className="h-56 sm:h-72 md:h-88 mx-auto mb-1 dark:invert" />
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
             Current focus: software products in finance, travel, and everyday utility
