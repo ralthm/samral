@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowDown, Mail } from "lucide-react";
+import samralLogo from "@/assets/samral-logo.png";
 
 const HeroSection = () => {
   const scrollToVentures = () => {
