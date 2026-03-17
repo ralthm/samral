@@ -14,10 +14,12 @@ const HeroSection = () => {
   return (
     <section className="min-h-[85vh] flex flex-col items-center justify-center px-6 py-24">
       <div className="max-w-[800px] text-center">
-        <img src={samralLogo} alt="Samral" className="h-28 sm:h-36 md:h-44 mx-auto mb-6 dark:invert" />
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-8">
-          Current focus: software products in finance, travel, and everyday utility
-        </p>
+        <div className="mb-12">
+          <img src={samralLogo} alt="Samral" className="h-28 sm:h-36 md:h-44 mx-auto mb-3 dark:invert" />
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Current focus: software products in finance, travel, and everyday utility
+          </p>
+        </div>
         <h1 className="text-4xl sm:text-5xl md:text-6xl leading-[1.1] text-foreground mb-6">
           Building useful digital products, one venture at a time.
         </h1>
