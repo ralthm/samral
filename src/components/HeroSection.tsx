@@ -12,10 +12,10 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="flex flex-col items-center justify-start pt-2 sm:pt-4 md:pt-5 pb-20 px-6">
+    <section className="flex flex-col items-center justify-start pt-1 sm:pt-2 md:pt-2 pb-20 px-6">
       <div className="max-w-[800px] text-center">
         <div className="mb-6">
-          <img src={samralLogo} alt="Samral" className="h-56 sm:h-72 md:h-88 mx-auto -mb-2 dark:invert" />
+          <img src={samralLogo} alt="Samral" className="h-56 sm:h-72 md:h-88 mx-auto -mb-4 dark:invert" />
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
             Current focus: software products in finance, travel, and everyday utility
           </p>
