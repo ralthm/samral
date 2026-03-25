@@ -1,4 +1,4 @@
-import { ArrowUpRight, Wallet, Plane } from "lucide-react";
+import { ArrowUpRight, Wallet, Plane, Target } from "lucide-react";
 
 const ventures = [
   {
@@ -16,6 +16,14 @@ const ventures = [
       "A travel expense splitting app that helps friends and groups track shared costs, split expenses fairly, and settle up easily during trips.",
     url: "https://www.triphalfsies.com",
     icon: Plane,
+  },
+  {
+    tag: "Productivity / Habits",
+    title: "GoalsKeep",
+    description:
+      "A step-by-step daily routine app that helps you follow morning and evening routines, build streaks, and stay consistent with habits that actually stick.",
+    url: "https://www.goalskeep.com",
+    icon: Target,
   },
 ];
 
