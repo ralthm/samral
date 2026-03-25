@@ -1,4 +1,4 @@
-import { ArrowUpRight, Wallet, Plane } from "lucide-react";
+import { ArrowUpRight, Wallet, Plane, Target } from "lucide-react";
 
 const ventures = [
   {
