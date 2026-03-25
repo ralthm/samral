@@ -17,6 +17,14 @@ const ventures = [
     url: "https://www.triphalfsies.com",
     icon: Plane,
   },
+  {
+    tag: "Productivity / Habits",
+    title: "GoalsKeep",
+    description:
+      "A step-by-step daily routine app that helps you follow morning and evening routines, build streaks, and stay consistent with habits that actually stick.",
+    url: "https://www.goalskeep.com",
+    icon: Target,
+  },
 ];
 
 const VenturesSection = () => {
