@@ -1,4 +1,4 @@
-import { ArrowUpRight, Wallet, Plane, Target } from "lucide-react";
+import { ArrowUpRight, Wallet, Plane, Target, Home } from "lucide-react";
 
 const ventures = [
   {
@@ -24,6 +24,14 @@ const ventures = [
       "A step-by-step daily routine app that helps you follow morning and evening routines, build streaks, and stay consistent with habits that actually stick.",
     url: "https://www.goalskeep.com",
     icon: Target,
+  },
+  {
+    tag: "Property / Finance",
+    title: "Resifolio",
+    description:
+      "A simple property finance tracker that shows your rent, expenses, and loan in one place — so you know what you're actually keeping each month.",
+    url: "https://www.resifolio.com",
+    icon: Home,
   },
 ];
 
