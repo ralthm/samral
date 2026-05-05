@@ -13,8 +13,9 @@ export default {
       },
     },
     fontFamily: {
-      heading: ['Inter', 'system-ui', 'sans-serif'],
+      heading: ['"Instrument Serif"', 'ui-serif', 'Georgia', 'serif'],
       body: ['Inter', 'system-ui', 'sans-serif'],
+      mono: ['ui-monospace', 'SFMono-Regular', 'monospace'],
     },
     extend: {
       colors: {
