@@ -41,6 +41,14 @@ const products: Product[] = [
       "Run structured daily routines that actually stick, using simple step-by-step flows.",
     url: "https://www.goalskeep.com",
   },
+  {
+    index: "05",
+    tag: "Life Admin / Reminders",
+    title: "LaterSafe",
+    description:
+      "Smart reminders for passports, credit cards, renewals, and life’s important dates.",
+    url: "https://www.lattersafe.com",
+  },
 ];
 
 const VenturesSection = () => {
@@ -52,7 +60,7 @@ const VenturesSection = () => {
           <div className="md:col-span-4">
             <div className="flex items-center gap-3">
               <span className="font-mono text-[11px] text-muted-foreground">02</span>
-              <span className="label-eyebrow">Portfolio · 04 Products</span>
+              <span className="label-eyebrow">Portfolio · 05 Products</span>
             </div>
           </div>
           <div className="md:col-span-8 md:pl-8 md:border-l md:border-border">
