@@ -128,23 +128,17 @@ function Hero() {
 /* ---------- Promise strip ---------- */
 
 function Promise() {
-  const items = [
-    { k: "01", t: "You share", d: "Where you dream of going and what points you have." },
-    { k: "02", t: "I research", d: "The smartest way to redeem — or when to just pay cash." },
-    { k: "03", t: "You travel", d: "A clear plan, a confirmed seat, no guesswork." },
-  ];
   return (
     <section className="border-b border-border bg-background">
-      <div className="mx-auto grid max-w-[1440px] gap-10 px-6 py-16 md:grid-cols-3 md:gap-14 md:px-12 md:py-20">
-        {items.map((i) => (
-          <div key={i.k} className="flex gap-5">
-            <span className="font-display text-3xl text-clay">{i.k}</span>
-            <div>
-              <h3 className="font-display text-2xl text-ink">{i.t}</h3>
-              <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{i.d}</p>
-            </div>
-          </div>
-        ))}
+      <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-12 md:py-24">
+        <div className="grid gap-10 md:grid-cols-12 md:gap-16">
+          <p className="eyebrow text-clay md:col-span-3 md:pt-3">How it works</p>
+          <p className="font-display text-2xl leading-[1.35] text-ink md:col-span-9 md:text-[34px] md:leading-[1.3]">
+            You tell me where you&rsquo;d like to go and what points you have. I work out the smartest
+            way to get you there &mdash; the right programme, roughly what it&rsquo;ll cost, and whether
+            transferring or paying cash is actually the better move. Then you book with a plan in hand.
+          </p>
+        </div>
       </div>
     </section>
   );
