@@ -394,6 +394,8 @@ function ServiceCard({
   copy,
   bullets,
   best,
+  ctaHref,
+  ctaLabel,
 }: {
   index: string;
   tag: string;
@@ -403,6 +405,8 @@ function ServiceCard({
   copy: string;
   bullets: string[];
   best: string;
+  ctaHref: string;
+  ctaLabel: string;
 }) {
   return (
     <article className="group flex flex-col">
@@ -436,6 +440,14 @@ function ServiceCard({
       <p className="mt-8 border-t border-border pt-5 text-[13px] italic text-muted-foreground">
         {best}
       </p>
+      <div className="mt-6">
+        <a
+          href={ctaHref}
+          className="inline-block rounded-full border border-ink px-6 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-background focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2"
+        >
+          {ctaLabel} &nbsp;&rarr;
+        </a>
+      </div>
     </article>
   );
 }
