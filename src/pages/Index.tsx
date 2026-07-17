@@ -46,6 +46,9 @@ function Nav() {
           <a href="#services" className="transition-opacity hover:opacity-70">
             Services
           </a>
+          <a href="/points-strategy" className="transition-opacity hover:opacity-70">
+            Points Strategy
+          </a>
           <a href="#destinations" className="transition-opacity hover:opacity-70">
             Destinations
           </a>
@@ -343,6 +346,8 @@ function Services() {
               "Exactly how to book it",
             ]}
             best="For a specific trip you want to get right."
+            ctaHref="/plan-my-trip"
+            ctaLabel="Plan my trip"
           />
           <ServiceCard
             index="02"
@@ -358,6 +363,8 @@ function Services() {
               "An honest look at what to keep and what to close",
             ]}
             best="For anyone building toward something in the next year or two."
+            ctaHref="/points-strategy"
+            ctaLabel="Explore Points Strategy"
           />
         </div>
 
@@ -387,6 +394,8 @@ function ServiceCard({
   copy,
   bullets,
   best,
+  ctaHref,
+  ctaLabel,
 }: {
   index: string;
   tag: string;
@@ -396,6 +405,8 @@ function ServiceCard({
   copy: string;
   bullets: string[];
   best: string;
+  ctaHref: string;
+  ctaLabel: string;
 }) {
   return (
     <article className="group flex flex-col">
@@ -429,6 +440,14 @@ function ServiceCard({
       <p className="mt-8 border-t border-border pt-5 text-[13px] italic text-muted-foreground">
         {best}
       </p>
+      <div className="mt-6">
+        <a
+          href={ctaHref}
+          className="inline-block rounded-full border border-ink px-6 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-background focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2"
+        >
+          {ctaLabel} &nbsp;&rarr;
+        </a>
+      </div>
     </article>
   );
 }
