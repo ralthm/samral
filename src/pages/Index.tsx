@@ -1,5 +1,5 @@
 import heroImage from "@/assets/hero.jpg";
-import samuelImage from "@/assets/samuel.jpg";
+import samuelImage from "@/assets/samral-founder.jpg.asset.json";
 import notebookImage from "@/assets/notebook.jpg";
 import kyotoImage from "@/assets/kyoto.jpg";
 import cabinImage from "@/assets/cabin.jpg";
@@ -151,7 +151,7 @@ function Founder() {
       <div className="mx-auto grid max-w-[1440px] gap-12 px-6 py-24 md:grid-cols-12 md:gap-16 md:px-12 md:py-36">
         <div className="md:col-span-5">
           <div className="relative">
-            <img src={samuelImage} alt="Samral, founder" className="aspect-[4/5] w-full object-cover" />
+            <img src={samuelImage.url} alt="Samral, founder" className="aspect-[4/5] w-full object-cover" />
             <div className="absolute -bottom-4 -right-4 hidden h-32 w-32 border border-clay md:block" />
           </div>
           <p className="mt-3 text-xs text-muted-foreground">Samral &mdash; founder</p>
