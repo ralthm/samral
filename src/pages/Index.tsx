@@ -15,6 +15,19 @@ import maldivesImage from "@/assets/maldives.jpg";
 import italyImage from "@/assets/italy.jpg";
 
 export default function Home() {
+  useEffect(() => {
+    document.title = "Samral | Smarter Rewards, Better Travel";
+    const desc =
+      "Samral helps people make better use of credit card rewards through personalised trip planning and points strategy research.";
+    let tag = document.querySelector('meta[name="description"]');
+    if (!tag) {
+      tag = document.createElement("meta");
+      tag.setAttribute("name", "description");
+      document.head.appendChild(tag);
+    }
+    tag.setAttribute("content", desc);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
@@ -29,6 +42,7 @@ export default function Home() {
     </div>
   );
 }
+
 
 /* ---------- Nav ---------- */
 
