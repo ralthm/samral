@@ -1,5 +1,9 @@
 import heroImage from "@/assets/hero.jpg";
 import samuelImage from "@/assets/samral-founder.jpg.asset.json";
+import travel1 from "@/assets/travel-1.jpg.asset.json";
+import travel2 from "@/assets/travel-2.jpg.asset.json";
+import travel3 from "@/assets/travel-3.jpg.asset.json";
+import travel4 from "@/assets/travel-4.jpg.asset.json";
 import notebookImage from "@/assets/notebook.jpg";
 import kyotoImage from "@/assets/kyoto.jpg";
 import cabinImage from "@/assets/cabin.jpg";
@@ -155,6 +159,47 @@ function Founder() {
             <div className="absolute -bottom-4 -right-4 hidden h-32 w-32 border border-clay md:block" />
           </div>
           <p className="mt-3 text-xs text-muted-foreground">Samral &mdash; founder</p>
+
+          {/* Travel collage */}
+          <div className="relative mt-10 hidden h-64 md:block">
+            {[
+              { src: travel1.url, rot: "-6deg", top: "0", left: "2%", z: 10 },
+              { src: travel2.url, rot: "4deg", top: "10%", left: "28%", z: 20 },
+              { src: travel3.url, rot: "-3deg", top: "4%", left: "54%", z: 15 },
+              { src: travel4.url, rot: "7deg", top: "14%", left: "78%", z: 25 },
+            ].map((p, i) => (
+              <div
+                key={i}
+                className="absolute w-[38%] bg-background p-2 shadow-xl transition-transform duration-500 hover:z-30 hover:scale-105"
+                style={{
+                  top: p.top,
+                  left: p.left,
+                  transform: `rotate(${p.rot})`,
+                  zIndex: p.z,
+                }}
+              >
+                <img
+                  src={p.src}
+                  alt="Travel moment"
+                  className="aspect-[3/4] w-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Mobile: simple 2x2 grid */}
+          <div className="mt-8 grid grid-cols-2 gap-3 md:hidden">
+            {[travel1.url, travel2.url, travel3.url, travel4.url].map((src, i) => (
+              <div
+                key={i}
+                className="bg-background p-1.5 shadow-md"
+                style={{ transform: `rotate(${i % 2 === 0 ? "-2deg" : "2deg"})` }}
+              >
+                <img src={src} alt="Travel moment" className="aspect-[3/4] w-full object-cover" loading="lazy" />
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="md:col-span-7 md:pt-8">
