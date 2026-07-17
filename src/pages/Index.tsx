@@ -54,7 +54,7 @@ function Nav() {
           </a>
         </nav>
         <a
-          href="#contact"
+          href="/plan-my-trip"
           className="rounded-full border border-background/70 px-5 py-2 text-[13px] text-background transition-colors hover:bg-background hover:text-ink"
         >
           Plan my trip
@@ -104,7 +104,7 @@ function Hero() {
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-6">
           <a
-            href="#contact"
+            href="/plan-my-trip"
             className="inline-block rounded-full bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
           >
             Plan my trip &nbsp;&rarr;
@@ -367,7 +367,7 @@ function Services() {
             booking on your behalf.
           </p>
           <a
-            href="#contact"
+            href="/plan-my-trip"
             className="inline-block rounded-full bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
           >
             Plan my trip &nbsp;&rarr;
@@ -567,7 +567,7 @@ function Contact() {
           </p>
           <div className="mt-12 flex flex-wrap items-center gap-6">
             <a
-              href="mailto:hello@samuel.example"
+              href="/plan-my-trip"
               className="rounded-full bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
             >
               Plan my trip &nbsp;&rarr;
