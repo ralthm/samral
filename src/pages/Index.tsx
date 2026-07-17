@@ -58,7 +58,7 @@ function Nav() {
         </nav>
         <a
           href="/plan-my-trip"
-          className="rounded-full border border-background/70 px-5 py-2 text-[13px] text-background transition-colors hover:bg-background hover:text-ink"
+          className="rounded-sm border border-background/70 px-5 py-2 text-[13px] text-background transition-colors hover:bg-background hover:text-ink"
         >
           Plan my trip
         </a>
@@ -108,7 +108,7 @@ function Hero() {
         <div className="mt-10 flex flex-wrap items-center gap-6">
           <a
             href="/plan-my-trip"
-            className="inline-block rounded-full bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
+            className="inline-block rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
           >
             Plan my trip &nbsp;&rarr;
           </a>
@@ -128,23 +128,17 @@ function Hero() {
 /* ---------- Promise strip ---------- */
 
 function Promise() {
-  const items = [
-    { k: "01", t: "You share", d: "Where you dream of going and what points you have." },
-    { k: "02", t: "I research", d: "The smartest way to redeem — or when to just pay cash." },
-    { k: "03", t: "You travel", d: "A clear plan, a confirmed seat, no guesswork." },
-  ];
   return (
     <section className="border-b border-border bg-background">
-      <div className="mx-auto grid max-w-[1440px] gap-10 px-6 py-16 md:grid-cols-3 md:gap-14 md:px-12 md:py-20">
-        {items.map((i) => (
-          <div key={i.k} className="flex gap-5">
-            <span className="font-display text-3xl text-clay">{i.k}</span>
-            <div>
-              <h3 className="font-display text-2xl text-ink">{i.t}</h3>
-              <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{i.d}</p>
-            </div>
-          </div>
-        ))}
+      <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-12 md:py-24">
+        <div className="grid gap-10 md:grid-cols-12 md:gap-16">
+          <p className="eyebrow text-clay md:col-span-3 md:pt-3">How it works</p>
+          <p className="font-display text-2xl leading-[1.35] text-ink md:col-span-9 md:text-[34px] md:leading-[1.3]">
+            You tell me where you&rsquo;d like to go and what points you have. I work out the smartest
+            way to get you there &mdash; the right programme, roughly what it&rsquo;ll cost, and whether
+            transferring or paying cash is actually the better move. Then you book with a plan in hand.
+          </p>
+        </div>
       </div>
     </section>
   );
@@ -208,7 +202,7 @@ function Founder() {
         <div className="md:col-span-7 md:pt-8">
           <p className="eyebrow mb-6 text-clay">About Samral</p>
           <h2 className="font-display text-3xl text-ink md:text-5xl">
-            From ignoring points to understanding them.
+            How I started paying attention to points.
           </h2>
 
           <div className="mt-10 space-y-5 text-[15px] leading-relaxed text-ink/85">
@@ -323,7 +317,7 @@ function Services() {
           <div>
             <p className="eyebrow mb-6 text-clay">What I offer</p>
             <h2 className="font-display max-w-2xl text-4xl text-ink md:text-6xl">
-              Two ways to work <em className="italic text-clay">together.</em>
+              Two ways to work together.
             </h2>
           </div>
           <p className="max-w-sm text-[15px] leading-relaxed text-muted-foreground">
@@ -375,7 +369,7 @@ function Services() {
           </p>
           <a
             href="/plan-my-trip"
-            className="inline-block rounded-full bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
+            className="inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
           >
             Plan my trip &nbsp;&rarr;
           </a>
@@ -417,7 +411,7 @@ function ServiceCard({
           className="h-[320px] w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.02] md:h-[380px]"
           loading="lazy"
         />
-        <span className="absolute left-5 top-5 rounded-full bg-background/90 px-3 py-1 text-[11px] font-medium tracking-widest text-ink">
+        <span className="absolute left-5 top-5 bg-background/90 px-3 py-1 text-[11px] font-medium tracking-widest text-ink">
           {tag.toUpperCase()}
         </span>
       </div>
@@ -443,7 +437,7 @@ function ServiceCard({
       <div className="mt-6">
         <a
           href={ctaHref}
-          className="inline-block rounded-full border border-ink px-6 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-background focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2"
+          className="inline-block rounded-sm border border-ink px-6 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-background focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2"
         >
           {ctaLabel} &nbsp;&rarr;
         </a>
@@ -479,7 +473,7 @@ function Destinations() {
         <div className="mb-14 max-w-2xl md:mb-20">
           <p className="eyebrow mb-6 text-clay">Where points can take you</p>
           <h2 className="font-display text-4xl text-ink md:text-6xl">
-            Trips people didn&rsquo;t <em className="italic text-clay">think were possible.</em>
+            Trips people didn&rsquo;t think were possible.
           </h2>
           <p className="mt-6 text-[16px] leading-relaxed text-muted-foreground">
             A few examples of what a well-planned redemption can look like. Yours will be different
@@ -487,26 +481,35 @@ function Destinations() {
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-3 md:gap-6">
-          {dests.map((d, i) => (
-            <figure key={d.name} className={`group ${i === 1 ? "md:mt-16" : ""}`}>
-              <div className="overflow-hidden">
-                <img
-                  src={d.img}
-                  alt={d.name}
-                  className="aspect-[4/5] w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.03]"
-                  loading="lazy"
-                />
-              </div>
-              <figcaption className="mt-5">
-                <p className="font-display text-2xl text-ink">{d.name}</p>
-                <p
-                  className="mt-2 text-[14px] leading-relaxed text-muted-foreground"
-                  dangerouslySetInnerHTML={{ __html: d.note }}
-                />
-              </figcaption>
-            </figure>
-          ))}
+        <div className="grid gap-10 md:grid-cols-12 md:gap-x-10 md:gap-y-24">
+          {dests.map((d, i) => {
+            // Asymmetric: first spans wide-left, second narrow-right pushed down, third offset middle
+            const spans = [
+              "md:col-span-7",
+              "md:col-span-4 md:col-start-9 md:mt-24",
+              "md:col-span-6 md:col-start-3",
+            ];
+            const aspect = i === 1 ? "aspect-[3/4]" : "aspect-[4/5]";
+            return (
+              <figure key={d.name} className={`group ${spans[i]}`}>
+                <div className="overflow-hidden">
+                  <img
+                    src={d.img}
+                    alt={d.name}
+                    className={`${aspect} w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.03]`}
+                    loading="lazy"
+                  />
+                </div>
+                <figcaption className="mt-5 max-w-md">
+                  <p className="font-display text-2xl text-ink">{d.name}</p>
+                  <p
+                    className="mt-2 text-[14px] leading-relaxed text-muted-foreground"
+                    dangerouslySetInnerHTML={{ __html: d.note }}
+                  />
+                </figcaption>
+              </figure>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -522,7 +525,7 @@ function Testimonials() {
         <div className="md:col-span-4">
           <p className="eyebrow mb-6 text-clay">Notes from clients</p>
           <h2 className="font-display text-4xl text-ink md:text-5xl">
-            Real words, <em className="italic text-clay">as they come in.</em>
+            Notes from real clients.
           </h2>
           <p className="mt-6 max-w-sm text-[15px] leading-relaxed text-muted-foreground">
             This is a new practice. Rather than invent testimonials, I&rsquo;m keeping this space
@@ -587,7 +590,7 @@ function Contact() {
           <div className="mt-12 flex flex-wrap items-center gap-6">
             <a
               href="/plan-my-trip"
-              className="rounded-full bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
+              className="rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
             >
               Plan my trip &nbsp;&rarr;
             </a>

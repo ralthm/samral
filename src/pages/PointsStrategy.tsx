@@ -17,7 +17,7 @@ function DiscoveryCTA({
   children?: React.ReactNode;
 }) {
   const base =
-    "inline-block rounded-full px-8 py-4 text-sm font-medium transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2";
+    "inline-block rounded-sm px-8 py-4 text-sm font-medium transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2";
   const styles =
     variant === "dark"
       ? "bg-ink text-background hover:bg-ink/90"
@@ -84,7 +84,7 @@ function Nav() {
         <a
           href={DISCOVERY_CALL_URL}
           {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-          className="rounded-full border border-ink/70 px-5 py-2 text-[13px] text-ink transition-colors hover:bg-ink hover:text-background"
+          className="rounded-sm border border-ink/70 px-5 py-2 text-[13px] text-ink transition-colors hover:bg-ink hover:text-background"
         >
           Book a call
         </a>
@@ -153,7 +153,7 @@ function Problem() {
         <div className="max-w-3xl">
           <h2 className="font-display text-3xl text-ink md:text-5xl">
             You built a successful business. You probably did not build a{" "}
-            <em className="italic text-clay">credit card rewards department.</em>
+            credit card rewards department.
           </h2>
           <div className="mt-10 space-y-5 text-[16px] leading-relaxed text-ink/85">
             <p>
@@ -216,22 +216,24 @@ function Overlooked() {
       <div className="mx-auto max-w-[1440px] px-6 py-24 md:px-12 md:py-32">
         <p className="eyebrow mb-6 text-clay">Common gaps</p>
         <h2 className="font-display max-w-2xl text-3xl text-ink md:text-5xl">
-          What may be getting <em className="italic text-clay">overlooked.</em>
+          What may be getting overlooked.
         </h2>
-        <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <dl className="mt-14 grid gap-x-16 gap-y-10 md:mt-20 md:grid-cols-12">
           {cards.map((c, i) => (
-            <article
+            <div
               key={c.t}
-              className="border border-border bg-background p-8 transition-transform hover:-translate-y-0.5"
+              className={`md:col-span-6 ${i % 2 === 1 ? "md:pt-8" : ""}`}
             >
-              <span className="font-display text-2xl text-clay">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <h3 className="font-display mt-4 text-2xl text-ink">{c.t}</h3>
-              <p className="mt-4 text-[15px] leading-relaxed text-ink/80">{c.d}</p>
-            </article>
+              <div className="flex items-baseline gap-4 border-t border-ink/15 pt-5">
+                <span className="font-display text-xl text-clay">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <dt className="font-display text-xl text-ink md:text-2xl">{c.t}</dt>
+              </div>
+              <dd className="mt-3 max-w-md pl-9 text-[15px] leading-relaxed text-ink/75">{c.d}</dd>
+            </div>
           ))}
-        </div>
+        </dl>
       </div>
     </section>
   );
@@ -259,7 +261,7 @@ function Founder() {
             <p className="eyebrow mb-6 text-clay">A note from Samuel</p>
             <h2 className="font-display text-3xl text-ink md:text-5xl">
               Hi, I&rsquo;m Samuel. I&rsquo;m here to make this{" "}
-              <em className="italic text-clay">less confusing.</em>
+              less confusing.
             </h2>
             <div className="mt-8 max-w-2xl space-y-5 text-[15px] leading-relaxed text-ink/85">
               <p>
@@ -323,7 +325,7 @@ function Process() {
         <div className="max-w-3xl">
           <p className="eyebrow mb-6 text-clay">How the process works</p>
           <h2 className="font-display text-3xl text-ink md:text-5xl">
-            Start with a <em className="italic text-clay">conversation.</em>
+            Start with a conversation.
           </h2>
         </div>
 
@@ -373,7 +375,7 @@ function DiscoveryCall() {
           <div className="md:col-span-5">
             <p className="eyebrow mb-6 text-clay">The free call</p>
             <h2 className="font-display text-3xl text-ink md:text-5xl">
-              What happens during the free <em className="italic text-clay">discovery call.</em>
+              What happens during the free discovery call.
             </h2>
             <p className="mt-8 max-w-md text-[15px] leading-relaxed text-ink/80">
               This is a short conversation to understand your situation and determine whether a deeper
@@ -435,7 +437,7 @@ function PaidService() {
         <div className="max-w-3xl">
           <p className="eyebrow mb-6 text-clay">IF WE DECIDE TO WORK TOGETHER</p>
           <h2 className="font-display text-3xl text-ink md:text-5xl">
-            The <em className="italic text-clay">Points Strategy Review.</em>
+            The Points Strategy Review.
           </h2>
           <p className="mt-8 text-[16px] leading-relaxed text-ink/85">
             The paid engagement begins only after the discovery call, once we have both agreed that there is
@@ -443,17 +445,23 @@ function PaidService() {
           </p>
         </div>
 
-        <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <ol className="mt-16 divide-y divide-ink/15 border-y border-ink/15">
           {cards.map((c, i) => (
-            <article key={c.t} className="border border-border bg-background p-8">
-              <span className="font-display text-2xl text-clay">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <h3 className="font-display mt-4 text-2xl text-ink">{c.t}</h3>
-              <p className="mt-4 text-[15px] leading-relaxed text-ink/80">{c.d}</p>
-            </article>
+            <li key={c.t} className="grid gap-6 py-8 md:grid-cols-12 md:gap-10 md:py-10">
+              <div className="md:col-span-4">
+                <div className="flex items-baseline gap-4">
+                  <span className="font-display text-xl text-clay">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="font-display text-xl text-ink md:text-2xl">{c.t}</h3>
+                </div>
+              </div>
+              <p className="max-w-xl text-[15px] leading-relaxed text-ink/80 md:col-span-7 md:col-start-6">
+                {c.d}
+              </p>
+            </li>
           ))}
-        </div>
+        </ol>
 
         <div className="mt-14 flex flex-col items-start gap-6 border-t border-border pt-10 md:flex-row md:items-center md:justify-between">
           <p className="max-w-xl text-[15px] italic text-muted-foreground">
@@ -485,7 +493,7 @@ function IdealClient() {
           <div className="md:col-span-6">
             <p className="eyebrow mb-6 text-clay">Fit</p>
             <h2 className="font-display text-3xl text-ink md:text-5xl">
-              Who this is <em className="italic text-clay">designed for.</em>
+              Who this is designed for.
             </h2>
             <p className="mt-8 max-w-2xl text-[15px] leading-relaxed text-ink/85">
               This service is most relevant for business owners, company directors, partners and high-income
@@ -594,7 +602,7 @@ function FAQ() {
           <div className="md:col-span-4">
             <p className="eyebrow mb-6 text-clay">Questions</p>
             <h2 className="font-display text-3xl text-ink md:text-5xl">
-              Common <em className="italic text-clay">questions.</em>
+              Common questions.
             </h2>
           </div>
           <div className="md:col-span-8">
