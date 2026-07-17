@@ -58,7 +58,7 @@ function Nav() {
         </nav>
         <a
           href="/plan-my-trip"
-          className="rounded-full border border-background/70 px-5 py-2 text-[13px] text-background transition-colors hover:bg-background hover:text-ink"
+          className="rounded-sm border border-background/70 px-5 py-2 text-[13px] text-background transition-colors hover:bg-background hover:text-ink"
         >
           Plan my trip
         </a>
@@ -108,7 +108,7 @@ function Hero() {
         <div className="mt-10 flex flex-wrap items-center gap-6">
           <a
             href="/plan-my-trip"
-            className="inline-block rounded-full bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
+            className="inline-block rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
           >
             Plan my trip &nbsp;&rarr;
           </a>
@@ -317,7 +317,7 @@ function Services() {
           <div>
             <p className="eyebrow mb-6 text-clay">What I offer</p>
             <h2 className="font-display max-w-2xl text-4xl text-ink md:text-6xl">
-              Two ways to work <em className="italic text-clay">together.</em>
+              Two ways to work together.
             </h2>
           </div>
           <p className="max-w-sm text-[15px] leading-relaxed text-muted-foreground">
@@ -369,7 +369,7 @@ function Services() {
           </p>
           <a
             href="/plan-my-trip"
-            className="inline-block rounded-full bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
+            className="inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
           >
             Plan my trip &nbsp;&rarr;
           </a>
@@ -411,7 +411,7 @@ function ServiceCard({
           className="h-[320px] w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.02] md:h-[380px]"
           loading="lazy"
         />
-        <span className="absolute left-5 top-5 rounded-full bg-background/90 px-3 py-1 text-[11px] font-medium tracking-widest text-ink">
+        <span className="absolute left-5 top-5 bg-background/90 px-3 py-1 text-[11px] font-medium tracking-widest text-ink">
           {tag.toUpperCase()}
         </span>
       </div>
@@ -437,7 +437,7 @@ function ServiceCard({
       <div className="mt-6">
         <a
           href={ctaHref}
-          className="inline-block rounded-full border border-ink px-6 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-background focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2"
+          className="inline-block rounded-sm border border-ink px-6 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-background focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2"
         >
           {ctaLabel} &nbsp;&rarr;
         </a>
@@ -473,7 +473,7 @@ function Destinations() {
         <div className="mb-14 max-w-2xl md:mb-20">
           <p className="eyebrow mb-6 text-clay">Where points can take you</p>
           <h2 className="font-display text-4xl text-ink md:text-6xl">
-            Trips people didn&rsquo;t <em className="italic text-clay">think were possible.</em>
+            Trips people didnTrips people didn&rsquo;t <em className="italic text-clay">think were possible.</em>rsquo;t think were possible.
           </h2>
           <p className="mt-6 text-[16px] leading-relaxed text-muted-foreground">
             A few examples of what a well-planned redemption can look like. Yours will be different
@@ -516,7 +516,7 @@ function Testimonials() {
         <div className="md:col-span-4">
           <p className="eyebrow mb-6 text-clay">Notes from clients</p>
           <h2 className="font-display text-4xl text-ink md:text-5xl">
-            Real words, <em className="italic text-clay">as they come in.</em>
+            Notes from real clients.
           </h2>
           <p className="mt-6 max-w-sm text-[15px] leading-relaxed text-muted-foreground">
             This is a new practice. Rather than invent testimonials, I&rsquo;m keeping this space
@@ -581,7 +581,7 @@ function Contact() {
           <div className="mt-12 flex flex-wrap items-center gap-6">
             <a
               href="/plan-my-trip"
-              className="rounded-full bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
+              className="rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
             >
               Plan my trip &nbsp;&rarr;
             </a>
