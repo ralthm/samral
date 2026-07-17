@@ -51,9 +51,6 @@ function Nav() {
           <a href="#destinations" className="transition-opacity hover:opacity-70">
             Destinations
           </a>
-          <a href="#testimonials" className="transition-opacity hover:opacity-70">
-            Notes
-          </a>
         </nav>
         <a
           href="/plan-my-trip"
@@ -509,37 +506,6 @@ function Destinations() {
               </figure>
             );
           })}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ---------- Testimonials ---------- */
-
-function Testimonials() {
-  return (
-    <section id="testimonials" className="bg-background">
-      <div className="mx-auto max-w-[1440px] px-6 py-24 md:grid md:grid-cols-12 md:gap-16 md:px-12 md:py-36">
-        <div className="md:col-span-4">
-          <p className="eyebrow mb-6 text-clay">Notes from clients</p>
-          <h2 className="font-display text-4xl text-ink md:text-5xl">
-            Notes from real clients.
-          </h2>
-          <p className="mt-6 max-w-sm text-[15px] leading-relaxed text-muted-foreground">
-            This is a new practice. Rather than invent testimonials, I&rsquo;m keeping this space
-            open for the first ones as they arrive.
-          </p>
-        </div>
-
-        <div className="mt-12 md:col-span-8 md:mt-0">
-          <blockquote className="border-l border-clay pl-6 md:pl-10">
-            <p className="font-display text-2xl leading-[1.25] text-ink md:text-4xl">
-              &ldquo;A space reserved for the first client to share their story.
-              Yours could be here.&rdquo;
-            </p>
-            <footer className="mt-6 text-sm text-muted-foreground">&mdash; Coming soon</footer>
-          </blockquote>
         </div>
       </div>
     </section>
