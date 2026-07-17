@@ -62,6 +62,19 @@
     font-feature-settings: "ss01", "kern";
   }
 
+  html,
+  body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  img,
+  video,
+  iframe {
+    display: block;
+    max-width: 100%;
+  }
+
   ::selection {
     background-color: hsl(var(--clay) / 0.2);
   }

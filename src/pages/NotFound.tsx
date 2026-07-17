@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
 const NotFound = () => {
@@ -6,17 +6,33 @@ const NotFound = () => {
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    document.title = "Page not found | Samral";
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
-        <a href="/" className="text-primary underline hover:text-primary/90">
-          Return to Home
-        </a>
-      </div>
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <header className="border-b border-border">
+        <div className="mx-auto flex w-full max-w-[1440px] items-center px-5 py-5 sm:px-6 md:px-12 md:py-8">
+          <Link to="/" className="font-display text-2xl leading-none text-ink md:text-[26px]">
+            Samral
+          </Link>
+        </div>
+      </header>
+      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-start justify-center px-5 py-20 sm:px-6">
+        <p className="eyebrow mb-6 text-clay">404</p>
+        <h1 className="font-display text-4xl text-ink md:text-6xl">
+          This page has taken a detour.
+        </h1>
+        <p className="mt-6 text-[16px] leading-relaxed text-ink/80">
+          The page you&rsquo;re looking for doesn&rsquo;t exist or has moved.
+        </p>
+        <Link
+          to="/"
+          className="mt-10 inline-flex min-h-12 items-center justify-center rounded-sm bg-ink px-6 py-3 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
+        >
+          Return to homepage &nbsp;&rarr;
+        </Link>
+      </main>
     </div>
   );
 };

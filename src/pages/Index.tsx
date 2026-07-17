@@ -1,4 +1,8 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import heroImage from "@/assets/hero.jpg";
+
 import samuelImage from "@/assets/samral-founder.jpg.asset.json";
 import travel1 from "@/assets/travel-1.jpg.asset.json";
 import travel2 from "@/assets/travel-2.jpg.asset.json";
@@ -11,6 +15,19 @@ import maldivesImage from "@/assets/maldives.jpg";
 import italyImage from "@/assets/italy.jpg";
 
 export default function Home() {
+  useEffect(() => {
+    document.title = "Samral | Smarter Rewards, Better Travel";
+    const desc =
+      "Samral helps people make better use of credit card rewards through personalised trip planning and points strategy research.";
+    let tag = document.querySelector('meta[name="description"]');
+    if (!tag) {
+      tag = document.createElement("meta");
+      tag.setAttribute("name", "description");
+      document.head.appendChild(tag);
+    }
+    tag.setAttribute("content", desc);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
@@ -26,40 +43,100 @@ export default function Home() {
   );
 }
 
+
 /* ---------- Nav ---------- */
 
 function Nav() {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  const links = [
+    { label: "Points Trip Planning", to: "/trip-planning" },
+    { label: "Points Strategy", to: "/points-strategy" },
+  ];
+
   return (
     <header className="absolute inset-x-0 top-0 z-30">
-      <div className="mx-auto flex max-w-[1440px] items-center justify-between px-6 py-6 md:px-12 md:py-8">
-        <a
-          href="#top"
+      <div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 py-5 sm:px-6 md:px-12 md:py-8">
+        <Link
+          to="/"
+          aria-label="Samral home"
           className="font-display text-2xl leading-none text-background md:text-[26px]"
         >
           Samral
-        </a>
+        </Link>
         <nav className="hidden items-center gap-9 text-[13px] text-background/90 md:flex">
-          <a href="#founder" className="transition-opacity hover:opacity-70">
-            About
-          </a>
-          <a href="#services" className="transition-opacity hover:opacity-70">
-            Services
-          </a>
-          <a href="/points-strategy" className="transition-opacity hover:opacity-70">
-            Points Strategy
-          </a>
-          <a href="#destinations" className="transition-opacity hover:opacity-70">
-            Destinations
-          </a>
+          {links.map((l) => (
+            <Link key={l.to} to={l.to} className="transition-opacity hover:opacity-70">
+              {l.label}
+            </Link>
+          ))}
+          <Link
+            to="/trip-planning"
+            className="rounded-sm border border-background/70 px-5 py-2 text-[13px] text-background transition-colors hover:bg-background hover:text-ink"
+          >
+            Plan my trip
+          </Link>
         </nav>
-        <a
-          href="/plan-my-trip"
-          className="rounded-sm border border-background/70 px-5 py-2 text-[13px] text-background transition-colors hover:bg-background hover:text-ink"
+        <button
+          type="button"
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+          className="inline-flex h-11 w-11 items-center justify-center text-background md:hidden"
         >
-          Plan my trip
-        </a>
+          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
       </div>
+
+      {open && (
+        <div className="fixed inset-0 z-40 flex flex-col bg-ink text-background md:hidden">
+          <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-5 sm:px-6">
+            <Link
+              to="/"
+              onClick={() => setOpen(false)}
+              className="font-display text-2xl leading-none text-background"
+            >
+              Samral
+            </Link>
+            <button
+              type="button"
+              aria-label="Close menu"
+              onClick={() => setOpen(false)}
+              className="inline-flex h-11 w-11 items-center justify-center"
+            >
+              <X className="h-6 w-6" />
+            </button>
+          </div>
+          <nav className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-2 px-5 pt-6 sm:px-6">
+            {[{ label: "Home", to: "/" }, ...links].map((l) => (
+              <Link
+                key={l.to}
+                to={l.to}
+                onClick={() => setOpen(false)}
+                className="font-display border-b border-background/15 py-5 text-3xl"
+              >
+                {l.label}
+              </Link>
+            ))}
+            <Link
+              to="/trip-planning"
+              onClick={() => setOpen(false)}
+              className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-sm bg-[#fdf7eb] px-6 py-3 text-sm font-medium text-ink"
+            >
+              Plan my trip &nbsp;&rarr;
+            </Link>
+          </nav>
+        </div>
+      )}
     </header>
+
   );
 }
 
@@ -67,7 +144,7 @@ function Nav() {
 
 function Hero() {
   return (
-    <section id="top" className="relative h-[92vh] min-h-[640px] w-full overflow-hidden">
+    <section className="relative h-[92vh] min-h-[640px] w-full overflow-hidden">
       <img
         src={heroImage}
         alt="View from an airplane window at golden hour"
@@ -103,7 +180,7 @@ function Hero() {
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-6">
           <a
-            href="/plan-my-trip"
+            href="/trip-planning"
             className="inline-block rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
           >
             Plan my trip &nbsp;&rarr;
@@ -336,7 +413,7 @@ function Services() {
               "Exactly how to book it",
             ]}
             best="For a specific trip you want to get right."
-            ctaHref="/plan-my-trip"
+            ctaHref="/trip-planning"
             ctaLabel="Plan my trip"
           />
           <ServiceCard
@@ -364,7 +441,7 @@ function Services() {
             booking on your behalf.
           </p>
           <a
-            href="/plan-my-trip"
+            href="/trip-planning"
             className="inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
           >
             Plan my trip &nbsp;&rarr;
@@ -540,7 +617,7 @@ function Contact() {
           </p>
           <div className="mt-12 flex flex-wrap items-center gap-6">
             <a
-              href="/plan-my-trip"
+              href="/trip-planning"
               className="rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
             >
               Plan my trip &nbsp;&rarr;
@@ -557,13 +634,50 @@ function Contact() {
 
 function Footer() {
   return (
-    <footer className="bg-ink text-background/60">
-      <div className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-4 border-t border-background/10 px-6 py-8 text-xs md:flex-row md:items-center md:px-12">
-        <p>
-          &copy; {new Date().getFullYear()} Samral &mdash; Independent points &amp; miles advisory.
-        </p>
-        <p className="italic">By appointment.</p>
+    <footer className="bg-ink text-background/70">
+      <div className="mx-auto w-full max-w-[1440px] px-5 py-14 sm:px-6 md:px-12">
+        <div className="grid gap-10 md:grid-cols-12">
+          <div className="md:col-span-5">
+            <Link to="/" className="font-display text-3xl text-background">
+              Samral
+            </Link>
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-background/60">
+              Independent points &amp; miles advisory. By appointment.
+            </p>
+          </div>
+          <div className="md:col-span-4">
+            <p className="eyebrow mb-4 text-background/50">Services</p>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/trip-planning" className="hover:text-background">
+                  Points Trip Planning
+                </Link>
+              </li>
+              <li>
+                <Link to="/points-strategy" className="hover:text-background">
+                  Points Strategy
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div className="md:col-span-3">
+            <p className="eyebrow mb-4 text-background/50">Contact</p>
+            <a
+              href="mailto:samuel@samral.com"
+              className="text-sm hover:text-background"
+            >
+              samuel@samral.com
+            </a>
+          </div>
+        </div>
+        <div className="mt-12 flex flex-col gap-2 border-t border-background/10 pt-6 text-xs text-background/50 md:flex-row md:items-center md:justify-between">
+          <p>
+            &copy; {new Date().getFullYear()} Samral &mdash; Independent points &amp; miles advisory.
+          </p>
+          <p className="italic">By appointment.</p>
+        </div>
       </div>
     </footer>
   );
 }
+
