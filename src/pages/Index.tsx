@@ -153,7 +153,7 @@ function Founder() {
   return (
     <section id="founder" className="bg-sand">
       <div className="mx-auto grid max-w-[1440px] gap-12 px-6 py-24 md:grid-cols-12 md:gap-16 md:px-12 md:py-36">
-        <div className="md:col-span-5">
+        <div className="flex flex-col md:col-span-5">
           <div className="relative">
             <img src={samuelImage.url} alt="Samral, founder" className="aspect-[4/5] w-full object-cover" />
             <div className="absolute -bottom-4 -right-4 hidden h-32 w-32 border border-clay md:block" />
@@ -161,16 +161,16 @@ function Founder() {
           <p className="mt-3 text-xs text-muted-foreground">Samral &mdash; founder</p>
 
           {/* Travel collage */}
-          <div className="relative mt-10 hidden h-64 md:block">
+          <div className="relative mt-10 hidden min-h-0 flex-grow md:block">
             {[
-              { src: travel1.url, rot: "-6deg", top: "0", left: "2%", z: 10 },
-              { src: travel2.url, rot: "4deg", top: "10%", left: "28%", z: 20 },
-              { src: travel3.url, rot: "-3deg", top: "4%", left: "54%", z: 15 },
-              { src: travel4.url, rot: "7deg", top: "14%", left: "78%", z: 25 },
+              { src: travel1.url, rot: "-6deg", top: "0%", left: "0%", z: 10 },
+              { src: travel2.url, rot: "5deg", top: "26%", left: "40%", z: 20 },
+              { src: travel3.url, rot: "-4deg", top: "50%", left: "4%", z: 15 },
+              { src: travel4.url, rot: "7deg", top: "72%", left: "38%", z: 25 },
             ].map((p, i) => (
               <div
                 key={i}
-                className="absolute w-[38%] bg-background p-2 shadow-xl transition-transform duration-500 hover:z-30 hover:scale-105"
+                className="absolute w-[44%] bg-background p-2 shadow-xl transition-transform duration-500 hover:z-30 hover:scale-105"
                 style={{
                   top: p.top,
                   left: p.left,
