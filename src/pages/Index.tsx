@@ -346,6 +346,8 @@ function Services() {
               "Exactly how to book it",
             ]}
             best="For a specific trip you want to get right."
+            ctaHref="/plan-my-trip"
+            ctaLabel="Plan my trip"
           />
           <ServiceCard
             index="02"
@@ -361,6 +363,8 @@ function Services() {
               "An honest look at what to keep and what to close",
             ]}
             best="For anyone building toward something in the next year or two."
+            ctaHref="/points-strategy"
+            ctaLabel="Explore Points Strategy"
           />
         </div>
 
