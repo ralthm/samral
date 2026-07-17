@@ -20,7 +20,6 @@ export default function Home() {
       <Inspiration />
       <Services />
       <Destinations />
-      <Testimonials />
       <Contact />
       <Footer />
     </div>
