@@ -481,26 +481,35 @@ function Destinations() {
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-3 md:gap-6">
-          {dests.map((d, i) => (
-            <figure key={d.name} className={`group ${i === 1 ? "md:mt-16" : ""}`}>
-              <div className="overflow-hidden">
-                <img
-                  src={d.img}
-                  alt={d.name}
-                  className="aspect-[4/5] w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.03]"
-                  loading="lazy"
-                />
-              </div>
-              <figcaption className="mt-5">
-                <p className="font-display text-2xl text-ink">{d.name}</p>
-                <p
-                  className="mt-2 text-[14px] leading-relaxed text-muted-foreground"
-                  dangerouslySetInnerHTML={{ __html: d.note }}
-                />
-              </figcaption>
-            </figure>
-          ))}
+        <div className="grid gap-10 md:grid-cols-12 md:gap-x-10 md:gap-y-24">
+          {dests.map((d, i) => {
+            // Asymmetric: first spans wide-left, second narrow-right pushed down, third offset middle
+            const spans = [
+              "md:col-span-7",
+              "md:col-span-4 md:col-start-9 md:mt-24",
+              "md:col-span-6 md:col-start-3",
+            ];
+            const aspect = i === 1 ? "aspect-[3/4]" : "aspect-[4/5]";
+            return (
+              <figure key={d.name} className={`group ${spans[i]}`}>
+                <div className="overflow-hidden">
+                  <img
+                    src={d.img}
+                    alt={d.name}
+                    className={`${aspect} w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.03]`}
+                    loading="lazy"
+                  />
+                </div>
+                <figcaption className="mt-5 max-w-md">
+                  <p className="font-display text-2xl text-ink">{d.name}</p>
+                  <p
+                    className="mt-2 text-[14px] leading-relaxed text-muted-foreground"
+                    dangerouslySetInnerHTML={{ __html: d.note }}
+                  />
+                </figcaption>
+              </figure>
+            );
+          })}
         </div>
       </div>
     </section>
