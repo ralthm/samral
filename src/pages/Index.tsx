@@ -46,6 +46,9 @@ function Nav() {
           <a href="#services" className="transition-opacity hover:opacity-70">
             Services
           </a>
+          <a href="/points-strategy" className="transition-opacity hover:opacity-70">
+            Points Strategy
+          </a>
           <a href="#destinations" className="transition-opacity hover:opacity-70">
             Destinations
           </a>
