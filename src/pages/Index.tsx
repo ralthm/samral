@@ -634,13 +634,50 @@ function Contact() {
 
 function Footer() {
   return (
-    <footer className="bg-ink text-background/60">
-      <div className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-4 border-t border-background/10 px-6 py-8 text-xs md:flex-row md:items-center md:px-12">
-        <p>
-          &copy; {new Date().getFullYear()} Samral &mdash; Independent points &amp; miles advisory.
-        </p>
-        <p className="italic">By appointment.</p>
+    <footer className="bg-ink text-background/70">
+      <div className="mx-auto w-full max-w-[1440px] px-5 py-14 sm:px-6 md:px-12">
+        <div className="grid gap-10 md:grid-cols-12">
+          <div className="md:col-span-5">
+            <Link to="/" className="font-display text-3xl text-background">
+              Samral
+            </Link>
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-background/60">
+              Independent points &amp; miles advisory. By appointment.
+            </p>
+          </div>
+          <div className="md:col-span-4">
+            <p className="eyebrow mb-4 text-background/50">Services</p>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/trip-planning" className="hover:text-background">
+                  Points Trip Planning
+                </Link>
+              </li>
+              <li>
+                <Link to="/points-strategy" className="hover:text-background">
+                  Points Strategy
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div className="md:col-span-3">
+            <p className="eyebrow mb-4 text-background/50">Contact</p>
+            <a
+              href="mailto:samuel@samral.com"
+              className="text-sm hover:text-background"
+            >
+              samuel@samral.com
+            </a>
+          </div>
+        </div>
+        <div className="mt-12 flex flex-col gap-2 border-t border-background/10 pt-6 text-xs text-background/50 md:flex-row md:items-center md:justify-between">
+          <p>
+            &copy; {new Date().getFullYear()} Samral &mdash; Independent points &amp; miles advisory.
+          </p>
+          <p className="italic">By appointment.</p>
+        </div>
       </div>
     </footer>
   );
 }
+
