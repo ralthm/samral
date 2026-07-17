@@ -17,7 +17,7 @@ function DiscoveryCTA({
   children?: React.ReactNode;
 }) {
   const base =
-    "inline-block rounded-full px-8 py-4 text-sm font-medium transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2";
+    "inline-block rounded-sm px-8 py-4 text-sm font-medium transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2";
   const styles =
     variant === "dark"
       ? "bg-ink text-background hover:bg-ink/90"
@@ -84,7 +84,7 @@ function Nav() {
         <a
           href={DISCOVERY_CALL_URL}
           {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-          className="rounded-full border border-ink/70 px-5 py-2 text-[13px] text-ink transition-colors hover:bg-ink hover:text-background"
+          className="rounded-sm border border-ink/70 px-5 py-2 text-[13px] text-ink transition-colors hover:bg-ink hover:text-background"
         >
           Book a call
         </a>
@@ -153,7 +153,7 @@ function Problem() {
         <div className="max-w-3xl">
           <h2 className="font-display text-3xl text-ink md:text-5xl">
             You built a successful business. You probably did not build a{" "}
-            <em className="italic text-clay">credit card rewards department.</em>
+            credit card rewards department.
           </h2>
           <div className="mt-10 space-y-5 text-[16px] leading-relaxed text-ink/85">
             <p>
@@ -216,7 +216,7 @@ function Overlooked() {
       <div className="mx-auto max-w-[1440px] px-6 py-24 md:px-12 md:py-32">
         <p className="eyebrow mb-6 text-clay">Common gaps</p>
         <h2 className="font-display max-w-2xl text-3xl text-ink md:text-5xl">
-          What may be getting <em className="italic text-clay">overlooked.</em>
+          What may be getting overlooked.
         </h2>
         <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {cards.map((c, i) => (
@@ -259,7 +259,7 @@ function Founder() {
             <p className="eyebrow mb-6 text-clay">A note from Samuel</p>
             <h2 className="font-display text-3xl text-ink md:text-5xl">
               Hi, I&rsquo;m Samuel. I&rsquo;m here to make this{" "}
-              <em className="italic text-clay">less confusing.</em>
+              less confusing.
             </h2>
             <div className="mt-8 max-w-2xl space-y-5 text-[15px] leading-relaxed text-ink/85">
               <p>
@@ -323,7 +323,7 @@ function Process() {
         <div className="max-w-3xl">
           <p className="eyebrow mb-6 text-clay">How the process works</p>
           <h2 className="font-display text-3xl text-ink md:text-5xl">
-            Start with a <em className="italic text-clay">conversation.</em>
+            Start with a conversation.
           </h2>
         </div>
 
@@ -373,7 +373,7 @@ function DiscoveryCall() {
           <div className="md:col-span-5">
             <p className="eyebrow mb-6 text-clay">The free call</p>
             <h2 className="font-display text-3xl text-ink md:text-5xl">
-              What happens during the free <em className="italic text-clay">discovery call.</em>
+              What happens during the free discovery call.
             </h2>
             <p className="mt-8 max-w-md text-[15px] leading-relaxed text-ink/80">
               This is a short conversation to understand your situation and determine whether a deeper
@@ -435,7 +435,7 @@ function PaidService() {
         <div className="max-w-3xl">
           <p className="eyebrow mb-6 text-clay">IF WE DECIDE TO WORK TOGETHER</p>
           <h2 className="font-display text-3xl text-ink md:text-5xl">
-            The <em className="italic text-clay">Points Strategy Review.</em>
+            The Points Strategy Review.
           </h2>
           <p className="mt-8 text-[16px] leading-relaxed text-ink/85">
             The paid engagement begins only after the discovery call, once we have both agreed that there is
@@ -485,7 +485,7 @@ function IdealClient() {
           <div className="md:col-span-6">
             <p className="eyebrow mb-6 text-clay">Fit</p>
             <h2 className="font-display text-3xl text-ink md:text-5xl">
-              Who this is <em className="italic text-clay">designed for.</em>
+              Who this is designed for.
             </h2>
             <p className="mt-8 max-w-2xl text-[15px] leading-relaxed text-ink/85">
               This service is most relevant for business owners, company directors, partners and high-income
@@ -594,7 +594,7 @@ function FAQ() {
           <div className="md:col-span-4">
             <p className="eyebrow mb-6 text-clay">Questions</p>
             <h2 className="font-display text-3xl text-ink md:text-5xl">
-              Common <em className="italic text-clay">questions.</em>
+              Common questions.
             </h2>
           </div>
           <div className="md:col-span-8">
