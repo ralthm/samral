@@ -572,13 +572,7 @@ function Contact() {
             >
               Plan my trip &nbsp;&rarr;
             </a>
-            <a
-              href="mailto:hello@samuel.example"
-              className="text-sm"
-              style={{ color: "rgba(253, 247, 235, 0.85)" }}
-            >
-              hello@samuel.example
-            </a>
+            {/* email link removed as requested */}
           </div>
         </div>
       </div>
