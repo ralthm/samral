@@ -218,20 +218,22 @@ function Overlooked() {
         <h2 className="font-display max-w-2xl text-3xl text-ink md:text-5xl">
           What may be getting overlooked.
         </h2>
-        <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <dl className="mt-14 grid gap-x-16 gap-y-10 md:mt-20 md:grid-cols-12">
           {cards.map((c, i) => (
-            <article
+            <div
               key={c.t}
-              className="border border-border bg-background p-8 transition-transform hover:-translate-y-0.5"
+              className={`md:col-span-6 ${i % 2 === 1 ? "md:pt-8" : ""}`}
             >
-              <span className="font-display text-2xl text-clay">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <h3 className="font-display mt-4 text-2xl text-ink">{c.t}</h3>
-              <p className="mt-4 text-[15px] leading-relaxed text-ink/80">{c.d}</p>
-            </article>
+              <div className="flex items-baseline gap-4 border-t border-ink/15 pt-5">
+                <span className="font-display text-xl text-clay">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <dt className="font-display text-xl text-ink md:text-2xl">{c.t}</dt>
+              </div>
+              <dd className="mt-3 max-w-md pl-9 text-[15px] leading-relaxed text-ink/75">{c.d}</dd>
+            </div>
           ))}
-        </div>
+        </dl>
       </div>
     </section>
   );
