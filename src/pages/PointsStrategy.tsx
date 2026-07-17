@@ -1,4 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import notebookImage from "@/assets/notebook.jpg";
 import cabinImage from "@/assets/cabin.jpg";
 import kyotoImage from "@/assets/kyoto.jpg";
