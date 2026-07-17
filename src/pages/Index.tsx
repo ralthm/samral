@@ -33,7 +33,7 @@ function Nav() {
           href="#top"
           className="font-display text-2xl leading-none text-background md:text-[26px]"
         >
-          Samuel<span className="text-background/60">.</span>
+          Samral
         </a>
         <nav className="hidden items-center gap-9 text-[13px] text-background/90 md:flex">
           <a href="#founder" className="transition-opacity hover:opacity-70">
@@ -151,14 +151,14 @@ function Founder() {
       <div className="mx-auto grid max-w-[1440px] gap-12 px-6 py-24 md:grid-cols-12 md:gap-16 md:px-12 md:py-36">
         <div className="md:col-span-5">
           <div className="relative">
-            <img src={samuelImage} alt="Samuel, founder" className="w-full object-cover" />
+            <img src={samuelImage} alt="Samral, founder" className="w-full object-cover" />
             <div className="absolute -bottom-4 -right-4 hidden h-32 w-32 border border-clay md:block" />
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">Samuel &mdash; founder</p>
+          <p className="mt-4 text-xs text-muted-foreground">Samral &mdash; founder</p>
         </div>
 
         <div className="md:col-span-7 md:pt-8">
-          <p className="eyebrow mb-6 text-clay">About Samuel</p>
+          <p className="eyebrow mb-6 text-clay">About Samral</p>
           <h2 className="font-display text-4xl text-ink md:text-6xl">
             I started this because I <em className="italic text-clay">wish someone had done it for me.</em>
           </h2>
@@ -225,7 +225,7 @@ function Inspiration() {
             It&rsquo;s about the trip you&rsquo;ll actually remember.&rdquo;
           </p>
           <p className="mt-6 text-sm" style={{ color: "rgba(253, 247, 235, 0.75)" }}>
-            &mdash; Samuel
+            &mdash; Samral
           </p>
         </div>
       </div>
@@ -516,7 +516,7 @@ function Footer() {
     <footer className="bg-ink text-background/60">
       <div className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-4 border-t border-background/10 px-6 py-8 text-xs md:flex-row md:items-center md:px-12">
         <p>
-          &copy; {new Date().getFullYear()} Samuel &mdash; Independent points &amp; miles advisory.
+          &copy; {new Date().getFullYear()} Samral &mdash; Independent points &amp; miles advisory.
         </p>
         <p className="italic">By appointment.</p>
       </div>
