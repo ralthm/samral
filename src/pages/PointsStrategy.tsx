@@ -70,27 +70,99 @@ export default function PointsStrategy() {
 /* ---------- Nav ---------- */
 
 function Nav() {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  const links = [
+    { label: "Home", to: "/" },
+    { label: "Points Trip Planning", to: "/trip-planning" },
+    { label: "Points Strategy", to: "/points-strategy" },
+  ];
+
   return (
     <header className="border-b border-border bg-background">
-      <div className="mx-auto flex max-w-[1440px] items-center justify-between px-6 py-6 md:px-12 md:py-8">
-        <a href="/" className="font-display text-2xl leading-none text-ink md:text-[26px]">
+      <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-5 sm:px-6 md:px-12 md:py-8">
+        <Link
+          to="/"
+          aria-label="Samral home"
+          className="font-display text-2xl leading-none text-ink md:text-[26px]"
+        >
           Samral
-        </a>
+        </Link>
         <nav className="hidden items-center gap-9 text-[13px] text-ink/80 md:flex">
-          <a href="/#founder" className="transition-opacity hover:opacity-70">About</a>
-          <a href="/#services" className="transition-opacity hover:opacity-70">Services</a>
-          <a href="/points-strategy" className="text-ink transition-opacity hover:opacity-70">Points Strategy</a>
-          <a href="/#destinations" className="transition-opacity hover:opacity-70">Destinations</a>
-          <a href="/#testimonials" className="transition-opacity hover:opacity-70">Notes</a>
+          <Link to="/" className="transition-opacity hover:opacity-70">Home</Link>
+          <Link to="/trip-planning" className="transition-opacity hover:opacity-70">
+            Points Trip Planning
+          </Link>
+          <Link to="/points-strategy" className="text-ink transition-opacity hover:opacity-70">
+            Points Strategy
+          </Link>
         </nav>
         <a
           href={DISCOVERY_CALL_URL}
           {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-          className="rounded-sm border border-ink/70 px-5 py-2 text-[13px] text-ink transition-colors hover:bg-ink hover:text-background"
+          className="hidden rounded-sm border border-ink/70 px-5 py-2 text-[13px] text-ink transition-colors hover:bg-ink hover:text-background md:inline-block"
         >
           Book a call
         </a>
+        <button
+          type="button"
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+          className="inline-flex h-11 w-11 items-center justify-center text-ink md:hidden"
+        >
+          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
       </div>
+
+      {open && (
+        <div className="fixed inset-0 z-40 flex flex-col bg-background text-ink md:hidden">
+          <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-5 sm:px-6">
+            <Link
+              to="/"
+              onClick={() => setOpen(false)}
+              className="font-display text-2xl leading-none text-ink"
+            >
+              Samral
+            </Link>
+            <button
+              type="button"
+              aria-label="Close menu"
+              onClick={() => setOpen(false)}
+              className="inline-flex h-11 w-11 items-center justify-center"
+            >
+              <X className="h-6 w-6" />
+            </button>
+          </div>
+          <nav className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-2 px-5 pt-6 sm:px-6">
+            {links.map((l) => (
+              <Link
+                key={l.to}
+                to={l.to}
+                onClick={() => setOpen(false)}
+                className="font-display border-b border-border py-5 text-3xl text-ink"
+              >
+                {l.label}
+              </Link>
+            ))}
+            <a
+              href={DISCOVERY_CALL_URL}
+              {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              onClick={() => setOpen(false)}
+              className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-sm bg-ink px-6 py-3 text-sm font-medium text-background"
+            >
+              Book a Free Discovery Call &nbsp;&rarr;
+            </a>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
