@@ -159,20 +159,64 @@ function Founder() {
 
         <div className="md:col-span-7 md:pt-8">
           <p className="eyebrow mb-6 text-clay">About Samral</p>
-          <h2 className="font-display text-4xl text-ink md:text-6xl">
-            I started this because I <em className="italic text-clay">wish someone had done it for me.</em>
+          <h2 className="font-display text-3xl text-ink md:text-5xl">
+            From ignoring points to understanding them.
           </h2>
 
-          <div className="mt-10 space-y-5 text-[17px] leading-relaxed text-ink/85">
+          <div className="mt-10 space-y-5 text-[15px] leading-relaxed text-ink/85">
             <p>
-              I work in real estate private equity. Like most people, I signed up for a few credit
-              cards without paying much attention to the rewards.
+              For most of my life, I never really thought about credit card points despite working in finance.
             </p>
             <p>
-              {" "}
+              Like most people, I used my credit cards for everyday spending without thinking too much about what I was earning in return.
             </p>
             <p>
-              {" "}
+              Then, less than a year after getting my first rewards cards, I decided to actually look at the points I had accumulated.
+            </p>
+            <p>
+              I realised I already had enough to potentially cover flights to places like Bangkok and Ho Chi Minh City.
+            </p>
+            <p>
+              That caught my attention.
+            </p>
+            <p>
+              If I’d accumulated that much without even trying, what would happen if I actually understood how the system worked?
+            </p>
+            <p>
+              So I started digging.
+            </p>
+            <p>
+              I learned about airline transfer partners, conversion ratios, award availability, redemption values and all the different ways the same points could be worth dramatically different amounts depending on how you used them.
+            </p>
+            <p>
+              And I realised something else.
+            </p>
+            <p>
+              This stuff is confusing.
+            </p>
+            <p>
+              Knowing that you have 200,000 credit card points is one thing. Knowing whether you should transfer them to an airline, which programme to choose, whether seats are actually available, or whether you’d be better off simply paying cash is something completely different.
+            </p>
+            <p>
+              The more I learned, the more I realised how easy it is to earn points for years without having a real strategy for using them.
+            </p>
+            <p>
+              That’s why I started Samral.
+            </p>
+            <p>
+              I wanted to help people answer a simple question:
+            </p>
+            <p>
+              What’s the smartest thing I can actually do with the rewards I have?
+            </p>
+            <p>
+              Today, I help people understand their points, explore their travel options and make better decisions before they transfer or redeem anything.
+            </p>
+            <p>
+              Because earning points is only half the equation.
+            </p>
+            <p>
+              Knowing what to do with them is where the real value begins.
             </p>
           </div>
 
