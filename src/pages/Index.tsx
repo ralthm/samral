@@ -202,7 +202,7 @@ function Founder() {
         <div className="md:col-span-7 md:pt-8">
           <p className="eyebrow mb-6 text-clay">About Samral</p>
           <h2 className="font-display text-3xl text-ink md:text-5xl">
-            From ignoring points to understanding them.
+            How I started paying attention to points.
           </h2>
 
           <div className="mt-10 space-y-5 text-[15px] leading-relaxed text-ink/85">
