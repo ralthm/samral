@@ -1,4 +1,8 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import heroImage from "@/assets/hero.jpg";
+
 import samuelImage from "@/assets/samral-founder.jpg.asset.json";
 import travel1 from "@/assets/travel-1.jpg.asset.json";
 import travel2 from "@/assets/travel-2.jpg.asset.json";
