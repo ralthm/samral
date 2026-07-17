@@ -144,7 +144,7 @@ function Nav() {
 
 function Hero() {
   return (
-    <section id="top" className="relative h-[92vh] min-h-[640px] w-full overflow-hidden">
+    <section className="relative h-[92vh] min-h-[640px] w-full overflow-hidden">
       <img
         src={heroImage}
         alt="View from an airplane window at golden hour"
