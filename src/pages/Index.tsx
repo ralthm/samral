@@ -459,7 +459,7 @@ function Destinations() {
     {
       img: kyotoImage,
       name: "Kyoto in autumn",
-      note: "Traditional ryokan stays and premium-cabin ANA seats &mdash; some of the best value in miles.",
+      note: "Traditional ryokan stays and premium-cabin ANA seats — some of the best value in miles.",
     },
   ];
 
