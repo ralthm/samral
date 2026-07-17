@@ -538,6 +538,13 @@ function IdealClient() {
   );
 }
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
 /* ---------- FAQ ---------- */
 
 function FAQ() {
@@ -574,7 +581,12 @@ function FAQ() {
       q: "Do you receive commissions from banks?",
       a: "No. Samral currently charges clients directly for its research and does not receive payment from banks for recommending specific cards.",
     },
+    {
+      q: "Can’t AI do this for me?",
+      a: "AI can be a very useful starting point. It can help compare cards, explain rewards programmes and generate ideas much faster than doing everything manually. I use it as part of the research process too.\n\nBut I would not rely on AI alone for decisions involving large points balances. Card terms, transfer rates, programme rules and availability can change, and AI can still present outdated or incorrect information with confidence.\n\nThere is also a difference between receiving a list of possible options and knowing which one genuinely makes sense for your spending, travel plans and tolerance for complexity. Some points transfers cannot be reversed, so checking the details before moving a large balance matters.\n\nSamral is for people who would rather have a human research the options, explain the trade-offs and guide them through the decision.\n\nIf you enjoy doing the research yourself with AI and feel confident checking every detail independently, you may not need this service—and that is completely fine.",
+    },
   ];
+
   return (
     <section className="bg-sand">
       <div className="mx-auto max-w-[1440px] px-6 py-24 md:px-12 md:py-32">
@@ -586,14 +598,20 @@ function FAQ() {
             </h2>
           </div>
           <div className="md:col-span-8">
-            <dl className="divide-y divide-border border-y border-border">
-              {faqs.map((f) => (
-                <div key={f.q} className="py-8">
-                  <dt className="font-display text-xl text-ink md:text-2xl">{f.q}</dt>
-                  <dd className="mt-3 max-w-2xl text-[15px] leading-relaxed text-ink/80">{f.a}</dd>
-                </div>
+            <Accordion type="single" collapsible className="border-t border-border">
+              {faqs.map((f, i) => (
+                <AccordionItem key={f.q} value={`faq-${i}`} className="border-b border-border">
+                  <AccordionTrigger className="py-7 text-left font-display text-xl text-ink transition-opacity hover:no-underline hover:opacity-70 md:text-2xl">
+                    {f.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-7 pt-0">
+                    <div className="max-w-2xl whitespace-pre-line text-[15px] leading-relaxed text-ink/80">
+                      {f.a}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
               ))}
-            </dl>
+            </Accordion>
           </div>
         </div>
       </div>
