@@ -473,7 +473,7 @@ function Destinations() {
         <div className="mb-14 max-w-2xl md:mb-20">
           <p className="eyebrow mb-6 text-clay">Where points can take you</p>
           <h2 className="font-display text-4xl text-ink md:text-6xl">
-            Trips people didnTrips people didn&rsquo;t <em className="italic text-clay">think were possible.</em>rsquo;t think were possible.
+            Trips people didn&rsquo;t think were possible.
           </h2>
           <p className="mt-6 text-[16px] leading-relaxed text-muted-foreground">
             A few examples of what a well-planned redemption can look like. Yours will be different
