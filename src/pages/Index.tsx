@@ -413,7 +413,7 @@ function Services() {
               "Exactly how to book it",
             ]}
             best="For a specific trip you want to get right."
-            ctaHref="/plan-my-trip"
+            ctaHref="/trip-planning"
             ctaLabel="Plan my trip"
           />
           <ServiceCard
