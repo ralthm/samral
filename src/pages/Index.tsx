@@ -1,5 +1,5 @@
 import heroImage from "@/assets/hero.jpg";
-import samuelImage from "@/assets/samuel.jpg";
+import samuelImage from "@/assets/samral-founder.jpg.asset.json";
 import notebookImage from "@/assets/notebook.jpg";
 import kyotoImage from "@/assets/kyoto.jpg";
 import cabinImage from "@/assets/cabin.jpg";
