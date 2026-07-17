@@ -80,7 +80,7 @@ function Hero() {
       />
       <div className="relative z-10 mx-auto flex h-full max-w-[1440px] flex-col justify-end px-6 pb-20 md:px-12 md:pb-28">
         <p className="eyebrow mb-6" style={{ color: "rgba(253, 247, 235, 0.85)" }}>
-          Personal points &amp; miles advisory
+          SMARTER REWARDS. BETTER TRAVEL.
         </p>
         <h1
           className="font-display max-w-[16ch] text-5xl leading-[1.02] md:text-7xl lg:text-[104px]"
@@ -95,8 +95,8 @@ function Hero() {
           className="mt-8 max-w-lg text-base leading-relaxed md:text-lg"
           style={{ color: "rgba(253, 247, 235, 0.85)" }}
         >
-          Independent, personal advice on how to turn the credit card rewards you already have
-          into trips worth remembering.
+          I&rsquo;ll help you get 2-10x more value from your credit card points, so you can have
+          more trips worth remembering.
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-6">
           <a
@@ -169,12 +169,10 @@ function Founder() {
               cards without paying much attention to the rewards.
             </p>
             <p>
-              Then one evening I sat down to look properly &mdash; and realised I already had
-              enough points for flights to Bangkok and Ho Chi Minh City.
+              {" "}
             </p>
             <p>
-              The deeper I went, the clearer it became: this world is designed to be confusing.
-              You shouldn&rsquo;t need fifty hours on forums to use points you&rsquo;ve already earned.
+              {" "}
             </p>
           </div>
 
