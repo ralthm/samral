@@ -151,10 +151,10 @@ function Founder() {
       <div className="mx-auto grid max-w-[1440px] gap-12 px-6 py-24 md:grid-cols-12 md:gap-16 md:px-12 md:py-36">
         <div className="md:col-span-5">
           <div className="relative">
-            <img src={samuelImage} alt="Samral, founder" className="w-full object-cover" />
+            <img src={samuelImage} alt="Samral, founder" className="aspect-[4/5] w-full object-cover" />
             <div className="absolute -bottom-4 -right-4 hidden h-32 w-32 border border-clay md:block" />
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">Samral &mdash; founder</p>
+          <p className="mt-3 text-xs text-muted-foreground">Samral &mdash; founder</p>
         </div>
 
         <div className="md:col-span-7 md:pt-8">
@@ -220,16 +220,6 @@ function Founder() {
             </p>
           </div>
 
-          <dl className="mt-12 grid grid-cols-2 gap-8 border-t border-clay/20 pt-8 md:max-w-md">
-            <div>
-              <dt className="eyebrow text-clay">Background</dt>
-              <dd className="mt-2 text-sm text-ink">Real estate private equity</dd>
-            </div>
-            <div>
-              <dt className="eyebrow text-clay">Approach</dt>
-              <dd className="mt-2 text-sm text-ink">Analytical &amp; personal</dd>
-            </div>
-          </dl>
         </div>
       </div>
     </section>
