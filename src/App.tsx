@@ -21,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/plan-my-trip" element={<PlanMyTrip />} />
           <Route path="/points-strategy" element={<PointsStrategy />} />
+          <Route path="/typography-preview" element={<TypographyPreview />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
