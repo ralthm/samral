@@ -255,9 +255,9 @@ function AboutSamral() {
       <div className="mx-auto grid max-w-[1440px] items-center gap-10 px-6 py-24 md:grid-cols-12 md:gap-16 md:px-12 md:py-36">
         {/* Travel collage */}
         <div className="md:col-span-6">
-          <div className="relative mx-auto aspect-[4/3] w-full">
+          <div className="relative mx-auto aspect-[5/4] w-full">
             {/* Photo 1 — hero */}
-            <div className="polaroid absolute left-0 top-[2%] z-20 w-[58%] -rotate-2 p-2 md:p-3">
+            <div className="polaroid absolute left-0 top-0 z-30 w-[60%] -rotate-2 p-2 md:p-3">
               <img
                 src={travel1.url}
                 alt="A travel moment"
@@ -275,7 +275,7 @@ function AboutSamral() {
               />
             </div>
             {/* Photo 3 */}
-            <div className="polaroid absolute bottom-[5%] left-[6%] z-10 w-[38%] -rotate-3 p-2 md:p-3">
+            <div className="polaroid absolute bottom-0 left-[2%] z-10 w-[45%] -rotate-3 p-2 md:p-3">
               <img
                 src={travel3.url}
                 alt="A travel moment"
@@ -284,7 +284,7 @@ function AboutSamral() {
               />
             </div>
             {/* Photo 4 */}
-            <div className="polaroid absolute bottom-0 right-0 z-10 w-[48%] rotate-2 p-2 md:p-3">
+            <div className="polaroid absolute bottom-[5%] right-0 z-20 w-[48%] rotate-2 p-2 md:p-3">
               <img
                 src={travel4.url}
                 alt="A travel moment"
