@@ -33,7 +33,7 @@ export default function Home() {
       <Nav />
       <Hero />
       <Promise />
-      <Founder />
+      <AboutSamral />
       <Inspiration />
       <Services />
       <Destinations />
@@ -249,7 +249,7 @@ function Promise() {
 
 /* ---------- About Samral ---------- */
 
-function Founder() {
+function AboutSamral() {
   return (
     <section id="about" className="bg-sand">
       <div className="mx-auto grid max-w-[1440px] items-center gap-10 px-6 py-24 md:grid-cols-12 md:gap-16 md:px-12 md:py-36">
