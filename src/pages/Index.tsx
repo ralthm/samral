@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import heroImage from "@/assets/hero.jpg";
 
-import samuelImage from "@/assets/samral-founder-v2.png.asset.json";
 import travel1 from "@/assets/travel-1.jpg.asset.json";
 import travel2 from "@/assets/travel-2.jpg.asset.json";
 import travel3 from "@/assets/travel-3.jpg.asset.json";
@@ -34,17 +33,15 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
       <Hero />
-      
+
       <Promise />
       <AboutSamral />
       <Inspiration />
       <Services />
       <Destinations />
-      <MeetSamuel />
       <Contact />
       <Footer />
     </div>
-
   );
 }
 
@@ -64,6 +61,7 @@ function Nav() {
   const links = [
     { label: "Points Trip Planning", to: "/trip-planning" },
     { label: "Points Strategy", to: "/points-strategy" },
+    { label: "About", to: "/about" },
   ];
 
   return (
@@ -312,12 +310,16 @@ function AboutSamral() {
               Samral is built around one idea: the points you already have are probably worth more than you think. Most people collect rewards for years, then redeem them in the easiest way rather than the smartest.
             </p>
             <p>
-              Even though I work in finance, I never gave credit card points much thought. Then I checked what I had accumulated in just under a year and realised it was already enough to make travel possible to places like Bangkok and Ho Chi Minh City.
-            </p>
-            <p>
               The real problem is not lack of points; it is lack of a clear strategy. My job is to help you understand your options, compare them honestly, and book the trip you&apos;ll actually remember.
             </p>
           </div>
+
+          <Link
+            to="/about"
+            className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-ink underline underline-offset-4 transition-opacity hover:opacity-70"
+          >
+            Read my story &nbsp;&rarr;
+          </Link>
         </div>
       </div>
     </section>
@@ -561,42 +563,6 @@ function Destinations() {
               </p>
             </article>
           ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ---------- Meet Samuel ---------- */
-
-function MeetSamuel() {
-  return (
-    <section id="meet-samuel" className="bg-background">
-      <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-12 md:py-28">
-        <div className="flex flex-col items-start gap-10 md:flex-row md:items-center md:gap-16">
-          <img
-            src={samuelImage.url}
-            alt="Samuel, founder of Samral"
-            className="aspect-[4/5] w-36 shrink-0 object-cover md:w-44"
-            loading="lazy"
-          />
-          <div className="max-w-2xl">
-            <p className="eyebrow mb-4 text-clay">{"\n"}</p>
-            <h2 className="font-display text-3xl text-ink md:text-4xl">
-              Meet Samuel
-            </h2>
-            <div className="mt-5 space-y-4 text-[15px] leading-relaxed text-ink/85">
-              <p>
-                My background is in finance although I never paid much attention to credit card points until I noticed that in just over a year, I had already accumulated enough for travel to places like Bangkok and Ho Chi Minh City.
-              </p>
-              <p>
-                That surprised me. I started reading the rules behind transfer partners, award charts and airline alliances, and I realised most people leave meaningful value on the table.
-              </p>
-              <p>
-                I built Samral to change that: to help you make informed decisions and get more from the points you already have.
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </section>

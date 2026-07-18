@@ -83,6 +83,7 @@ function Nav() {
     { label: "Home", to: "/" },
     { label: "Points Trip Planning", to: "/trip-planning" },
     { label: "Points Strategy", to: "/points-strategy" },
+    { label: "About", to: "/about" },
   ];
 
   return (
@@ -102,6 +103,9 @@ function Nav() {
           </Link>
           <Link to="/points-strategy" className="text-ink transition-opacity hover:opacity-70">
             Points Strategy
+          </Link>
+          <Link to="/about" className="transition-opacity hover:opacity-70">
+            About
           </Link>
         </nav>
         <a
