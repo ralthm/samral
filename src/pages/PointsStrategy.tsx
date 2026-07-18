@@ -211,7 +211,7 @@ function Intro() {
 function WhoFor() {
   const items = [
     "You put meaningful monthly spending on credit cards.",
-    "You pay your balances in full each month.",
+    "\n",
     "You have points scattered across several programmes.",
     "You travel internationally, or want to.",
     "You don't have the time or interest to research card rules yourself.",
@@ -291,7 +291,7 @@ function WhatYouGet() {
           </div>
           <div className="md:col-span-7 max-w-2xl space-y-5 text-[16px] leading-relaxed text-ink/85">
             <p>
-              The paid review is a written strategy based on your actual setup. It covers what you're currently earning, where you might be missing value, and what I'd do differently.
+              The paid review is a written strategy based on your actual setup. It covers what you're currently spending on, where you might be missing value, and what I'd do differently.
             </p>
             <p>
               That might mean changing a card, moving points, simplifying your wallet, or sometimes just keeping what you have and using it more deliberately. The answer is whatever makes sense for your spending and travel goals.
