@@ -58,7 +58,6 @@ export default function PointsStrategy() {
       <WhatYouReceive />
       <HowItWorks />
       <UsefulIf />
-      <ImportantNote />
       <FAQ />
       <FinalCTA />
       <Footer />
