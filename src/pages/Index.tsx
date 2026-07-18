@@ -637,13 +637,13 @@ function Contact() {
               you&rsquo;d like to take.
             </em>
           </h2>
-          <p
-            className="mt-8 max-w-xl text-lg leading-relaxed"
+          <div
+            className="mt-8 max-w-xl text-lg leading-relaxed whitespace-pre-line"
             style={{ color: "rgba(253, 247, 235, 0.8)" }}
           >
-            A short note is enough &mdash; where, roughly when, and what points you think you have.
-            I read every enquiry personally and reply within two working days.
-          </p>
+            Tell me where you'd like to go, roughly when you're hoping to travel, and which points or rewards you already have.{"\n\n\n"}
+            I'll personally review your submission and put together a complimentary Points Travel Plan.
+          </div>
           <div className="mt-12 flex flex-wrap items-center gap-6">
             <a
               href="/trip-planning"
