@@ -37,9 +37,11 @@ export default function Home() {
       <Inspiration />
       <Services />
       <Destinations />
+      <MeetSamuel />
       <Contact />
       <Footer />
     </div>
+
   );
 }
 
