@@ -45,7 +45,7 @@ export default function About() {
                   Like most people, I signed up for a credit card because it seemed like a good deal and barely thought about the points afterwards.
                 </p>
                 <p>
-                  One day I checked my account and realised I&apos;d already earned enough points to travel to places like Bangkok and Ho Chi Minh City in less than a year. That surprised me.
+                  One day I checked my account and realised I&apos;d already earned enough points to travel to places like Bangkok and Ho Chi Minh City in just a few months. That surprised me.
                 </p>
                 <p>
                   I started reading about airline programmes, transfer partners and award redemptions, expecting it to be fairly straightforward.
