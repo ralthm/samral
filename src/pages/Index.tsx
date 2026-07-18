@@ -665,11 +665,14 @@ function Footer() {
             </a>
           </div>
         </div>
-        <div className="mt-12 flex flex-col gap-2 border-t border-background/10 pt-6 text-xs text-background/50 md:flex-row md:items-center md:justify-between">
+        <div className="mt-12 flex flex-col gap-3 border-t border-background/10 pt-6 text-xs text-background/50 md:flex-row md:items-center md:justify-between">
           <p>
             &copy; {new Date().getFullYear()} Samral &mdash; Independent points &amp; miles advisory
           </p>
-          <p className="italic">{"\n"}</p>
+          <div className="flex gap-5">
+            <Link to="/terms" className="hover:text-background">Terms of Service</Link>
+            <Link to="/privacy" className="hover:text-background">Privacy Notice</Link>
+          </div>
         </div>
       </div>
     </footer>
