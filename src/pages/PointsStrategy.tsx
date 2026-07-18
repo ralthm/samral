@@ -83,6 +83,7 @@ function Nav() {
     { label: "Home", to: "/" },
     { label: "Points Trip Planning", to: "/trip-planning" },
     { label: "Points Strategy", to: "/points-strategy" },
+    { label: "About", to: "/about" },
   ];
 
   return (
