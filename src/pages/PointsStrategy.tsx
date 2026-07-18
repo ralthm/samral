@@ -391,7 +391,7 @@ function FAQ() {
       a: "The Discovery Call is a brief introduction to understand your current situation and determine whether the Card Strategy service is suitable for you. It is not the strategy session itself.",
     },
     {
-      q: "Will I receive recommendations during the free call?",
+      q: "Will I receive recommendations during the Discovery Call?",
       a: "No. Personal recommendations require proper research and are provided as part of the paid Card Strategy.",
     },
     {
