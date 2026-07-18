@@ -441,7 +441,7 @@ function DiscoveryCall() {
     "Your approximate monthly eligible card spending",
     "The main categories you spend on",
     "The cards you currently use",
-    "Whether balances are paid in full",
+    "\n",
     "Your existing rewards balances",
     "Whether you prefer travel rewards, cashback or both",
     "Your usual travel destinations and cabin preferences",
