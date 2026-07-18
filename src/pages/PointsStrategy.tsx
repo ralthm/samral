@@ -387,8 +387,8 @@ function UsefulIf() {
 function FAQ() {
   const faqs = [
     {
-      q: "What happens during the free call?",
-      a: "The call is a brief introduction to understand your current situation and determine whether the Card Strategy service is suitable for you. It is not the strategy session itself.",
+      q: "What happens during the Discovery Call?",
+      a: "The Discovery Call is a brief introduction to understand your current situation and determine whether the Card Strategy service is suitable for you. It is not the strategy session itself.",
     },
     {
       q: "Will I receive recommendations during the free call?",
