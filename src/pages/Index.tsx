@@ -207,23 +207,22 @@ function Hero() {
 
 function Programmes() {
   const programmes = [
-    { name: "KrisFlyer", airline: "Singapore Airlines", mono: "SQ" },
-    { name: "Enrich", airline: "Malaysia Airlines", mono: "MH" },
-    { name: "Asia Miles", airline: "Cathay", mono: "CX" },
-    { name: "Privilege Club", airline: "Qatar Airways", mono: "QR" },
-    { name: "Skywards", airline: "Emirates", mono: "EK" },
-    { name: "Flying Blue", airline: "Air France–KLM", mono: "AF" },
-    { name: "Executive Club", airline: "British Airways", mono: "BA" },
-    { name: "Aeroplan", airline: "Air Canada", mono: "AC" },
-    { name: "Frequent Flyer", airline: "Qantas", mono: "QF" },
-    { name: "Etihad Guest", airline: "Etihad", mono: "EY" },
-    { name: "Miles&Smiles", airline: "Turkish Airlines", mono: "TK" },
-    { name: "Infinity MileageLands", airline: "EVA Air", mono: "BR" },
-    { name: "Mileage Club", airline: "ANA", mono: "NH" },
-    { name: "Mileage Bank", airline: "Japan Airlines", mono: "JL" },
-    { name: "MileagePlus", airline: "United", mono: "UA" },
-    { name: "Mileage Plan", airline: "Alaska Airlines", mono: "AS" },
-    { name: "More programmes", airline: "Global partners & alliances", mono: "+" },
+    { name: "KrisFlyer", airline: "Singapore Airlines", logo: "/src/assets/loyalty/krisflyer.svg" },
+    { name: "Enrich", airline: "Malaysia Airlines", logo: "/src/assets/loyalty/enrich.svg" },
+    { name: "Asia Miles", airline: "Cathay", logo: "/src/assets/loyalty/asia-miles.svg" },
+    { name: "Privilege Club", airline: "Qatar Airways", logo: "/src/assets/loyalty/qatar-privilege-club.svg" },
+    { name: "Skywards", airline: "Emirates", logo: "/src/assets/loyalty/emirates-skywards.svg" },
+    { name: "Flying Blue", airline: "Air France–KLM", logo: "/src/assets/loyalty/flying-blue.svg" },
+    { name: "British Airways Club", airline: "British Airways", logo: "/src/assets/loyalty/british-airways-club.svg" },
+    { name: "Aeroplan", airline: "Air Canada", logo: "/src/assets/loyalty/aeroplan.svg" },
+    { name: "Frequent Flyer", airline: "Qantas", logo: "/src/assets/loyalty/qantas-frequent-flyer.svg" },
+    { name: "Etihad Guest", airline: "Etihad", logo: "/src/assets/loyalty/etihad-guest.svg" },
+    { name: "Miles&Smiles", airline: "Turkish Airlines", logo: "/src/assets/loyalty/miles-and-smiles.svg" },
+    { name: "Infinity MileageLands", airline: "EVA Air", logo: "/src/assets/loyalty/eva-infinity-mileagelands.svg" },
+    { name: "Mileage Club", airline: "ANA", logo: "/src/assets/loyalty/ana-mileage-club.svg" },
+    { name: "Mileage Bank", airline: "Japan Airlines", logo: "/src/assets/loyalty/jal-mileage-bank.svg" },
+    { name: "MileagePlus", airline: "United Airlines", logo: "/src/assets/loyalty/united-mileageplus.svg" },
+    { name: "Mileage Plan", airline: "Alaska Airlines", logo: "/src/assets/loyalty/alaska-mileage-plan.svg" },
   ];
 
   const railRef = useRef<HTMLUListElement>(null);
@@ -249,10 +248,10 @@ function Programmes() {
               id="programmes-heading"
               className="font-display text-2xl leading-[1.1] text-ink md:text-[32px]"
             >
-              Your trip is not limited to one airline.
+              Compare more than the obvious option.
             </h2>
             <p className="mt-2 max-w-xl text-[14px] leading-snug text-ink/70">
-              I compare award options across the programmes most relevant to your route, points and travel goals.
+              Samral independently analyses redemption opportunities across leading airline loyalty programmes.
             </p>
           </div>
           <div className="hidden shrink-0 items-center gap-2 md:flex">
@@ -279,30 +278,36 @@ function Programmes() {
           ref={railRef}
           className="mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           tabIndex={0}
-          aria-label="Frequent flyer programmes"
+          aria-label="Programmes we analyse"
         >
           {programmes.map((p) => (
             <li
               key={p.name + p.airline}
-              className="group flex min-h-[120px] w-[180px] shrink-0 snap-start flex-col justify-between border border-border bg-sand/60 p-4 transition-colors hover:border-ink/40 hover:bg-sand md:w-[190px]"
+              className="group flex h-[150px] w-[190px] shrink-0 snap-start flex-col items-center justify-between border border-border bg-sand/60 p-4 transition-colors hover:border-ink/40 hover:bg-sand"
             >
-              <div
-                aria-hidden
-                className="flex h-8 w-8 items-center justify-center border border-ink/20 font-display text-[13px] tracking-wider text-ink/80"
-              >
-                {p.mono}
+              <div className="flex flex-1 items-center justify-center w-full px-2">
+                <img
+                  src={p.logo}
+                  alt={`${p.name} (${p.airline}) logo`}
+                  className="max-h-12 max-w-full object-contain"
+                  loading="lazy"
+                />
               </div>
-              <div>
-                <p className="font-display text-[18px] leading-tight text-ink">
+              <div className="w-full text-center">
+                <p className="font-display text-[15px] leading-tight text-ink">
                   {p.name}
                 </p>
-                <p className="mt-0.5 text-[12px] leading-tight text-ink/60">
+                <p className="mt-0.5 text-[11px] leading-tight text-ink/60">
                   {p.airline}
                 </p>
               </div>
             </li>
           ))}
         </ul>
+
+        <p className="mt-4 max-w-3xl text-[11px] leading-snug text-ink/50">
+          Airline and loyalty programme names and logos belong to their respective owners. Samral is an independent advisory service and is not affiliated with or endorsed by the programmes shown.
+        </p>
       </div>
     </section>
   );
