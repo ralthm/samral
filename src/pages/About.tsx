@@ -72,9 +72,6 @@ function Nav() {
               {l.label}
             </Link>
           ))}
-          <Link to="/about" className="text-ink transition-opacity hover:opacity-70">
-            About
-          </Link>
         </nav>
         <Link
           to="/trip-planning"
