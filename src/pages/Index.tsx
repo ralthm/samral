@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import heroImage from "@/assets/hero.jpg";
@@ -34,6 +34,7 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
       <Hero />
+      <Programmes />
       <Promise />
       <AboutSamral />
       <Inspiration />
@@ -202,9 +203,115 @@ function Hero() {
   );
 }
 
+/* ---------- Frequent Flyer Programmes ---------- */
+
+function Programmes() {
+  const programmes = [
+    { name: "KrisFlyer", airline: "Singapore Airlines", mono: "SQ" },
+    { name: "Enrich", airline: "Malaysia Airlines", mono: "MH" },
+    { name: "Asia Miles", airline: "Cathay", mono: "CX" },
+    { name: "Privilege Club", airline: "Qatar Airways", mono: "QR" },
+    { name: "Skywards", airline: "Emirates", mono: "EK" },
+    { name: "Flying Blue", airline: "Air France–KLM", mono: "AF" },
+    { name: "Executive Club", airline: "British Airways", mono: "BA" },
+    { name: "Aeroplan", airline: "Air Canada", mono: "AC" },
+    { name: "Frequent Flyer", airline: "Qantas", mono: "QF" },
+    { name: "Etihad Guest", airline: "Etihad", mono: "EY" },
+    { name: "Miles&Smiles", airline: "Turkish Airlines", mono: "TK" },
+    { name: "Infinity MileageLands", airline: "EVA Air", mono: "BR" },
+    { name: "Mileage Club", airline: "ANA", mono: "NH" },
+    { name: "Mileage Bank", airline: "Japan Airlines", mono: "JL" },
+    { name: "MileagePlus", airline: "United", mono: "UA" },
+    { name: "Mileage Plan", airline: "Alaska Airlines", mono: "AS" },
+    { name: "More programmes", airline: "Global partners & alliances", mono: "+" },
+  ];
+
+  const railRef = useRef<HTMLUListElement>(null);
+
+  const scrollBy = (dir: 1 | -1) => {
+    const el = railRef.current;
+    if (!el) return;
+    const card = el.querySelector("li");
+    const step = card ? (card as HTMLElement).offsetWidth + 16 : 200;
+    el.scrollBy({ left: step * 2 * dir, behavior: "smooth" });
+  };
+
+  return (
+    <section
+      aria-labelledby="programmes-heading"
+      className="border-b border-border bg-background"
+    >
+      <div className="mx-auto max-w-[1440px] px-6 pb-8 pt-10 md:px-12 md:pb-10 md:pt-12">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl">
+            <p className="eyebrow mb-2 text-clay">Frequent flyer programmes</p>
+            <h2
+              id="programmes-heading"
+              className="font-display text-2xl leading-[1.1] text-ink md:text-[32px]"
+            >
+              Your trip is not limited to one airline.
+            </h2>
+            <p className="mt-2 max-w-xl text-[14px] leading-snug text-ink/70">
+              I compare award options across the programmes most relevant to your route, points and travel goals.
+            </p>
+          </div>
+          <div className="hidden shrink-0 items-center gap-2 md:flex">
+            <button
+              type="button"
+              onClick={() => scrollBy(-1)}
+              aria-label="Scroll programmes left"
+              className="grid h-11 w-11 place-items-center border border-border text-ink/70 transition hover:border-ink hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <span aria-hidden>‹</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollBy(1)}
+              aria-label="Scroll programmes right"
+              className="grid h-11 w-11 place-items-center border border-border text-ink/70 transition hover:border-ink hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <span aria-hidden>›</span>
+            </button>
+          </div>
+        </div>
+
+        <ul
+          ref={railRef}
+          className="mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          tabIndex={0}
+          aria-label="Frequent flyer programmes"
+        >
+          {programmes.map((p) => (
+            <li
+              key={p.name + p.airline}
+              className="group flex min-h-[120px] w-[180px] shrink-0 snap-start flex-col justify-between border border-border bg-sand/60 p-4 transition-colors hover:border-ink/40 hover:bg-sand md:w-[190px]"
+            >
+              <div
+                aria-hidden
+                className="flex h-8 w-8 items-center justify-center border border-ink/20 font-display text-[13px] tracking-wider text-ink/80"
+              >
+                {p.mono}
+              </div>
+              <div>
+                <p className="font-display text-[18px] leading-tight text-ink">
+                  {p.name}
+                </p>
+                <p className="mt-0.5 text-[12px] leading-tight text-ink/60">
+                  {p.airline}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- Promise strip ---------- */
 
 function Promise() {
+
   const steps = [
     {
       n: "01",
