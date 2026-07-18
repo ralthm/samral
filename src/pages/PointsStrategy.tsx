@@ -290,7 +290,7 @@ function WhatYouReceive() {
 function HowItWorks() {
   const steps = [
     {
-      title: "Book a free 10-minute call",
+      title: "Book a Discovery Call",
       text: "We will briefly discuss your situation and decide whether a Card Strategy would be useful for you.",
     },
     {
