@@ -650,7 +650,7 @@ function Footer() {
               </li>
               <li>
                 <Link to="/points-strategy" className="hover:text-background">
-                  Points Strategy
+                  Cards Strategy
                 </Link>
               </li>
             </ul>
