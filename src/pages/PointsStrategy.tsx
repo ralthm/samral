@@ -290,7 +290,7 @@ function WhatYouReceive() {
 function HowItWorks() {
   const steps = [
     {
-      title: "Book a free 10-minute call",
+      title: "Book a Discovery Call",
       text: "We will briefly discuss your situation and decide whether a Card Strategy would be useful for you.",
     },
     {
@@ -387,11 +387,11 @@ function UsefulIf() {
 function FAQ() {
   const faqs = [
     {
-      q: "What happens during the free call?",
-      a: "The call is a brief introduction to understand your current situation and determine whether the Card Strategy service is suitable for you. It is not the strategy session itself.",
+      q: "What happens during the Discovery Call?",
+      a: "The Discovery Call is a brief introduction to understand your current situation and determine whether the Card Strategy service is suitable for you. It is not the strategy session itself.",
     },
     {
-      q: "Will I receive recommendations during the free call?",
+      q: "Will I receive recommendations during the Discovery Call?",
       a: "No. Personal recommendations require proper research and are provided as part of the paid Card Strategy.",
     },
     {
@@ -470,7 +470,7 @@ function FinalCTA() {
             Not sure if this is for you?
           </h2>
           <p className="mt-6 max-w-2xl text-[16px] leading-relaxed text-background/85">
-            Book a free call and tell me about your setup. If the service is not right for you, I will say so.
+            Book a Discovery Call and tell me about your setup. If the service is not right for you, I will say so.
           </p>
           <div className="mt-10">
             <DiscoveryCTA variant="light" />
