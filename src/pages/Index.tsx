@@ -33,17 +33,15 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
       <Hero />
-      
+
       <Promise />
       <AboutSamral />
       <Inspiration />
       <Services />
       <Destinations />
-      <MeetSamuel />
       <Contact />
       <Footer />
     </div>
-
   );
 }
 
