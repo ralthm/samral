@@ -2,19 +2,22 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import cabinImage from "@/assets/cabin.jpg";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
-// TODO: Replace with real booking URL when provided.
 const DISCOVERY_CALL_URL = "#discovery-call";
 const isExternal = /^https?:\/\//i.test(DISCOVERY_CALL_URL);
 
 function DiscoveryCTA({
   variant = "light",
   className = "",
-  children = "Book a free call",
 }: {
   variant?: "light" | "dark";
   className?: string;
-  children?: React.ReactNode;
 }) {
   const base =
     "inline-block rounded-sm px-8 py-4 text-sm font-medium transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2";
@@ -28,16 +31,16 @@ function DiscoveryCTA({
       {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       className={`${base} ${styles} ${className}`}
     >
-      {children} &nbsp;&rarr;
+      Book a Free 10-Minute Call &nbsp;&rarr;
     </a>
   );
 }
 
 export default function PointsStrategy() {
   useEffect(() => {
-    document.title = "Cards Strategy for Business Owners | Samral";
+    document.title = "Card Strategy | Samral";
     const desc =
-      "Personalised credit card and rewards strategy for Malaysian business owners and high spenders. Start with a free discovery call.";
+      "Personalised credit card review for people who use several cards and want a clear, written plan for what to keep, change or reconsider.";
     let tag = document.querySelector('meta[name="description"]');
     if (!tag) {
       tag = document.createElement("meta");
@@ -50,10 +53,12 @@ export default function PointsStrategy() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
-      <Intro />
-      <WhoFor />
+      <Hero />
+      <ServiceOverview />
+      <WhatYouReceive />
       <HowItWorks />
-      <WhatYouGet />
+      <UsefulIf />
+      <ImportantNote />
       <FAQ />
       <FinalCTA />
       <Footer />
@@ -156,7 +161,7 @@ function Nav() {
               onClick={() => setOpen(false)}
               className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-sm bg-ink px-6 py-3 text-sm font-medium text-background"
             >
-              Book a free call &nbsp;&rarr;
+              Book a Free 10-Minute Call &nbsp;&rarr;
             </a>
           </nav>
         </div>
@@ -165,29 +170,41 @@ function Nav() {
   );
 }
 
-/* ---------- Intro ---------- */
+/* ---------- Hero ---------- */
 
-function Intro() {
+function Hero() {
   return (
-    <section className="relative overflow-hidden bg-sand">
+    <section className="bg-background">
+      <div className="mx-auto max-w-[1440px] px-6 pt-16 pb-12 md:px-12 md:pt-24 md:pb-16">
+        <p className="eyebrow mb-6 text-ink/60">CARD STRATEGY</p>
+        <h1 className="font-display max-w-3xl text-4xl leading-[1.05] text-ink md:text-6xl lg:text-[72px]">
+          Are you using the right cards for the way you spend?
+        </h1>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Service Overview ---------- */
+
+function ServiceOverview() {
+  return (
+    <section className="bg-sand">
       <div className="mx-auto grid max-w-[1440px] gap-12 px-6 py-20 md:grid-cols-12 md:gap-16 md:px-12 md:py-28">
         <div className="md:col-span-7">
-          <h1 className="font-display text-4xl leading-[1.05] text-ink md:text-6xl lg:text-[72px]">
-            Cards Strategy
-          </h1>
-          <div className="mt-8 max-w-2xl space-y-5 text-[16px] leading-relaxed text-ink/85">
+          <div className="max-w-2xl space-y-6 text-[16px] leading-relaxed text-ink/85">
             <p>
-              I review your credit cards, spending and rewards, then tell you whether there's a better way to set things up.
+              Most people choose credit cards one at a time. After a while, it is easy to end up with several cards, points in different programmes and no clear idea whether the setup still makes sense.
             </p>
             <p>
-              Most people don't need another card. They need someone to look at what they already have and point out what's actually worth changing. That's what this is.
+              I will review the cards you use, where you spend and what you would actually like to get from your rewards. I will then put together a clear, personal strategy showing what I think you should keep, change or reconsider.
             </p>
           </div>
           <div className="mt-10">
             <DiscoveryCTA variant="dark" />
           </div>
           <p className="mt-4 text-[13px] italic text-muted-foreground">
-            15–20 minutes. No obligation. No payment required.
+            A short call to see whether the service is suitable for you. No advice or card recommendations are provided during this call.
           </p>
         </div>
         <div className="md:col-span-5">
@@ -206,15 +223,34 @@ function Intro() {
   );
 }
 
-/* ---------- Who it's for ---------- */
+/* ---------- What you receive ---------- */
 
-function WhoFor() {
+function WhatYouReceive() {
   const items = [
-    "You put meaningful monthly spending on credit cards.",
-    "\n",
-    "You have points scattered across several programmes.",
-    "You travel internationally, or want to.",
-    "You don't have the time or interest to research card rules yourself.",
+    {
+      title: "A review of your current cards",
+      text: "I will look at what each card earns, its annual fee, its useful benefits and whether it still has a place in your setup.",
+    },
+    {
+      title: "A review of your spending",
+      text: "I will consider your main spending categories and whether you are using suitable cards for them.",
+    },
+    {
+      title: "Clear recommendations",
+      text: "You will receive my recommendations on which cards to keep, reconsider or potentially add, together with the reasons behind them.",
+    },
+    {
+      title: "A rewards direction",
+      text: "I will explain whether travel points, cashback or a mixture of both makes the most sense for you.",
+    },
+    {
+      title: "A written Card Strategy",
+      text: "Everything will be brought together in a personal written plan that you can refer back to.",
+    },
+    {
+      title: "A follow-up call",
+      text: "We will go through the strategy together, and you can ask questions about my recommendations.",
+    },
   ];
 
   return (
@@ -223,24 +259,26 @@ function WhoFor() {
         <div className="grid gap-12 md:grid-cols-12 md:gap-16">
           <div className="md:col-span-5">
             <h2 className="font-display text-3xl text-ink md:text-5xl">
-              Who this is for
+              What you receive
             </h2>
+            <div className="mt-6">
+              <p className="text-[15px] text-ink/70">Card Strategy</p>
+              <p className="mt-1 font-display text-4xl text-ink">US$150</p>
+            </div>
           </div>
           <div className="md:col-span-7">
-            <p className="max-w-2xl text-[16px] leading-relaxed text-ink/85">
-              This is most useful for business owners, company directors and high-income professionals who:
-            </p>
-            <ul className="mt-8 space-y-4">
-              {items.map((i) => (
-                <li key={i} className="flex gap-3 text-[15px] text-ink/85">
-                  <span className="text-clay">&mdash;</span>
-                  <span>{i}</span>
+            <ul className="space-y-8">
+              {items.map((item) => (
+                <li key={item.title}>
+                  <h3 className="font-display text-xl text-ink md:text-2xl">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-ink/80">
+                    {item.text}
+                  </p>
                 </li>
               ))}
             </ul>
-            <p className="mt-8 max-w-2xl text-[14px] italic text-muted-foreground">
-              There is no fixed spending minimum for the free call. The call itself is partly there to figure out whether a full review would be worthwhile for you.
-            </p>
           </div>
         </div>
       </div>
@@ -251,6 +289,25 @@ function WhoFor() {
 /* ---------- How it works ---------- */
 
 function HowItWorks() {
+  const steps = [
+    {
+      title: "Book a free 10-minute call",
+      text: "We will briefly discuss your situation and decide whether a Card Strategy would be useful for you.",
+    },
+    {
+      title: "Decide whether to proceed",
+      text: "If the service is suitable, I will send you the payment link and a questionnaire. The Card Strategy costs US$150.",
+    },
+    {
+      title: "I do the research",
+      text: "I will review the information you provide and prepare your personal recommendations.",
+    },
+    {
+      title: "Receive your strategy",
+      text: "You will receive the written Card Strategy, followed by a call to walk through it together.",
+    },
+  ];
+
   return (
     <section className="bg-sand">
       <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-12 md:py-28">
@@ -260,16 +317,27 @@ function HowItWorks() {
               How it works
             </h2>
           </div>
-          <div className="md:col-span-7 max-w-2xl space-y-5 text-[16px] leading-relaxed text-ink/85">
-            <p>
-              We start with a short discovery call. You tell me about your current cards, spending patterns, rewards balances and what you want your points to actually do.
-            </p>
-            <p>
-              After the call, I look at whether there's a genuine opportunity to improve things. If I think the value is worth the fee, I'll explain the scope and cost before you decide. If not, I'll tell you.
-            </p>
-            <p>
-              Only if you choose to proceed do I start the paid review. No pressure, no surprise charges.
-            </p>
+          <div className="md:col-span-7">
+            <ol className="space-y-10">
+              {steps.map((step, i) => (
+                <li key={step.title} className="flex gap-5">
+                  <span className="font-display text-3xl text-ink/40">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3 className="font-display text-xl text-ink md:text-2xl">
+                      {step.title}
+                    </h3>
+                    <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-ink/80">
+                      {step.text}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <div className="mt-12">
+              <DiscoveryCTA variant="dark" />
+            </div>
           </div>
         </div>
       </div>
@@ -277,28 +345,37 @@ function HowItWorks() {
   );
 }
 
-/* ---------- What you get ---------- */
+/* ---------- Useful if ---------- */
 
-function WhatYouGet() {
+function UsefulIf() {
+  const items = [
+    "You use several personal or business credit cards.",
+    "You have significant monthly card spending.",
+    "You are unsure which card to use for different expenses.",
+    "You are paying annual fees without knowing whether they are worthwhile.",
+    "You have points spread across different programmes.",
+    "You want your rewards to support future travel.",
+    "You pay your credit-card balances in full each month.",
+  ];
+
   return (
-    <section className="bg-background">
+    <section className="border-b border-border bg-background">
       <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-12 md:py-28">
         <div className="grid gap-12 md:grid-cols-12 md:gap-16">
           <div className="md:col-span-5">
             <h2 className="font-display text-3xl text-ink md:text-5xl">
-              What you get
+              This may be useful for you if
             </h2>
           </div>
-          <div className="md:col-span-7 max-w-2xl space-y-5 text-[16px] leading-relaxed text-ink/85">
-            <p>
-              The paid review is a written strategy based on your actual setup. It covers what you're currently spending on, where you might be missing value, and what I'd do differently.
-            </p>
-            <p>
-              That might mean changing a card, moving points, simplifying your wallet, or sometimes just keeping what you have and using it more deliberately. The answer is whatever makes sense for your spending and travel goals.
-            </p>
-            <p>
-              I also walk you through the findings so you can ask questions and decide what to act on.
-            </p>
+          <div className="md:col-span-7">
+            <ul className="space-y-4">
+              {items.map((item) => (
+                <li key={item} className="flex gap-3 text-[15px] text-ink/85">
+                  <span className="text-clay">&mdash;</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
@@ -306,57 +383,83 @@ function WhatYouGet() {
   );
 }
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+/* ---------- Important note ---------- */
+
+function ImportantNote() {
+  return (
+    <section className="bg-sand">
+      <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-12 md:py-28">
+        <div className="grid gap-12 md:grid-cols-12 md:gap-16">
+          <div className="md:col-span-5">
+            <h2 className="font-display text-3xl text-ink md:text-5xl">
+              An important note
+            </h2>
+          </div>
+          <div className="md:col-span-7 max-w-2xl space-y-5 text-[16px] leading-relaxed text-ink/85">
+            <p>
+              This service is for people who pay their credit-card balances in full.
+            </p>
+            <p>
+              The recommendation will not necessarily be to apply for more cards. It may be to simplify what you already have, cancel an unnecessary card, use cashback instead of points or make no change at all.
+            </p>
+            <p>
+              I do not apply for cards on your behalf, guarantee approval or provide regulated financial advice.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 /* ---------- FAQ ---------- */
 
 function FAQ() {
   const faqs = [
     {
-      q: "Is the discovery call free?",
-      a: "Yes. The discovery call is complimentary and usually lasts 15–20 minutes.",
+      q: "What happens during the free call?",
+      a: "The call is a brief introduction to understand your current situation and determine whether the Card Strategy service is suitable for you. It is not the strategy session itself.",
     },
     {
-      q: "Will I receive my full strategy during the discovery call?",
-      a: "No. The discovery call is designed to understand your situation and determine whether a full paid review is likely to be worthwhile. Detailed research begins only after scope, price and payment have been agreed.",
+      q: "Will I receive recommendations during the free call?",
+      a: "No. Personal recommendations require proper research and are provided as part of the paid Card Strategy.",
     },
     {
-      q: "Do I have to proceed after the call?",
-      a: "No. There is no obligation to purchase the full service.",
+      q: "What does the US$150 fee include?",
+      a: "It includes a review of your current cards and spending, clear written recommendations, a rewards direction, a personal written Card Strategy, and a follow-up call to walk through it together.",
     },
     {
-      q: "When do I pay?",
-      a: "Payment is collected only after the discovery call, once the scope and price of the Cards Strategy Review have been explained and you have chosen to proceed.",
+      q: "What information will I need to provide?",
+      a: "You will receive a questionnaire covering your current cards, annual fees, main spending categories, existing rewards balances, and what you want your rewards to do for you.",
     },
     {
-      q: "Will you apply for cards on my behalf?",
-      a: "No. Samral provides research and recommendations. Any application remains under your control and is subject to the bank's approval.",
+      q: "Will you tell me which cards to apply for?",
+      a: "I may recommend cards to consider, but I do not apply for them on your behalf and any application remains your decision and subject to the bank's approval.",
     },
     {
-      q: "Can you guarantee a certain amount of travel?",
-      a: "No. Results depend on spending, eligibility, available products, programme rules, transfer rates, fees and award availability.",
-    },
-    {
-      q: "Is this only about airline miles?",
-      a: "No. The review may compare airline points, bank rewards, cashback and relevant card benefits.",
+      q: "Do you apply for cards on my behalf?",
+      a: "No. Samral provides research and recommendations only. Any application remains under your control.",
     },
     {
       q: "Do you receive commissions from banks?",
       a: "No. Samral currently charges clients directly for its research and does not receive payment from banks for recommending specific cards.",
     },
     {
-      q: "Can’t AI do this for me?",
+      q: "Is this only about airline points?",
+      a: "No. The review may compare airline points, bank rewards, cashback and relevant card benefits.",
+    },
+    {
+      q: "Can you guarantee how much value I will receive?",
+      a: "No. Results depend on spending, eligibility, available products, programme rules, transfer rates, fees and award availability.",
+    },
+    {
+      q: "Can't AI do this for me?",
       a: "AI can be a very useful starting point. It can help compare cards, explain rewards programmes and generate ideas much faster than doing everything manually. I use it as part of the research process too.\n\nBut I would not rely on AI alone for decisions involving large points balances. Card terms, transfer rates, programme rules and availability can change, and AI can still present outdated or incorrect information with confidence.\n\nThere is also a difference between receiving a list of possible options and knowing which one genuinely makes sense for your spending, travel plans and tolerance for complexity. Some points transfers cannot be reversed, so checking the details before moving a large balance matters.\n\nSamral is for people who would rather have a human research the options, explain the trade-offs and guide them through the decision.\n\nIf you enjoy doing the research yourself with AI and feel confident checking every detail independently, you may not need this service—and that is completely fine.",
     },
   ];
 
   return (
-    <section className="bg-sand">
+    <section className="bg-background">
       <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-12 md:py-28">
         <div className="grid gap-12 md:grid-cols-12 md:gap-16">
           <div className="md:col-span-4">
@@ -394,19 +497,14 @@ function FinalCTA() {
       <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-12 md:py-28">
         <div className="max-w-3xl">
           <h2 className="font-display text-3xl text-background md:text-5xl">
-            Not sure if this is for you? That's fine.
+            Not sure if this is for you?
           </h2>
-          <div className="mt-8 max-w-2xl space-y-5 text-[16px] leading-relaxed text-background/85">
-            <p>
-              Book a free call and tell me about your setup. I'll be honest about whether I can help, and if I can't, I'll say so.
-            </p>
-          </div>
+          <p className="mt-6 max-w-2xl text-[16px] leading-relaxed text-background/85">
+            Book a free call and tell me about your setup. If the service is not right for you, I will say so.
+          </p>
           <div className="mt-10">
             <DiscoveryCTA variant="light" />
           </div>
-          <p className="mt-4 text-[13px] italic text-background/70">
-            15–20 minutes. No obligation. No payment required.
-          </p>
         </div>
       </div>
     </section>
