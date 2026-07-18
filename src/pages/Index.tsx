@@ -307,7 +307,7 @@ function AboutSamral() {
               Samral is built around one idea: the points you already have are probably worth more than you think. Most people collect rewards for years, then redeem them in the easiest way rather than the smartest.
             </p>
             <p>
-              I started Samral after realising that most people have no idea how valuable their points can be. I wanted to help others make the most of the rewards they already have.
+              Even though I work in finance, I never gave credit card points much thought. Then I checked what I had accumulated in just under a year and realised it was already enough to make travel possible to places like Bangkok and Ho Chi Minh City.
             </p>
             <p>
               The real problem is not lack of points; it is lack of a clear strategy. My job is to help you understand your options, compare them honestly, and book the trip you&apos;ll actually remember.
@@ -577,7 +577,7 @@ function MeetSamuel() {
             </h2>
             <div className="mt-5 space-y-4 text-[15px] leading-relaxed text-ink/85">
               <p>
-                My background is in finance although I never paid much attention to credit card points until I noticed that, without trying, I had already accumulated enough for real travel.
+                My background is in finance although I never paid much attention to credit card points until I noticed that in just over a year, I had already accumulated enough for travel to places like Bangkok and Ho Chi Minh City.
               </p>
               <p>
                 That surprised me. I started reading the rules behind transfer partners, award charts and airline alliances, and I realised most people leave meaningful value on the table.
@@ -691,7 +691,7 @@ function Footer() {
         </div>
         <div className="mt-12 flex flex-col gap-2 border-t border-background/10 pt-6 text-xs text-background/50 md:flex-row md:items-center md:justify-between">
           <p>
-            &copy; {new Date().getFullYear()} Samral &mdash; Independent points &amp; miles advisory.
+            &copy; {new Date().getFullYear()} Samral &mdash; Independent points &amp; miles advisory
           </p>
           <p className="italic">{"\n"}</p>
         </div>
