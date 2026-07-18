@@ -245,129 +245,51 @@ function Promise() {
   );
 }
 
-/* ---------- Founder ---------- */
+/* ---------- About Samral ---------- */
 
 function Founder() {
   return (
-    <section id="founder" className="bg-sand">
-      <div className="mx-auto grid max-w-[1440px] gap-12 px-6 py-24 md:grid-cols-12 md:gap-16 md:px-12 md:py-36">
-        <div className="flex flex-col md:col-span-5">
-          <div className="relative">
-            <img src={samuelImage.url} alt="Samral, founder" className="aspect-[4/5] w-full object-cover" />
-            <div className="absolute -bottom-4 -right-4 hidden h-32 w-32 border border-clay md:block" />
-          </div>
-          <p className="mt-3 text-xs text-muted-foreground"><br /></p>
-
-          {/* Travel collage */}
-          <div className="relative mt-10 hidden min-h-0 flex-grow md:block">
-            {[
-              { src: travel1.url, rot: "-6deg", top: "0%", left: "0%", z: 10 },
-              { src: travel2.url, rot: "5deg", top: "26%", left: "40%", z: 20 },
-              { src: travel3.url, rot: "-4deg", top: "50%", left: "4%", z: 15 },
-              { src: travel4.url, rot: "7deg", top: "72%", left: "38%", z: 25 },
-            ].map((p, i) => (
-              <div
-                key={i}
-                className="absolute w-[44%] bg-background p-2 shadow-xl transition-transform duration-500 hover:z-30 hover:scale-105"
-                style={{
-                  top: p.top,
-                  left: p.left,
-                  transform: `rotate(${p.rot})`,
-                  zIndex: p.z,
-                }}
-              >
-                <img
-                  src={p.src}
-                  alt="Travel moment"
-                  className="aspect-[3/4] w-full object-cover"
-                  loading="lazy"
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Mobile: simple 2x2 grid */}
-          <div className="mt-8 grid grid-cols-2 gap-3 md:hidden">
+    <section id="about" className="bg-sand">
+      <div className="mx-auto grid max-w-[1440px] items-center gap-10 px-6 py-24 md:grid-cols-12 md:gap-16 md:px-12 md:py-36">
+        {/* Travel gallery */}
+        <div className="md:col-span-6">
+          <div className="grid grid-cols-2 gap-3 md:gap-5">
             {[travel1.url, travel2.url, travel3.url, travel4.url].map((src, i) => (
-              <div
+              <img
                 key={i}
-                className="bg-background p-1.5 shadow-md"
-                style={{ transform: `rotate(${i % 2 === 0 ? "-2deg" : "2deg"})` }}
-              >
-                <img src={src} alt="Travel moment" className="aspect-[3/4] w-full object-cover" loading="lazy" />
-              </div>
+                src={src}
+                alt="A travel moment"
+                className="aspect-[4/3] w-full object-cover"
+                loading="lazy"
+              />
             ))}
           </div>
         </div>
 
-        <div className="md:col-span-7 md:pt-8">
+        {/* Story */}
+        <div className="md:col-span-6">
           <p className="eyebrow mb-6 text-clay">About Samral</p>
           <h2 className="font-display text-3xl text-ink md:text-5xl">
-            How I started paying attention to points.
+            The points you have are worth more than you think.
           </h2>
 
           <div className="mt-10 space-y-5 text-[15px] leading-relaxed text-ink/85">
             <p>
-              I never really thought about credit card points despite working in finance.
+              Samral is built around one idea: the points you already have are probably worth more than you think. Most people collect rewards for years, then redeem them in the easiest way rather than the smartest.
             </p>
             <p>
-              Like most people, I used my credit cards for everyday spending without thinking too much about what I was earning in return.
+              I started Samral after realising that the trips that matter &mdash; a long weekend in Bangkok, a first business-class seat, a family holiday across the world &mdash; often cost far less in points than people assume.
             </p>
             <p>
-              Then, less than a year after getting my first rewards cards, I decided to actually look at the points I had accumulated.
-            </p>
-            <p>
-              I realised I already had enough to potentially cover flights to places like Bangkok and Ho Chi Minh City.
-            </p>
-            <p>
-              That caught my attention.
-            </p>
-            <p>
-              If I’d accumulated that much without even trying, what would happen if I actually understood how the system worked?
-            </p>
-            <p>
-              So I started digging.
-            </p>
-            <p>
-              I learned about airline transfer partners, conversion ratios, award availability, redemption values and all the different ways the same points could be worth dramatically different amounts depending on how you used them.
-            </p>
-            <p>
-              And I realised something else.
-            </p>
-            <p>
-              This stuff is confusing.
-            </p>
-            <p>
-              Knowing that you have 200,000 credit card points is one thing. Knowing whether you should transfer them to an airline, which programme to choose, whether seats are actually available, or whether you’d be better off simply paying cash is something completely different.
-            </p>
-            <p>
-              The more I learned, the more I realised how easy it is to earn points for years without having a real strategy for using them.
-            </p>
-            <p>
-              <br />
-            </p>
-            <p>
-              I wanted to help people answer a simple question:
-            </p>
-            <p>
-              What’s the smartest thing I can actually do with the rewards I have?
-            </p>
-            <p>
-              Today, I help people understand their points, explore their travel options and make better decisions before they transfer or redeem anything.
-            </p>
-            <p>
-              Because earning points is only half the equation.
-            </p>
-            <p>
-              Knowing what to do with them is where the real value begins.
+              The real problem is not lack of points; it is lack of a clear strategy. My job is to help you understand your options, compare them honestly, and book the trip you&apos;ll actually remember.
             </p>
           </div>
-
         </div>
       </div>
     </section>
   );
 }
+
 
 /* ---------- Full-bleed inspiration ---------- */
 
