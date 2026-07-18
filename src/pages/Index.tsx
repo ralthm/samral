@@ -186,7 +186,7 @@ function Hero() {
             Plan my trip &nbsp;&rarr;
           </a>
           <a
-            href="#services"
+            href="#how-it-works"
             className="text-sm transition-opacity hover:opacity-100"
             style={{ color: "rgba(253, 247, 235, 0.85)" }}
           >
@@ -201,16 +201,44 @@ function Hero() {
 /* ---------- Promise strip ---------- */
 
 function Promise() {
+  const steps = [
+    {
+      n: "01",
+      title: "Tell me your destination",
+      body: "Share where you want to go and the points or miles you already have.",
+    },
+    {
+      n: "02",
+      title: "I build your strategy",
+      body: "I compare points vs cash, transfer partners and airlines to find the smartest route.",
+    },
+    {
+      n: "03",
+      title: "Book with confidence",
+      body: "Know you're making an informed decision before you spend a single point.",
+    },
+  ];
+
   return (
-    <section className="border-b border-border bg-background">
-      <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-12 md:py-24">
-        <div className="grid gap-10 md:grid-cols-12 md:gap-16">
-          <p className="eyebrow text-clay md:col-span-3 md:pt-3">How it works</p>
-          <p className="font-display text-2xl leading-[1.35] text-ink md:col-span-9 md:text-[34px] md:leading-[1.3]">
-            You tell me where you&rsquo;d like to go and what points you have. I work out the smartest
-            way to get you there &mdash; the right programme, roughly what it&rsquo;ll cost, and whether
-            transferring or paying cash is actually the better move. Then you book with a plan in hand.
-          </p>
+    <section id="how-it-works" className="border-b border-border bg-background">
+      <div className="mx-auto max-w-[1440px] px-6 py-24 md:px-12 md:py-36">
+        <div className="max-w-3xl">
+          <p className="eyebrow mb-6 text-clay">Your strategy in three steps</p>
+          <h2 className="font-display text-3xl leading-[1.1] text-ink md:text-5xl md:leading-[1.05]">
+            Know the smartest way to use your points &mdash; before you book.
+          </h2>
+        </div>
+
+        <div className="mt-16 grid gap-px bg-border md:mt-24 md:grid-cols-3">
+          {steps.map((s) => (
+            <div key={s.n} className="bg-background p-8 md:p-10">
+              <p className="font-display text-sm text-clay">{s.n}</p>
+              <h3 className="mt-8 font-display text-2xl leading-tight text-ink md:text-[28px]">
+                {s.title}
+              </h3>
+              <p className="mt-4 text-[15px] leading-relaxed text-ink/70">{s.body}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
