@@ -256,7 +256,7 @@ function Founder() {
             <img src={samuelImage.url} alt="Samral, founder" className="aspect-[4/5] w-full object-cover" />
             <div className="absolute -bottom-4 -right-4 hidden h-32 w-32 border border-clay md:block" />
           </div>
-          <p className="mt-3 text-xs text-muted-foreground">Samral &mdash; founder</p>
+          <p className="mt-3 text-xs text-muted-foreground"><br /></p>
 
           {/* Travel collage */}
           <div className="relative mt-10 hidden min-h-0 flex-grow md:block">
@@ -308,7 +308,7 @@ function Founder() {
 
           <div className="mt-10 space-y-5 text-[15px] leading-relaxed text-ink/85">
             <p>
-              For most of my life, I never really thought about credit card points despite working in finance.
+              I never really thought about credit card points despite working in finance.
             </p>
             <p>
               Like most people, I used my credit cards for everyday spending without thinking too much about what I was earning in return.
@@ -344,7 +344,7 @@ function Founder() {
               The more I learned, the more I realised how easy it is to earn points for years without having a real strategy for using them.
             </p>
             <p>
-              That’s why I started Samral.
+              <br />
             </p>
             <p>
               I wanted to help people answer a simple question:
