@@ -8,6 +8,8 @@ import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import PlanMyTrip from "./pages/PlanMyTrip.tsx";
 import PointsStrategy from "./pages/PointsStrategy.tsx";
+import Privacy from "./pages/Privacy.tsx";
+import Terms from "./pages/Terms.tsx";
 import TypographyPreview from "./pages/TypographyPreview.tsx";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
           <Route path="/plan-my-trip" element={<PlanMyTrip />} />
           <Route path="/trip-planning" element={<PlanMyTrip />} />
           <Route path="/points-strategy" element={<PointsStrategy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="/typography-preview" element={<TypographyPreview />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
