@@ -39,7 +39,7 @@ export default function About() {
               </h1>
               <div className="mt-8 max-w-2xl space-y-5 text-[16px] leading-relaxed text-ink/85">
                 <p>
-                  I didn&apos;t grow up obsessed with airline miles.
+                  I didn&apos;t grow up obsessed with airline miles. Even after working in finance, I never expected credit card points to become such a big interest of mine.
                 </p>
                 <p>
                   Like most people, I signed up for a credit card because it seemed like a good deal and barely thought about the points afterwards.
