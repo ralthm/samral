@@ -310,12 +310,16 @@ function AboutSamral() {
               Samral is built around one idea: the points you already have are probably worth more than you think. Most people collect rewards for years, then redeem them in the easiest way rather than the smartest.
             </p>
             <p>
-              Even though I work in finance, I never gave credit card points much thought. Then I checked what I had accumulated in just under a year and realised it was already enough to make travel possible to places like Bangkok and Ho Chi Minh City.
-            </p>
-            <p>
               The real problem is not lack of points; it is lack of a clear strategy. My job is to help you understand your options, compare them honestly, and book the trip you&apos;ll actually remember.
             </p>
           </div>
+
+          <Link
+            to="/about"
+            className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-ink underline underline-offset-4 transition-opacity hover:opacity-70"
+          >
+            Read my story &nbsp;&rarr;
+          </Link>
         </div>
       </div>
     </section>
