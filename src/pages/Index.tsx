@@ -396,11 +396,14 @@ function Inspiration() {
             className="font-display text-3xl leading-[1.15] md:text-5xl"
             style={{ color: "#fdf7eb" }}
           >
-            &ldquo;A good redemption isn&rsquo;t about squeezing every last point.
-            It&rsquo;s about the trip you&rsquo;ll actually remember.&rdquo;
+            A good redemption isn’t about squeezing every last point.&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;
+            <br />
+            <br />
+            <br />
+            It’s about the trip you’ll actually remember.
           </p>
           <p className="mt-6 text-sm" style={{ color: "rgba(253, 247, 235, 0.75)" }}>
-            &mdash; Samral
+            <br />
           </p>
         </div>
       </div>
