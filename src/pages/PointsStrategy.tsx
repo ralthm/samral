@@ -104,6 +104,9 @@ function Nav() {
           <Link to="/points-strategy" className="text-ink transition-opacity hover:opacity-70">
             Points Strategy
           </Link>
+          <Link to="/about" className="transition-opacity hover:opacity-70">
+            About
+          </Link>
         </nav>
         <a
           href={DISCOVERY_CALL_URL}
