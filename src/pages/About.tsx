@@ -45,7 +45,7 @@ export default function About() {
                   Like most people, I signed up for a credit card because it seemed like a good deal and barely thought about the points afterwards.
                 </p>
                 <p>
-                  One day I checked my account and realised I&apos;d already earned enough points to travel. That surprised me.
+                  One day I checked my account and realised I&apos;d already earned enough points to travel to places like Bangkok and Ho Chi Minh City in less than a year. That surprised me.
                 </p>
                 <p>
                   I started reading about airline programmes, transfer partners and award redemptions, expecting it to be fairly straightforward.
@@ -63,13 +63,13 @@ export default function About() {
                   That&apos;s how Samral started.
                 </p>
                 <p>
-                  Today, I help people understand the rewards they already have and how to use them more effectively. Sometimes that means finding a better redemption. Sometimes it means paying cash instead. The goal isn&apos;t to use points at all costs—it&apos;s to make informed decisions.
+                  Today, I help people understand the rewards they already have and how to use them more effectively. Sometimes that means finding a better redemption. Sometimes it means paying cash instead. The goal isn&apos;t to use points at all costs, it&apos;s to make informed decisions.
                 </p>
                 <p>
-                  I&apos;m still learning every day. Airline programmes change, banks update their transfer partners and new opportunities appear all the time. That&apos;s part of what I enjoy.
+                  Airline programmes change, banks update their transfer partners and new opportunities appear all the time. That&apos;s part of what I enjoy.
                 </p>
                 <p>
-                  If I can save you hours of research—or help you get more from points you already earned—then Samral has done its job.
+                  I can save you hours of research or help you get more from points you already earned.
                 </p>
               </div>
             </div>
