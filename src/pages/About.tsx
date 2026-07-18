@@ -110,7 +110,7 @@ function Nav() {
             </button>
           </div>
           <nav className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-2 px-5 pt-6 sm:px-6">
-            {[{ label: "Home", to: "/" }, ...links].map((l) => (
+            {links.map((l) => (
               <Link
                 key={l.to}
                 to={l.to}
@@ -120,13 +120,6 @@ function Nav() {
                 {l.label}
               </Link>
             ))}
-            <Link
-              to="/about"
-              onClick={() => setOpen(false)}
-              className="font-display border-b border-background/15 py-5 text-3xl"
-            >
-              About
-            </Link>
             <Link
               to="/trip-planning"
               onClick={() => setOpen(false)}
