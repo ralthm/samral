@@ -381,34 +381,6 @@ function UsefulIf() {
   );
 }
 
-/* ---------- Important note ---------- */
-
-function ImportantNote() {
-  return (
-    <section className="bg-sand">
-      <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-12 md:py-28">
-        <div className="grid gap-12 md:grid-cols-12 md:gap-16">
-          <div className="md:col-span-5">
-            <h2 className="font-display text-3xl text-ink md:text-5xl">
-              An important note
-            </h2>
-          </div>
-          <div className="md:col-span-7 max-w-2xl space-y-5 text-[16px] leading-relaxed text-ink/85">
-            <p>
-              This service is for people who pay their credit-card balances in full.
-            </p>
-            <p>
-              The recommendation will not necessarily be to apply for more cards. It may be to simplify what you already have, cancel an unnecessary card, use cashback instead of points or make no change at all.
-            </p>
-            <p>
-              I do not apply for cards on your behalf, guarantee approval or provide regulated financial advice.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ---------- FAQ ---------- */
 
