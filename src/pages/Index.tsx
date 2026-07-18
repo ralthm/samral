@@ -204,39 +204,39 @@ function Promise() {
   const steps = [
     {
       n: "01",
-      title: "Tell me your destination",
-      body: "Share where you want to go and the points or miles you already have.",
+      title: "Tell me your trip",
+      body: "Destination, dates and the points you already have.",
     },
     {
       n: "02",
-      title: "I build your strategy",
-      body: "I compare points vs cash, transfer partners and airlines to find the smartest route.",
+      title: "I compare every option",
+      body: "Cash, miles, transfer partners and airlines.",
     },
     {
       n: "03",
-      title: "Book with confidence",
-      body: "Know you're making an informed decision before you spend a single point.",
+      title: "Book knowing it's the best choice",
+      body: "No second guessing. No wasted points.",
     },
   ];
 
   return (
     <section id="how-it-works" className="border-b border-border bg-background">
-      <div className="mx-auto max-w-[1440px] px-6 py-24 md:px-12 md:py-36">
+      <div className="mx-auto max-w-[1440px] px-6 py-14 md:px-12 md:py-20">
         <div className="max-w-3xl">
-          <p className="eyebrow mb-6 text-clay">Your strategy in three steps</p>
+          <p className="eyebrow mb-4 text-clay">Your strategy in three steps</p>
           <h2 className="font-display text-3xl leading-[1.1] text-ink md:text-5xl md:leading-[1.05]">
-            Know the smartest way to use your points &mdash; before you book.
+            Know the smartest way to use your points.
           </h2>
         </div>
 
-        <div className="mt-16 grid gap-px bg-border md:mt-24 md:grid-cols-3">
+        <div className="mt-10 grid gap-px bg-border md:mt-14 md:grid-cols-3">
           {steps.map((s) => (
-            <div key={s.n} className="bg-background p-8 md:p-10">
+            <div key={s.n} className="bg-background p-6 md:p-8">
               <p className="font-display text-sm text-clay">{s.n}</p>
-              <h3 className="mt-8 font-display text-2xl leading-tight text-ink md:text-[28px]">
+              <h3 className="mt-5 font-display text-[26px] leading-tight text-ink md:text-[30px]">
                 {s.title}
               </h3>
-              <p className="mt-4 text-[15px] leading-relaxed text-ink/70">{s.body}</p>
+              <p className="mt-3 text-[15px] leading-snug text-ink/70">{s.body}</p>
             </div>
           ))}
         </div>
