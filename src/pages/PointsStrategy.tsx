@@ -470,7 +470,7 @@ function FinalCTA() {
             Not sure if this is for you?
           </h2>
           <p className="mt-6 max-w-2xl text-[16px] leading-relaxed text-background/85">
-            Book a free call and tell me about your setup. If the service is not right for you, I will say so.
+            Book a Discovery Call and tell me about your setup. If the service is not right for you, I will say so.
           </p>
           <div className="mt-10">
             <DiscoveryCTA variant="light" />
