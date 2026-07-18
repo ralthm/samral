@@ -280,7 +280,7 @@ function AboutSamral() {
               Samral is built around one idea: the points you already have are probably worth more than you think. Most people collect rewards for years, then redeem them in the easiest way rather than the smartest.
             </p>
             <p>
-              I started Samral after realising that the trips that matter &mdash; a long weekend in Bangkok, a first business-class seat, a family holiday across the world &mdash; often cost far less in points than people assume.
+              I started Samral after realising that most people have no idea how valuable their points can be. I wanted to help others make the most of the rewards they already have.
             </p>
             <p>
               The real problem is not lack of points; it is lack of a clear strategy. My job is to help you understand your options, compare them honestly, and book the trip you&apos;ll actually remember.
@@ -544,13 +544,13 @@ function MeetSamuel() {
             loading="lazy"
           />
           <div className="max-w-2xl">
-            <p className="eyebrow mb-4 text-clay">Behind the service</p>
+            <p className="eyebrow mb-4 text-clay">{"\n"}</p>
             <h2 className="font-display text-3xl text-ink md:text-4xl">
               Meet Samuel
             </h2>
             <div className="mt-5 space-y-4 text-[15px] leading-relaxed text-ink/85">
               <p>
-                My background is in finance &mdash; spreadsheets, markets, and making sense of opaque systems. I never paid much attention to credit card points until I noticed that, without trying, I had already accumulated enough for real travel.
+                My background is in finance although I never paid much attention to credit card points until I noticed that, without trying, I had already accumulated enough for real travel.
               </p>
               <p>
                 That surprised me. I started reading the rules behind transfer partners, award charts and airline alliances, and I realised most people leave meaningful value on the table.
@@ -634,7 +634,7 @@ function Footer() {
               Samral
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-background/60">
-              Independent points &amp; miles advisory. By appointment.
+              Independent points &amp; miles advisory
             </p>
           </div>
           <div className="md:col-span-4">
@@ -666,7 +666,7 @@ function Footer() {
           <p>
             &copy; {new Date().getFullYear()} Samral &mdash; Independent points &amp; miles advisory.
           </p>
-          <p className="italic">By appointment.</p>
+          <p className="italic">{"\n"}</p>
         </div>
       </div>
     </footer>
