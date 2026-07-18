@@ -13,6 +13,8 @@ import kyotoImage from "@/assets/kyoto.jpg";
 import cabinImage from "@/assets/cabin.jpg";
 import maldivesImage from "@/assets/maldives.jpg";
 import italyImage from "@/assets/italy.jpg";
+import alpsAsset from "@/assets/swiss-alps.jpg.asset.json";
+const alpsImage = alpsAsset.url;
 
 export default function Home() {
   useEffect(() => {
@@ -519,6 +521,11 @@ function Destinations() {
       img: kyotoImage,
       name: "Kyoto in autumn",
       note: "Traditional ryokan stays and premium-cabin ANA seats — some of the best value in miles.",
+    },
+    {
+      img: alpsImage,
+      name: "The Swiss Alps",
+      note: "Slow train journeys through alpine valleys, paired with a mountainside stay booked on hotel points.",
     },
   ];
 
