@@ -353,7 +353,7 @@ function UsefulIf() {
     "You are unsure which card to use for different expenses.",
     "You are paying annual fees without knowing whether they are worthwhile.",
     "You have points spread across different programmes.",
-    "You want your rewards to support future travel.",
+    "You want your rewards to support future travel."
     "You pay your credit-card balances in full each month.",
   ];
 
