@@ -60,7 +60,7 @@ function Nav() {
 
   const links = [
     { label: "Points Trip Planning", to: "/trip-planning" },
-    { label: "Points Strategy", to: "/points-strategy" },
+    { label: "Card Strategy", to: "/points-strategy" },
     { label: "About", to: "/about" },
   ];
 
@@ -408,7 +408,7 @@ function Services() {
           <ServiceCard
             index="02"
             tag="Longer term"
-            title="Points Strategy"
+            title="Card Strategy"
             image={notebookImage}
             imageAlt="Handwritten notes in a leather notebook"
             copy="No trip in mind yet. Just a sense you could be doing this better. We build the plan together."
@@ -420,7 +420,7 @@ function Services() {
             ]}
             best="For anyone building toward something in the next year or two."
             ctaHref="/points-strategy"
-            ctaLabel="Explore Points Strategy"
+            ctaLabel="Explore Card Strategy"
           />
         </div>
 

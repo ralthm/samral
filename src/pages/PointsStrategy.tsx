@@ -35,7 +35,7 @@ function DiscoveryCTA({
 
 export default function PointsStrategy() {
   useEffect(() => {
-    document.title = "Points Strategy for Business Owners | Samral";
+    document.title = "Card Strategy for Business Owners | Samral";
     const desc =
       "Personalised credit card and rewards strategy for Malaysian business owners and high spenders. Start with a free discovery call.";
     let tag = document.querySelector('meta[name="description"]');
@@ -76,7 +76,7 @@ function Nav() {
   const links = [
     { label: "Home", to: "/" },
     { label: "Points Trip Planning", to: "/trip-planning" },
-    { label: "Points Strategy", to: "/points-strategy" },
+    { label: "Card Strategy", to: "/points-strategy" },
     { label: "About", to: "/about" },
   ];
 
@@ -96,7 +96,7 @@ function Nav() {
             Points Trip Planning
           </Link>
           <Link to="/points-strategy" className="text-ink transition-opacity hover:opacity-70">
-            Points Strategy
+            Card Strategy
           </Link>
           <Link to="/about" className="transition-opacity hover:opacity-70">
             About
@@ -173,7 +173,7 @@ function Intro() {
       <div className="mx-auto grid max-w-[1440px] gap-12 px-6 py-20 md:grid-cols-12 md:gap-16 md:px-12 md:py-28">
         <div className="md:col-span-7">
           <h1 className="font-display text-4xl leading-[1.05] text-ink md:text-6xl lg:text-[72px]">
-            Points Strategy
+            Card Strategy
           </h1>
           <div className="mt-8 max-w-2xl space-y-5 text-[16px] leading-relaxed text-ink/85">
             <p>
@@ -331,7 +331,7 @@ function FAQ() {
     },
     {
       q: "When do I pay?",
-      a: "Payment is collected only after the discovery call, once the scope and price of the Points Strategy Review have been explained and you have chosen to proceed.",
+      a: "Payment is collected only after the discovery call, once the scope and price of the Card Strategy Review have been explained and you have chosen to proceed.",
     },
     {
       q: "Will you apply for cards on my behalf?",
@@ -438,7 +438,7 @@ function Footer() {
               </li>
               <li>
                 <Link to="/points-strategy" className="hover:text-background">
-                  Points Strategy
+                  Card Strategy
                 </Link>
               </li>
             </ul>
