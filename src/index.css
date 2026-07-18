@@ -94,4 +94,9 @@
     text-transform: uppercase;
     font-weight: 500;
   }
+
+  .polaroid {
+    background-color: hsl(var(--background));
+    box-shadow: 0 4px 24px -14px hsl(var(--ink) / 0.12);
+  }
 }
