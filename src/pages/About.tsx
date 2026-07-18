@@ -96,7 +96,7 @@ function Nav() {
   const links = [
     { label: "Home", to: "/" },
     { label: "Points Trip Planning", to: "/trip-planning" },
-    { label: "Card Strategy", to: "/points-strategy" },
+    { label: "Cards Strategy", to: "/points-strategy" },
     { label: "About", to: "/about" },
   ];
 
@@ -207,7 +207,7 @@ function Footer() {
               </li>
               <li>
                 <Link to="/points-strategy" className="hover:text-background">
-                  Card Strategy
+                  Cards Strategy
                 </Link>
               </li>
             </ul>
