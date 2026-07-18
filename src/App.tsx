@@ -8,6 +8,8 @@ import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import PlanMyTrip from "./pages/PlanMyTrip.tsx";
 import PointsStrategy from "./pages/PointsStrategy.tsx";
+import Privacy from "./pages/Privacy.tsx";
+import Terms from "./pages/Terms.tsx";
 import TypographyPreview from "./pages/TypographyPreview.tsx";
 
 const queryClient = new QueryClient();
