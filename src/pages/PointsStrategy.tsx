@@ -9,7 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const DISCOVERY_CALL_URL = "#discovery-call";
+const DISCOVERY_CALL_URL = "https://cal.com/samral/discovery-call";
 const isExternal = /^https?:\/\//i.test(DISCOVERY_CALL_URL);
 
 function DiscoveryCTA({
