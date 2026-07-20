@@ -493,7 +493,7 @@ function Footer() {
               Samral
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-background/60">
-              Independent points &amp; miles advisory.
+              Points &amp; miles advisory
             </p>
           </div>
           <div className="md:col-span-3">
@@ -533,7 +533,7 @@ function Footer() {
         </div>
         <div className="mt-12 flex flex-col gap-3 border-t border-background/10 pt-6 text-xs text-background/50 md:flex-row md:items-center md:justify-between">
           <p>
-            &copy; {new Date().getFullYear()} Samral &mdash; Independent points &amp; miles advisory.
+            &copy; {new Date().getFullYear()} Samral &mdash; Points &amp; miles advisory
           </p>
           <div className="flex gap-5">
             <Link to="/terms" className="hover:text-background">Terms of Service</Link>
