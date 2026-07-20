@@ -262,7 +262,7 @@ function WhatYouReceive() {
             </h2>
             <div className="mt-6">
               <p className="text-[15px] text-ink/70">Card Strategy</p>
-              <p className="mt-1 font-display text-4xl text-ink">US$150</p>
+              <p className="mt-1 font-display text-4xl text-ink">US$ 200</p>
             </div>
           </div>
           <div className="md:col-span-7">
@@ -295,7 +295,7 @@ function HowItWorks() {
     },
     {
       title: "Decide whether to proceed",
-      text: "If the service is suitable, I will send you the payment link and a questionnaire. The Card Strategy costs US$150.",
+      text: "If the service is suitable, I will send you the payment link and a questionnaire. The Card Strategy costs US$ 200.",
     },
     {
       title: "I do the research",
@@ -395,7 +395,7 @@ function FAQ() {
       a: "No. Personal recommendations require proper research and are provided as part of the paid Card Strategy.",
     },
     {
-      q: "What does the US$150 fee include?",
+      q: "What does the US$ 200 fee include?",
       a: "It includes a review of your current cards and spending, clear written recommendations, a rewards direction, a personal written Card Strategy, and a follow-up call to walk through it together.",
     },
     {
