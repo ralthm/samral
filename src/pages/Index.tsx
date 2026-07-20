@@ -632,7 +632,7 @@ function Footer() {
     <footer className="bg-ink text-background/70">
       <div className="mx-auto w-full max-w-[1440px] px-5 py-14 sm:px-6 md:px-12">
         <div className="grid gap-10 md:grid-cols-12">
-          <div className="md:col-span-5">
+          <div className="md:col-span-4">
             <Link to="/" className="font-display text-3xl text-background">
               Samral
             </Link>
@@ -640,7 +640,7 @@ function Footer() {
               Independent points &amp; miles advisory
             </p>
           </div>
-          <div className="md:col-span-4">
+          <div className="md:col-span-3">
             <p className="eyebrow mb-4 text-background/50">Services</p>
             <ul className="space-y-2 text-sm">
               <li>
@@ -655,7 +655,17 @@ function Footer() {
               </li>
             </ul>
           </div>
-          <div className="md:col-span-3">
+          <div className="md:col-span-2">
+            <p className="eyebrow mb-4 text-background/50">Software</p>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/products" className="hover:text-background">
+                  Our products
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div className="md:col-span-2">
             <p className="eyebrow mb-4 text-background/50">Contact</p>
             <a
               href="mailto:samuel@samral.com"
