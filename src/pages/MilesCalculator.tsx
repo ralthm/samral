@@ -756,26 +756,19 @@ function ExistingBalancesPanel({
 
 /* ---------- Results dashboard ---------- */
 
-type TabKey = "airline" | "hotel" | "other";
+type GroupKey = "airline" | "travel" | "hotel";
 
-function categorise(type: string): TabKey {
+function groupOf(type: string): GroupKey {
   if (type === "hotel_points") return "hotel";
-  if (type === "other_travel_points") return "other";
+  if (type === "other_travel_points" || type === "airline_points") return "travel";
   return "airline";
 }
 
-function sortProgrammes(items: ProgrammeTotal[]): ProgrammeTotal[] {
-  return [...items].sort((a, b) => {
-    const ai = PRIORITY_PROGRAMMES.indexOf(a.programmeId);
-    const bi = PRIORITY_PROGRAMMES.indexOf(b.programmeId);
-    if (ai !== -1 || bi !== -1) {
-      if (ai === -1) return 1;
-      if (bi === -1) return -1;
-      return ai - bi;
-    }
-    return a.programmeName.localeCompare(b.programmeName);
-  });
-}
+const GROUP_LABEL: Record<GroupKey, string> = {
+  airline: "Airline programmes",
+  travel: "Travel rewards",
+  hotel: "Hotel programmes",
+};
 
 function ResultsDashboard({
   snapshot, isStale, onEdit,
@@ -787,37 +780,51 @@ function ResultsDashboard({
   const { results, portfolio, entryContext } = snapshot;
 
   const grouped = useMemo(() => {
-    const g: Record<TabKey, ProgrammeTotal[]> = { airline: [], hotel: [], other: [] };
-    for (const p of portfolio) g[categorise(p.programmeType)].push(p);
-    (Object.keys(g) as TabKey[]).forEach((k) => { g[k] = sortProgrammes(g[k]); });
+    const g: Record<GroupKey, ProgrammeTotal[]> = { airline: [], travel: [], hotel: [] };
+    for (const p of portfolio) g[groupOf(p.programmeType)].push(p);
+    (Object.keys(g) as GroupKey[]).forEach((k) => {
+      g[k].sort((a, b) => {
+        const ai = PRIORITY_PROGRAMMES.indexOf(a.programmeId);
+        const bi = PRIORITY_PROGRAMMES.indexOf(b.programmeId);
+        if (ai !== -1 || bi !== -1) {
+          if (ai === -1) return 1;
+          if (bi === -1) return -1;
+          return ai - bi;
+        }
+        return a.programmeName.localeCompare(b.programmeName);
+      });
+    });
     return g;
   }, [portfolio]);
 
-  const availableTabs: TabKey[] = (["airline", "hotel", "other"] as TabKey[]).filter((k) => grouped[k].length > 0);
-  const [tab, setTab] = useState<TabKey>(availableTabs[0] ?? "airline");
-  useEffect(() => {
-    if (!availableTabs.includes(tab) && availableTabs[0]) setTab(availableTabs[0]);
-  }, [availableTabs, tab]);
+  const resultsByProgramme = useMemo(() => {
+    const m = new Map<string, RuleResult[]>();
+    for (const r of results) {
+      const arr = m.get(r.programmeId) ?? [];
+      arr.push(r);
+      m.set(r.programmeId, arr);
+    }
+    return m;
+  }, [results]);
 
-  const hero = portfolio[0];
-  const totalEntered = Array.from(entryContext.values()).reduce((s, v) => s + v.entered, 0);
+  // Points remaining per entry (min across rules for that entry)
   const totalUsedByEntry = useMemo(() => {
     const perEntry = new Map<string, number>();
     for (const [id, ctx] of entryContext) perEntry.set(id, ctx.entered);
     for (const r of results) {
-      // For each entry, the "best utilisation" is the highest bankPointsUsed across its rules
-      const cur = perEntry.get(r.entryId) ?? 0;
-      const usedEquiv = r.bankPointsUsed;
-      // We want remaining = entered - max(bankPointsUsed). Track as min-remaining.
-      const currentRemaining = cur;
-      const candidateRemaining = (entryContext.get(r.entryId)?.entered ?? 0) - usedEquiv;
+      const currentRemaining = perEntry.get(r.entryId) ?? (entryContext.get(r.entryId)?.entered ?? 0);
+      const candidateRemaining = (entryContext.get(r.entryId)?.entered ?? 0) - r.bankPointsUsed;
       if (candidateRemaining < currentRemaining) perEntry.set(r.entryId, candidateRemaining);
     }
     return perEntry;
   }, [results, entryContext]);
 
-  const totalRemaining = Array.from(totalUsedByEntry.values()).reduce((s, v) => s + Math.max(0, v), 0);
-  const bankBalanceCount = entryContext.size;
+  useEffect(() => {
+    for (const p of portfolio) {
+      track("programme_result_viewed", { programme: p.programmeId });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section className="border-b border-border bg-sand/40">
@@ -825,9 +832,12 @@ function ResultsDashboard({
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="eyebrow text-ink/60">Results</p>
-            <h2 className="mt-2 font-display text-3xl text-ink md:text-4xl">
-              What your points can become
+            <h2 className="mt-2 font-display text-4xl text-ink md:text-5xl">
+              Your travel power
             </h2>
+            <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-ink/70">
+              What each loyalty programme balance would look like after transferring your bank points. Programmes are shown separately — different currencies aren&rsquo;t comparable.
+            </p>
           </div>
           <button
             type="button"
@@ -844,66 +854,29 @@ function ResultsDashboard({
           </div>
         )}
 
-        {/* Hero result */}
-        {hero && (
-          <div className="mt-8 rounded-sm border border-border bg-background p-8 md:p-10">
-            <p className="text-[12px] uppercase tracking-[0.16em] text-ink/55">
-              Your highest potential balance
-            </p>
-            <p className="mt-3 font-display text-5xl leading-none text-ink md:text-6xl">
-              {formatInt(hero.potentialTotal)}{" "}
-              <span className="text-3xl md:text-4xl">{hero.programmeName}</span>
-            </p>
-            <p className="mt-4 max-w-xl text-[14px] text-ink/70">
-              {heroSupportLine(hero)}
-            </p>
-            <p className="mt-3 text-[11px] text-ink/50">
-              A larger points balance does not necessarily mean greater redemption value.
-            </p>
-          </div>
-        )}
+        {/* Programme balance cards */}
+        <div className="mt-10 space-y-10">
+          {(Object.keys(grouped) as GroupKey[]).map((k) =>
+            grouped[k].length === 0 ? null : (
+              <div key={k}>
+                <h3 className="text-[11px] uppercase tracking-[0.18em] text-ink/55">{GROUP_LABEL[k]}</h3>
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  {grouped[k].map((p) => (
+                    <ProgrammeBalanceCard
+                      key={p.programmeId}
+                      programme={p}
+                      rowResults={resultsByProgramme.get(p.programmeId) ?? []}
+                      entryContext={entryContext}
+                    />
+                  ))}
+                </div>
+              </div>
+            ),
+          )}
+        </div>
 
-        {/* Summary metrics */}
-        <dl className="mt-6 grid grid-cols-3 gap-3">
-          <MetricCard label="Programmes available" value={formatInt(portfolio.length)} />
-          <MetricCard label="Bank balances calculated" value={formatInt(bankBalanceCount)} />
-          <MetricCard label="Bank points remaining" value={formatInt(totalRemaining)} sub={`of ${formatInt(totalEntered)} entered`} />
-        </dl>
-
-        {/* Tabs */}
-        {availableTabs.length > 0 && (
-          <div className="mt-10">
-            <div role="tablist" aria-label="Result categories" className="flex flex-wrap gap-2 border-b border-border">
-              {availableTabs.map((k) => (
-                <button
-                  key={k}
-                  type="button"
-                  role="tab"
-                  aria-selected={tab === k}
-                  onClick={() => setTab(k)}
-                  className={`-mb-px border-b-2 px-4 py-3 text-[13px] transition-colors ${
-                    tab === k ? "border-ink text-ink" : "border-transparent text-ink/55 hover:text-ink"
-                  }`}
-                >
-                  {tabLabel(k)} <span className="ml-1 text-ink/40">{grouped[k].length}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Bar visual */}
-            <div className="mt-8">
-              <h3 className="text-[11px] uppercase tracking-[0.16em] text-ink/55">
-                Potential balances by programme
-              </h3>
-              <BarVisual items={grouped[tab]} />
-            </div>
-
-            {/* Comparison table / cards */}
-            <div className="mt-8">
-              <ComparisonTable items={grouped[tab]} results={results} entryContext={entryContext} />
-            </div>
-          </div>
-        )}
+        {/* Destination discovery */}
+        <DestinationDiscovery portfolio={portfolio} />
 
         {/* Points remaining */}
         <PointsRemaining entryContext={entryContext} totalUsedByEntry={totalUsedByEntry} />
@@ -912,182 +885,57 @@ function ResultsDashboard({
   );
 }
 
-function heroSupportLine(hero: ProgrammeTotal): string {
-  const parts: string[] = [];
-  const n = hero.transferredFromEntries.length;
-  if (n > 0) parts.push(`From ${n} bank balance${n === 1 ? "" : "s"}`);
-  if (hero.existingBalance > 0) parts.push(`your existing ${hero.programmeName} balance`);
-  if (parts.length === 0) return "";
-  return parts.join(" plus ") + ".";
-}
+/* ---------- Programme balance card ---------- */
 
-function tabLabel(k: TabKey): string {
-  return k === "airline" ? "Airline programmes" : k === "hotel" ? "Hotel programmes" : "Other travel rewards";
-}
-
-function MetricCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
-  return (
-    <div className="rounded-sm border border-border bg-background p-4">
-      <p className="font-display text-2xl text-ink md:text-3xl">{value}</p>
-      <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-ink/60">{label}</p>
-      {sub && <p className="mt-1 text-[11px] text-ink/50">{sub}</p>}
-    </div>
-  );
-}
-
-/* ---------- Bar visual ---------- */
-
-function BarVisual({ items }: { items: ProgrammeTotal[] }) {
-  if (items.length === 0) return null;
-  const max = Math.max(...items.map((i) => i.potentialTotal), 1);
-  return (
-    <ul className="mt-4 space-y-3">
-      {items.map((p) => {
-        const pct = Math.max(4, Math.round((p.potentialTotal / max) * 100));
-        return (
-          <li key={p.programmeId}>
-            <div className="flex items-baseline justify-between text-[13px]">
-              <span className="text-ink">{p.programmeName}</span>
-              <span className="font-display text-lg text-ink">{formatInt(p.potentialTotal)}</span>
-            </div>
-            <div className="mt-1 h-2 w-full bg-sand" aria-hidden="true">
-              <div className="h-full bg-ink" style={{ width: `${pct}%` }} />
-            </div>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-/* ---------- Comparison table ---------- */
-
-function ComparisonTable({
-  items, results, entryContext,
+function ProgrammeBalanceCard({
+  programme, rowResults, entryContext,
 }: {
-  items: ProgrammeTotal[];
-  results: RuleResult[];
+  programme: ProgrammeTotal;
+  rowResults: RuleResult[];
   entryContext: Snapshot["entryContext"];
 }) {
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
-
-  const toggle = (pid: string) => {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      if (next.has(pid)) next.delete(pid);
-      else { next.add(pid); track("result_programme_expanded", { programme: pid }); }
-      return next;
-    });
-  };
-
-  const resultsByProgramme = useMemo(() => {
-    const m = new Map<string, RuleResult[]>();
-    for (const r of results) {
-      const arr = m.get(r.programmeId) ?? [];
-      arr.push(r);
-      m.set(r.programmeId, arr);
-    }
-    return m;
-  }, [results]);
-
-  if (items.length === 0) {
-    return <p className="text-sm text-ink/60">No results in this category.</p>;
-  }
-
-  const remainingLabel = (n: number) => (n > 0 ? formatInt(n) : "—");
+  const [open, setOpen] = useState(false);
+  const totalRemainingInBanks = rowResults.reduce((s, r) => s + r.bankPointsRemaining, 0);
+  const totalBankUsed = rowResults.reduce((s, r) => s + r.bankPointsUsed, 0);
 
   return (
-    <>
-      {/* Desktop */}
-      <div className="hidden md:block">
-        <table className="w-full border-collapse text-left text-[13px]">
-          <thead>
-            <tr className="border-b border-border text-[11px] uppercase tracking-[0.14em] text-ink/60">
-              <th scope="col" className="py-3 pr-4">Programme</th>
-              <th scope="col" className="py-3 pr-4 text-right">From transfers</th>
-              <th scope="col" className="py-3 pr-4 text-right">Existing</th>
-              <th scope="col" className="py-3 pr-4 text-right">Potential total</th>
-              <th scope="col" className="py-3 pr-4 text-right">Points remaining</th>
-              <th scope="col" className="py-3 text-right">Details</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((p) => {
-              const isOpen = expanded.has(p.programmeId);
-              const rowResults = resultsByProgramme.get(p.programmeId) ?? [];
-              const remaining = rowResults.reduce((s, r) => s + r.bankPointsRemaining, 0);
-              return (
-                <>
-                  <tr key={p.programmeId} className="border-b border-border/70 text-ink">
-                    <td className="py-4 pr-4">
-                      <p className="font-display text-lg text-ink">{p.programmeName}</p>
-                    </td>
-                    <td className="py-4 pr-4 text-right">{remainingLabel(p.transferredTotal)}</td>
-                    <td className="py-4 pr-4 text-right">{remainingLabel(p.existingBalance)}</td>
-                    <td className="py-4 pr-4 text-right font-display text-xl text-ink">
-                      {formatInt(p.potentialTotal)}
-                    </td>
-                    <td className="py-4 pr-4 text-right text-ink/70">{remainingLabel(remaining)}</td>
-                    <td className="py-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => toggle(p.programmeId)}
-                        aria-expanded={isOpen}
-                        className="inline-flex items-center gap-1 text-[12px] text-ink underline underline-offset-4 hover:no-underline"
-                      >
-                        {isOpen ? "Hide" : "View"}
-                      </button>
-                    </td>
-                  </tr>
-                  {isOpen && (
-                    <tr>
-                      <td colSpan={6} className="border-b border-border bg-sand/30 px-4 py-6">
-                        <ProgrammeDetails p={p} rowResults={rowResults} entryContext={entryContext} />
-                      </td>
-                    </tr>
-                  )}
-                </>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+    <div className="rounded-sm border border-border bg-background p-6">
+      <p className="text-[11px] uppercase tracking-[0.16em] text-ink/55">Potential balance</p>
+      <p className="mt-2 font-display text-4xl leading-none text-ink md:text-[44px]">
+        {formatInt(programme.potentialTotal)}
+      </p>
+      <p className="mt-2 text-[13px] text-ink/70">{programme.programmeName}</p>
 
-      {/* Mobile */}
-      <div className="space-y-3 md:hidden">
-        {items.map((p) => {
-          const isOpen = expanded.has(p.programmeId);
-          const rowResults = resultsByProgramme.get(p.programmeId) ?? [];
-          return (
-            <div key={p.programmeId} className="rounded-sm border border-border bg-background p-4">
-              <div className="flex items-baseline justify-between gap-3">
-                <p className="font-display text-lg text-ink">{p.programmeName}</p>
-                <p className="font-display text-2xl text-ink">{formatInt(p.potentialTotal)}</p>
-              </div>
-              <dl className="mt-3 grid grid-cols-2 gap-y-1 text-[12px]">
-                <dt className="text-ink/55">From transfers</dt>
-                <dd className="text-right text-ink">{remainingLabel(p.transferredTotal)}</dd>
-                <dt className="text-ink/55">Existing balance</dt>
-                <dd className="text-right text-ink">{remainingLabel(p.existingBalance)}</dd>
-              </dl>
-              <button
-                type="button"
-                onClick={() => toggle(p.programmeId)}
-                aria-expanded={isOpen}
-                className="mt-4 inline-flex items-center gap-1 text-[12px] text-ink underline underline-offset-4"
-              >
-                {isOpen ? "Hide calculation" : "View calculation"}
-              </button>
-              {isOpen && (
-                <div className="mt-4 border-t border-border pt-4">
-                  <ProgrammeDetails p={p} rowResults={rowResults} entryContext={entryContext} />
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </>
+      <dl className="mt-5 grid grid-cols-2 gap-y-2 border-t border-border pt-4 text-[12px]">
+        <dt className="text-ink/55">From bank transfers</dt>
+        <dd className="text-right text-ink">{formatInt(programme.transferredTotal)}</dd>
+        <dt className="text-ink/55">Existing balance</dt>
+        <dd className="text-right text-ink">{formatInt(programme.existingBalance)}</dd>
+        <dt className="text-ink/55">Bank points used</dt>
+        <dd className="text-right text-ink">{formatInt(totalBankUsed)}</dd>
+        <dt className="text-ink/55">Bank points remaining</dt>
+        <dd className="text-right text-ink">{formatInt(totalRemainingInBanks)}</dd>
+      </dl>
+
+      <button
+        type="button"
+        onClick={() => {
+          const next = !open;
+          setOpen(next);
+          if (next) track("result_programme_expanded", { programme: programme.programmeId });
+        }}
+        aria-expanded={open}
+        className="mt-4 inline-flex items-center gap-1 text-[12px] text-ink underline underline-offset-4 hover:no-underline"
+      >
+        {open ? "Hide calculation" : "See calculation"}
+      </button>
+
+      {open && (
+        <div className="mt-5 space-y-4 border-t border-border pt-5">
+          <ProgrammeDetails p={programme} rowResults={rowResults} entryContext={entryContext} />
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -1100,25 +948,24 @@ function ProgrammeDetails({
 }) {
   const notesSeen = new Set<string>();
   return (
-    <div className="space-y-5">
+    <>
       {p.existingBalance > 0 && (
-        <p className="text-[13px] text-ink/70">
+        <p className="text-[12px] text-ink/70">
           Includes an existing balance of {formatInt(p.existingBalance)} {p.programmeName}.
         </p>
       )}
       {rowResults.map((r) => {
         const ctx = entryContext.get(r.entryId);
-        const nextBlockNeed = r.bankPointsRemaining > 0 ? r.bankPointsPerBlock - r.bankPointsRemaining : 0;
         const showNote = r.notes && !notesSeen.has(r.notes);
         if (r.notes) notesSeen.add(r.notes);
         return (
-          <div key={`${r.entryId}-${r.programmeId}`} className="rounded-sm border border-border bg-background p-4">
+          <div key={`${r.entryId}-${r.programmeId}`} className="rounded-sm border border-border bg-sand/30 p-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="font-display text-base text-ink">
                 {ctx?.nickname || `${r.bankName} — ${r.cardGroupName}`}
               </p>
               <p className="font-display text-lg text-ink">
-                +{formatInt(r.partnerPointsReceived)} {r.programmeName}
+                +{formatInt(r.partnerPointsReceived)}
               </p>
             </div>
             <dl className="mt-3 grid grid-cols-2 gap-y-1.5 text-[12px]">
@@ -1133,16 +980,6 @@ function ProgrammeDetails({
               <dt className="text-ink/55">Points remaining</dt>
               <dd className="text-right text-ink">{formatInt(r.bankPointsRemaining)}</dd>
             </dl>
-            {nextBlockNeed > 0 && (
-              <p className="mt-3 rounded-sm bg-sand/70 px-3 py-2 text-[12px] text-ink">
-                {formatInt(nextBlockNeed)} more {r.rewardCurrencyName} would complete the next {r.programmeName} transfer block.
-              </p>
-            )}
-            {r.fullBlocks === 0 && (
-              <p className="mt-3 rounded-sm bg-sand/70 px-3 py-2 text-[12px] text-ink">
-                {formatInt(r.pointsShortOfNextBlock)} more {r.rewardCurrencyName} needed to reach the first transfer block.
-              </p>
-            )}
             {showNote && (
               <p className="mt-3 text-[11px] leading-relaxed text-ink/60">{r.notes}</p>
             )}
@@ -1160,9 +997,395 @@ function ProgrammeDetails({
           </div>
         );
       })}
+    </>
+  );
+}
+
+/* ---------- Destination discovery ---------- */
+
+function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
+  const navigate = useNavigate();
+  const balances = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of portfolio) m.set(p.programmeId, p.potentialTotal);
+    return m;
+  }, [portfolio]);
+
+  const cabinsPresent = useMemo(() => verifiedCabinsPresent(), []);
+  const programmeOptions = useMemo(() => {
+    const ids = new Set<string>();
+    for (const t of redemptionTargets) if (isTargetPublic(t)) ids.add(t.loyaltyProgrammeId);
+    return Array.from(ids).map((id) => {
+      const prog = loyaltyProgrammes.find((p) => p.id === id);
+      return { id, name: prog?.name ?? id };
+    });
+  }, []);
+
+  const [region, setRegion] = useState<Region | "">("");
+  const [cabin, setCabin] = useState<Cabin | "">("");
+  const [tripType, setTripType] = useState<"one_way" | "return">("one_way");
+  const [travellers, setTravellers] = useState(1);
+  const [programmeId, setProgrammeId] = useState<string>("");
+
+  const emitFilter = useCallback((key: string, value: unknown) => {
+    track("destination_filter_changed", { key, value });
+  }, []);
+
+  const targets = useMemo(() => {
+    return redemptionTargets.filter((t) => {
+      if (!isTargetPublic(t)) return false;
+      if (region && t.region !== region) return false;
+      if (cabin && t.cabin !== cabin) return false;
+      if (programmeId && t.loyaltyProgrammeId !== programmeId) return false;
+      return true;
+    });
+  }, [region, cabin, programmeId]);
+
+  interface Enriched {
+    t: RedemptionTarget;
+    required: number;
+    balance: number;
+    delta: number; // balance - required (positive = unlocked)
+    ratio: number; // balance / required
+  }
+
+  const enriched: Enriched[] = useMemo(() => {
+    return targets.map((t) => {
+      const required = computeRequiredPoints(t, tripType, travellers);
+      const balance = balances.get(t.loyaltyProgrammeId) ?? 0;
+      const delta = balance - required;
+      const ratio = required > 0 ? balance / required : 0;
+      return { t, required, balance, delta, ratio };
+    });
+  }, [targets, tripType, travellers, balances]);
+
+  const unlocked = enriched
+    .filter((e) => e.delta >= 0)
+    .sort((a, b) => a.required - b.required);
+  const almost = enriched
+    .filter((e) => e.delta < 0 && e.ratio >= 0.75)
+    .sort((a, b) => b.ratio - a.ratio || a.required - b.required);
+  const future = enriched
+    .filter((e) => e.ratio < 0.75)
+    .sort((a, b) => a.required - b.required);
+
+  useEffect(() => {
+    if (unlocked.length > 0) {
+      track("unlocked_destination_viewed", { count: unlocked.length });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unlocked.length]);
+
+  const availableCabins = CABINS.filter((c) => cabinsPresent.has(c));
+
+  const handlePlan = (e: Enriched) => {
+    const prog = loyaltyProgrammes.find((p) => p.id === e.t.loyaltyProgrammeId);
+    const ctx: TripContext = {
+      origin: e.t.origin,
+      destination: e.t.destination,
+      destinationName: e.t.destinationName,
+      cabin: e.t.cabin,
+      tripType,
+      travellers,
+      loyaltyProgrammeId: e.t.loyaltyProgrammeId,
+      loyaltyProgrammeName: prog?.name ?? "",
+      operatingAirline: e.t.operatingAirline,
+      redemptionType: e.t.redemptionType,
+      requiredPoints: e.required,
+      potentialProgrammeBalance: e.balance,
+      remainingAfterRedemption: Math.max(0, e.delta),
+      verifiedOn: e.t.verifiedOn,
+      createdAt: new Date().toISOString(),
+    };
+    saveTripContext(ctx);
+    track("plan_trip_clicked", { destination: e.t.destination, cabin: e.t.cabin, programme: e.t.loyaltyProgrammeId });
+    navigate("/trip-planning");
+  };
+
+  const handleStrategy = (e: Enriched, event: "almost" | "future") => {
+    track(event === "almost" ? "points_strategy_clicked" : "points_strategy_clicked", {
+      state: event, destination: e.t.destination, programme: e.t.loyaltyProgrammeId,
+    });
+    navigate(STRATEGY_URL);
+  };
+
+  return (
+    <section className="mt-16 border-t border-border pt-12">
+      <div>
+        <h2 className="font-display text-3xl text-ink md:text-4xl">
+          Where can your points take you?
+        </h2>
+        <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-ink/70">
+          Explore indicative redemption opportunities departing Kuala Lumpur.
+        </p>
+      </div>
+
+      {/* Filters */}
+      <div className="mt-6 grid gap-3 rounded-sm border border-border bg-background p-4 sm:grid-cols-2 md:grid-cols-5">
+        <FilterField label="Region">
+          <select
+            value={region}
+            onChange={(e) => { setRegion(e.target.value as Region | ""); emitFilter("region", e.target.value); }}
+            className="mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-ink"
+          >
+            <option value="">All regions</option>
+            {REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+          </select>
+        </FilterField>
+
+        {availableCabins.length > 0 && (
+          <FilterField label="Cabin">
+            <select
+              value={cabin}
+              onChange={(e) => { setCabin(e.target.value as Cabin | ""); emitFilter("cabin", e.target.value); }}
+              className="mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-ink"
+            >
+              <option value="">All cabins</option>
+              {availableCabins.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </FilterField>
+        )}
+
+        <FilterField label="Trip type">
+          <select
+            value={tripType}
+            onChange={(e) => { setTripType(e.target.value as "one_way" | "return"); emitFilter("tripType", e.target.value); }}
+            className="mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-ink"
+          >
+            <option value="one_way">One way</option>
+            <option value="return">Return</option>
+          </select>
+        </FilterField>
+
+        <FilterField label="Travellers">
+          <input
+            type="number"
+            min={1}
+            max={9}
+            value={travellers}
+            onChange={(e) => {
+              const n = Math.max(1, Math.min(9, Math.floor(Number(e.target.value) || 1)));
+              setTravellers(n); emitFilter("travellers", n);
+            }}
+            className="mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-ink"
+          />
+        </FilterField>
+
+        <FilterField label="Programme">
+          <select
+            value={programmeId}
+            onChange={(e) => { setProgrammeId(e.target.value); emitFilter("programme", e.target.value); }}
+            className="mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-ink"
+          >
+            <option value="">All programmes</option>
+            {programmeOptions.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+        </FilterField>
+      </div>
+
+      {/* Groups */}
+      <div className="mt-10 space-y-12">
+        <DestinationGroup
+          title="You can reach these now"
+          empty="No unlocked destinations yet. Adjust filters or add more balances."
+          items={unlocked}
+          state="unlocked"
+          onPrimary={handlePlan}
+          onSecondary={handleStrategy}
+        />
+        <DestinationGroup
+          title="You’re close"
+          empty="Nothing within 25% of a target right now."
+          items={almost}
+          state="almost"
+          onPrimary={handlePlan}
+          onSecondary={handleStrategy}
+        />
+        <DestinationGroup
+          title="Future goals"
+          empty="No further destinations to display."
+          items={future}
+          state="future"
+          onPrimary={handlePlan}
+          onSecondary={handleStrategy}
+        />
+      </div>
+
+      <p className="mt-10 rounded-sm border border-border bg-background p-4 text-[12px] leading-relaxed text-ink/65">
+        Points requirements shown do not indicate award-seat availability. Taxes, fees and surcharges may apply. Confirm availability before transferring bank points. Enrich Saver awards apply to Malaysia Airlines-operated flights only, in selected fare classes and subject to availability. Displayed figures are per person; one-way and return are shown separately.
+      </p>
+    </section>
+  );
+}
+
+function FilterField({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="text-[11px] uppercase tracking-[0.14em] text-ink/60">{label}</p>
+      {children}
     </div>
   );
 }
+
+interface EnrichedT {
+  t: RedemptionTarget;
+  required: number;
+  balance: number;
+  delta: number;
+  ratio: number;
+}
+
+function DestinationGroup({
+  title, empty, items, state, onPrimary, onSecondary,
+}: {
+  title: string;
+  empty: string;
+  items: EnrichedT[];
+  state: "unlocked" | "almost" | "future";
+  onPrimary: (e: EnrichedT) => void;
+  onSecondary: (e: EnrichedT, state: "almost" | "future") => void;
+}) {
+  return (
+    <div>
+      <h3 className="font-display text-2xl text-ink md:text-3xl">{title}</h3>
+      {items.length === 0 ? (
+        <p className="mt-3 text-[13px] text-ink/55">{empty}</p>
+      ) : (
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          {items.map((e) => (
+            <DestinationCard
+              key={e.t.id + state}
+              e={e}
+              state={state}
+              onPrimary={() => onPrimary(e)}
+              onSecondary={() => state !== "unlocked" && onSecondary(e, state)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DestinationCard({
+  e, state, onPrimary, onSecondary,
+}: {
+  e: EnrichedT;
+  state: "unlocked" | "almost" | "future";
+  onPrimary: () => void;
+  onSecondary: () => void;
+}) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const prog = loyaltyProgrammes.find((p) => p.id === e.t.loyaltyProgrammeId);
+  const progName = prog?.name ?? "";
+  const shortfall = Math.max(0, -e.delta);
+  const remaining = Math.max(0, e.delta);
+
+  const badge =
+    state === "unlocked" ? { label: "Unlocked", cls: "bg-ink text-background" } :
+    state === "almost" ? { label: "Almost there", cls: "border border-ink text-ink" } :
+    { label: "Future goal", cls: "border border-ink/40 text-ink/70" };
+
+  const primaryLabel =
+    state === "unlocked" ? "Plan This Trip" :
+    state === "almost" ? "Build My Points Plan" :
+    "Create My Points Strategy";
+
+  return (
+    <article className="rounded-sm border border-border bg-background p-6">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">{e.t.origin} → {e.t.destination} · {e.t.country}</p>
+          <h4 className="mt-1 font-display text-2xl text-ink md:text-3xl">{e.t.destinationName}</h4>
+          <p className="mt-1 text-[13px] text-ink/70">{e.t.cabin} · {progName}</p>
+        </div>
+        <span className={`inline-flex shrink-0 items-center rounded-sm px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] ${badge.cls}`}>
+          {badge.label}
+        </span>
+      </div>
+
+      <div className="mt-5 border-t border-border pt-4">
+        <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">Points required</p>
+        <p className="mt-1 font-display text-3xl text-ink">{formatInt(e.required)} <span className="text-base text-ink/70">{progName}</span></p>
+        <p className="mt-1 text-[12px] text-ink/60">
+          {e.t.tripType === "return" ? "Return" : "One way"} · {formatInt(e.t.pointsPerPerson)} per person · {e.t.redemptionType.replace("_", " ")}
+        </p>
+      </div>
+
+      <dl className="mt-4 grid grid-cols-2 gap-y-1.5 text-[12px]">
+        <dt className="text-ink/55">Your potential balance</dt>
+        <dd className="text-right text-ink">{formatInt(e.balance)}</dd>
+        {state === "unlocked" ? (
+          <>
+            <dt className="text-ink/55">Remaining after redemption</dt>
+            <dd className="text-right text-ink">{formatInt(remaining)}</dd>
+          </>
+        ) : (
+          <>
+            <dt className="text-ink/55">Shortfall</dt>
+            <dd className="text-right text-ink">{formatInt(shortfall)}</dd>
+          </>
+        )}
+      </dl>
+
+      <p className="mt-4 text-[11px] leading-relaxed text-ink/60">
+        {state === "unlocked"
+          ? "Your potential balance meets the displayed points requirement. Samral can help you assess the transfer route, practical redemption options and booking plan before you move your points."
+          : state === "almost"
+          ? `You are ${formatInt(shortfall)} points away from this displayed target. Get a strategy for closing the gap using your cards and spending.`
+          : "Turn this trip into a practical points goal based on your cards, spending and timeline."}
+      </p>
+
+      <div className="mt-5 flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={state === "unlocked" ? onPrimary : onSecondary}
+          className="inline-flex items-center rounded-sm bg-ink px-5 py-2.5 text-[13px] text-background hover:-translate-y-0.5 transition-transform"
+        >
+          {primaryLabel}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            const next = !detailsOpen;
+            setDetailsOpen(next);
+            if (next) track("destination_details_opened", { destination: e.t.destination });
+          }}
+          className="text-[12px] text-ink underline underline-offset-4 hover:no-underline"
+        >
+          {detailsOpen ? "Hide details" : "See details"}
+        </button>
+      </div>
+
+      {detailsOpen && (
+        <div className="mt-4 border-t border-border pt-4 text-[12px] leading-relaxed text-ink/70">
+          <dl className="grid grid-cols-2 gap-y-1.5">
+            <dt className="text-ink/55">Operating airline</dt>
+            <dd className="text-right text-ink">{e.t.operatingAirline ?? "—"}</dd>
+            <dt className="text-ink/55">Redemption type</dt>
+            <dd className="text-right text-ink">{e.t.redemptionType.replace("_", " ")}</dd>
+            <dt className="text-ink/55">Trip basis</dt>
+            <dd className="text-right text-ink">{e.t.tripType === "return" ? "Return" : "One way"}</dd>
+            <dt className="text-ink/55">Travellers</dt>
+            <dd className="text-right text-ink">1</dd>
+            <dt className="text-ink/55">Verified</dt>
+            <dd className="text-right text-ink">
+              <a href={e.t.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:underline">
+                {formatDate(e.t.verifiedOn)} <ExternalLink className="h-3 w-3" />
+              </a>
+            </dd>
+          </dl>
+          <p className="mt-3 text-[11px] text-ink/55">
+            Points requirement shown does not indicate award-seat availability. Your balance meets the displayed points requirement — confirm availability with the airline before transferring bank points.
+          </p>
+          {e.t.notes && <p className="mt-2 text-[11px] text-ink/55">{e.t.notes}</p>}
+        </div>
+      )}
+    </article>
+  );
+}
+
+/* ---------- Points remaining ---------- */
 
 function PointsRemaining({
   entryContext, totalUsedByEntry,
@@ -1201,7 +1424,6 @@ function PointsRemaining({
 }
 
 function currencyForEntry(entryId: string, entryContext: Snapshot["entryContext"]): string {
-  // Look up the product currency via the calculated results is complex — infer from group name.
   const ctx = entryContext.get(entryId);
   if (!ctx) return "points";
   const group = eligibleCardGroups.find((g) => g.name === ctx.groupName);
