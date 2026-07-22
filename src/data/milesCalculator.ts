@@ -297,6 +297,7 @@ export const rewardProducts: RewardProduct[] = [
   { id: "rakyat-points", bankId: "bankrakyat", name: "Rakyat Reward Points", slug: "rakyat-points", rewardCurrencyName: "Rakyat Reward Points", active: true, displayOrder: 1 },
   // Standard Chartered
   { id: "sc-journey", bankId: "sc", name: "SC Journey Miles", slug: "sc-journey", rewardCurrencyName: "Journey Miles", active: true, displayOrder: 1 },
+  { id: "sc-360-rewards", bankId: "sc", name: "SC 360° Rewards Points", slug: "sc-360-rewards", rewardCurrencyName: "360° Rewards Points", active: true, displayOrder: 2 },
 ];
 
 /* -------------------- Card groups (entitlement tiers) -------------------- */
