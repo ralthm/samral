@@ -1235,14 +1235,21 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
   }, [portfolio]);
 
   const cabinsPresent = useMemo(() => verifiedCabinsPresent(), []);
+  // Programme filter is the UNION of programmes actually reachable from the
+  // user's calculated portfolio (never a fixed catalogue). Falls back to all
+  // targeted programmes only when no balances have been entered.
   const programmeOptions = useMemo(() => {
-    const ids = new Set<string>();
-    for (const t of redemptionTargets) if (isTargetPublic(t)) ids.add(t.loyaltyProgrammeId);
-    return Array.from(ids).map((id) => {
-      const prog = loyaltyProgrammes.find((p) => p.id === id);
-      return { id, name: prog?.name ?? id };
-    });
-  }, []);
+    const targetProgrammeIds = new Set<string>();
+    for (const t of redemptionTargets) if (isTargetPublic(t)) targetProgrammeIds.add(t.loyaltyProgrammeId);
+    const portfolioIds = new Set(portfolio.map((p) => p.programmeId));
+    const source = portfolioIds.size > 0
+      ? Array.from(portfolioIds).filter((id) => targetProgrammeIds.has(id))
+      : Array.from(targetProgrammeIds);
+    return source
+      .map((id) => ({ id, name: loyaltyProgrammes.find((p) => p.id === id)?.name ?? id }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [portfolio]);
+
 
   const [region, setRegion] = useState<Region | "">("");
   const [cabin, setCabin] = useState<Cabin | "">("");
