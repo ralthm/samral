@@ -725,11 +725,15 @@ function EntryCard({
           <p className="font-medium text-ink">
             {card.status === "direct_airline"
               ? "Direct airline-earning card"
-              : "Current air-mile rate requires confirmation"}
+              : card.status === "rate_pending_verification"
+                ? "Conversion profile pending verification"
+                : "Current air-mile rate requires confirmation"}
           </p>
           <p className="mt-1">
-            {selectedGroup?.unverifiedNotice ??
-              "We cannot confirm a preferential conversion rate for this card from the currently recorded official source. Select another card you hold, or submit this card for verification."}
+            {card.status === "rate_pending_verification"
+              ? "We have identified your exact card, but its current programme-level conversion profile has not yet been fully verified."
+              : (selectedGroup?.unverifiedNotice ??
+                "We cannot confirm a preferential conversion rate for this card from the currently recorded official source. Select another card you hold, or submit this card for verification.")}
           </p>
         </div>
       )}
