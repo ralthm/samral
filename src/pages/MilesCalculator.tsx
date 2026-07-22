@@ -1413,8 +1413,6 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
     balance: number;
     delta: number;                 // balance - required (positive = unlocked)
     ratio: number;
-    /** True when the user chose one-way but the programme requires return. */
-    tripTypeMismatch: boolean;
   }
 
   const enriched: Enriched[] = useMemo(() => {
@@ -1432,7 +1430,6 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
         balance,
         delta,
         ratio,
-        tripTypeMismatch: t.returnBookingRequired && tripType === "one_way",
       };
     });
   }, [targets, tripType, travellers, balances]);
