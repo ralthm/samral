@@ -89,6 +89,10 @@ export interface ConversionRule {
   redemptionChannel?: string;
   processingTime?: string;
   reviewNotes?: string;
+  /** Bank-issued product/redemption code for the transfer route (e.g. CIMB "10047"). */
+  productCode?: string;
+  /** Page reference within a printed catalogue. */
+  sourcePage?: number;
   status: RuleStatus;
   active: boolean;
 }
