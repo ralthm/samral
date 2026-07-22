@@ -1358,3 +1358,77 @@ export function auditMaybankInventory(): MaybankAuditReport {
     unverifiedLegacyIds,
   };
 }
+
+/* -------------------- CIMB inventory audit -------------------- */
+
+/**
+ * Immutable expected current-catalogue CIMB Bonus Points card IDs.
+ * Cashback cards (PETRONAS Visa Infinite-i, PETRONAS Visa Platinum-i,
+ * CIMB Cash Rebate Platinum) are tracked separately and must NEVER appear
+ * in this list — they earn cashback, not CIMB Bonus Points.
+ */
+export const EXPECTED_CIMB_BONUS_POINTS_CARD_IDS: readonly string[] = [
+  "cimb-preferred-vi",
+  "cimb-preferred-vi-i",
+  "cimb-travel-world-elite",
+  "cimb-travel-world",
+  "cimb-travel-platinum",
+  "cimb-visa-infinite",
+  "cimb-visa-signature",
+  "cimb-world-mc",
+  "cimb-visa-platinum",
+  "cimb-platinum-i",
+  "cimb-e-credit",
+];
+
+export const EXPECTED_CIMB_BONUS_POINTS_CARD_COUNT = 11;
+
+export const EXPECTED_CIMB_CASHBACK_CARD_IDS: readonly string[] = [
+  "cimb-petronas-vi-i",
+  "cimb-petronas-vp-i",
+  "cimb-cash-rebate-plat",
+];
+
+export interface CimbAuditReport {
+  expectedBonusPoints: number;
+  presentBonusPoints: number;
+  missingBonusPointsIds: string[];
+  unexpectedBonusPointsIds: string[];
+  cashbackIds: string[];
+  misclassifiedCashbackIds: string[];
+}
+
+/** Compare the seeded CIMB inventory against the expected current catalogue. */
+export function auditCimbInventory(): CimbAuditReport {
+  const all = cards.filter((c) => c.bankId === "cimb");
+  const bonusPointsIds = new Set(
+    all.filter((c) => c.cardGroupId === "cg-cimb-bonus").map((c) => c.id),
+  );
+  const expectedBonus = new Set(EXPECTED_CIMB_BONUS_POINTS_CARD_IDS);
+
+  const missingBonusPointsIds = EXPECTED_CIMB_BONUS_POINTS_CARD_IDS.filter(
+    (id) => !bonusPointsIds.has(id),
+  );
+  const unexpectedBonusPointsIds = [...bonusPointsIds].filter(
+    (id) => !expectedBonus.has(id),
+  );
+
+  const cashbackIds = all
+    .filter((c) => c.cardGroupId === "cg-cimb-cashback")
+    .map((c) => c.id);
+
+  // Any card whose ID is in the cashback-expected list but that was wired to the
+  // Bonus Points profile is a serious mis-classification.
+  const misclassifiedCashbackIds = EXPECTED_CIMB_CASHBACK_CARD_IDS.filter(
+    (id) => bonusPointsIds.has(id),
+  );
+
+  return {
+    expectedBonusPoints: EXPECTED_CIMB_BONUS_POINTS_CARD_COUNT,
+    presentBonusPoints: bonusPointsIds.size,
+    missingBonusPointsIds,
+    unexpectedBonusPointsIds,
+    cashbackIds,
+    misclassifiedCashbackIds,
+  };
+}
