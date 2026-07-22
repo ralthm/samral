@@ -397,6 +397,27 @@ function buildKrisflyerTargets(): RedemptionTarget[] {
     if (s.business) push(s, "Business", s.business, "j");
     if (s.suites) push(s, "First or Business Suite", s.suites, "f");
   }
+  // Scoot Saver — separate award product on the KrisFlyer programme.
+  for (const s of scootSeeds) {
+    out.push({
+      ...shared,
+      id: `kf-${s.code}-y`,
+      operatingAirline: "Scoot",
+      marketingAirline: "Scoot",
+      awardType: "Scoot Saver",
+      destination: s.destination,
+      destinationName: s.destinationName,
+      country: s.country,
+      region: s.region,
+      connectionAirports: s.destination === "SIN" ? [] : ["SIN"],
+      numberOfSegments: s.destination === "SIN" ? 1 : 2,
+      directOrConnecting: s.destination === "SIN" ? "direct" : "connecting",
+      cabin: "Economy",
+      pointsPerPerson: s.economy,
+      status: "verified",
+      notes: "Scoot is a low-cost carrier. Checked baggage, meals and seat selection are not included and must be purchased separately.",
+    });
+  }
   return out;
 }
 
