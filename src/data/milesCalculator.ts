@@ -401,16 +401,6 @@ export const conversionRules: ConversionRule[] = [
     annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
   }),
 
-  // ---- Maybank — MR other travel partners ----
-  rule("mbb-mrother-airasia", "cg-mbb-mr-other", "airasia", [5600, 1000]),
-  rule("mbb-mrother-delta", "cg-mbb-mr-other", "delta", [5600, 1000]),
-  rule("mbb-mrother-rop", "cg-mbb-mr-other", "rop", [5600, 1000]),
-  rule("mbb-mrother-etihad", "cg-mbb-mr-other", "etihad", [5600, 1000]),
-  rule("mbb-mrother-emirates", "cg-mbb-mr-other", "emirates", [5600, 1000]),
-  rule("mbb-mrother-batik", "cg-mbb-mr-other", "batik", [7000, 10], {
-    notes: "Batik Air Club units are not airline miles. Do not add them to any airline-miles total.",
-  }),
-
   // ---- Maybank — Standard TreatsPoints (20,000 → 1,000) ----
   rule("mbb-std-enrich", "cg-mbb-treats-standard", "enrich", [20000, 1000], {
     annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
@@ -422,11 +412,7 @@ export const conversionRules: ConversionRule[] = [
     annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
   }),
 
-  // ---- Maybank — All cards → AirAsia / Batik ----
-  rule("mbb-all-airasia", "cg-mbb-all-cards-lowtier", "airasia", [7000, 1000]),
-  rule("mbb-all-batik", "cg-mbb-all-cards-lowtier", "batik", [7000, 10], {
-    notes: "Batik Air Club units are not airline miles.",
-  }),
+
 
   // ---- CIMB ----
   rule("cimb-airasia", "cg-cimb-bonus", "airasia", [40000, 5000], {
