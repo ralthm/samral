@@ -44,7 +44,22 @@ export const promotions: Promotion[] = [
     id: "mh-enrich-10pct-2026",
     programmeId: "enrich",
     name: "10% Bonus Enrich Points",
-    participatingBanks: ["maybank", "cimb", "alliance", "uob", "hsbc", "hongleong", "affin", "ambank", "publicbank", "bankrakyat"],
+    participatingBanks: ["maybank", "cimb", "alliance", "uob", "hsbc", "hongleong", "affin", "ambank", "publicbank", "bankrakyat", "sc"],
+    eligibleTransferRoutes: [
+      { bankId: "maybank" },
+      { bankId: "cimb" },
+      { bankId: "alliance" },
+      { bankId: "uob" },
+      { bankId: "hsbc" },
+      { bankId: "hongleong" },
+      { bankId: "affin" },
+      { bankId: "ambank" },
+      { bankId: "publicbank" },
+      { bankId: "bankrakyat" },
+      // Standard Chartered: only the Journey/WorldMiles card is eligible for the
+      // Enrich Bank Conversion Promotion. 360° Rewards routes are excluded.
+      { bankId: "sc", cardGroupId: "cg-sc-journey" },
+    ],
     bonusType: "percentage",
     bonusPercentage: 10,
     registrationRequired: false,
