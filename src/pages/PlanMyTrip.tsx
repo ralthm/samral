@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 import { readTripContext, clearTripContext, TripContext } from "@/lib/tripContext";
 import { formatInt } from "@/lib/milesCalculator";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
 const track = (event: string, payload: Record<string, unknown> = {}) => {
   try {
