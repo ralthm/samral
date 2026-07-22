@@ -1228,3 +1228,87 @@ export function searchCardsInBank(bankId: string, query: string): Card[] {
     return (c.aliases ?? []).some((a) => a.toLowerCase().includes(q));
   });
 }
+
+/* -------------------- Maybank inventory audit -------------------- */
+
+/**
+ * Immutable expected current-catalogue Maybank card IDs.
+ * 32 credit cards + 3 charge cards = 35 records.
+ * Legacy cards are tracked separately and must NEVER appear in this list.
+ */
+export const EXPECTED_MAYBANK_CURRENT_CARD_IDS: readonly string[] = [
+  // Charge cards (3)
+  "mbb-the-platinum-card",
+  "mbb-amex-card",
+  "mbb-amex-gold",
+  // Credit cards (32)
+  "mbb-islamic-world-elite",
+  "mbb-world-elite",
+  "mbb-mu-visa-infinite",
+  "mbb-visa-infinite",
+  "mbb-m2-premier",
+  "mbb-islamic-ikhwan-vi",
+  "mbb-visa-signature",
+  "mbb-islamic-petronas-plat",
+  "mbb-amex-plat-credit",
+  "mbb-petronas-visa-plat",
+  "mbb-visa-platinum",
+  "mbb-mc-platinum",
+  "mbb-m2-platinum",
+  "mbb-sq-krisflyer-plat",
+  "mbb-fc-barcelona",
+  "mbb-islamic-ikhwan-amex-plat",
+  "mbb-islamic-ikhwan-mc-plat",
+  "mbb-myimpact-vsig",
+  "mbb-sq-krisflyer-gold",
+  "mbb-visa-gold",
+  "mbb-mc-gold",
+  "mbb-islamic-petronas-gold",
+  "mbb-petronas-visa-gold",
+  "mbb-m2-gold",
+  "mbb-visa-classic",
+  "mbb-mc-classic",
+  "mbb-mu-visa",
+  "mbb-amex-cashback-gold",
+  "mbb-grab-mc-plat",
+  "mbb-myimpact-islamic-plat",
+  "mbb-shopee-visa-plat",
+  "mbb-islamic-ikhwan-mc-gold",
+];
+
+export const EXPECTED_CURRENT_MAYBANK_CARD_COUNT = 35;
+
+export interface MaybankAuditReport {
+  expected: number;
+  present: number;
+  missingIds: string[];
+  unexpectedIds: string[];
+  legacyIds: string[];
+  unverifiedLegacyIds: string[];
+}
+
+/** Compare the seeded Maybank inventory against the expected current catalogue. */
+export function auditMaybankInventory(): MaybankAuditReport {
+  const all = cards.filter((c) => c.bankId === "maybank");
+  const currentIds = new Set(
+    all.filter((c) => c.status !== "legacy").map((c) => c.id),
+  );
+  const expectedSet = new Set(EXPECTED_MAYBANK_CURRENT_CARD_IDS);
+
+  const missingIds = EXPECTED_MAYBANK_CURRENT_CARD_IDS.filter((id) => !currentIds.has(id));
+  const unexpectedIds = [...currentIds].filter((id) => !expectedSet.has(id));
+  const legacy = all.filter((c) => c.status === "legacy");
+  const legacyIds = legacy.map((c) => c.id);
+  const unverifiedLegacyIds = legacy
+    .filter((c) => !c.cardGroupId || c.cardGroupId === "cg-mbb-legacy-unverified")
+    .map((c) => c.id);
+
+  return {
+    expected: EXPECTED_CURRENT_MAYBANK_CARD_COUNT,
+    present: currentIds.size,
+    missingIds,
+    unexpectedIds,
+    legacyIds,
+    unverifiedLegacyIds,
+  };
+}
