@@ -1327,6 +1327,19 @@ export const cards: Card[] = [
   mkCard("sc-platinum-mc-basic", "sc", "Standard Chartered Platinum Mastercard Basic", "cg-sc-360-unverified", { status: "rate_unconfirmed", aliases: ["Platinum Mastercard Basic"] }),
   mkCard("sc-beyond-priority-private", "sc", "Standard Chartered Beyond Credit Card — Priority Private", "cg-sc-360-unverified", { status: "rate_unconfirmed", aliases: ["Beyond Priority Private"] }),
   mkCard("sc-beyond-priority-banking", "sc", "Standard Chartered Beyond Credit Card — Priority Banking", "cg-sc-360-unverified", { status: "rate_unconfirmed", aliases: ["Beyond Priority Banking"] }),
+
+  // ---------- OCBC Malaysia ----------
+  // Only publicly verified airline transfer: Premier Voyage → KrisFlyer (3,000:1,000).
+  // OCBC Malaysia is NOT an Enrich bank-points conversion partner: no Enrich route,
+  // no Enrich promotional bonus, no Singapore OCBC rules inherited.
+  mkCard("ocbc_premier_voyage_premier_banking", "ocbc", "OCBC Premier Voyage Mastercard — Premier Banking", "cg-ocbc-voyage", { aliases: ["Voyage", "Premier Voyage", "OCBC Voyage"] }),
+  mkCard("ocbc_premier_voyage_premier_private_client", "ocbc", "OCBC Premier Voyage Mastercard — Premier Private Client", "cg-ocbc-voyage", { aliases: ["Voyage Private Client", "Premier Private Client"] }),
+  mkCard("ocbc_90n_visa", "ocbc", "OCBC 90°N Visa Card", "cg-ocbc-travel-dollar", { aliases: ["90N", "Travel Dollar", "Travel$"] }),
+  mkCard("ocbc_titanium_mastercard", "ocbc", "OCBC Titanium Mastercard", "cg-ocbc-ocbc-dollar", { aliases: ["Titanium", "Blue Titanium", "Pink Titanium"] }),
+  mkCard("ocbc_365_mastercard", "ocbc", "OCBC 365 Mastercard", "cg-ocbc-ocbc-dollar", { aliases: ["OCBC 365"] }),
+  mkCard("ocbc_cashflo_mastercard", "ocbc", "OCBC Cashflo Mastercard", "cg-ocbc-cashback", { status: "cashback_only", aliases: ["Cashflo"] }),
+  mkCard("ocbc_great_eastern_platinum_mastercard", "ocbc", "OCBC Great Eastern Platinum Mastercard", "cg-ocbc-cashback", { status: "cashback_only", aliases: ["Great Eastern Platinum", "GE Platinum"] }),
+  mkCard("ocbc_world_mastercard", "ocbc", "OCBC World Mastercard", "cg-ocbc-cashback", { status: "cashback_only", aliases: ["OCBC World"] }),
 ];
 
 /* -------------------- Helpers -------------------- */
