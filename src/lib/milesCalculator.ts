@@ -130,6 +130,35 @@ function buildResult(
     monthlyCapApplied,
     minimumTransferPartnerPoints: r.minimumTransferPartnerPoints,
     transferIncrementPartnerPoints: r.transferIncrementPartnerPoints,
+    ...applyPromotionToResult(ctx.bankId, programme.id, r.eligibleCardGroupId, partnerPointsReceived),
+  };
+}
+
+function applyPromotionToResult(
+  bankId: string,
+  programmeId: string,
+  cardGroupId: string,
+  basePartnerPoints: number,
+): {
+  bonusPartnerPoints: number;
+  promotionalPartnerPoints: number;
+  promotionId?: string;
+  promotionName?: string;
+  promotionEndDate?: string;
+  promotionBonusPercentage?: number;
+} {
+  const promo = findApplicablePromotion(bankId, programmeId, cardGroupId);
+  if (!promo || basePartnerPoints <= 0) {
+    return { bonusPartnerPoints: 0, promotionalPartnerPoints: basePartnerPoints };
+  }
+  const bonus = computeBonus(promo, basePartnerPoints);
+  return {
+    bonusPartnerPoints: bonus,
+    promotionalPartnerPoints: basePartnerPoints + bonus,
+    promotionId: promo.id,
+    promotionName: promo.name,
+    promotionEndDate: promo.endDate,
+    promotionBonusPercentage: promo.bonusType === "percentage" ? promo.bonusPercentage : undefined,
   };
 }
 
