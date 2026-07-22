@@ -107,6 +107,8 @@ export interface Card {
   bankId: string;
   /** Official card name as printed on the card. */
   name: string;
+  /** Optional secondary line shown under the card name (e.g. "Charge card", combo composition). */
+  subtitle?: string;
   /** Alternative names/spellings to match in search. */
   aliases?: string[];
   /** Card-group id that acts as the reusable conversion profile. */
