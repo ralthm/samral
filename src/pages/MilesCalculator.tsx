@@ -1113,20 +1113,79 @@ function ProgrammeBalanceCard({
     return Array.from(m.values());
   }, [rowResults, entryContext]);
 
+  const hasPromo = programme.bonusTotal > 0;
+  const activePromos = programme.activePromotionIds
+    .map((id) => getActivePromotions().find((p) => p.id === id))
+    .filter(Boolean) as Promotion[];
+
   return (
-    <div className="rounded-sm border border-border bg-background p-6">
-      <p className="text-[11px] uppercase tracking-[0.16em] text-ink/55">Potential balance</p>
-      <p className="mt-2 font-display text-4xl leading-none text-ink md:text-[44px]">
-        {formatInt(programme.potentialTotal)}
-      </p>
-      <p className="mt-2 text-[13px] text-ink/70">{programme.programmeName}</p>
+    <div className={`rounded-sm border bg-background p-6 ${hasPromo ? "border-ink" : "border-border"}`}>
+      {hasPromo ? (
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.16em] text-ink/55">Standard</p>
+            <p className="mt-2 font-display text-3xl leading-none text-ink/70 md:text-[36px]">
+              {formatInt(programme.potentialTotal)}
+            </p>
+            <p className="mt-2 text-[12px] text-ink/60">{programme.programmeName}</p>
+          </div>
+          <div className="sm:border-l sm:border-border sm:pl-5">
+            <p className="text-[11px] uppercase tracking-[0.16em] text-ink">
+              During current promotion
+            </p>
+            <p className="mt-2 font-display text-4xl leading-none text-ink md:text-[44px]">
+              {formatInt(programme.promotionalTotal)}
+            </p>
+            <p className="mt-2 text-[12px] text-ink">
+              +{formatInt(programme.bonusTotal)} bonus {programme.programmeName}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <p className="text-[11px] uppercase tracking-[0.16em] text-ink/55">Potential balance</p>
+          <p className="mt-2 font-display text-4xl leading-none text-ink md:text-[44px]">
+            {formatInt(programme.potentialTotal)}
+          </p>
+          <p className="mt-2 text-[13px] text-ink/70">{programme.programmeName}</p>
+        </>
+      )}
 
       <dl className="mt-5 grid grid-cols-2 gap-y-2 border-t border-border pt-4 text-[12px]">
-        <dt className="text-ink/55">From bank transfers</dt>
+        <dt className="text-ink/55">Standard transfer</dt>
         <dd className="text-right text-ink">{formatInt(programme.transferredTotal)} {programme.programmeName}</dd>
+        {hasPromo && (
+          <>
+            <dt className="text-ink">
+              {activePromos[0]?.bonusType === "percentage" && activePromos[0]?.bonusPercentage
+                ? `${activePromos[0].bonusPercentage}% bonus`
+                : "Promotional bonus"}
+            </dt>
+            <dd className="text-right text-ink">+{formatInt(programme.bonusTotal)} {programme.programmeName}</dd>
+          </>
+        )}
         <dt className="text-ink/55">Existing balance</dt>
         <dd className="text-right text-ink">{formatInt(programme.existingBalance)} {programme.programmeName}</dd>
+        {hasPromo && (
+          <>
+            <dt className="border-t border-border pt-2 font-medium text-ink">Final promotional balance</dt>
+            <dd className="border-t border-border pt-2 text-right font-medium text-ink">
+              {formatInt(programme.promotionalTotal)} {programme.programmeName}
+            </dd>
+          </>
+        )}
       </dl>
+
+      {hasPromo && activePromos[0] && (
+        <p className="mt-3 text-[11px] leading-relaxed text-ink/60">
+          Bonus from <span className="text-ink">{activePromos[0].name}</span> · valid until {formatDate(activePromos[0].endDate)}.
+          {activePromos[0].postingTimeline ? " " + activePromos[0].postingTimeline : ""}
+        </p>
+      )}
+      {!hasPromo && (
+        <p className="mt-3 text-[11px] text-ink/50">No active transfer promotion for this programme.</p>
+      )}
+
 
       {byCurrency.length > 0 && (
         <div className="mt-4 border-t border-border pt-4">
