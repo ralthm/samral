@@ -1397,6 +1397,20 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
     });
   }, [region, cabin, programmeId, eligibleProgrammes]);
 
+  // True when the user has picked a cabin that has zero verified records
+  // across the programmes they currently hold a balance in (independent of
+  // region/programme filters). Used to show a dataset-gap notice instead of
+  // the generic "no unlocked destinations" empty state, so we never imply
+  // the airline does not operate that cabin.
+  const cabinMissingFromDataset = useMemo(() => {
+    if (!cabin) return false;
+    const eligibleFilter = programmeId ? new Set([programmeId]) : eligibleProgrammes;
+    if (eligibleFilter.size === 0) return false;
+    return !redemptionTargets.some(
+      (t) => isTargetPublic(t) && eligibleFilter.has(t.programmeId) && t.cabin === cabin,
+    );
+  }, [cabin, programmeId, eligibleProgrammes]);
+
   interface Enriched {
     t: RedemptionTarget;
     required: number;              // full points needed for the selected trip type (party size included)
@@ -1596,49 +1610,59 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
         </FilterField>
       </div>
 
-      {/* Groups */}
       <div className="mt-10 space-y-12">
-        <DestinationGroup
-          title="You can reach these now"
-          empty="No unlocked destinations yet. Adjust filters or add more balances."
-          items={unlocked}
-          state="unlocked"
-          tripType={tripType}
-          travellers={travellers}
-          onPrimary={handlePlan}
-          onSecondary={handleStrategy}
-        />
-        <DestinationGroup
-          title="You’re close"
-          empty="Nothing within 25% of a target right now."
-          items={almost}
-          state="almost"
-          tripType={tripType}
-          travellers={travellers}
-          onPrimary={handlePlan}
-          onSecondary={handleStrategy}
-        />
-        <DestinationGroup
-          title="Future goals"
-          empty="No further destinations to display."
-          items={future}
-          state="future"
-          tripType={tripType}
-          travellers={travellers}
-          onPrimary={handlePlan}
-          onSecondary={handleStrategy}
-        />
-        {capped && (
-          <div>
-            <button
-              type="button"
-              onClick={() => { setShowAll(true); track("destination_view_all_clicked"); }}
-              className="inline-flex items-center rounded-sm border border-ink px-4 py-2 text-[13px] text-ink hover:bg-ink hover:text-background"
-            >
-              View all results
-            </button>
-            <p className="mt-2 text-[11px] text-ink/55">Showing up to three results per programme. Filter by programme or click above to see the full list.</p>
+        {cabinMissingFromDataset ? (
+          <div className="rounded-sm border border-border bg-background p-6 text-sm leading-relaxed text-ink/75">
+            <p className="font-medium text-ink">No verified {cabin} redemption has been added to our database yet.</p>
+            <p className="mt-2 text-ink/65">
+              This reflects a gap in our verified dataset for the programmes you hold — not an indication of whether the airline operates {cabin} on any given route. Switch cabin or check back as we expand coverage.
+            </p>
           </div>
+        ) : (
+          <>
+            <DestinationGroup
+              title="You can reach these now"
+              empty="No unlocked destinations yet. Adjust filters or add more balances."
+              items={unlocked}
+              state="unlocked"
+              tripType={tripType}
+              travellers={travellers}
+              onPrimary={handlePlan}
+              onSecondary={handleStrategy}
+            />
+            <DestinationGroup
+              title="You’re close"
+              empty="Nothing within 25% of a target right now."
+              items={almost}
+              state="almost"
+              tripType={tripType}
+              travellers={travellers}
+              onPrimary={handlePlan}
+              onSecondary={handleStrategy}
+            />
+            <DestinationGroup
+              title="Future goals"
+              empty="No further destinations to display."
+              items={future}
+              state="future"
+              tripType={tripType}
+              travellers={travellers}
+              onPrimary={handlePlan}
+              onSecondary={handleStrategy}
+            />
+            {capped && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => { setShowAll(true); track("destination_view_all_clicked"); }}
+                  className="inline-flex items-center rounded-sm border border-ink px-4 py-2 text-[13px] text-ink hover:bg-ink hover:text-background"
+                >
+                  View all results
+                </button>
+                <p className="mt-2 text-[11px] text-ink/55">Showing up to three results per programme. Filter by programme or click above to see the full list.</p>
+              </div>
+            )}
+          </>
         )}
       </div>
 
