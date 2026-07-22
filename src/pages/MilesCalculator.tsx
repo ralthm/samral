@@ -51,11 +51,20 @@ const PRIORITY_PROGRAMMES = ["enrich", "krisflyer", "asia-miles"];
 
 type UiState = "idle" | "calculated" | "stale" | "error";
 
+interface UnknownCard {
+  cardName: string;
+  currency: string; // "TreatsPoints" | "Membership Rewards" | "UNIRM" | "TBP" | "CIMB Bonus Points" | "Other"
+}
+
 interface Entry {
   id: string;
   bankId: string;
-  rewardProductId: string;
+  cardId: string;
+  /** Derived from cardId; kept here so calculation and validation can read it directly. */
   cardGroupId: string;
+  /** True when the user chose "I can't find my card". */
+  notFound: boolean;
+  unknown?: UnknownCard;
   nickname: string;
   showLabel: boolean;
   rawInput: string;
@@ -81,8 +90,9 @@ const uid = () =>
 const newEntry = (): Entry => ({
   id: uid(),
   bankId: "",
-  rewardProductId: "",
+  cardId: "",
   cardGroupId: "",
+  notFound: false,
   nickname: "",
   showLabel: false,
   rawInput: "",
