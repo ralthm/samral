@@ -434,19 +434,38 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     rewardProductId: "cimb-bonus",
     name: "CIMB Bonus Points — all eligible credit cards",
     description:
-      "CIMB Bonus Points transfers are available to twelve airline partners at published ratios. Earning rates differ by card, but the conversion route does not.",
+      "CIMB Member Rewards Catalogue 2026/27 airline transfers. Every current CIMB Bonus Points credit card uses the same partner-conversion ratios; only the earn rate differs by card. Transfers must be in complete 5,000 partner-mile blocks.",
     eligibleCards: [
-      "CIMB Travel World Elite",
+      "CIMB Preferred Visa Infinite",
+      "CIMB Preferred Visa Infinite-i",
+      "CIMB Travel World Elite (incl. CIMB Private Wealth World Elite variant)",
       "CIMB Travel World",
       "CIMB Travel Platinum",
-      "CIMB Preferred Visa Infinite / Visa Infinite-i",
       "CIMB Visa Infinite",
       "CIMB Visa Signature",
-      "CIMB PETRONAS Visa Infinite-i",
-      "Other CIMB credit cards earning Bonus Points",
+      "CIMB World Mastercard",
+      "CIMB Visa Platinum",
+      "CIMB Platinum-i",
+      "CIMB e Credit Card",
     ],
     active: true,
     displayOrder: 1,
+  },
+  {
+    id: "cg-cimb-cashback",
+    rewardProductId: "cimb-cashback",
+    name: "CIMB cashback / non-convertible cards",
+    description:
+      "PETRONAS-branded CIMB credit cards and CIMB Cash Rebate cards earn cashback, not CIMB Bonus Points, and cannot be used in the points-transfer calculator.",
+    eligibleCards: [
+      "CIMB PETRONAS Visa Infinite-i",
+      "CIMB PETRONAS Visa Platinum-i",
+      "CIMB Cash Rebate Platinum",
+    ],
+    unverifiedNotice:
+      "This card earns cashback rather than CIMB Bonus Points and cannot be used in this points-transfer calculator.",
+    active: true,
+    displayOrder: 2,
   },
 
   // ------- Alliance -------
