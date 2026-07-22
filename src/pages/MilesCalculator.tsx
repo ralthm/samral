@@ -1397,6 +1397,20 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
     });
   }, [region, cabin, programmeId, eligibleProgrammes]);
 
+  // True when the user has picked a cabin that has zero verified records
+  // across the programmes they currently hold a balance in (independent of
+  // region/programme filters). Used to show a dataset-gap notice instead of
+  // the generic "no unlocked destinations" empty state, so we never imply
+  // the airline does not operate that cabin.
+  const cabinMissingFromDataset = useMemo(() => {
+    if (!cabin) return false;
+    const eligibleFilter = programmeId ? new Set([programmeId]) : eligibleProgrammes;
+    if (eligibleFilter.size === 0) return false;
+    return !redemptionTargets.some(
+      (t) => isTargetPublic(t) && eligibleFilter.has(t.programmeId) && t.cabin === cabin,
+    );
+  }, [cabin, programmeId, eligibleProgrammes]);
+
   interface Enriched {
     t: RedemptionTarget;
     required: number;              // full points needed for the selected trip type (party size included)
