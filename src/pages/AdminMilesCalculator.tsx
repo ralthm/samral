@@ -161,6 +161,8 @@ function Dashboard() {
           { label: "Needs review", value: needsReview.length },
           { label: `Verified > ${STALE_DAYS} days ago`, value: stale.length },
         ]} />
+        <MaybankAuditPanel />
+
 
         <Section title={`Rules needing review`} count={needsReview.length}>
           <RuleTable rows={needsReview} />
