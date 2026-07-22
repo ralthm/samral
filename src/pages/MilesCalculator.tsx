@@ -1478,12 +1478,11 @@ function ProgrammeDetails({
 
 /* ---------- Destination discovery ---------- */
 
-function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
+function DestinationDiscovery({ portfolio, registeredSet }: { portfolio: ProgrammeTotal[]; registeredSet: Set<string> }) {
   const navigate = useNavigate();
-  // Use the promotional balance (base + verified bonus) when a live promotion
-  // applies — that is the balance the user will actually receive in the
-  // destination programme, so it is what the redemption engine must compare
-  // requiredPoints against. Falls back to potentialTotal when no bonus applies.
+  // Redemption gating uses the currently-applied promotional balance
+  // (base + unconditional + confirmed-registered bonuses). It never assumes
+  // an unregistered conditional bonus is available.
   const balances = useMemo(() => {
     const m = new Map<string, number>();
     for (const p of portfolio) {
@@ -1492,6 +1491,14 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
     }
     return m;
   }, [portfolio]);
+  // Track whether a programme has additional headroom the user could unlock
+  // by registering for a conditional promotion.
+  const hasConditionalHeadroom = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of portfolio) m.set(p.programmeId, p.conditionalBonusTotal ?? 0);
+    return m;
+  }, [portfolio]);
+
 
   const cabinsPresent = useMemo(() => verifiedCabinsPresent(), []);
 
