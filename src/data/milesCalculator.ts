@@ -89,6 +89,10 @@ export interface ConversionRule {
   redemptionChannel?: string;
   processingTime?: string;
   reviewNotes?: string;
+  /** Bank-issued product/redemption code for the transfer route (e.g. CIMB "10047"). */
+  productCode?: string;
+  /** Page reference within a printed catalogue. */
+  sourcePage?: number;
   status: RuleStatus;
   active: boolean;
 }
@@ -272,6 +276,7 @@ export const rewardProducts: RewardProduct[] = [
   { id: "mbb-legacy-unverified", bankId: "maybank", name: "Maybank legacy card — conversion pending verification", slug: "mbb-legacy-unverified", rewardCurrencyName: "Not currently calculable", active: true, displayOrder: 10 },
   // CIMB
   { id: "cimb-bonus", bankId: "cimb", name: "CIMB Bonus Points", slug: "cimb-bonus", rewardCurrencyName: "Bonus Points", active: true, displayOrder: 1 },
+  { id: "cimb-cashback", bankId: "cimb", name: "CIMB cashback / non-convertible cards", slug: "cimb-cashback", rewardCurrencyName: "Cashback", active: true, displayOrder: 2 },
   // Alliance
   { id: "alliance-tbp", bankId: "alliance", name: "Alliance Three-year Bonus Points (TBP)", slug: "alliance-tbp", rewardCurrencyName: "TBP", active: true, displayOrder: 1 },
   // UOB — one currency (UNIRM), multiple entitlement tiers by card.
@@ -429,19 +434,38 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     rewardProductId: "cimb-bonus",
     name: "CIMB Bonus Points — all eligible credit cards",
     description:
-      "CIMB Bonus Points transfers are available to twelve airline partners at published ratios. Earning rates differ by card, but the conversion route does not.",
+      "CIMB Member Rewards Catalogue 2026/27 airline transfers. Every current CIMB Bonus Points credit card uses the same partner-conversion ratios; only the earn rate differs by card. Transfers must be in complete 5,000 partner-mile blocks.",
     eligibleCards: [
-      "CIMB Travel World Elite",
+      "CIMB Preferred Visa Infinite",
+      "CIMB Preferred Visa Infinite-i",
+      "CIMB Travel World Elite (incl. CIMB Private Wealth World Elite variant)",
       "CIMB Travel World",
       "CIMB Travel Platinum",
-      "CIMB Preferred Visa Infinite / Visa Infinite-i",
       "CIMB Visa Infinite",
       "CIMB Visa Signature",
-      "CIMB PETRONAS Visa Infinite-i",
-      "Other CIMB credit cards earning Bonus Points",
+      "CIMB World Mastercard",
+      "CIMB Visa Platinum",
+      "CIMB Platinum-i",
+      "CIMB e Credit Card",
     ],
     active: true,
     displayOrder: 1,
+  },
+  {
+    id: "cg-cimb-cashback",
+    rewardProductId: "cimb-cashback",
+    name: "CIMB cashback / non-convertible cards",
+    description:
+      "PETRONAS-branded CIMB credit cards and CIMB Cash Rebate cards earn cashback, not CIMB Bonus Points, and cannot be used in the points-transfer calculator.",
+    eligibleCards: [
+      "CIMB PETRONAS Visa Infinite-i",
+      "CIMB PETRONAS Visa Platinum-i",
+      "CIMB Cash Rebate Platinum",
+    ],
+    unverifiedNotice:
+      "This card earns cashback rather than CIMB Bonus Points and cannot be used in this points-transfer calculator.",
+    active: true,
+    displayOrder: 2,
   },
 
   // ------- Alliance -------
@@ -691,7 +715,7 @@ const MBB_SRC =
 const MBB_TITLE = "Maybank Service Tax Redemption and Air Miles Conversion Rate";
 const CIMB_SRC =
   "https://www.cimb.com.my/en/personal/day-to-day-banking/cards/credit-cards/bonus-points.html";
-const CIMB_TITLE = "CIMB Bonus Points Redemption";
+const CIMB_TITLE = "CIMB Member Rewards Catalogue 2026/27";
 const ALLIANCE_SRC = "https://www.alliancebank.com.my/Personal/Cards/Rewards.aspx";
 const ALLIANCE_TITLE =
   "Alliance Bank Three-year Bonus Points (TBP) Redemption";
@@ -775,29 +799,38 @@ export const conversionRules: ConversionRule[] = [
 
 
 
-  // ---- CIMB ----
-  rule("cimb-airasia", "cg-cimb-bonus", "airasia", [40000, 5000], {
-    sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE,
-    minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000,
-    notes: "Transfers must be made by the principal cardholder into a matching-name loyalty account, in multiples of 5,000 partner points.",
-  }),
-  rule("cimb-enrich", "cg-cimb-bonus", "enrich", [62500, 5000], {
-    sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE,
-    minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000,
-  }),
-  rule("cimb-krisflyer", "cg-cimb-bonus", "krisflyer", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-flyingblue", "cg-cimb-bonus", "flying-blue", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-eva", "cg-cimb-bonus", "eva", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-ba", "cg-cimb-bonus", "ba", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-etihad", "cg-cimb-bonus", "etihad", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-cathay", "cg-cimb-bonus", "asia-miles", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-qatar", "cg-cimb-bonus", "qatar", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-emirates", "cg-cimb-bonus", "emirates", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-jal", "cg-cimb-bonus", "jal", [100000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-turkish", "cg-cimb-bonus", "turkish", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-ihg", "cg-cimb-bonus", "ihg", [50000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-marriott", "cg-cimb-bonus", "marriott", [50000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-accor", "cg-cimb-bonus", "accor", [125000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
+  // ---- CIMB — Member Rewards Catalogue 2026/27 (1 Apr 2026 – 30 Apr 2027) ----
+  // Transfers must be in complete 5,000 partner-mile blocks. Partial blocks are
+  // never issued. Product codes come from the CIMB Member Rewards Catalogue.
+  ...([
+    ["cimb-enrich",       "enrich",       40000,  "10047"  ],
+    ["cimb-airasia",      "airasia",      50000,  "AA0001" ],
+    ["cimb-krisflyer",    "krisflyer",    62500,  "KF0001" ],
+    ["cimb-flyingblue",   "flying-blue",  75000,  "PT21001"],
+    ["cimb-eva",          "eva",          75000,  "PT21002"],
+    ["cimb-ba",           "ba",           75000,  "PT21003"],
+    ["cimb-etihad",       "etihad",       75000,  "PT21004"],
+    ["cimb-cathay",       "asia-miles",   75000,  "PT21007"],
+    ["cimb-qatar",        "qatar",        75000,  "PT21008"],
+    ["cimb-emirates",     "emirates",     75000,  "PT21009"],
+    ["cimb-jal",          "jal",         100000,  "PT21010"],
+    ["cimb-turkish",      "turkish",      75000,  "PT21012"],
+  ] as [string, string, number, string][]).map(([id, prog, bp, code]) =>
+    rule(id, "cg-cimb-bonus", prog, [bp, 5000], {
+      sourceUrl: CIMB_SRC,
+      sourceTitle: CIMB_TITLE,
+      sourcePublisher: "CIMB Bank Berhad",
+      sourcePage: 53,
+      productCode: code,
+      effectiveFrom: "2026-04-01",
+      effectiveUntil: "2027-04-30",
+      verifiedOn: "2026-07-22",
+      minimumTransferPartnerPoints: 5000,
+      transferIncrementPartnerPoints: 5000,
+      notes:
+        "Transfers must be made by the principal cardholder into a matching-name loyalty account, in complete blocks of 5,000 partner miles/points. Partial blocks are not issued.",
+    }),
+  ),
 
   // ---- Alliance TBP (75,000 → 5,000 Enrich, cap 20,000 Enrich/month) ----
   rule("alliance-enrich", "cg-alliance-tbp", "enrich", [75000, 5000], {
@@ -1060,14 +1093,27 @@ export const cards: Card[] = [
   mkCard("alliance-virtual", "alliance", "Alliance Bank Virtual Credit Card", "cg-alliance-tbp", { aliases: ["Alliance Virtual"] }),
 
   // ---------- CIMB ----------
-  mkCard("cimb-travel-world-elite", "cimb", "CIMB Travel World Elite", "cg-cimb-bonus"),
-  mkCard("cimb-travel-world", "cimb", "CIMB Travel World", "cg-cimb-bonus"),
-  mkCard("cimb-travel-platinum", "cimb", "CIMB Travel Platinum", "cg-cimb-bonus"),
+  // Bonus Points cards (11) — every current CIMB credit card that earns
+  // CIMB Bonus Points and can be transferred to airline partners.
   mkCard("cimb-preferred-vi", "cimb", "CIMB Preferred Visa Infinite", "cg-cimb-bonus"),
   mkCard("cimb-preferred-vi-i", "cimb", "CIMB Preferred Visa Infinite-i", "cg-cimb-bonus"),
+  mkCard("cimb-travel-world-elite", "cimb", "CIMB Travel World Elite", "cg-cimb-bonus", {
+    aliases: ["CIMB Private Wealth World Elite", "Private Wealth World Elite"],
+    subtitle: "Also issued as CIMB Private Wealth World Elite (effective 22 June 2026)",
+  }),
+  mkCard("cimb-travel-world", "cimb", "CIMB Travel World", "cg-cimb-bonus"),
+  mkCard("cimb-travel-platinum", "cimb", "CIMB Travel Platinum", "cg-cimb-bonus"),
   mkCard("cimb-visa-infinite", "cimb", "CIMB Visa Infinite", "cg-cimb-bonus"),
   mkCard("cimb-visa-signature", "cimb", "CIMB Visa Signature", "cg-cimb-bonus"),
-  mkCard("cimb-petronas-vi-i", "cimb", "CIMB PETRONAS Visa Infinite-i", "cg-cimb-bonus"),
+  mkCard("cimb-world-mc", "cimb", "CIMB World Mastercard", "cg-cimb-bonus"),
+  mkCard("cimb-visa-platinum", "cimb", "CIMB Visa Platinum", "cg-cimb-bonus"),
+  mkCard("cimb-platinum-i", "cimb", "CIMB Platinum-i", "cg-cimb-bonus"),
+  mkCard("cimb-e-credit", "cimb", "CIMB e Credit Card", "cg-cimb-bonus", { aliases: ["e Credit"] }),
+  // Cashback / non-convertible cards — must NEVER inherit a Bonus Points profile.
+  mkCard("cimb-petronas-vi-i", "cimb", "CIMB PETRONAS Visa Infinite-i", "cg-cimb-cashback", { status: "cashback_only" }),
+  mkCard("cimb-petronas-vp-i", "cimb", "CIMB PETRONAS Visa Platinum-i", "cg-cimb-cashback", { status: "cashback_only" }),
+  mkCard("cimb-cash-rebate-plat", "cimb", "CIMB Cash Rebate Platinum", "cg-cimb-cashback", { status: "cashback_only", aliases: ["Cash Rebate"] }),
+
 
   // ---------- HSBC ----------
   mkCard("hsbc-travelone", "hsbc", "HSBC TravelOne Credit Card", "cg-hsbc-travelone"),
@@ -1310,5 +1356,79 @@ export function auditMaybankInventory(): MaybankAuditReport {
     unexpectedIds,
     legacyIds,
     unverifiedLegacyIds,
+  };
+}
+
+/* -------------------- CIMB inventory audit -------------------- */
+
+/**
+ * Immutable expected current-catalogue CIMB Bonus Points card IDs.
+ * Cashback cards (PETRONAS Visa Infinite-i, PETRONAS Visa Platinum-i,
+ * CIMB Cash Rebate Platinum) are tracked separately and must NEVER appear
+ * in this list — they earn cashback, not CIMB Bonus Points.
+ */
+export const EXPECTED_CIMB_BONUS_POINTS_CARD_IDS: readonly string[] = [
+  "cimb-preferred-vi",
+  "cimb-preferred-vi-i",
+  "cimb-travel-world-elite",
+  "cimb-travel-world",
+  "cimb-travel-platinum",
+  "cimb-visa-infinite",
+  "cimb-visa-signature",
+  "cimb-world-mc",
+  "cimb-visa-platinum",
+  "cimb-platinum-i",
+  "cimb-e-credit",
+];
+
+export const EXPECTED_CIMB_BONUS_POINTS_CARD_COUNT = 11;
+
+export const EXPECTED_CIMB_CASHBACK_CARD_IDS: readonly string[] = [
+  "cimb-petronas-vi-i",
+  "cimb-petronas-vp-i",
+  "cimb-cash-rebate-plat",
+];
+
+export interface CimbAuditReport {
+  expectedBonusPoints: number;
+  presentBonusPoints: number;
+  missingBonusPointsIds: string[];
+  unexpectedBonusPointsIds: string[];
+  cashbackIds: string[];
+  misclassifiedCashbackIds: string[];
+}
+
+/** Compare the seeded CIMB inventory against the expected current catalogue. */
+export function auditCimbInventory(): CimbAuditReport {
+  const all = cards.filter((c) => c.bankId === "cimb");
+  const bonusPointsIds = new Set(
+    all.filter((c) => c.cardGroupId === "cg-cimb-bonus").map((c) => c.id),
+  );
+  const expectedBonus = new Set(EXPECTED_CIMB_BONUS_POINTS_CARD_IDS);
+
+  const missingBonusPointsIds = EXPECTED_CIMB_BONUS_POINTS_CARD_IDS.filter(
+    (id) => !bonusPointsIds.has(id),
+  );
+  const unexpectedBonusPointsIds = [...bonusPointsIds].filter(
+    (id) => !expectedBonus.has(id),
+  );
+
+  const cashbackIds = all
+    .filter((c) => c.cardGroupId === "cg-cimb-cashback")
+    .map((c) => c.id);
+
+  // Any card whose ID is in the cashback-expected list but that was wired to the
+  // Bonus Points profile is a serious mis-classification.
+  const misclassifiedCashbackIds = EXPECTED_CIMB_CASHBACK_CARD_IDS.filter(
+    (id) => bonusPointsIds.has(id),
+  );
+
+  return {
+    expectedBonusPoints: EXPECTED_CIMB_BONUS_POINTS_CARD_COUNT,
+    presentBonusPoints: bonusPointsIds.size,
+    missingBonusPointsIds,
+    unexpectedBonusPointsIds,
+    cashbackIds,
+    misclassifiedCashbackIds,
   };
 }

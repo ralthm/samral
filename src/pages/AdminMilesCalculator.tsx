@@ -10,6 +10,7 @@ import {
   getRewardProductById,
   isRulePublic,
   auditMaybankInventory,
+  auditCimbInventory,
 } from "@/data/milesCalculator";
 import { calculateEntry, formatInt } from "@/lib/milesCalculator";
 
@@ -162,6 +163,7 @@ function Dashboard() {
           { label: `Verified > ${STALE_DAYS} days ago`, value: stale.length },
         ]} />
         <MaybankAuditPanel />
+        <CimbAuditPanel />
 
 
         <Section title={`Rules needing review`} count={needsReview.length}>
@@ -359,6 +361,43 @@ function MaybankAuditPanel() {
           <p className="font-mono text-[11px] text-ink/70">{audit.legacyIds.length ? audit.legacyIds.join(", ") : "—"}</p>
           <p className="mt-2 text-ink/70">Unverified legacy card IDs ({audit.unverifiedLegacyIds.length}):</p>
           <p className="font-mono text-[11px] text-ink/70">{audit.unverifiedLegacyIds.length ? audit.unverifiedLegacyIds.join(", ") : "—"}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CimbAuditPanel() {
+  const audit = auditCimbInventory();
+  const ok =
+    audit.presentBonusPoints === audit.expectedBonusPoints &&
+    audit.missingBonusPointsIds.length === 0 &&
+    audit.unexpectedBonusPointsIds.length === 0 &&
+    audit.misclassifiedCashbackIds.length === 0;
+  return (
+    <section>
+      <h2 className="font-display text-2xl text-ink">
+        CIMB inventory audit{" "}
+        <span className={ok ? "text-emerald-700" : "text-red-700"}>
+          ({audit.presentBonusPoints}/{audit.expectedBonusPoints})
+        </span>
+      </h2>
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <div className="rounded-sm border border-border bg-background p-4 text-[13px] text-ink/80">
+          <p className="font-medium text-ink">Bonus Points catalogue</p>
+          <p className="mt-1">Expected: {audit.expectedBonusPoints}</p>
+          <p>Present: {audit.presentBonusPoints}</p>
+          <p className="mt-2 text-ink/70">Missing Bonus Points IDs ({audit.missingBonusPointsIds.length}):</p>
+          <p className="font-mono text-[11px] text-ink/70">{audit.missingBonusPointsIds.length ? audit.missingBonusPointsIds.join(", ") : "—"}</p>
+          <p className="mt-2 text-ink/70">Unexpected Bonus Points IDs ({audit.unexpectedBonusPointsIds.length}):</p>
+          <p className="font-mono text-[11px] text-ink/70">{audit.unexpectedBonusPointsIds.length ? audit.unexpectedBonusPointsIds.join(", ") : "—"}</p>
+        </div>
+        <div className="rounded-sm border border-border bg-background p-4 text-[13px] text-ink/80">
+          <p className="font-medium text-ink">Cashback / non-convertible</p>
+          <p className="mt-1 text-ink/70">Cashback card IDs ({audit.cashbackIds.length}):</p>
+          <p className="font-mono text-[11px] text-ink/70">{audit.cashbackIds.length ? audit.cashbackIds.join(", ") : "—"}</p>
+          <p className="mt-2 text-ink/70">Mis-classified as Bonus Points ({audit.misclassifiedCashbackIds.length}):</p>
+          <p className="font-mono text-[11px] text-ink/70">{audit.misclassifiedCashbackIds.length ? audit.misclassifiedCashbackIds.join(", ") : "—"}</p>
         </div>
       </div>
     </section>
