@@ -1236,7 +1236,13 @@ export const cards: Card[] = [
   mkCard("rakyat-card", "bankrakyat", "Bank Rakyat credit card (Rakyat Reward Points)", "cg-rakyat"),
 
   // ---------- Standard Chartered ----------
-  mkCard("sc-journey", "sc", "Standard Chartered Journey Credit Card", "cg-sc-journey", { status: "rate_unconfirmed" }),
+  mkCard("sc-journey", "sc", "Standard Chartered Journey Credit Card", "cg-sc-journey", { aliases: ["SC Journey", "Journey Credit Card", "Journey Miles"] }),
+  mkCard("sc-priority-banking-visa-infinite", "sc", "Standard Chartered Priority Banking Visa Infinite Credit Card", "cg-sc-360-7k", { aliases: ["Priority Banking Visa Infinite", "SC Priority VI"] }),
+  mkCard("sc-visa-infinite", "sc", "Standard Chartered Visa Infinite Credit Card", "cg-sc-360-7k", { aliases: ["SC Visa Infinite"] }),
+  mkCard("sc-visa-platinum", "sc", "Standard Chartered Visa Platinum Credit Card", "cg-sc-360-46k", { aliases: ["SC Visa Platinum"] }),
+  mkCard("sc-platinum-mc-basic", "sc", "Standard Chartered Platinum Mastercard Basic", "cg-sc-360-unverified", { status: "rate_unconfirmed", aliases: ["Platinum Mastercard Basic"] }),
+  mkCard("sc-beyond-priority-private", "sc", "Standard Chartered Beyond Credit Card — Priority Private", "cg-sc-360-unverified", { status: "rate_unconfirmed", aliases: ["Beyond Priority Private"] }),
+  mkCard("sc-beyond-priority-banking", "sc", "Standard Chartered Beyond Credit Card — Priority Banking", "cg-sc-360-unverified", { status: "rate_unconfirmed", aliases: ["Beyond Priority Banking"] }),
 ];
 
 /* -------------------- Helpers -------------------- */
