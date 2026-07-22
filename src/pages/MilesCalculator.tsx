@@ -37,10 +37,13 @@ import {
   CABINS,
   computeRequiredPoints,
   isTargetPublic,
+  outboundPointsForParty,
+  pointsPerPersonPerDirection,
   RedemptionTarget,
   redemptionTargets,
   Region,
   REGIONS,
+  SUPPORTED_PROGRAMMES,
   verifiedCabinsPresent,
 } from "@/data/redemptionTargets";
 import { getActivePromotions, Promotion } from "@/data/promotions";
