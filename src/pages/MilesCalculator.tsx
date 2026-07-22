@@ -1655,7 +1655,7 @@ interface EnrichedT {
   balance: number;
   delta: number;
   ratio: number;
-  tripTypeMismatch: boolean;
+  
 }
 
 function DestinationGroup({
