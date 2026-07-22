@@ -163,6 +163,7 @@ function Dashboard() {
           { label: `Verified > ${STALE_DAYS} days ago`, value: stale.length },
         ]} />
         <MaybankAuditPanel />
+        <CimbAuditPanel />
 
 
         <Section title={`Rules needing review`} count={needsReview.length}>
