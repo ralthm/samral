@@ -1760,18 +1760,14 @@ function DestinationCard({
         </div>
       ) : isEnrich ? (
         <div className="mt-5 border-t border-border pt-4">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">Per person, per direction</p>
-          <p className="mt-1 font-display text-2xl text-ink">
-            {formatInt(e.perDirectionPerPerson)} <span className="text-sm text-ink/70">Enrich</span>
+          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">
+            {tripLabelTitle} · {formatInt(e.perDirectionPerPerson)} Enrich per person
           </p>
-          <dl className="mt-4 grid grid-cols-1 gap-y-1.5 text-[12px] sm:grid-cols-2">
-            <dt className="text-ink/55">Outbound requirement for {travellers}</dt>
-            <dd className="text-ink sm:text-right">{formatInt(e.outboundPartyTotal)} Enrich</dd>
-            <dt className="text-ink/55">Return requirement for {travellers}</dt>
-            <dd className="text-ink sm:text-right">{formatInt(e.required)} Enrich</dd>
-          </dl>
-          <p className="mt-3 text-[12px] text-ink/70">
-            Return booking required under Enrich Saver rules.
+          <p className="mt-1 font-display text-3xl text-ink">
+            {formatInt(e.required)} <span className="text-base text-ink/70">Enrich</span>
+          </p>
+          <p className="mt-1 text-[12px] text-ink/60">
+            {travellers} traveller{travellers === 1 ? "" : "s"} · {tripLabel} · quoted per person, per direction
           </p>
         </div>
       ) : (
