@@ -1413,8 +1413,6 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
     balance: number;
     delta: number;                 // balance - required (positive = unlocked)
     ratio: number;
-    /** True when the user chose one-way but the programme requires return. */
-    tripTypeMismatch: boolean;
   }
 
   const enriched: Enriched[] = useMemo(() => {
@@ -1432,7 +1430,6 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
         balance,
         delta,
         ratio,
-        tripTypeMismatch: t.returnBookingRequired && tripType === "one_way",
       };
     });
   }, [targets, tripType, travellers, balances]);
@@ -1450,8 +1447,8 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
   const rankAlmost = (a: Enriched, b: Enriched) => b.ratio - a.ratio || a.required - b.required;
   const rankFuture = (a: Enriched, b: Enriched) => a.required - b.required;
 
-  const unlockedAll = enriched.filter((e) => e.delta >= 0 && !e.tripTypeMismatch).sort(rankUnlocked);
-  const almostAll = enriched.filter((e) => (e.delta < 0 || e.tripTypeMismatch) && e.ratio >= 0.75).sort(rankAlmost);
+  const unlockedAll = enriched.filter((e) => e.delta >= 0).sort(rankUnlocked);
+  const almostAll = enriched.filter((e) => e.delta < 0 && e.ratio >= 0.75).sort(rankAlmost);
   const futureAll = enriched.filter((e) => e.ratio < 0.75).sort(rankFuture);
 
   // Per-programme cap of 3 when "All programmes" is selected and the user
@@ -1490,7 +1487,7 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
       destination: e.t.destination,
       destinationName: e.t.destinationName,
       cabin: e.t.cabin,
-      tripType: e.t.returnBookingRequired ? "return" : tripType,
+      tripType,
       travellers,
       loyaltyProgrammeId: e.t.programmeId,
       loyaltyProgrammeName: prog?.name ?? "",
@@ -1635,7 +1632,7 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
       </div>
 
       <p className="mt-10 rounded-sm border border-border bg-background p-4 text-[12px] leading-relaxed text-ink/65">
-        Award-seat availability has not been checked. Taxes, fees and airline surcharges apply on top of the points requirement. Enrich Saver is valid for round-trip bookings on Malaysia Airlines-operated flights only. KrisFlyer Saver uses the Singapore Airlines award chart effective 1 November 2025 for Singapore Airlines-operated itineraries. Asia Miles opportunities cover Cathay Pacific-operated flights only. Partner-airline awards on any programme require separate pricing and are not shown here.
+        Award-seat availability has not been checked. Taxes, fees and airline surcharges apply on top of the points requirement. Enrich Saver applies to point-to-point itineraries on Malaysia Airlines-operated flights only and is bookable one-way or return, with a return booking requiring twice the one-way points; codeshares and connecting sectors are priced separately. KrisFlyer Saver uses the Singapore Airlines award chart effective 1 November 2025 for Singapore Airlines-operated itineraries. Asia Miles opportunities cover Cathay Pacific-operated flights only. Partner-airline awards on any programme require separate pricing and are not shown here.
       </p>
     </section>
   );
@@ -1658,7 +1655,7 @@ interface EnrichedT {
   balance: number;
   delta: number;
   ratio: number;
-  tripTypeMismatch: boolean;
+  
 }
 
 function DestinationGroup({
@@ -1734,8 +1731,8 @@ function DestinationCard({
 
   const primaryLabel = state === "unlocked" ? "Find My Best Redemption" : "Get My Points Strategy";
   const conn = connectionLabel(t);
-  const effectiveTripType: "one_way" | "return" = t.returnBookingRequired ? "return" : tripType;
-  const tripLabel = effectiveTripType === "return" ? "return" : "one way";
+  const tripLabel = tripType === "return" ? "return" : "one way";
+  const tripLabelTitle = tripType === "return" ? "Return" : "One way";
 
   return (
     <article className="rounded-sm border border-border bg-background p-6">
@@ -1763,18 +1760,14 @@ function DestinationCard({
         </div>
       ) : isEnrich ? (
         <div className="mt-5 border-t border-border pt-4">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">Per person, per direction</p>
-          <p className="mt-1 font-display text-2xl text-ink">
-            {formatInt(e.perDirectionPerPerson)} <span className="text-sm text-ink/70">Enrich</span>
+          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">
+            {tripLabelTitle} · {formatInt(e.perDirectionPerPerson)} Enrich per person
           </p>
-          <dl className="mt-4 grid grid-cols-1 gap-y-1.5 text-[12px] sm:grid-cols-2">
-            <dt className="text-ink/55">Outbound requirement for {travellers}</dt>
-            <dd className="text-ink sm:text-right">{formatInt(e.outboundPartyTotal)} Enrich</dd>
-            <dt className="text-ink/55">Return requirement for {travellers}</dt>
-            <dd className="text-ink sm:text-right">{formatInt(e.required)} Enrich</dd>
-          </dl>
-          <p className="mt-3 text-[12px] text-ink/70">
-            Return booking required under Enrich Saver rules.
+          <p className="mt-1 font-display text-3xl text-ink">
+            {formatInt(e.required)} <span className="text-base text-ink/70">Enrich</span>
+          </p>
+          <p className="mt-1 text-[12px] text-ink/60">
+            {travellers} traveller{travellers === 1 ? "" : "s"} · {tripLabel} · quoted per person, per direction
           </p>
         </div>
       ) : (
@@ -1809,11 +1802,6 @@ function DestinationCard({
         )}
       </dl>
 
-      {e.tripTypeMismatch && (
-        <p className="mt-3 rounded-sm border border-ink/30 bg-sand/40 p-3 text-[11px] leading-relaxed text-ink/75">
-          You selected one way, but {t.awardType} requires a return booking. The requirement above reflects the return itinerary.
-        </p>
-      )}
 
       <p className="mt-4 text-[11px] leading-relaxed text-ink/60">
         {isEnrich && "Malaysia Airlines-operated flight only. "}
@@ -1854,7 +1842,7 @@ function DestinationCard({
             <dt className="text-ink/55">Segments</dt>
             <dd className="text-right text-ink">{t.numberOfSegments} · {t.directOrConnecting}</dd>
             <dt className="text-ink/55">Trip basis</dt>
-            <dd className="text-right text-ink">{effectiveTripType === "return" ? "Return" : "One way"}</dd>
+            <dd className="text-right text-ink">{tripLabelTitle}</dd>
             <dt className="text-ink/55">Travellers</dt>
             <dd className="text-right text-ink">{travellers}</dd>
             <dt className="text-ink/55">Verified</dt>
