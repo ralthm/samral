@@ -494,6 +494,86 @@ export const conversionRules: ConversionRule[] = [
   rule("uob-vi-prvi-cathay", "cg-uob-vi-prvi", "asia-miles", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
 ];
 
+/* -------------------- Cards (searchable) -------------------- */
+
+const mkCard = (
+  id: string,
+  bankId: string,
+  name: string,
+  cardGroupId: string,
+  extra: Partial<Card> = {},
+): Card => ({
+  id, bankId, name, cardGroupId, status: "active", ...extra,
+});
+
+export const cards: Card[] = [
+  // ---------- Maybank — Profile A: 12,500 TP → 1,000 miles ----------
+  mkCard("mbb-visa-infinite", "maybank", "Maybank Visa Infinite", "cg-mbb-treats-premium"),
+  mkCard("mbb-islamic-visa-infinite", "maybank", "Maybank Islamic Ikhwan Visa Infinite Card-i", "cg-mbb-treats-premium", { aliases: ["Ikhwan Visa Infinite", "Islamic Visa Infinite"] }),
+  mkCard("mbb-mu-visa-infinite", "maybank", "Maybank Manchester United Visa Infinite", "cg-mbb-treats-premium", { aliases: ["MU Visa Infinite"] }),
+  mkCard("mbb-visa-infinite-diamante", "maybank", "Maybank Visa Infinite Diamanté", "cg-mbb-treats-premium", { aliases: ["Diamante"] }),
+  mkCard("mbb-mercedes", "maybank", "Maybank Mercedes-Benz Card", "cg-mbb-treats-premium"),
+  mkCard("mbb-m2-premier-amex", "maybank", "Maybank 2 Cards Premier — American Express Reserve", "cg-mbb-treats-premium", { aliases: ["M2 Premier Amex Reserve"] }),
+  mkCard("mbb-m2-premier-visa", "maybank", "Maybank 2 Cards Premier — Visa Infinite", "cg-mbb-treats-premium", { aliases: ["M2 Premier Visa Infinite"] }),
+  mkCard("mbb-world-elite", "maybank", "Maybank World Elite Mastercard", "cg-mbb-treats-premium"),
+  mkCard("mbb-islamic-world-elite", "maybank", "Maybank Islamic World Elite Mastercard-i", "cg-mbb-treats-premium"),
+
+  // ---------- Maybank — Profile B: 12,500 MR → 1,000 miles ----------
+  mkCard("mbb-amex-plat-credit", "maybank", "American Express Platinum Credit Card", "cg-mbb-mr-selected-amex", { aliases: ["Amex Platinum Credit"] }),
+  mkCard("mbb-amex-charge", "maybank", "American Express Charge Card", "cg-mbb-mr-selected-amex", { aliases: ["Amex Green Charge"] }),
+  mkCard("mbb-amex-gold-charge", "maybank", "American Express Gold Charge Card", "cg-mbb-mr-selected-amex", { aliases: ["Amex Gold Charge"] }),
+
+  // ---------- Maybank — Profile C: 7,000 MR → 1,000 miles ----------
+  mkCard("mbb-amex-plat-charge", "maybank", "American Express Platinum Charge Card", "cg-mbb-mr-plat-charge", { aliases: ["Amex Platinum Charge"] }),
+
+  // ---------- Maybank — Profile D: 20,000 TP → 1,000 miles ----------
+  mkCard("mbb-m2-platinum", "maybank", "Maybank 2 Platinum Cards", "cg-mbb-treats-standard", { aliases: ["M2 Platinum", "Maybank 2 Platinum"] }),
+  mkCard("mbb-m2-gold", "maybank", "Maybank 2 Gold Cards", "cg-mbb-treats-standard"),
+  mkCard("mbb-visa-platinum", "maybank", "Maybank Visa Platinum", "cg-mbb-treats-standard"),
+  mkCard("mbb-mc-platinum", "maybank", "Maybank Mastercard Platinum", "cg-mbb-treats-standard"),
+  mkCard("mbb-visa-gold", "maybank", "Maybank Visa Gold", "cg-mbb-treats-standard"),
+  mkCard("mbb-mc-gold", "maybank", "Maybank Mastercard Gold", "cg-mbb-treats-standard"),
+  mkCard("mbb-visa-classic", "maybank", "Maybank Visa Classic", "cg-mbb-treats-standard"),
+  mkCard("mbb-mc-classic", "maybank", "Maybank Mastercard Classic", "cg-mbb-treats-standard"),
+  mkCard("mbb-visa-signature", "maybank", "Maybank Visa Signature", "cg-mbb-treats-standard"),
+  mkCard("mbb-mu-visa", "maybank", "Maybank Manchester United Visa", "cg-mbb-treats-standard"),
+  mkCard("mbb-petronas-visa-gold", "maybank", "PETRONAS Maybank Visa Gold", "cg-mbb-treats-standard"),
+  mkCard("mbb-petronas-ikhwan", "maybank", "PETRONAS Ikhwan Visa Platinum Card-i", "cg-mbb-treats-standard"),
+  mkCard("mbb-ikhwan-amex-plat", "maybank", "Ikhwan American Express Platinum Card-i", "cg-mbb-treats-standard"),
+
+  // ---------- UOB ----------
+  mkCard("uob-metal", "uob", "UOB Visa Infinite Metal", "cg-uob-metal", { aliases: ["Visa Infinite Metal"] }),
+  mkCard("uob-privilege-vi", "uob", "UOB Privilege Banking Visa Infinite", "cg-uob-privilege"),
+  mkCard("uob-visa-infinite", "uob", "UOB Visa Infinite", "cg-uob-vi-prvi"),
+  mkCard("uob-prvi-elite", "uob", "UOB PRVI Miles Elite", "cg-uob-vi-prvi", { aliases: ["PRVI Elite"] }),
+  mkCard("uob-world-mc", "uob", "UOB World Mastercard", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-zenith", "uob", "UOB Zenith Mastercard", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-prvi", "uob", "UOB PRVI Miles", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-one", "uob", "UOB ONE Card", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-evol", "uob", "UOB EVOL Card", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-ladys", "uob", "UOB Lady's Card", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-preferred", "uob", "UOB Preferred Platinum Visa", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-lazada", "uob", "UOB Lazada Card", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-simple", "uob", "UOB YOLO / Simple Card", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-basic", "uob", "UOB Basic Card", "cg-uob-other", { status: "rate_unconfirmed" }),
+
+  // ---------- Alliance Bank ----------
+  mkCard("alliance-visa-infinite", "alliance", "Alliance Bank Visa Infinite", "cg-alliance-tbp"),
+  mkCard("alliance-visa-platinum", "alliance", "Alliance Bank Visa Platinum", "cg-alliance-tbp"),
+  mkCard("alliance-visa-signature", "alliance", "Alliance Bank Visa Signature", "cg-alliance-tbp"),
+  mkCard("alliance-virtual", "alliance", "Alliance Bank Virtual Credit Card", "cg-alliance-tbp", { aliases: ["Alliance Virtual"] }),
+
+  // ---------- CIMB ----------
+  mkCard("cimb-travel-world-elite", "cimb", "CIMB Travel World Elite", "cg-cimb-bonus"),
+  mkCard("cimb-travel-world", "cimb", "CIMB Travel World", "cg-cimb-bonus"),
+  mkCard("cimb-travel-platinum", "cimb", "CIMB Travel Platinum", "cg-cimb-bonus"),
+  mkCard("cimb-preferred-vi", "cimb", "CIMB Preferred Visa Infinite", "cg-cimb-bonus"),
+  mkCard("cimb-preferred-vi-i", "cimb", "CIMB Preferred Visa Infinite-i", "cg-cimb-bonus"),
+  mkCard("cimb-visa-infinite", "cimb", "CIMB Visa Infinite", "cg-cimb-bonus"),
+  mkCard("cimb-visa-signature", "cimb", "CIMB Visa Signature", "cg-cimb-bonus"),
+  mkCard("cimb-petronas-vi-i", "cimb", "CIMB PETRONAS Visa Infinite-i", "cg-cimb-bonus"),
+];
+
 /* -------------------- Helpers -------------------- */
 
 const today = () => new Date().toISOString().slice(0, 10);
