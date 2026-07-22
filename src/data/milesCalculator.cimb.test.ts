@@ -100,27 +100,28 @@ function resultFor(programmeId: string) {
 }
 
 describe("CIMB 600,000 Bonus Points block calculation", () => {
-  it("Enrich: 15 blocks → 75,000 Enrich, 0 remaining", () => {
+  it("Enrich: 62,500 BP/block → 9 blocks, 45,000 Enrich, 37,500 remaining", () => {
     const r = resultFor("enrich");
+    expect(r.fullBlocks).toBe(9);
+    expect(r.partnerPointsReceived).toBe(45_000);
+    expect(r.bankPointsUsed).toBe(562_500);
+    expect(r.bankPointsRemaining).toBe(37_500);
+  });
+
+  it("AirAsia: 40,000 BP/block → 15 blocks, 75,000 points, 0 remaining", () => {
+    const r = resultFor("airasia");
     expect(r.fullBlocks).toBe(15);
     expect(r.partnerPointsReceived).toBe(75_000);
     expect(r.bankPointsUsed).toBe(600_000);
     expect(r.bankPointsRemaining).toBe(0);
   });
 
-  it("AirAsia: 12 blocks → 60,000 points, 0 remaining", () => {
-    const r = resultFor("airasia");
-    expect(r.fullBlocks).toBe(12);
-    expect(r.partnerPointsReceived).toBe(60_000);
-    expect(r.bankPointsRemaining).toBe(0);
-  });
-
-  it("KrisFlyer: 9 blocks → 45,000 miles, 37,500 remaining", () => {
+  it("KrisFlyer: 75,000 BP/block → 8 blocks, 40,000 miles, 0 remaining", () => {
     const r = resultFor("krisflyer");
-    expect(r.fullBlocks).toBe(9);
-    expect(r.partnerPointsReceived).toBe(45_000);
-    expect(r.bankPointsUsed).toBe(562_500);
-    expect(r.bankPointsRemaining).toBe(37_500);
+    expect(r.fullBlocks).toBe(8);
+    expect(r.partnerPointsReceived).toBe(40_000);
+    expect(r.bankPointsUsed).toBe(600_000);
+    expect(r.bankPointsRemaining).toBe(0);
   });
 
   it.each([
@@ -148,3 +149,4 @@ describe("CIMB 600,000 Bonus Points block calculation", () => {
     expect(r.bankPointsRemaining).toBe(0);
   });
 });
+
