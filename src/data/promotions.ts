@@ -3,16 +3,23 @@
 // src/data/milesCalculator.ts. They are applied AFTER the standard transfer
 // calculation as an additive bonus in the destination programme currency.
 //
+// A single transfer route can have multiple simultaneously-active promotions
+// (e.g. a bank-funded bonus AND an airline-funded bonus that stack). Each is
+// modelled as its own record so we never invent a combined percentage.
+//
 // If a promotion ends or is withdrawn, delete or set `active: false` here —
 // the underlying conversion database is never touched.
 
 export type BonusType = "percentage" | "fixed";
+export type PromotionSponsor = "bank" | "airline";
 
 export interface Promotion {
   id: string;
   /** Destination loyalty programme the bonus is credited in. */
   programmeId: string;
   name: string;
+  /** Who funds the bonus. Displayed to the user. */
+  sponsor: PromotionSponsor;
   /**
    * Bank ids eligible for the promotion. Use ["*"] to mean "all banks".
    * These match the ids in src/data/milesCalculator.ts banks[].
@@ -28,15 +35,36 @@ export interface Promotion {
   bonusPercentage?: number;
   /** For bonusType === "fixed". Flat partner-points added per transfer. */
   bonusFixed?: number;
-  /** Optional cap on the bonus (in destination partner points). */
+  /** Optional per-transaction cap on the bonus (in destination partner points). */
   maximumBonus?: number;
+  /**
+   * Campaign-wide cap on total bonus miles issued across all participants.
+   * Informational — this calculator can't observe live campaign consumption,
+   * so we always show the bonus but note it is subject to availability.
+   */
+  overallBonusCap?: number;
+  /**
+   * True when the user must complete an off-site registration step BEFORE
+   * transferring for the bonus to be credited. UI must gate application of
+   * the bonus on an explicit user confirmation.
+   */
   registrationRequired: boolean;
-  startDate: string; // ISO
-  endDate: string;   // ISO
+  /** Optional registration link surfaced to the user. */
+  registrationUrl?: string;
+  /** Optional list of eligible residency countries. */
+  eligibleResidence?: string[];
+  startDate: string; // ISO date, evaluated in Asia/Kuala_Lumpur time
+  endDate: string;   // ISO date, evaluated in Asia/Kuala_Lumpur time
   /** Human copy on when the bonus points post (e.g. "within 6 weeks of transfer"). */
   postingTimeline?: string;
+  /** Date by which the bonus is expected to be credited. */
+  creditBy?: string;
+  /** Date by which the user must escalate if the bonus has not posted. */
+  claimDeadline?: string;
   officialSource: string;
   active: boolean;
+  /** Optional additional plain-text terms shown under "See terms". */
+  additionalTerms?: string[];
 }
 
 export const promotions: Promotion[] = [
@@ -44,6 +72,7 @@ export const promotions: Promotion[] = [
     id: "mh-enrich-10pct-2026",
     programmeId: "enrich",
     name: "10% Bonus Enrich Points",
+    sponsor: "airline",
     participatingBanks: ["maybank", "cimb", "alliance", "uob", "hsbc", "hongleong", "affin", "ambank", "publicbank", "bankrakyat", "sc"],
     eligibleTransferRoutes: [
       { bankId: "maybank" },
@@ -68,6 +97,58 @@ export const promotions: Promotion[] = [
     postingTimeline: "The base and bonus Enrich Points are expected to be credited within 14 working days after the bank submits the conversion. Bonus Enrich Points are valid for one year. Transfers are irreversible. The legal name on the credit-card account and Enrich account must match.",
     officialSource: "https://www.malaysiaairlines.com/my/en/enrich/enrich-promotions.html",
     active: true,
+  },
+
+  /* -------- CIMB × Cathay "Up to 25% Extra Asia Miles" campaign -------- */
+  // Two independent sponsors, different deadlines, one shared conversion.
+
+  {
+    id: "cathay-cimb-am-10pct-airline-2026",
+    programmeId: "asia-miles",
+    name: "Cathay 10% Extra Asia Miles",
+    sponsor: "airline",
+    participatingBanks: ["cimb"],
+    eligibleTransferRoutes: [{ bankId: "cimb", cardGroupId: "cg-cimb-bonus" }],
+    bonusType: "percentage",
+    bonusPercentage: 10,
+    registrationRequired: true,
+    registrationUrl: "https://www.cathaypacific.com/",
+    eligibleResidence: ["Malaysia", "Singapore", "Philippines", "Thailand", "Indonesia"],
+    startDate: "2026-06-25",
+    endDate: "2026-07-31",
+    creditBy: "2026-10-31",
+    claimDeadline: "2026-11-15",
+    postingTimeline: "Bonus expected to be credited by 31 October 2026. Contact Cathay by 15 November 2026 if not received. Cathay membership must remain valid when the bonus posts. Non-transferable, non-refundable, non-exchangeable for cash.",
+    officialSource: "https://www.cathaypacific.com/",
+    active: true,
+    additionalTerms: [
+      "You must hold a Cathay membership with a residential address in Malaysia, Singapore, Philippines, Thailand or Indonesia.",
+      "You must register via Cathay's dedicated campaign page BEFORE completing the conversion.",
+    ],
+  },
+
+  {
+    id: "cimb-am-15pct-bank-2026",
+    programmeId: "asia-miles",
+    name: "CIMB 15% Extra Asia Miles",
+    sponsor: "bank",
+    participatingBanks: ["cimb"],
+    eligibleTransferRoutes: [{ bankId: "cimb", cardGroupId: "cg-cimb-bonus" }],
+    bonusType: "percentage",
+    bonusPercentage: 15,
+    overallBonusCap: 500_000,
+    registrationRequired: false,
+    startDate: "2026-06-25",
+    endDate: "2026-08-31",
+    postingTimeline: "Bonus expected to be credited within three weeks after the campaign ends. Subject to a 500,000 Asia Miles overall campaign cap — bonus is not guaranteed once the cap has been exhausted.",
+    officialSource: "https://www.cimb.com.my/",
+    active: true,
+    additionalTerms: [
+      "Applies to principal cardholders only.",
+      "Cathay membership name must match the CIMB principal cardholder's name.",
+      "Minimum conversion of 75,000 CIMB Bonus Points (one full 5,000 Asia Miles block).",
+      "Overall campaign cap of 500,000 Extra Asia Miles across all participants.",
+    ],
   },
 ];
 
@@ -97,17 +178,14 @@ export function getActivePromotions(date = today()): Promotion[] {
   return promotions.filter((p) => isPromotionActive(p, date));
 }
 
-/**
- * Returns the best applicable active promotion for the given (bank, programme).
- * Best = largest bonus percentage / fixed amount if multiple match.
- */
-export function findApplicablePromotion(
+/** Returns EVERY active promotion applicable to the given route (may stack). */
+export function findApplicablePromotions(
   bankId: string,
   programmeId: string,
   cardGroupId?: string,
   date = today(),
-): Promotion | undefined {
-  const candidates = getActivePromotions(date).filter((p) => {
+): Promotion[] {
+  return getActivePromotions(date).filter((p) => {
     if (p.programmeId !== programmeId) return false;
     const bankOk = p.participatingBanks.includes("*") || p.participatingBanks.includes(bankId);
     if (!bankOk) return false;
@@ -118,6 +196,19 @@ export function findApplicablePromotion(
     }
     return true;
   });
+}
+
+/**
+ * Legacy single-promotion helper. Returns the promotion with the largest
+ * percentage / fixed amount if multiple match.
+ */
+export function findApplicablePromotion(
+  bankId: string,
+  programmeId: string,
+  cardGroupId?: string,
+  date = today(),
+): Promotion | undefined {
+  const candidates = findApplicablePromotions(bankId, programmeId, cardGroupId, date);
   if (candidates.length === 0) return undefined;
   return candidates.sort((a, b) => scoreOf(b) - scoreOf(a))[0];
 }
