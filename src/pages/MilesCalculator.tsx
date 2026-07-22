@@ -1076,6 +1076,62 @@ function ResultsDashboard({
   );
 }
 
+/* ---------- Promotion banner ---------- */
+
+function PromoBanner({ portfolio }: { portfolio: ProgrammeTotal[] }) {
+  const active = useMemo(() => {
+    const promos = getActivePromotions();
+    const portfolioProgrammeIds = new Set(portfolio.map((p) => p.programmeId));
+    return promos.filter((p) => portfolioProgrammeIds.has(p.programmeId));
+  }, [portfolio]);
+
+  useEffect(() => {
+    for (const p of active) track("promotion_shown", { promotion: p.id });
+  }, [active]);
+
+  if (active.length === 0) return null;
+
+  return (
+    <div className="mt-6 space-y-3">
+      {active.map((p) => {
+        const programme = loyaltyProgrammes.find((lp) => lp.id === p.programmeId);
+        const bonusLabel = p.bonusType === "percentage"
+          ? `${p.bonusPercentage ?? 0}% Bonus ${programme?.name ?? "Points"}`
+          : `+${formatInt(p.bonusFixed ?? 0)} Bonus ${programme?.name ?? "Points"}`;
+        return (
+          <div
+            key={p.id}
+            role="status"
+            className="rounded-sm border border-ink bg-background p-5"
+          >
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-ink">
+                  <span aria-hidden className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+                  Promotion currently active
+                </p>
+                <p className="mt-2 font-display text-2xl text-ink md:text-3xl">{bonusLabel}</p>
+                <p className="mt-1 text-[13px] text-ink/70">
+                  Valid until {formatDate(p.endDate)}. Eligible bank conversions receive an additional {" "}
+                  {p.bonusType === "percentage" ? `${p.bonusPercentage}% ${programme?.name ?? ""}` : `${formatInt(p.bonusFixed ?? 0)} ${programme?.name ?? ""}`} after successful transfer.
+                </p>
+              </div>
+              <a
+                href={p.officialSource}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex shrink-0 items-center gap-1 text-[12px] text-ink underline underline-offset-4 hover:no-underline"
+              >
+                See terms <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ---------- Programme balance card ---------- */
 
 function ProgrammeBalanceCard({
