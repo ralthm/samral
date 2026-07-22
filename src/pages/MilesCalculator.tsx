@@ -1368,20 +1368,19 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
   const cabinsPresent = useMemo(() => verifiedCabinsPresent(), []);
 
   // Programme filter = intersection of programmes reachable from the user's
-  // portfolio AND programmes with a completed redemption engine. Never a fixed
-  // catalogue and never hard-coded to a single programme.
+  // portfolio *with a verified transferable balance* AND programmes with a
+  // completed redemption engine. Programmes whose balance is zero because
+  // conversion rules are still unverified are excluded — we surface an
+  // explanation in place of the destination grid rather than a browse fallback.
   const programmeOptions = useMemo(() => {
     const supported = new Set<string>(SUPPORTED_PROGRAMMES);
-    const portfolioIds = new Set<string>(portfolio.map((p) => p.programmeId));
-    // If the user hasn't entered any balances yet, show all supported engines
-    // so the page still functions as a browse view.
-    const source: string[] = portfolioIds.size > 0
-      ? Array.from(portfolioIds).filter((id) => supported.has(id))
-      : Array.from(supported);
-    return source
-      .map((id) => ({ id, name: loyaltyProgrammes.find((p) => p.id === id)?.name ?? id }))
+    return portfolio
+      .filter((p) => supported.has(p.programmeId) && p.potentialTotal > 0)
+      .map((p) => ({ id: p.programmeId, name: loyaltyProgrammes.find((lp) => lp.id === p.programmeId)?.name ?? p.programmeId }))
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [portfolio]);
+
+  const hasVerifiedBalance = programmeOptions.length > 0;
 
   const [region, setRegion] = useState<Region | "">("");
   const [cabin, setCabin] = useState<Cabin | "">("");
@@ -1394,8 +1393,8 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
     track("destination_filter_changed", { key, value });
   }, []);
 
-  // Only targets whose programme is both supported AND reachable from the
-  // user's portfolio (falls back to all supported when portfolio is empty).
+  // Only targets whose programme is supported AND has a verified balance in
+  // the user's portfolio.
   const eligibleProgrammes = useMemo(() => new Set(programmeOptions.map((o) => o.id)), [programmeOptions]);
 
   const targets = useMemo(() => {
@@ -1515,6 +1514,30 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
     navigate(STRATEGY_URL);
   };
 
+  if (!hasVerifiedBalance) {
+    return (
+      <section className="mt-16 border-t border-border pt-12">
+        <div>
+          <h2 className="font-display text-3xl text-ink md:text-4xl">
+            Where can your points take you?
+          </h2>
+          <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-ink/70">
+            Redemption planning is unavailable right now.
+          </p>
+        </div>
+        <div className="mt-6 rounded-sm border border-ink/30 bg-background p-5 text-[13px] leading-relaxed text-ink/80">
+          <p className="font-medium text-ink">No verified transferable balance yet</p>
+          <p className="mt-2">
+            We only show destination opportunities once a card you&rsquo;ve entered has a verified conversion route into a supported loyalty programme. The cards in your portfolio either have no confirmed conversion rate on record, earn miles directly with an airline (so their balance belongs in Step&nbsp;2), or convert only into programmes whose redemption engine isn&rsquo;t live yet.
+          </p>
+          <p className="mt-2">
+            Add a card with a verified transfer route, or enter an existing balance in an airline programme in Step&nbsp;2, and destination results will appear here.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="mt-16 border-t border-border pt-12">
       <div>
@@ -1525,6 +1548,7 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
           Verified redemption opportunities across the programmes your cards can reach. Programme balances shown are alternative transfer scenarios — the same bank points cannot become their full potential balance in more than one programme at the same time.
         </p>
       </div>
+
 
       {/* Filters */}
       <div className="mt-6 grid gap-3 rounded-sm border border-border bg-background p-4 sm:grid-cols-2 md:grid-cols-5">
