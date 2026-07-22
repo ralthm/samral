@@ -42,8 +42,7 @@ export const SUPPORTED_PROGRAMMES: readonly string[] = ["enrich", "krisflyer", "
 
 export interface RedemptionTarget {
   id: string;
-  programmeId: string; // "enrich" | "krisflyer" | "asia-miles"
-  /** Alias kept for compatibility with older calculator code paths. */
+  programmeId: string;
   loyaltyProgrammeId: string;
   programmeName: string;
   operatingAirline: string;
@@ -53,20 +52,22 @@ export interface RedemptionTarget {
   destinationName: string;
   country: string;
   region: Region;
-  connectionAirports: string[]; // [] = direct
+  connectionAirports: string[];
   numberOfSegments: number;
   directOrConnecting: "direct" | "connecting";
   cabin: Cabin;
-  awardType: string; // e.g. "Enrich Saver", "KrisFlyer Saver", "Asia Miles standard flight award"
+  awardType: string;
   redemptionType: RedemptionType;
   pricingBasis: "fixed_chart_per_direction" | "fixed_chart_one_way" | "zone_based";
-  /** Points quoted by the airline, per person. For Enrich this is per direction. */
   pointsPerPerson: number;
-  /** When true the programme requires a return itinerary and pointsPerPerson is
-   * per direction; per brief this applies to Enrich Saver. */
   returnBookingRequired: boolean;
-  /** Programmes that quote per-direction (Enrich). Doubled for a full return. */
   perDirection: boolean;
+  /** Whether the seed is a transcription of the official published chart, or
+   * observed redemption pricing (e.g. BolehMiles). Rendered on the card. */
+  verificationLevel?: "official-chart-transcription" | "observed-redemption-data";
+  /** Secondary reference source (e.g. BolehMiles chart mirror). */
+  rateReferenceSource?: string;
+  nonstopOnly?: boolean;
   effectiveFrom?: string;
   effectiveUntil?: string;
   verifiedOn: string;
@@ -105,39 +106,95 @@ interface EnrichSeed {
   country: string;
   region: Region;
   economy?: number;
-  premiumEconomy?: number;
   business?: number;
-  first?: number;
+  verificationLevel?: "official-chart-transcription" | "observed-redemption-data";
   notes?: string;
   status?: TargetStatus;
 }
 
-// Malaysia Airlines-operated non-stop routes from KUL only. Codeshare-only
-// destinations (DXB, IST, CDG, etc.) are excluded because Enrich Saver rates
-// apply solely to MH-operated flights; those must be priced via the Enrich
-// Partner Travel Award table (not implemented in this release).
+// Malaysia Airlines Enrich Saver — every value is one-way per person from KUL
+// on a Malaysia Airlines-operated nonstop flight. Return = one-way × 2.
+// Premium Economy is deliberately absent: the current Enrich Saver chart
+// publishes Economy and Business Saver only. Do not invent Premium Economy
+// values because an aircraft has that cabin.
+//
+// Official chart: https://enrich.malaysiaairlines.com/enrich/products/enrich-saver/fixed-redemption.html
+// Secondary reference: https://bolehmiles.com/enrich-redemption-chart/
 const enrichSeeds: EnrichSeed[] = [
-  { code: "pen", destination: "PEN", destinationName: "Penang", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 6000, business: 12000 },
-  { code: "bki", destination: "BKI", destinationName: "Kota Kinabalu", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 8000, business: 18000 },
-  { code: "kch", destination: "KCH", destinationName: "Kuching", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 8000, business: 18000 },
-  { code: "bkk", destination: "BKK", destinationName: "Bangkok", country: "Thailand", region: "Malaysia and Southeast Asia", economy: 8000, business: 15000 },
-  { code: "dps", destination: "DPS", destinationName: "Bali (Denpasar)", country: "Indonesia", region: "Malaysia and Southeast Asia", economy: 10000, business: 20000 },
-  { code: "sgn", destination: "SGN", destinationName: "Ho Chi Minh City", country: "Vietnam", region: "Malaysia and Southeast Asia", economy: 10000, business: 20000 },
-  { code: "han", destination: "HAN", destinationName: "Hanoi", country: "Vietnam", region: "Malaysia and Southeast Asia", economy: 12000, business: 22000 },
-  { code: "mnl", destination: "MNL", destinationName: "Manila", country: "Philippines", region: "Malaysia and Southeast Asia", economy: 12000, business: 22000 },
-  { code: "sin", destination: "SIN", destinationName: "Singapore", country: "Singapore", region: "Malaysia and Southeast Asia", economy: 6000, business: 12000 },
-  { code: "hkg", destination: "HKG", destinationName: "Hong Kong", country: "Hong Kong SAR", region: "North Asia", economy: 15000, business: 30000 },
-  { code: "tpe", destination: "TPE", destinationName: "Taipei", country: "Taiwan", region: "North Asia", economy: 18000, business: 35000 },
-  { code: "icn", destination: "ICN", destinationName: "Seoul (Incheon)", country: "South Korea", region: "North Asia", economy: 25000, business: 50000 },
-  { code: "nrt", destination: "NRT", destinationName: "Tokyo (Narita)", country: "Japan", region: "North Asia", economy: 25000, business: 50000 },
-  { code: "kix", destination: "KIX", destinationName: "Osaka", country: "Japan", region: "North Asia", economy: 25000, business: 50000 },
-  { code: "del", destination: "DEL", destinationName: "Delhi", country: "India", region: "South Asia", economy: 18000, business: 35000 },
-  { code: "bom", destination: "BOM", destinationName: "Mumbai", country: "India", region: "South Asia", economy: 18000, business: 35000 },
-  { code: "per", destination: "PER", destinationName: "Perth", country: "Australia", region: "Australia and New Zealand", economy: 20000, business: 40000 },
-  { code: "syd", destination: "SYD", destinationName: "Sydney", country: "Australia", region: "Australia and New Zealand", economy: 30000, business: 60000 },
-  { code: "mel", destination: "MEL", destinationName: "Melbourne", country: "Australia", region: "Australia and New Zealand", economy: 30000, business: 60000 },
-  { code: "akl", destination: "AKL", destinationName: "Auckland", country: "New Zealand", region: "Australia and New Zealand", economy: 35000, business: 70000, notes: "Operated seasonally — check current MH schedule." },
-  { code: "lhr", destination: "LHR", destinationName: "London (Heathrow)", country: "United Kingdom", region: "Europe", economy: 45000, business: 90000 },
+  // Domestic — Peninsular Malaysia
+  { code: "aor", destination: "AOR", destinationName: "Alor Setar", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 2100, business: 9300 },
+  { code: "jhb", destination: "JHB", destinationName: "Johor Bahru", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 2100, business: 9300 },
+  { code: "kbr", destination: "KBR", destinationName: "Kota Bharu", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 2100, business: 9300 },
+  { code: "tgg", destination: "TGG", destinationName: "Kuala Terengganu", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 2100, business: 9300 },
+  { code: "kua", destination: "KUA", destinationName: "Kuantan", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 2100, business: 9300 },
+  { code: "lgk", destination: "LGK", destinationName: "Langkawi", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 2300, business: 9300 },
+  { code: "pen", destination: "PEN", destinationName: "Penang", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 2300, business: 9300 },
+  // Domestic — Sarawak
+  { code: "kch", destination: "KCH", destinationName: "Kuching", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 3900, business: 18000 },
+  { code: "myy", destination: "MYY", destinationName: "Miri", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 3200, business: 18000 },
+  { code: "sbw", destination: "SBW", destinationName: "Sibu", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 3200, business: 18000 },
+  { code: "btu", destination: "BTU", destinationName: "Bintulu", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 3000, business: 18000 },
+  // Domestic — Sabah
+  { code: "sdk", destination: "SDK", destinationName: "Sandakan", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 4400, business: 21300 },
+  { code: "lbu", destination: "LBU", destinationName: "Labuan", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 4400, business: 21300 },
+  { code: "bki", destination: "BKI", destinationName: "Kota Kinabalu", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 4600, business: 21300 },
+  { code: "twu", destination: "TWU", destinationName: "Tawau", country: "Malaysia", region: "Malaysia and Southeast Asia", economy: 4600, business: 21300 },
+  // ASEAN
+  { code: "kjt", destination: "KJT", destinationName: "Kertajati", country: "Indonesia", region: "Malaysia and Southeast Asia", economy: 3700, business: 11900 },
+  { code: "hkt", destination: "HKT", destinationName: "Phuket", country: "Thailand", region: "Malaysia and Southeast Asia", economy: 5000, business: 15900 },
+  { code: "kno", destination: "KNO", destinationName: "Medan", country: "Indonesia", region: "Malaysia and Southeast Asia", economy: 4200, business: 16900 },
+  { code: "sgn", destination: "SGN", destinationName: "Ho Chi Minh City", country: "Vietnam", region: "Malaysia and Southeast Asia", economy: 7100, business: 18900 },
+  { code: "dad", destination: "DAD", destinationName: "Da Nang", country: "Vietnam", region: "Malaysia and Southeast Asia", economy: 5400, business: 19200 },
+  { code: "han", destination: "HAN", destinationName: "Hanoi", country: "Vietnam", region: "Malaysia and Southeast Asia", economy: 6900, business: 19400 },
+  { code: "rgn", destination: "RGN", destinationName: "Yangon", country: "Myanmar", region: "Malaysia and Southeast Asia", economy: 7300, business: 19500 },
+  { code: "sin", destination: "SIN", destinationName: "Singapore", country: "Singapore", region: "Malaysia and Southeast Asia", economy: 5400, business: 20000 },
+  { code: "bkk", destination: "BKK", destinationName: "Bangkok", country: "Thailand", region: "Malaysia and Southeast Asia", economy: 7200, business: 20000 },
+  { code: "sub", destination: "SUB", destinationName: "Surabaya", country: "Indonesia", region: "Malaysia and Southeast Asia", economy: 6700, business: 20400 },
+  { code: "cgk", destination: "CGK", destinationName: "Jakarta", country: "Indonesia", region: "Malaysia and Southeast Asia", economy: 6700, business: 21400 },
+  { code: "pnh", destination: "PNH", destinationName: "Phnom Penh", country: "Cambodia", region: "Malaysia and Southeast Asia", economy: 6700, business: 21600 },
+  { code: "cnx", destination: "CNX", destinationName: "Chiang Mai", country: "Thailand", region: "Malaysia and Southeast Asia", economy: 8000, business: 24200 },
+  { code: "dps", destination: "DPS", destinationName: "Bali (Denpasar)", country: "Indonesia", region: "Malaysia and Southeast Asia", economy: 8500, business: 25000 },
+  { code: "mnl", destination: "MNL", destinationName: "Manila", country: "Philippines", region: "Malaysia and Southeast Asia", economy: 11700, business: 36900 },
+  // South Asia
+  { code: "mle", destination: "MLE", destinationName: "Malé (Maldives)", country: "Maldives", region: "South Asia", economy: 5500, business: 16300 },
+  { code: "trv", destination: "TRV", destinationName: "Thiruvananthapuram", country: "India", region: "South Asia", economy: 7600, business: 18200 },
+  { code: "atq", destination: "ATQ", destinationName: "Amritsar", country: "India", region: "South Asia", economy: 8400, business: 19000 },
+  { code: "amd", destination: "AMD", destinationName: "Ahmedabad", country: "India", region: "South Asia", economy: 9000, business: 19700 },
+  { code: "cok", destination: "COK", destinationName: "Kochi", country: "India", region: "South Asia", economy: 11300, business: 31300 },
+  { code: "maa", destination: "MAA", destinationName: "Chennai", country: "India", region: "South Asia", economy: 11900, business: 31800 },
+  { code: "blr", destination: "BLR", destinationName: "Bengaluru", country: "India", region: "South Asia", economy: 12300, business: 35400 },
+  { code: "hyd", destination: "HYD", destinationName: "Hyderabad", country: "India", region: "South Asia", economy: 13400, business: 42700 },
+  { code: "ktm", destination: "KTM", destinationName: "Kathmandu", country: "Nepal", region: "South Asia", economy: 17400, business: 43800 },
+  { code: "bom", destination: "BOM", destinationName: "Mumbai", country: "India", region: "South Asia", economy: 17200, business: 44000 },
+  { code: "dac", destination: "DAC", destinationName: "Dhaka", country: "Bangladesh", region: "South Asia", economy: 17500, business: 34500 },
+  { code: "cmb", destination: "CMB", destinationName: "Colombo", country: "Sri Lanka", region: "South Asia", economy: 9700, business: 46000 },
+  { code: "del", destination: "DEL", destinationName: "New Delhi", country: "India", region: "South Asia", economy: 16800, business: 50800 },
+  // Middle East
+  { code: "doh", destination: "DOH", destinationName: "Doha", country: "Qatar", region: "Middle East", economy: 38700, business: 175100 },
+  // China & North Asia
+  { code: "tfu", destination: "TFU", destinationName: "Chengdu", country: "China", region: "North Asia", economy: 11600, business: 35200 },
+  { code: "xmn", destination: "XMN", destinationName: "Xiamen", country: "China", region: "North Asia", economy: 11200, business: 37100 },
+  { code: "can", destination: "CAN", destinationName: "Guangzhou", country: "China", region: "North Asia", economy: 14000, business: 40000 },
+  { code: "hkg", destination: "HKG", destinationName: "Hong Kong", country: "Hong Kong SAR", region: "North Asia", economy: 14100, business: 40000 },
+  { code: "pvg", destination: "PVG", destinationName: "Shanghai", country: "China", region: "North Asia", economy: 19600, business: 47500 },
+  { code: "pkx", destination: "PKX", destinationName: "Beijing", country: "China", region: "North Asia", economy: 19900, business: 48700 },
+  { code: "tpe", destination: "TPE", destinationName: "Taipei", country: "Taiwan", region: "North Asia", economy: 13200, business: 36000 },
+  { code: "kix", destination: "KIX", destinationName: "Osaka", country: "Japan", region: "North Asia", economy: 19600, business: 50000 },
+  { code: "nrt", destination: "NRT", destinationName: "Tokyo (Narita)", country: "Japan", region: "North Asia", economy: 20400, business: 50000 },
+  { code: "icn", destination: "ICN", destinationName: "Seoul (Incheon)", country: "South Korea", region: "North Asia", economy: 20000, business: 48000 },
+  // Australia & New Zealand
+  { code: "per", destination: "PER", destinationName: "Perth", country: "Australia", region: "Australia and New Zealand", economy: 19600, business: 55000 },
+  { code: "syd", destination: "SYD", destinationName: "Sydney", country: "Australia", region: "Australia and New Zealand", economy: 25000, business: 75000 },
+  { code: "mel", destination: "MEL", destinationName: "Melbourne", country: "Australia", region: "Australia and New Zealand", economy: 25000, business: 75000 },
+  { code: "adl", destination: "ADL", destinationName: "Adelaide", country: "Australia", region: "Australia and New Zealand", economy: 25000, business: 75000 },
+  { code: "bne", destination: "BNE", destinationName: "Brisbane", country: "Australia", region: "Australia and New Zealand", economy: 16900, business: 102500 },
+  { code: "akl", destination: "AKL", destinationName: "Auckland", country: "New Zealand", region: "Australia and New Zealand", economy: 35000, business: 105000 },
+  // Europe
+  { code: "lhr", destination: "LHR", destinationName: "London (Heathrow)", country: "United Kingdom", region: "Europe", economy: 33000, business: 108000 },
+  { code: "cdg", destination: "CDG", destinationName: "Paris (Charles de Gaulle)", country: "France", region: "Europe", economy: 43100, business: 165200 },
+  // Observed pricing (not official chart transcriptions) — label as observed.
+  { code: "csx", destination: "CSX", destinationName: "Changsha", country: "China", region: "North Asia", economy: 9200, business: 54300, verificationLevel: "observed-redemption-data" },
+  { code: "fuk", destination: "FUK", destinationName: "Fukuoka", country: "Japan", region: "North Asia", economy: 16900, business: 64000, verificationLevel: "observed-redemption-data" },
 ];
 
 function buildEnrichTargets(): RedemptionTarget[] {
@@ -157,9 +214,11 @@ function buildEnrichTargets(): RedemptionTarget[] {
     directOrConnecting: "direct" as const,
     returnBookingRequired: false,
     perDirection: true,
+    nonstopOnly: true,
     verifiedOn: V_ENRICH,
     sourceUrl: SRC_ENRICH,
     sourceTitle: TITLE_ENRICH,
+    rateReferenceSource: "https://bolehmiles.com/enrich-redemption-chart/",
     availabilityChecked: false,
     taxesAndFeesNote: TAX_NOTE,
   };
@@ -174,14 +233,15 @@ function buildEnrichTargets(): RedemptionTarget[] {
       cabin,
       pointsPerPerson: points,
       status: s.status ?? "verified",
+      verificationLevel: s.verificationLevel ?? "official-chart-transcription",
       notes: s.notes,
     });
   };
   for (const s of enrichSeeds) {
     if (s.economy) pushCabin(s, "Economy", s.economy, "y");
-    if (s.premiumEconomy) pushCabin(s, "Premium Economy", s.premiumEconomy, "w");
     if (s.business) pushCabin(s, "Business", s.business, "j");
-    if (s.first) pushCabin(s, "First or Business Suite", s.first, "f");
+    // Enrich Saver publishes Economy and Business only — never emit Premium
+    // Economy or First even if the aircraft has that cabin.
   }
   return out;
 }

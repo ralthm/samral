@@ -1612,12 +1612,28 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
 
       <div className="mt-10 space-y-12">
         {cabinMissingFromDataset ? (
-          <div className="rounded-sm border border-border bg-background p-6 text-sm leading-relaxed text-ink/75">
-            <p className="font-medium text-ink">No verified {cabin} redemption has been added to our database yet.</p>
-            <p className="mt-2 text-ink/65">
-              This reflects a gap in our verified dataset for the programmes you hold — not an indication of whether the airline operates {cabin} on any given route. Switch cabin or check back as we expand coverage.
-            </p>
-          </div>
+          (() => {
+            const eligibleFilter = programmeId ? new Set([programmeId]) : eligibleProgrammes;
+            const enrichOnlyPE = cabin === "Premium Economy" && eligibleFilter.size > 0 && Array.from(eligibleFilter).every((p) => p === "enrich");
+            if (enrichOnlyPE) {
+              return (
+                <div className="rounded-sm border border-border bg-background p-6 text-sm leading-relaxed text-ink/75">
+                  <p className="font-medium text-ink">No published Enrich Saver Premium Economy awards match these filters.</p>
+                  <p className="mt-2 text-ink/65">
+                    The current Enrich Saver chart publishes Economy and Business Saver pricing. This does not necessarily mean that no Malaysia Airlines flight has a Premium Economy cabin.
+                  </p>
+                </div>
+              );
+            }
+            return (
+              <div className="rounded-sm border border-border bg-background p-6 text-sm leading-relaxed text-ink/75">
+                <p className="font-medium text-ink">No verified {cabin} redemption has been added to our database yet.</p>
+                <p className="mt-2 text-ink/65">
+                  This reflects a gap in our verified dataset for the programmes you hold — not an indication of whether the airline operates {cabin} on any given route. Switch cabin or check back as we expand coverage.
+                </p>
+              </div>
+            );
+          })()
         ) : (
           <>
             <DestinationGroup
@@ -1760,14 +1776,18 @@ function DestinationCard({
 
   const badge = isNeedsReview
     ? { label: "Verification needed", cls: "border border-ink/40 text-ink/70" }
-    : state === "unlocked" ? { label: "Points threshold met", cls: "bg-ink text-background" }
+    : state === "unlocked" ? { label: "Enough points", cls: "bg-ink text-background" }
     : state === "almost" ? { label: "Almost there", cls: "border border-ink text-ink" }
     : { label: "Future goal", cls: "border border-ink/40 text-ink/70" };
 
-  const primaryLabel = state === "unlocked" ? "Find My Best Redemption" : "Get My Points Strategy";
+  const primaryLabel =
+    state === "unlocked" ? "Find My Best Redemption"
+    : state === "almost" ? "Close My Points Gap"
+    : "Build My Points Strategy";
   const conn = connectionLabel(t);
   const tripLabel = tripType === "return" ? "return" : "one way";
   const tripLabelTitle = tripType === "return" ? "Return" : "One way";
+  const isObserved = t.verificationLevel === "observed-redemption-data";
 
   return (
     <article className="rounded-sm border border-border bg-background p-6">
@@ -1781,6 +1801,11 @@ function DestinationCard({
             {t.cabin} · {t.operatingAirline}
           </p>
           <p className="mt-0.5 text-[12px] text-ink/60">{t.awardType}</p>
+          {isObserved && (
+            <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-ink/60">
+              Observed Enrich Saver pricing
+            </p>
+          )}
           {conn && <p className="mt-1 text-[12px] text-ink/60">{conn}</p>}
         </div>
         <span className={`inline-flex shrink-0 items-center rounded-sm px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] ${badge.cls}`}>
@@ -1795,14 +1820,14 @@ function DestinationCard({
         </div>
       ) : isEnrich ? (
         <div className="mt-5 border-t border-border pt-4">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">
-            {tripLabelTitle} · {formatInt(e.perDirectionPerPerson)} Enrich per person
+          <p className="font-display text-3xl text-ink">
+            {formatInt(e.required)} <span className="text-base text-ink/70">Enrich total</span>
           </p>
-          <p className="mt-1 font-display text-3xl text-ink">
-            {formatInt(e.required)} <span className="text-base text-ink/70">Enrich</span>
+          <p className="mt-2 text-[13px] text-ink/75">
+            {formatInt(e.perDirectionPerPerson)} each way, per traveller
           </p>
           <p className="mt-1 text-[12px] text-ink/60">
-            {travellers} traveller{travellers === 1 ? "" : "s"} · {tripLabel} · quoted per person, per direction
+            {travellers} traveller{travellers === 1 ? "" : "s"} · {tripLabel}
           </p>
         </div>
       ) : (
