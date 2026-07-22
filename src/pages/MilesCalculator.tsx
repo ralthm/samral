@@ -725,7 +725,7 @@ function QuickReference() {
       const product = getRewardProductById(cg.rewardProductId);
       const bank = product ? getBankById(product.bankId) : undefined;
       if (!bank || !product) return [];
-      const rules = getPublicRulesForCardGroupInternal(cg.id);
+      const rules = getPublicRulesForCardGroup(cg.id);
       return rules.map((r) => {
         const prog = getProgrammeById(r.loyaltyProgrammeId);
         return {
@@ -816,7 +816,7 @@ function QuickReference() {
 }
 
 // Avoid circular naming with the imported helper by wrapping it here.
-import { getPublicRulesForCardGroup as getPublicRulesForCardGroupInternal } from "@/data/milesCalculator";
+
 
 /* ---------- Explainer content ---------- */
 
