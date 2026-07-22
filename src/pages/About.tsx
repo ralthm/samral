@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
 import samuelImage from "@/assets/samral-founder-v2.png.asset.json";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
 export default function About() {
   useEffect(() => {
