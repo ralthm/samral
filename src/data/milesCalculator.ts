@@ -87,6 +87,28 @@ export interface ConversionRule {
   active: boolean;
 }
 
+export type CardStatus =
+  | "active"
+  | "legacy"
+  | "discontinued"
+  | "cashback_only"
+  | "direct_airline"
+  | "rate_unconfirmed";
+
+export interface Card {
+  id: string;
+  bankId: string;
+  /** Official card name as printed on the card. */
+  name: string;
+  /** Alternative names/spellings to match in search. */
+  aliases?: string[];
+  /** Card-group id that acts as the reusable conversion profile. */
+  cardGroupId: string;
+  status: CardStatus;
+  officialSourceUrl?: string;
+  lastVerifiedDate?: string;
+}
+
 /* -------------------- Banks -------------------- */
 
 export const banks: Bank[] = [
