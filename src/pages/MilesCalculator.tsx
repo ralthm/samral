@@ -1731,8 +1731,8 @@ function DestinationCard({
 
   const primaryLabel = state === "unlocked" ? "Find My Best Redemption" : "Get My Points Strategy";
   const conn = connectionLabel(t);
-  const effectiveTripType: "one_way" | "return" = t.returnBookingRequired ? "return" : tripType;
-  const tripLabel = effectiveTripType === "return" ? "return" : "one way";
+  const tripLabel = tripType === "return" ? "return" : "one way";
+  const tripLabelTitle = tripType === "return" ? "Return" : "One way";
 
   return (
     <article className="rounded-sm border border-border bg-background p-6">
