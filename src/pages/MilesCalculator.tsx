@@ -1802,11 +1802,6 @@ function DestinationCard({
         )}
       </dl>
 
-      {e.tripTypeMismatch && (
-        <p className="mt-3 rounded-sm border border-ink/30 bg-sand/40 p-3 text-[11px] leading-relaxed text-ink/75">
-          You selected one way, but {t.awardType} requires a return booking. The requirement above reflects the return itinerary.
-        </p>
-      )}
 
       <p className="mt-4 text-[11px] leading-relaxed text-ink/60">
         {isEnrich && "Malaysia Airlines-operated flight only. "}
