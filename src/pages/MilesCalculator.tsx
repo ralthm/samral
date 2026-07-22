@@ -1403,6 +1403,17 @@ function ProgrammeBalanceCard({
   );
 }
 
+function FragmentRow({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
+  return (
+    <>
+      <dt className={muted ? "text-ink/55" : "text-ink"}>{label}</dt>
+      <dd className={muted ? "text-right text-ink/60" : "text-right text-ink"}>{value}</dd>
+    </>
+  );
+}
+
+
+
 function ProgrammeDetails({
   p, rowResults, entryContext,
 }: {
