@@ -3,12 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronDown,
   ExternalLink,
-  Menu,
   Pencil,
   Plus,
   Trash2,
   X,
 } from "lucide-react";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 import {
   banks,
   Card,
@@ -173,63 +174,7 @@ function upsertLink(rel: string, href: string) {
 /* ---------- Nav ---------- */
 
 function Nav() {
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [open]);
-
-  const links = [
-    { label: "Home", to: "/" },
-    { label: "Miles Calculator", to: "/miles-calculator" },
-    { label: "Cards Strategy", to: "/points-strategy" },
-    { label: "About", to: "/about" },
-  ];
-
-  return (
-    <header className="border-b border-border bg-background">
-      <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-5 sm:px-6 md:px-12 md:py-8">
-        <Link to="/" aria-label="Samral home" className="font-display text-2xl leading-none text-ink md:text-[26px]">
-          Samral
-        </Link>
-        <nav className="hidden items-center gap-9 text-[13px] text-ink/80 md:flex">
-          {links.map((l) => (
-            <Link key={l.to} to={l.to} className="transition-opacity hover:opacity-70">
-              {l.label}
-            </Link>
-          ))}
-        </nav>
-        <button
-          type="button"
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-          className="inline-flex h-11 w-11 items-center justify-center text-ink md:hidden"
-        >
-          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
-      </div>
-      {open && (
-        <div className="fixed inset-0 z-40 flex flex-col bg-background text-ink md:hidden">
-          <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-5 sm:px-6">
-            <Link to="/" onClick={() => setOpen(false)} className="font-display text-2xl leading-none text-ink">
-              Samral
-            </Link>
-            <button type="button" aria-label="Close menu" onClick={() => setOpen(false)} className="inline-flex h-11 w-11 items-center justify-center">
-              <X className="h-6 w-6" />
-            </button>
-          </div>
-          <nav className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-2 px-5 pt-6 sm:px-6">
-            {links.map((l) => (
-              <Link key={l.to} to={l.to} onClick={() => setOpen(false)} className="border-b border-border py-4 font-display text-2xl leading-tight text-ink">
-                {l.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      )}
-    </header>
-  );
+  return <SiteHeader />;
 }
 
 /* ---------- Hero ---------- */
@@ -2175,45 +2120,5 @@ function Disclaimer() {
 /* ---------- Footer ---------- */
 
 function Footer() {
-  return (
-    <footer className="bg-background">
-      <div className="mx-auto max-w-[1440px] px-5 py-16 sm:px-6 md:px-12">
-        <div className="grid gap-10 md:grid-cols-4">
-          <div>
-            <p className="font-display text-2xl text-ink">Samral</p>
-            <p className="mt-3 max-w-xs text-[13px] text-ink/60">
-              Points &amp; miles advisory for Malaysian card holders.
-            </p>
-          </div>
-          <FooterCol title="Explore" items={[
-            { label: "Home", to: "/" },
-            { label: "Miles Calculator", to: "/miles-calculator" },
-            { label: "Cards Strategy", to: "/points-strategy" },
-            { label: "About", to: "/about" },
-          ]} />
-          <FooterCol title="Software" items={[{ label: "Our products", to: "/products" }]} />
-          <FooterCol title="Legal" items={[
-            { label: "Terms", to: "/terms" },
-            { label: "Privacy", to: "/privacy" },
-          ]} />
-        </div>
-        <p className="mt-12 border-t border-border pt-6 text-[12px] text-ink/50">
-          © 2026 Samral — Points &amp; miles advisory
-        </p>
-      </div>
-    </footer>
-  );
-}
-
-function FooterCol({ title, items }: { title: string; items: { label: string; to: string }[] }) {
-  return (
-    <div>
-      <p className="text-[11px] uppercase tracking-[0.16em] text-ink/60">{title}</p>
-      <ul className="mt-3 space-y-2 text-[13px] text-ink/80">
-        {items.map((i) => (
-          <li key={i.to}><Link to={i.to} className="hover:text-ink">{i.label}</Link></li>
-        ))}
-      </ul>
-    </div>
-  );
+  return <SiteFooter />;
 }

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 import { readTripContext, clearTripContext, TripContext } from "@/lib/tripContext";
 import { formatInt } from "@/lib/milesCalculator";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
 const track = (event: string, payload: Record<string, unknown> = {}) => {
   try {
@@ -86,14 +87,7 @@ export default function PlanMyTrip() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border">
-        <div className="mx-auto flex w-full max-w-[1200px] items-center justify-between px-5 py-5 sm:px-6 md:px-12 md:py-8">
-          <Link to="/" className="font-display text-2xl text-ink">Samral</Link>
-          <Link to="/miles-calculator" className="inline-flex items-center gap-1.5 text-[13px] text-ink/70 hover:text-ink">
-            <ArrowLeft className="h-4 w-4" /> Back to calculator
-          </Link>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="mx-auto max-w-[880px] px-5 py-14 sm:px-6 md:py-20">
         <p className="eyebrow text-ink/60">Trip planning</p>
@@ -234,6 +228,8 @@ export default function PlanMyTrip() {
           </form>
         )}
       </main>
+
+      <SiteFooter />
 
       <style>{`
         .input {

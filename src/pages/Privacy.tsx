@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
 const LAST_UPDATED = "18 July 2026";
 
@@ -181,136 +182,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 /* ---------- Nav ---------- */
 
 function Nav() {
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
-  const links = [
-    { label: "Home", to: "/" },
-    { label: "Points Trip Planning", to: "/trip-planning" },
-    { label: "Cards Strategy", to: "/points-strategy" },
-    { label: "About", to: "/about" },
-  ];
-  return (
-    <header className="border-b border-border bg-background">
-      <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-5 sm:px-6 md:px-12 md:py-8">
-        <Link to="/" aria-label="Samral home" className="font-display text-2xl leading-none text-ink md:text-[26px]">
-          Samral
-        </Link>
-        <nav className="hidden items-center gap-9 text-[13px] text-ink/80 md:flex">
-          {links.map((l) => (
-            <Link key={l.to} to={l.to} className="transition-opacity hover:opacity-70">
-              {l.label}
-            </Link>
-          ))}
-        </nav>
-        <Link
-          to="/trip-planning"
-          className="hidden rounded-sm border border-ink/70 px-5 py-2 text-[13px] text-ink transition-colors hover:bg-ink hover:text-background md:inline-block"
-        >
-          Plan my trip
-        </Link>
-        <button
-          type="button"
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-          className="inline-flex h-11 w-11 items-center justify-center text-ink md:hidden"
-        >
-          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
-      </div>
-      {open && (
-        <div className="fixed inset-0 z-40 flex flex-col bg-ink text-background md:hidden">
-          <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-5 sm:px-6">
-            <Link to="/" onClick={() => setOpen(false)} className="font-display text-2xl leading-none text-background">
-              Samral
-            </Link>
-            <button
-              type="button"
-              aria-label="Close menu"
-              onClick={() => setOpen(false)}
-              className="inline-flex h-11 w-11 items-center justify-center"
-            >
-              <X className="h-6 w-6" />
-            </button>
-          </div>
-          <nav className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-2 px-5 pt-6 sm:px-6">
-            {links.map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                onClick={() => setOpen(false)}
-                className="font-display border-b border-background/15 py-5 text-3xl"
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      )}
-    </header>
-  );
+  return <SiteHeader />;
 }
 
 /* ---------- Footer ---------- */
 
 function Footer() {
-  return (
-    <footer className="bg-ink text-background/70">
-      <div className="mx-auto w-full max-w-[1440px] px-5 py-14 sm:px-6 md:px-12">
-        <div className="grid gap-10 md:grid-cols-12">
-          <div className="md:col-span-4">
-            <Link to="/" className="font-display text-3xl text-background">
-              Samral
-            </Link>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-background/60">
-              Points &amp; miles advisory
-            </p>
-          </div>
-          <div className="md:col-span-3">
-            <p className="eyebrow mb-4 text-background/50">Services</p>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/trip-planning" className="hover:text-background">
-                  Points Trip Planning
-                </Link>
-              </li>
-              <li>
-                <Link to="/points-strategy" className="hover:text-background">
-                  Cards Strategy
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div className="md:col-span-2">
-            <p className="eyebrow mb-4 text-background/50">Software</p>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/products" className="hover:text-background">
-                  Our products
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div className="md:col-span-2">
-            <p className="eyebrow mb-4 text-background/50">Contact</p>
-            <a href="mailto:samuel@samral.com" className="text-sm hover:text-background">
-              samuel@samral.com
-            </a>
-          </div>
-        </div>
-        <div className="mt-12 flex flex-col gap-3 border-t border-background/10 pt-6 text-xs text-background/50 md:flex-row md:items-center md:justify-between">
-          <p>&copy; {new Date().getFullYear()} Samral &mdash; Points &amp; miles advisory</p>
-          <div className="flex gap-5">
-            <Link to="/terms" className="hover:text-background">Terms of Service</Link>
-            <Link to="/privacy" className="hover:text-background">Privacy Notice</Link>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
+  return <SiteFooter />;
 }
