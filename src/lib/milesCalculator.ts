@@ -6,6 +6,11 @@ import {
   getRewardProductById,
   getBankById,
 } from "@/data/milesCalculator";
+import {
+  computeBonus,
+  findApplicablePromotion,
+  Promotion,
+} from "@/data/promotions";
 
 /* Integer-only, floor-only conversion. Never invents partial blocks. */
 
