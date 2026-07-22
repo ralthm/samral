@@ -2120,45 +2120,5 @@ function Disclaimer() {
 /* ---------- Footer ---------- */
 
 function Footer() {
-  return (
-    <footer className="bg-background">
-      <div className="mx-auto max-w-[1440px] px-5 py-16 sm:px-6 md:px-12">
-        <div className="grid gap-10 md:grid-cols-4">
-          <div>
-            <p className="font-display text-2xl text-ink">Samral</p>
-            <p className="mt-3 max-w-xs text-[13px] text-ink/60">
-              Points &amp; miles advisory for Malaysian card holders.
-            </p>
-          </div>
-          <FooterCol title="Explore" items={[
-            { label: "Home", to: "/" },
-            { label: "Miles Calculator", to: "/miles-calculator" },
-            { label: "Cards Strategy", to: "/points-strategy" },
-            { label: "About", to: "/about" },
-          ]} />
-          <FooterCol title="Software" items={[{ label: "Our products", to: "/products" }]} />
-          <FooterCol title="Legal" items={[
-            { label: "Terms", to: "/terms" },
-            { label: "Privacy", to: "/privacy" },
-          ]} />
-        </div>
-        <p className="mt-12 border-t border-border pt-6 text-[12px] text-ink/50">
-          © 2026 Samral — Points &amp; miles advisory
-        </p>
-      </div>
-    </footer>
-  );
-}
-
-function FooterCol({ title, items }: { title: string; items: { label: string; to: string }[] }) {
-  return (
-    <div>
-      <p className="text-[11px] uppercase tracking-[0.16em] text-ink/60">{title}</p>
-      <ul className="mt-3 space-y-2 text-[13px] text-ink/80">
-        {items.map((i) => (
-          <li key={i.to}><Link to={i.to} className="hover:text-ink">{i.label}</Link></li>
-        ))}
-      </ul>
-    </div>
-  );
+  return <SiteFooter />;
 }
