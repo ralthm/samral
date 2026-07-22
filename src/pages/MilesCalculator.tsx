@@ -1851,7 +1851,7 @@ function DestinationCard({
             <dt className="text-ink/55">Segments</dt>
             <dd className="text-right text-ink">{t.numberOfSegments} · {t.directOrConnecting}</dd>
             <dt className="text-ink/55">Trip basis</dt>
-            <dd className="text-right text-ink">{effectiveTripType === "return" ? "Return" : "One way"}</dd>
+            <dd className="text-right text-ink">{tripLabelTitle}</dd>
             <dt className="text-ink/55">Travellers</dt>
             <dd className="text-right text-ink">{travellers}</dd>
             <dt className="text-ink/55">Verified</dt>
