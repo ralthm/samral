@@ -537,7 +537,6 @@ function EntryCard({
     card?.status === "rate_pending_verification" ||
     card?.status === "direct_airline" ||
     card?.status === "cashback_only" ||
-    card?.status === "legacy" ||
     hasNoRules;
 
   const [query, setQuery] = useState("");
