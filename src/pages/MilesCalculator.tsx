@@ -1368,20 +1368,19 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
   const cabinsPresent = useMemo(() => verifiedCabinsPresent(), []);
 
   // Programme filter = intersection of programmes reachable from the user's
-  // portfolio AND programmes with a completed redemption engine. Never a fixed
-  // catalogue and never hard-coded to a single programme.
+  // portfolio *with a verified transferable balance* AND programmes with a
+  // completed redemption engine. Programmes whose balance is zero because
+  // conversion rules are still unverified are excluded — we surface an
+  // explanation in place of the destination grid rather than a browse fallback.
   const programmeOptions = useMemo(() => {
     const supported = new Set<string>(SUPPORTED_PROGRAMMES);
-    const portfolioIds = new Set<string>(portfolio.map((p) => p.programmeId));
-    // If the user hasn't entered any balances yet, show all supported engines
-    // so the page still functions as a browse view.
-    const source: string[] = portfolioIds.size > 0
-      ? Array.from(portfolioIds).filter((id) => supported.has(id))
-      : Array.from(supported);
-    return source
-      .map((id) => ({ id, name: loyaltyProgrammes.find((p) => p.id === id)?.name ?? id }))
+    return portfolio
+      .filter((p) => supported.has(p.programmeId) && p.potentialTotal > 0)
+      .map((p) => ({ id: p.programmeId, name: loyaltyProgrammes.find((lp) => lp.id === p.programmeId)?.name ?? p.programmeId }))
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [portfolio]);
+
+  const hasVerifiedBalance = programmeOptions.length > 0;
 
   const [region, setRegion] = useState<Region | "">("");
   const [cabin, setCabin] = useState<Cabin | "">("");
@@ -1394,8 +1393,8 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
     track("destination_filter_changed", { key, value });
   }, []);
 
-  // Only targets whose programme is both supported AND reachable from the
-  // user's portfolio (falls back to all supported when portfolio is empty).
+  // Only targets whose programme is supported AND has a verified balance in
+  // the user's portfolio.
   const eligibleProgrammes = useMemo(() => new Set(programmeOptions.map((o) => o.id)), [programmeOptions]);
 
   const targets = useMemo(() => {
