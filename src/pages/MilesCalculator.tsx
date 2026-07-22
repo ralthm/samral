@@ -1295,14 +1295,14 @@ function DestinationCard({
   const remaining = Math.max(0, e.delta);
 
   const badge =
-    state === "unlocked" ? { label: "Unlocked", cls: "bg-ink text-background" } :
+    state === "unlocked" ? { label: "Points threshold met", cls: "bg-ink text-background" } :
     state === "almost" ? { label: "Almost there", cls: "border border-ink text-ink" } :
     { label: "Future goal", cls: "border border-ink/40 text-ink/70" };
 
   const primaryLabel =
-    state === "unlocked" ? "Plan This Trip" :
-    state === "almost" ? "Build My Points Plan" :
-    "Create My Points Strategy";
+    state === "unlocked" ? "Find My Best Redemption" :
+    state === "almost" ? "Get My Points Strategy" :
+    "Get My Points Strategy";
 
   return (
     <article className="rounded-sm border border-border bg-background p-6">
