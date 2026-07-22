@@ -3,12 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronDown,
   ExternalLink,
-  Menu,
   Pencil,
   Plus,
   Trash2,
   X,
 } from "lucide-react";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 import {
   banks,
   Card,
