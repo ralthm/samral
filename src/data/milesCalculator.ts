@@ -913,9 +913,9 @@ export const conversionRules: ConversionRule[] = [
   // Transfers must be in complete 5,000 partner-mile blocks. Partial blocks are
   // never issued. Product codes come from the CIMB Member Rewards Catalogue.
   ...([
-    ["cimb-enrich",       "enrich",       40000,  "10047"  ],
-    ["cimb-airasia",      "airasia",      50000,  "AA0001" ],
-    ["cimb-krisflyer",    "krisflyer",    62500,  "KF0001" ],
+    ["cimb-enrich",       "enrich",       62500,  "10047"  ],
+    ["cimb-airasia",      "airasia",      40000,  "AA0001" ],
+    ["cimb-krisflyer",    "krisflyer",    75000,  "KF0001" ],
     ["cimb-flyingblue",   "flying-blue",  75000,  "PT21001"],
     ["cimb-eva",          "eva",          75000,  "PT21002"],
     ["cimb-ba",           "ba",           75000,  "PT21003"],
