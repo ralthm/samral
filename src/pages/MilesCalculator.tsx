@@ -532,7 +532,10 @@ function EntryCard({
   const selectedGroup = card ? getCardGroupById(card.cardGroupId) : undefined;
   const rulesForSelected = card ? getPublicRulesForCardGroup(card.cardGroupId) : [];
   const hasNoRules = !!card && rulesForSelected.length === 0;
-  const rateUnconfirmed = card?.status === "rate_unconfirmed" || hasNoRules;
+  const rateUnconfirmed =
+    card?.status === "rate_unconfirmed" ||
+    card?.status === "rate_pending_verification" ||
+    hasNoRules;
 
   const [query, setQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -652,7 +655,7 @@ function EntryCard({
                       className="flex w-full items-center justify-between gap-3 border-b border-border/60 px-3 py-2 text-left text-[13px] text-ink hover:bg-sand/50"
                     >
                       <span className="truncate">{c.name}</span>
-                      {c.status === "rate_unconfirmed" && (
+                      {(c.status === "rate_unconfirmed" || c.status === "rate_pending_verification") && (
                         <span className="shrink-0 text-[10px] uppercase tracking-[0.14em] text-ink/50">Rate to confirm</span>
                       )}
                     </button>
@@ -722,11 +725,15 @@ function EntryCard({
           <p className="font-medium text-ink">
             {card.status === "direct_airline"
               ? "Direct airline-earning card"
-              : "Current air-mile rate requires confirmation"}
+              : card.status === "rate_pending_verification"
+                ? "Conversion profile pending verification"
+                : "Current air-mile rate requires confirmation"}
           </p>
           <p className="mt-1">
-            {selectedGroup?.unverifiedNotice ??
-              "We cannot confirm a preferential conversion rate for this card from the currently recorded official source. Select another card you hold, or submit this card for verification."}
+            {card.status === "rate_pending_verification"
+              ? "We have identified your exact card, but its current programme-level conversion profile has not yet been fully verified."
+              : (selectedGroup?.unverifiedNotice ??
+                "We cannot confirm a preferential conversion rate for this card from the currently recorded official source. Select another card you hold, or submit this card for verification.")}
           </p>
         </div>
       )}

@@ -99,7 +99,8 @@ export type CardStatus =
   | "discontinued"
   | "cashback_only"
   | "direct_airline"
-  | "rate_unconfirmed";
+  | "rate_unconfirmed"
+  | "rate_pending_verification";
 
 export interface Card {
   id: string;
@@ -402,37 +403,31 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     displayOrder: 2,
   },
   {
-    id: "cg-uob-vi-prvi",
+    id: "cg-uob-zenith",
     rewardProductId: "uob-unirm",
-    name: "UOB Visa Infinite / PRVI Miles Elite — 12,000 UNIRM per 1,000 miles",
-    description:
-      "Same conversion rate for two cards. Keep both searchable so cardholders can find their exact product.",
-    eligibleCards: ["UOB Visa Infinite", "UOB PRVI Miles Elite"],
+    name: "UOB Zenith — 7,400 UNIRM per 1,000 miles",
+    description: "Zenith-tier UNIRM conversion rate published on UOB Malaysia's UNIRinggit page.",
+    eligibleCards: ["UOB Zenith Mastercard"],
     active: true,
     displayOrder: 3,
   },
   {
-    id: "cg-uob-other",
+    id: "cg-uob-visa-infinite",
     rewardProductId: "uob-unirm",
-    name: "Other UOB card — rate requires confirmation",
-    description:
-      "For UOB World, PRVI Miles (non-Elite), Zenith, ONE, Preferred, EVOL, Lady's, Lazada, Simple, Basic and similar. No conversion is calculated until an official card-specific rate is recorded.",
-    eligibleCards: [
-      "UOB World Mastercard",
-      "UOB PRVI Miles (non-Elite)",
-      "UOB Zenith",
-      "UOB ONE",
-      "UOB Preferred",
-      "UOB EVOL",
-      "UOB Lady's",
-      "UOB Lazada",
-      "UOB Simple",
-      "UOB Basic",
-    ],
-    unverifiedNotice:
-      "We cannot confirm a preferential UNIRM conversion rate for this card from the currently recorded official source. Check the Air Miles section in UOB TMRW, or select another UOB card you hold.",
+    name: "UOB Visa Infinite Card — 12,000 UNIRM per 1,000 miles",
+    description: "Verified conversion rate for the UOB Visa Infinite Card. Do not confuse with the UOB Visa Infinite Metal Card or Privilege Banking Visa Infinite Card.",
+    eligibleCards: ["UOB Visa Infinite Card"],
     active: true,
-    displayOrder: 9,
+    displayOrder: 4,
+  },
+  {
+    id: "cg-uob-prvi-elite",
+    rewardProductId: "uob-unirm",
+    name: "UOB PRVI Miles Elite Card — 12,000 UNIRM per 1,000 miles",
+    description: "Verified conversion rate for the UOB PRVI Miles Elite Card. This profile does not apply to the non-Elite UOB PRVI Miles Card.",
+    eligibleCards: ["UOB PRVI Miles Elite Card"],
+    active: true,
+    displayOrder: 5,
   },
 
   // ------- HSBC -------
@@ -746,18 +741,34 @@ export const conversionRules: ConversionRule[] = [
       "Effective 1 December 2025, compulsory 5,000-point transfer blocks. Maximum 20,000 AirAsia points per cardholder per month (equivalent to 120,000 TBP).",
   }),
 
-  // ---- UOB — three verified card tiers ----
+  // ---- UOB — verified per-card tiers (Enrich, KrisFlyer, Asia Miles, AirAsia) ----
   rule("uob-metal-enrich", "cg-uob-metal", "enrich", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
   rule("uob-metal-krisflyer", "cg-uob-metal", "krisflyer", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
   rule("uob-metal-cathay", "cg-uob-metal", "asia-miles", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-metal-airasia", "cg-uob-metal", "airasia", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+
+  rule("uob-zenith-enrich", "cg-uob-zenith", "enrich", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-zenith-krisflyer", "cg-uob-zenith", "krisflyer", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-zenith-cathay", "cg-uob-zenith", "asia-miles", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-zenith-airasia", "cg-uob-zenith", "airasia", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
 
   rule("uob-privilege-enrich", "cg-uob-privilege", "enrich", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
   rule("uob-privilege-krisflyer", "cg-uob-privilege", "krisflyer", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
   rule("uob-privilege-cathay", "cg-uob-privilege", "asia-miles", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-privilege-airasia", "cg-uob-privilege", "airasia", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
 
-  rule("uob-vi-prvi-enrich", "cg-uob-vi-prvi", "enrich", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-vi-prvi-krisflyer", "cg-uob-vi-prvi", "krisflyer", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-vi-prvi-cathay", "cg-uob-vi-prvi", "asia-miles", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-vi-enrich", "cg-uob-visa-infinite", "enrich", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-vi-krisflyer", "cg-uob-visa-infinite", "krisflyer", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-vi-cathay", "cg-uob-visa-infinite", "asia-miles", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-vi-airasia", "cg-uob-visa-infinite", "airasia", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+
+  rule("uob-prvi-elite-enrich", "cg-uob-prvi-elite", "enrich", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-prvi-elite-krisflyer", "cg-uob-prvi-elite", "krisflyer", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-prvi-elite-cathay", "cg-uob-prvi-elite", "asia-miles", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-prvi-elite-airasia", "cg-uob-prvi-elite", "airasia", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+
+
+
 
   // ---- HSBC TravelOne — 21 verified partner routes ----
   ...(([
@@ -926,20 +937,20 @@ export const cards: Card[] = [
   mkCard("mbb-ikhwan-amex-plat", "maybank", "Ikhwan American Express Platinum Card-i", "cg-mbb-treats-standard"),
 
   // ---------- UOB ----------
-  mkCard("uob-metal", "uob", "UOB Visa Infinite Metal", "cg-uob-metal", { aliases: ["Visa Infinite Metal"] }),
-  mkCard("uob-privilege-vi", "uob", "UOB Privilege Banking Visa Infinite", "cg-uob-privilege"),
-  mkCard("uob-visa-infinite", "uob", "UOB Visa Infinite", "cg-uob-vi-prvi"),
-  mkCard("uob-prvi-elite", "uob", "UOB PRVI Miles Elite", "cg-uob-vi-prvi", { aliases: ["PRVI Elite"] }),
-  mkCard("uob-world-mc", "uob", "UOB World Mastercard", "cg-uob-other", { status: "rate_unconfirmed" }),
-  mkCard("uob-zenith", "uob", "UOB Zenith Mastercard", "cg-uob-other", { status: "rate_unconfirmed" }),
-  mkCard("uob-prvi", "uob", "UOB PRVI Miles", "cg-uob-other", { status: "rate_unconfirmed" }),
-  mkCard("uob-one", "uob", "UOB ONE Card", "cg-uob-other", { status: "rate_unconfirmed" }),
-  mkCard("uob-evol", "uob", "UOB EVOL Card", "cg-uob-other", { status: "rate_unconfirmed" }),
-  mkCard("uob-ladys", "uob", "UOB Lady's Card", "cg-uob-other", { status: "rate_unconfirmed" }),
-  mkCard("uob-preferred", "uob", "UOB Preferred Platinum Visa", "cg-uob-other", { status: "rate_unconfirmed" }),
-  mkCard("uob-lazada", "uob", "UOB Lazada Card", "cg-uob-other", { status: "rate_unconfirmed" }),
-  mkCard("uob-simple", "uob", "UOB YOLO / Simple Card", "cg-uob-other", { status: "rate_unconfirmed" }),
-  mkCard("uob-basic", "uob", "UOB Basic Card", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-metal", "uob", "UOB Visa Infinite Metal Card", "cg-uob-metal", { aliases: ["Visa Infinite Metal", "UOB Metal"] }),
+  mkCard("uob-privilege-vi", "uob", "UOB Privilege Banking Visa Infinite Card", "cg-uob-privilege", { aliases: ["Privilege Banking Visa Infinite"] }),
+  mkCard("uob-visa-infinite", "uob", "UOB Visa Infinite Card", "cg-uob-visa-infinite", { aliases: ["Visa Infinite"] }),
+  mkCard("uob-prvi-elite", "uob", "UOB PRVI Miles Elite Card", "cg-uob-prvi-elite", { aliases: ["PRVI Miles Elite", "PRVI Elite"] }),
+  mkCard("uob-zenith", "uob", "UOB Zenith Mastercard", "cg-uob-zenith", { aliases: ["Zenith"] }),
+  mkCard("uob-prvi", "uob", "UOB PRVI Miles Card", "", { status: "rate_pending_verification", aliases: ["PRVI Miles", "PRVI Miles Card"] }),
+  mkCard("uob-world-mc", "uob", "UOB World Mastercard", "", { status: "rate_pending_verification" }),
+  mkCard("uob-one", "uob", "UOB ONE Card", "", { status: "rate_pending_verification" }),
+  mkCard("uob-evol", "uob", "UOB EVOL Card", "", { status: "rate_pending_verification" }),
+  mkCard("uob-ladys", "uob", "UOB Lady's Card", "", { status: "rate_pending_verification" }),
+  mkCard("uob-preferred", "uob", "UOB Preferred Platinum Visa", "", { status: "rate_pending_verification" }),
+  mkCard("uob-lazada", "uob", "UOB Lazada Card", "", { status: "rate_pending_verification" }),
+  mkCard("uob-simple", "uob", "UOB YOLO / Simple Card", "", { status: "rate_pending_verification" }),
+  mkCard("uob-basic", "uob", "UOB Basic Card", "", { status: "rate_pending_verification" }),
 
   // ---------- Alliance Bank ----------
   mkCard("alliance-visa-infinite", "alliance", "Alliance Bank Visa Infinite", "cg-alliance-tbp"),
