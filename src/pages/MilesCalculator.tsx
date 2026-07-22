@@ -312,14 +312,15 @@ function CalculatorFlow() {
   const handleCalculate = () => {
     // Validate
     const errs: string[] = [];
-    const usableEntries = entries.filter((e) => e.cardGroupId || e.rawInput.trim());
+    const usableEntries = entries.filter((e) => e.bankId || e.cardId || e.rawInput.trim());
 
     if (usableEntries.length === 0) {
       errs.push("Add at least one bank balance to calculate.");
     }
     for (const e of usableEntries) {
       if (!e.bankId) errs.push("Select a bank for every entry.");
-      else if (!e.cardGroupId) errs.push("Select a card group for every entry.");
+      else if (e.notFound) errs.push("We need to verify your unlisted card before calculating. Submit it for verification or pick another card.");
+      else if (!e.cardId) errs.push("Select the exact credit card for every entry.");
       const pts = parseIntSafe(e.rawInput);
       if (!Number.isFinite(pts) || pts <= 0) errs.push("Enter a valid points balance greater than zero.");
     }
