@@ -68,7 +68,9 @@ interface Seed {
   premiumEconomy?: number;
   business?: number;
   first?: number;
+  notes?: string;
 }
+
 
 // Enrich Fixed Award Chart — one-way, per person, MH-operated flights.
 const enrichSeeds: Seed[] = [
