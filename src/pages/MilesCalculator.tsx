@@ -1610,19 +1610,6 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
         </FilterField>
       </div>
 
-      {/* Groups */}
-      <div className="mt-10 space-y-12">
-        <DestinationGroup
-          title="You can reach these now"
-          empty="No unlocked destinations yet. Adjust filters or add more balances."
-          items={unlocked}
-          state="unlocked"
-          tripType={tripType}
-          travellers={travellers}
-          onPrimary={handlePlan}
-          onSecondary={handleStrategy}
-        />
-      {/* Groups */}
       <div className="mt-10 space-y-12">
         {cabinMissingFromDataset ? (
           <div className="rounded-sm border border-border bg-background p-6 text-sm leading-relaxed text-ink/75">
