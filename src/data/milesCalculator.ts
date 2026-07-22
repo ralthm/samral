@@ -87,6 +87,28 @@ export interface ConversionRule {
   active: boolean;
 }
 
+export type CardStatus =
+  | "active"
+  | "legacy"
+  | "discontinued"
+  | "cashback_only"
+  | "direct_airline"
+  | "rate_unconfirmed";
+
+export interface Card {
+  id: string;
+  bankId: string;
+  /** Official card name as printed on the card. */
+  name: string;
+  /** Alternative names/spellings to match in search. */
+  aliases?: string[];
+  /** Card-group id that acts as the reusable conversion profile. */
+  cardGroupId: string;
+  status: CardStatus;
+  officialSourceUrl?: string;
+  lastVerifiedDate?: string;
+}
+
 /* -------------------- Banks -------------------- */
 
 export const banks: Bank[] = [
@@ -145,8 +167,8 @@ export const loyaltyProgrammes: LoyaltyProgramme[] = [
   { id: "etihad", name: "Etihad Guest", slug: "etihad-guest", programmeType: "airline_miles", airlineName: "Etihad Airways", active: true, displayOrder: 8 },
   { id: "emirates", name: "Emirates Skywards", slug: "emirates-skywards", programmeType: "airline_miles", airlineName: "Emirates", active: true, displayOrder: 9 },
   { id: "flying-blue", name: "Flying Blue", slug: "flying-blue", programmeType: "airline_miles", airlineName: "Air France / KLM", active: true, displayOrder: 10 },
-  { id: "eva", name: "EVA Infinity MileageLands", slug: "eva-infinity", programmeType: "airline_miles", airlineName: "EVA Air", active: true, displayOrder: 11 },
-  { id: "ba", name: "British Airways Club", slug: "british-airways-club", programmeType: "airline_miles", airlineName: "British Airways", active: true, displayOrder: 12 },
+  { id: "eva", name: "EVA Air Infinity MileageLands", slug: "eva-infinity", programmeType: "airline_miles", airlineName: "EVA Air", active: true, displayOrder: 11 },
+  { id: "ba", name: "The British Airways Club", slug: "british-airways-club", programmeType: "airline_miles", airlineName: "British Airways", active: true, displayOrder: 12 },
   { id: "qatar", name: "Qatar Airways Privilege Club", slug: "qatar-privilege-club", programmeType: "airline_miles", airlineName: "Qatar Airways", active: true, displayOrder: 13 },
   { id: "jal", name: "JAL Mileage Bank", slug: "jal-mileage-bank", programmeType: "airline_miles", airlineName: "Japan Airlines", active: true, displayOrder: 14 },
   { id: "turkish", name: "Turkish Airlines Miles&Smiles", slug: "turkish-miles-smiles", programmeType: "airline_miles", airlineName: "Turkish Airlines", active: true, displayOrder: 15 },
@@ -163,9 +185,7 @@ export const rewardProducts: RewardProduct[] = [
   { id: "mbb-treats-premium", bankId: "maybank", name: "Maybank TreatsPoints — Selected Visa Infinite / World Elite / M2 Premier", slug: "mbb-treats-premium", rewardCurrencyName: "TreatsPoints", active: true, displayOrder: 1 },
   { id: "mbb-mr-selected-amex", bankId: "maybank", name: "Maybank Membership Rewards — Selected Amex Credit & Charge", slug: "mbb-mr-selected-amex", rewardCurrencyName: "Membership Rewards", active: true, displayOrder: 2 },
   { id: "mbb-mr-plat-charge", bankId: "maybank", name: "Maybank Membership Rewards — Amex Platinum Charge", slug: "mbb-mr-plat-charge", rewardCurrencyName: "Membership Rewards", active: true, displayOrder: 3 },
-  { id: "mbb-mr-other", bankId: "maybank", name: "Maybank Membership Rewards — other travel partners (all Amex)", slug: "mbb-mr-other", rewardCurrencyName: "Membership Rewards", active: true, displayOrder: 4 },
   { id: "mbb-treats-standard", bankId: "maybank", name: "Maybank TreatsPoints — Classic / Gold / Platinum / Visa Signature", slug: "mbb-treats-standard", rewardCurrencyName: "TreatsPoints", active: true, displayOrder: 5 },
-  { id: "mbb-all-cards-lowtier", bankId: "maybank", name: "Maybank TreatsPoints — AirAsia / Batik route (all cards)", slug: "mbb-all-cards-lowtier", rewardCurrencyName: "TreatsPoints", active: true, displayOrder: 6 },
   // CIMB
   { id: "cimb-bonus", bankId: "cimb", name: "CIMB Bonus Points", slug: "cimb-bonus", rewardCurrencyName: "Bonus Points", active: true, displayOrder: 1 },
   // Alliance
@@ -220,16 +240,6 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     displayOrder: 1,
   },
   {
-    id: "cg-mbb-mr-other",
-    rewardProductId: "mbb-mr-other",
-    name: "All Maybank Amex — transfers to AirAsia, Delta, Etihad, Emirates, Royal Orchid Plus, Batik",
-    description:
-      "Additional Membership Rewards partner routes for Maybank American Express credit and charge cards.",
-    eligibleCards: ["All Maybank American Express credit and charge cards"],
-    active: true,
-    displayOrder: 1,
-  },
-  {
     id: "cg-mbb-treats-standard",
     rewardProductId: "mbb-treats-standard",
     name: "Classic / Gold / Platinum / Visa Signature — 20,000 TP per 1,000 miles",
@@ -239,15 +249,6 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
       "All Maybank Classic, Gold, Platinum and Visa Signature cards not in the preferential tier",
       "Maybank 2 Platinum Cards",
     ],
-    active: true,
-    displayOrder: 1,
-  },
-  {
-    id: "cg-mbb-all-cards-lowtier",
-    rewardProductId: "mbb-all-cards-lowtier",
-    name: "All Maybank credit cards — AirAsia points / Batik Air Club",
-    description: "Available to all Maybank credit cards for the AirAsia and Batik routes.",
-    eligibleCards: ["All Maybank credit cards"],
     active: true,
     displayOrder: 1,
   },
@@ -422,16 +423,6 @@ export const conversionRules: ConversionRule[] = [
     annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
   }),
 
-  // ---- Maybank — MR other travel partners ----
-  rule("mbb-mrother-airasia", "cg-mbb-mr-other", "airasia", [5600, 1000]),
-  rule("mbb-mrother-delta", "cg-mbb-mr-other", "delta", [5600, 1000]),
-  rule("mbb-mrother-rop", "cg-mbb-mr-other", "rop", [5600, 1000]),
-  rule("mbb-mrother-etihad", "cg-mbb-mr-other", "etihad", [5600, 1000]),
-  rule("mbb-mrother-emirates", "cg-mbb-mr-other", "emirates", [5600, 1000]),
-  rule("mbb-mrother-batik", "cg-mbb-mr-other", "batik", [7000, 10], {
-    notes: "Batik Air Club units are not airline miles. Do not add them to any airline-miles total.",
-  }),
-
   // ---- Maybank — Standard TreatsPoints (20,000 → 1,000) ----
   rule("mbb-std-enrich", "cg-mbb-treats-standard", "enrich", [20000, 1000], {
     annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
@@ -443,11 +434,7 @@ export const conversionRules: ConversionRule[] = [
     annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
   }),
 
-  // ---- Maybank — All cards → AirAsia / Batik ----
-  rule("mbb-all-airasia", "cg-mbb-all-cards-lowtier", "airasia", [7000, 1000]),
-  rule("mbb-all-batik", "cg-mbb-all-cards-lowtier", "batik", [7000, 10], {
-    notes: "Batik Air Club units are not airline miles.",
-  }),
+
 
   // ---- CIMB ----
   rule("cimb-airasia", "cg-cimb-bonus", "airasia", [40000, 5000], {
@@ -505,6 +492,86 @@ export const conversionRules: ConversionRule[] = [
   rule("uob-vi-prvi-enrich", "cg-uob-vi-prvi", "enrich", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
   rule("uob-vi-prvi-krisflyer", "cg-uob-vi-prvi", "krisflyer", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
   rule("uob-vi-prvi-cathay", "cg-uob-vi-prvi", "asia-miles", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+];
+
+/* -------------------- Cards (searchable) -------------------- */
+
+const mkCard = (
+  id: string,
+  bankId: string,
+  name: string,
+  cardGroupId: string,
+  extra: Partial<Card> = {},
+): Card => ({
+  id, bankId, name, cardGroupId, status: "active", ...extra,
+});
+
+export const cards: Card[] = [
+  // ---------- Maybank — Profile A: 12,500 TP → 1,000 miles ----------
+  mkCard("mbb-visa-infinite", "maybank", "Maybank Visa Infinite", "cg-mbb-treats-premium"),
+  mkCard("mbb-islamic-visa-infinite", "maybank", "Maybank Islamic Ikhwan Visa Infinite Card-i", "cg-mbb-treats-premium", { aliases: ["Ikhwan Visa Infinite", "Islamic Visa Infinite"] }),
+  mkCard("mbb-mu-visa-infinite", "maybank", "Maybank Manchester United Visa Infinite", "cg-mbb-treats-premium", { aliases: ["MU Visa Infinite"] }),
+  mkCard("mbb-visa-infinite-diamante", "maybank", "Maybank Visa Infinite Diamanté", "cg-mbb-treats-premium", { aliases: ["Diamante"] }),
+  mkCard("mbb-mercedes", "maybank", "Maybank Mercedes-Benz Card", "cg-mbb-treats-premium"),
+  mkCard("mbb-m2-premier-amex", "maybank", "Maybank 2 Cards Premier — American Express Reserve", "cg-mbb-treats-premium", { aliases: ["M2 Premier Amex Reserve"] }),
+  mkCard("mbb-m2-premier-visa", "maybank", "Maybank 2 Cards Premier — Visa Infinite", "cg-mbb-treats-premium", { aliases: ["M2 Premier Visa Infinite"] }),
+  mkCard("mbb-world-elite", "maybank", "Maybank World Elite Mastercard", "cg-mbb-treats-premium"),
+  mkCard("mbb-islamic-world-elite", "maybank", "Maybank Islamic World Elite Mastercard-i", "cg-mbb-treats-premium"),
+
+  // ---------- Maybank — Profile B: 12,500 MR → 1,000 miles ----------
+  mkCard("mbb-amex-plat-credit", "maybank", "American Express Platinum Credit Card", "cg-mbb-mr-selected-amex", { aliases: ["Amex Platinum Credit"] }),
+  mkCard("mbb-amex-charge", "maybank", "American Express Charge Card", "cg-mbb-mr-selected-amex", { aliases: ["Amex Green Charge"] }),
+  mkCard("mbb-amex-gold-charge", "maybank", "American Express Gold Charge Card", "cg-mbb-mr-selected-amex", { aliases: ["Amex Gold Charge"] }),
+
+  // ---------- Maybank — Profile C: 7,000 MR → 1,000 miles ----------
+  mkCard("mbb-amex-plat-charge", "maybank", "American Express Platinum Charge Card", "cg-mbb-mr-plat-charge", { aliases: ["Amex Platinum Charge"] }),
+
+  // ---------- Maybank — Profile D: 20,000 TP → 1,000 miles ----------
+  mkCard("mbb-m2-platinum", "maybank", "Maybank 2 Platinum Cards", "cg-mbb-treats-standard", { aliases: ["M2 Platinum", "Maybank 2 Platinum"] }),
+  mkCard("mbb-m2-gold", "maybank", "Maybank 2 Gold Cards", "cg-mbb-treats-standard"),
+  mkCard("mbb-visa-platinum", "maybank", "Maybank Visa Platinum", "cg-mbb-treats-standard"),
+  mkCard("mbb-mc-platinum", "maybank", "Maybank Mastercard Platinum", "cg-mbb-treats-standard"),
+  mkCard("mbb-visa-gold", "maybank", "Maybank Visa Gold", "cg-mbb-treats-standard"),
+  mkCard("mbb-mc-gold", "maybank", "Maybank Mastercard Gold", "cg-mbb-treats-standard"),
+  mkCard("mbb-visa-classic", "maybank", "Maybank Visa Classic", "cg-mbb-treats-standard"),
+  mkCard("mbb-mc-classic", "maybank", "Maybank Mastercard Classic", "cg-mbb-treats-standard"),
+  mkCard("mbb-visa-signature", "maybank", "Maybank Visa Signature", "cg-mbb-treats-standard"),
+  mkCard("mbb-mu-visa", "maybank", "Maybank Manchester United Visa", "cg-mbb-treats-standard"),
+  mkCard("mbb-petronas-visa-gold", "maybank", "PETRONAS Maybank Visa Gold", "cg-mbb-treats-standard"),
+  mkCard("mbb-petronas-ikhwan", "maybank", "PETRONAS Ikhwan Visa Platinum Card-i", "cg-mbb-treats-standard"),
+  mkCard("mbb-ikhwan-amex-plat", "maybank", "Ikhwan American Express Platinum Card-i", "cg-mbb-treats-standard"),
+
+  // ---------- UOB ----------
+  mkCard("uob-metal", "uob", "UOB Visa Infinite Metal", "cg-uob-metal", { aliases: ["Visa Infinite Metal"] }),
+  mkCard("uob-privilege-vi", "uob", "UOB Privilege Banking Visa Infinite", "cg-uob-privilege"),
+  mkCard("uob-visa-infinite", "uob", "UOB Visa Infinite", "cg-uob-vi-prvi"),
+  mkCard("uob-prvi-elite", "uob", "UOB PRVI Miles Elite", "cg-uob-vi-prvi", { aliases: ["PRVI Elite"] }),
+  mkCard("uob-world-mc", "uob", "UOB World Mastercard", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-zenith", "uob", "UOB Zenith Mastercard", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-prvi", "uob", "UOB PRVI Miles", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-one", "uob", "UOB ONE Card", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-evol", "uob", "UOB EVOL Card", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-ladys", "uob", "UOB Lady's Card", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-preferred", "uob", "UOB Preferred Platinum Visa", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-lazada", "uob", "UOB Lazada Card", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-simple", "uob", "UOB YOLO / Simple Card", "cg-uob-other", { status: "rate_unconfirmed" }),
+  mkCard("uob-basic", "uob", "UOB Basic Card", "cg-uob-other", { status: "rate_unconfirmed" }),
+
+  // ---------- Alliance Bank ----------
+  mkCard("alliance-visa-infinite", "alliance", "Alliance Bank Visa Infinite", "cg-alliance-tbp"),
+  mkCard("alliance-visa-platinum", "alliance", "Alliance Bank Visa Platinum", "cg-alliance-tbp"),
+  mkCard("alliance-visa-signature", "alliance", "Alliance Bank Visa Signature", "cg-alliance-tbp"),
+  mkCard("alliance-virtual", "alliance", "Alliance Bank Virtual Credit Card", "cg-alliance-tbp", { aliases: ["Alliance Virtual"] }),
+
+  // ---------- CIMB ----------
+  mkCard("cimb-travel-world-elite", "cimb", "CIMB Travel World Elite", "cg-cimb-bonus"),
+  mkCard("cimb-travel-world", "cimb", "CIMB Travel World", "cg-cimb-bonus"),
+  mkCard("cimb-travel-platinum", "cimb", "CIMB Travel Platinum", "cg-cimb-bonus"),
+  mkCard("cimb-preferred-vi", "cimb", "CIMB Preferred Visa Infinite", "cg-cimb-bonus"),
+  mkCard("cimb-preferred-vi-i", "cimb", "CIMB Preferred Visa Infinite-i", "cg-cimb-bonus"),
+  mkCard("cimb-visa-infinite", "cimb", "CIMB Visa Infinite", "cg-cimb-bonus"),
+  mkCard("cimb-visa-signature", "cimb", "CIMB Visa Signature", "cg-cimb-bonus"),
+  mkCard("cimb-petronas-vi-i", "cimb", "CIMB PETRONAS Visa Infinite-i", "cg-cimb-bonus"),
 ];
 
 /* -------------------- Helpers -------------------- */
@@ -577,4 +644,35 @@ export function summaryCounters() {
     partners: activeProgrammeIds.size,
     routes: publicRules.length,
   };
+}
+
+/* -------------------- Card helpers -------------------- */
+
+export function getCardById(id: string): Card | undefined {
+  return cards.find((c) => c.id === id);
+}
+
+export function getCardsByBank(bankId: string): Card[] {
+  return cards
+    .filter((c) => c.bankId === bankId)
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/** Rewards currency (bank-side) for a given card. Derived from the card group. */
+export function getRewardCurrencyForCard(card: Card): { productId: string; currencyName: string } | undefined {
+  const group = getCardGroupById(card.cardGroupId);
+  const product = group ? getRewardProductById(group.rewardProductId) : undefined;
+  if (!product) return undefined;
+  return { productId: product.id, currencyName: product.rewardCurrencyName };
+}
+
+/** Simple case-insensitive search across name + aliases. Empty query returns all bank cards. */
+export function searchCardsInBank(bankId: string, query: string): Card[] {
+  const list = getCardsByBank(bankId);
+  const q = query.trim().toLowerCase();
+  if (!q) return list;
+  return list.filter((c) => {
+    if (c.name.toLowerCase().includes(q)) return true;
+    return (c.aliases ?? []).some((a) => a.toLowerCase().includes(q));
+  });
 }

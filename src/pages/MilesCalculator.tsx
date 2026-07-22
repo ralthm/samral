@@ -11,14 +11,17 @@ import {
 } from "lucide-react";
 import {
   banks,
+  Card,
   eligibleCardGroups,
   getBankById,
-  getCardGroupsByRewardProduct,
+  getCardById,
+  getCardGroupById,
   getProgrammeById,
   getPublicRulesForCardGroup,
+  getRewardCurrencyForCard,
   getRewardProductById,
-  getRewardProductsByBank,
   loyaltyProgrammes,
+  searchCardsInBank,
   summaryCounters,
 } from "@/data/milesCalculator";
 import {
@@ -48,11 +51,20 @@ const PRIORITY_PROGRAMMES = ["enrich", "krisflyer", "asia-miles"];
 
 type UiState = "idle" | "calculated" | "stale" | "error";
 
+interface UnknownCard {
+  cardName: string;
+  currency: string; // "TreatsPoints" | "Membership Rewards" | "UNIRM" | "TBP" | "CIMB Bonus Points" | "Other"
+}
+
 interface Entry {
   id: string;
   bankId: string;
-  rewardProductId: string;
+  cardId: string;
+  /** Derived from cardId; kept here so calculation and validation can read it directly. */
   cardGroupId: string;
+  /** True when the user chose "I can't find my card". */
+  notFound: boolean;
+  unknown?: UnknownCard;
   nickname: string;
   showLabel: boolean;
   rawInput: string;
@@ -78,8 +90,9 @@ const uid = () =>
 const newEntry = (): Entry => ({
   id: uid(),
   bankId: "",
-  rewardProductId: "",
+  cardId: "",
   cardGroupId: "",
+  notFound: false,
   nickname: "",
   showLabel: false,
   rawInput: "",
@@ -299,14 +312,15 @@ function CalculatorFlow() {
   const handleCalculate = () => {
     // Validate
     const errs: string[] = [];
-    const usableEntries = entries.filter((e) => e.cardGroupId || e.rawInput.trim());
+    const usableEntries = entries.filter((e) => e.bankId || e.cardId || e.rawInput.trim());
 
     if (usableEntries.length === 0) {
       errs.push("Add at least one bank balance to calculate.");
     }
     for (const e of usableEntries) {
       if (!e.bankId) errs.push("Select a bank for every entry.");
-      else if (!e.cardGroupId) errs.push("Select a card group for every entry.");
+      else if (e.notFound) errs.push("We need to verify your unlisted card before calculating. Submit it for verification or pick another card.");
+      else if (!e.cardId) errs.push("Select the exact credit card for every entry.");
       const pts = parseIntSafe(e.rawInput);
       if (!Number.isFinite(pts) || pts <= 0) errs.push("Enter a valid points balance greater than zero.");
     }
@@ -489,6 +503,15 @@ function CalculatorFlow() {
 
 /* ---------- Entry card ---------- */
 
+const UNKNOWN_CURRENCIES = [
+  "TreatsPoints",
+  "Membership Rewards",
+  "UNIRM",
+  "Three-year Bonus Points (TBP)",
+  "CIMB Bonus Points",
+  "Other / not sure",
+];
+
 function EntryCard({
   entry, index, canRemove, onChange, onRemove, onFirstValid,
 }: {
@@ -499,25 +522,21 @@ function EntryCard({
   onRemove: () => void;
   onFirstValid: () => void;
 }) {
-  const bankProducts = entry.bankId ? getRewardProductsByBank(entry.bankId) : [];
-  const product = entry.rewardProductId ? getRewardProductById(entry.rewardProductId) : undefined;
-  const cardGroups = entry.rewardProductId ? getCardGroupsByRewardProduct(entry.rewardProductId) : [];
   const bank = entry.bankId ? getBankById(entry.bankId) : undefined;
-  const selectedGroup = entry.cardGroupId ? eligibleCardGroups.find((g) => g.id === entry.cardGroupId) : undefined;
-  const rulesForSelected = entry.cardGroupId ? getPublicRulesForCardGroup(entry.cardGroupId) : [];
-  const hasNoRules = !!entry.cardGroupId && rulesForSelected.length === 0;
+  const card = entry.cardId ? getCardById(entry.cardId) : undefined;
+  const currency = card ? getRewardCurrencyForCard(card) : undefined;
+  const selectedGroup = card ? getCardGroupById(card.cardGroupId) : undefined;
+  const rulesForSelected = card ? getPublicRulesForCardGroup(card.cardGroupId) : [];
+  const hasNoRules = !!card && rulesForSelected.length === 0;
+  const rateUnconfirmed = card?.status === "rate_unconfirmed" || hasNoRules;
 
-  const [eligibleOpen, setEligibleOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
 
-  // Auto-pick a reward product if the bank exposes only one.
-  useEffect(() => {
-    if (entry.bankId && !entry.rewardProductId && bankProducts.length === 1) {
-      const only = bankProducts[0];
-      const groups = getCardGroupsByRewardProduct(only.id);
-      onChange({ ...entry, rewardProductId: only.id, cardGroupId: groups.length === 1 ? groups[0].id : "" });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entry.bankId, entry.rewardProductId, bankProducts.length]);
+  const matches = useMemo(() => {
+    if (!entry.bankId) return [];
+    return searchCardsInBank(entry.bankId, query).slice(0, 12);
+  }, [entry.bankId, query]);
 
   const pointsValue = parseIntSafe(entry.rawInput);
   const pointsError = entry.rawInput && !Number.isFinite(pointsValue)
@@ -526,13 +545,33 @@ function EntryCard({
 
   const validReported = useRef(false);
   useEffect(() => {
-    if (!validReported.current && entry.cardGroupId && pointsValue > 0) {
+    if (!validReported.current && entry.cardId && !rateUnconfirmed && pointsValue > 0) {
       validReported.current = true;
       onFirstValid();
     }
-  }, [entry.cardGroupId, pointsValue, onFirstValid]);
+  }, [entry.cardId, rateUnconfirmed, pointsValue, onFirstValid]);
 
-  const currencyLabel = product?.rewardCurrencyName ?? "Points";
+  const currencyLabel = entry.notFound
+    ? (entry.unknown?.currency && entry.unknown.currency !== "Other / not sure" ? entry.unknown.currency : "Points")
+    : (currency?.currencyName ?? "Points");
+
+  const pickCard = (c: Card) => {
+    onChange({
+      ...entry,
+      cardId: c.id,
+      cardGroupId: c.cardGroupId,
+      notFound: false,
+      unknown: undefined,
+    });
+    setQuery(c.name);
+    setSearchOpen(false);
+  };
+
+  const clearCard = () => {
+    onChange({ ...entry, cardId: "", cardGroupId: "", notFound: false, unknown: undefined });
+    setQuery("");
+    setSearchOpen(true);
+  };
 
   return (
     <div className="rounded-sm border border-border bg-background p-5">
@@ -557,7 +596,11 @@ function EntryCard({
           <select
             id={`bank-${entry.id}`}
             value={entry.bankId}
-            onChange={(e) => onChange({ ...entry, bankId: e.target.value, rewardProductId: "", cardGroupId: "" })}
+            onChange={(e) => {
+              onChange({ ...entry, bankId: e.target.value, cardId: "", cardGroupId: "", notFound: false, unknown: undefined });
+              setQuery("");
+              setSearchOpen(false);
+            }}
             className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
           >
             <option value="">Select bank</option>
@@ -567,43 +610,74 @@ function EntryCard({
           </select>
         </Field>
 
-        {bankProducts.length > 1 && (
-          <Field label="Rewards programme" htmlFor={`product-${entry.id}`}>
-            <select
-              id={`product-${entry.id}`}
-              value={entry.rewardProductId}
-              onChange={(e) => {
-                const productId = e.target.value;
-                const groups = productId ? getCardGroupsByRewardProduct(productId) : [];
-                const cardGroupId = groups.length === 1 ? groups[0].id : "";
-                onChange({ ...entry, rewardProductId: productId, cardGroupId });
-              }}
-              disabled={!entry.bankId}
-              className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none disabled:bg-muted"
-            >
-              <option value="">{entry.bankId ? "Select rewards programme" : "Select bank first"}</option>
-              {bankProducts.map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          </Field>
-        )}
-
-        {cardGroups.length > 1 && (
-          <Field label="Which card do you hold?" htmlFor={`cardgroup-${entry.id}`}>
-            <select
-              id={`cardgroup-${entry.id}`}
-              value={entry.cardGroupId}
-              onChange={(e) => onChange({ ...entry, cardGroupId: e.target.value })}
-              className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
-            >
-              <option value="">Select your exact card</option>
-              {cardGroups.map((g) => (
-                <option key={g.id} value={g.id}>{g.name}</option>
-              ))}
-            </select>
-          </Field>
-        )}
+        <Field label="Credit card" htmlFor={`card-${entry.id}`}>
+          {card && !searchOpen ? (
+            <div className="mt-2 flex items-center justify-between gap-3 rounded-sm border border-border bg-sand/40 px-3 py-2.5 text-sm text-ink">
+              <span className="truncate">{card.name}</span>
+              <button
+                type="button"
+                onClick={clearCard}
+                className="shrink-0 text-[12px] text-ink/60 underline underline-offset-4 hover:text-ink"
+              >
+                Change
+              </button>
+            </div>
+          ) : (
+            <div className="relative">
+              <input
+                id={`card-${entry.id}`}
+                type="text"
+                autoComplete="off"
+                placeholder={entry.bankId ? "Search by card name" : "Select bank first"}
+                disabled={!entry.bankId}
+                value={query}
+                onChange={(e) => { setQuery(e.target.value); setSearchOpen(true); }}
+                onFocus={() => setSearchOpen(true)}
+                className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none disabled:bg-muted"
+              />
+              {searchOpen && entry.bankId && (
+                <div className="absolute z-20 mt-1 max-h-72 w-full overflow-auto rounded-sm border border-border bg-background shadow-md">
+                  {matches.length === 0 && (
+                    <p className="px-3 py-2 text-[13px] text-ink/60">No cards match that name.</p>
+                  )}
+                  {matches.map((c) => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => pickCard(c)}
+                      className="flex w-full items-center justify-between gap-3 border-b border-border/60 px-3 py-2 text-left text-[13px] text-ink hover:bg-sand/50"
+                    >
+                      <span className="truncate">{c.name}</span>
+                      {c.status === "rate_unconfirmed" && (
+                        <span className="shrink-0 text-[10px] uppercase tracking-[0.14em] text-ink/50">Rate to confirm</span>
+                      )}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onChange({ ...entry, cardId: "", cardGroupId: "", notFound: true, unknown: { cardName: query, currency: "" } });
+                      setSearchOpen(false);
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-ink/80 hover:bg-sand/50"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> I can’t find my card
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+          {(card || entry.notFound) && (
+            <p className="mt-2 text-[11px] uppercase tracking-[0.14em] text-ink/55">
+              Rewards currency:{" "}
+              <span className="normal-case tracking-normal text-ink/80">
+                {entry.notFound
+                  ? (entry.unknown?.currency || "to be confirmed")
+                  : (currency?.currencyName ?? "—")}
+              </span>
+            </p>
+          )}
+        </Field>
 
         <Field label={`${currencyLabel} balance`} htmlFor={`points-${entry.id}`}>
           <input
@@ -628,32 +702,24 @@ function EntryCard({
         </Field>
       </div>
 
-      {selectedGroup && selectedGroup.eligibleCards.length > 0 && (
-        <div className="mt-4 rounded-sm border border-border/70 bg-sand/40 p-3 text-[12px] text-ink/75">
-          <button
-            type="button"
-            onClick={() => setEligibleOpen((v) => !v)}
-            aria-expanded={eligibleOpen}
-            className="inline-flex items-center gap-1.5 text-ink hover:opacity-70"
-          >
-            <ChevronDown className={`h-3.5 w-3.5 transition-transform ${eligibleOpen ? "rotate-180" : ""}`} />
-            {eligibleOpen ? "Hide" : "Show"} the {selectedGroup.eligibleCards.length} card{selectedGroup.eligibleCards.length === 1 ? "" : "s"} included in this group
-          </button>
-          {eligibleOpen && (
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-ink/70">
-              {selectedGroup.eligibleCards.map((c) => <li key={c}>{c}</li>)}
-            </ul>
-          )}
-          {selectedGroup.description && (
-            <p className="mt-2 text-[11px] leading-relaxed text-ink/55">{selectedGroup.description}</p>
-          )}
-        </div>
+      {entry.notFound && (
+        <UnknownCardPanel
+          value={entry.unknown ?? { cardName: query, currency: "" }}
+          onChange={(u) => onChange({ ...entry, unknown: u })}
+          onCancel={() => {
+            onChange({ ...entry, notFound: false, unknown: undefined });
+            setSearchOpen(true);
+          }}
+        />
       )}
 
-      {hasNoRules && selectedGroup?.unverifiedNotice && (
+      {rateUnconfirmed && card && (
         <div role="note" className="mt-3 rounded-sm border border-ink/30 bg-background p-3 text-[12px] leading-relaxed text-ink/80">
-          <p className="font-medium text-ink">Rate not confirmed</p>
-          <p className="mt-1">{selectedGroup.unverifiedNotice}</p>
+          <p className="font-medium text-ink">Current air-mile rate requires confirmation</p>
+          <p className="mt-1">
+            {selectedGroup?.unverifiedNotice ??
+              "We cannot confirm a preferential UNIRM conversion rate for this card from the currently recorded official source. Check the Air Miles section in UOB TMRW, or select another UOB card you hold."}
+          </p>
         </div>
       )}
 
@@ -683,6 +749,66 @@ function EntryCard({
     </div>
   );
 }
+
+function UnknownCardPanel({
+  value, onChange, onCancel,
+}: {
+  value: UnknownCard;
+  onChange: (u: UnknownCard) => void;
+  onCancel: () => void;
+}) {
+  const mailtoBody = encodeURIComponent(
+    `Card name: ${value.cardName || "(unspecified)"}\nStatement currency: ${value.currency || "(unspecified)"}\n\nPlease verify the conversion entitlement for this card.`,
+  );
+  const canSubmit = value.cardName.trim().length > 1 && !!value.currency;
+  return (
+    <div className="mt-4 rounded-sm border border-ink/30 bg-sand/40 p-4 text-[12px] text-ink/80">
+      <p className="font-medium text-ink">We need to confirm this card’s conversion entitlement before providing a definitive result.</p>
+      <p className="mt-1 text-ink/65">Answer the two questions below so we can add your card to the database.</p>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <Field label="Exact name printed on the card" htmlFor="unknown-name">
+          <input
+            id="unknown-name"
+            type="text"
+            value={value.cardName}
+            onChange={(e) => onChange({ ...value, cardName: e.target.value })}
+            className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+          />
+        </Field>
+        <Field label="Which currency does your statement show?" htmlFor="unknown-currency">
+          <select
+            id="unknown-currency"
+            value={value.currency}
+            onChange={(e) => onChange({ ...value, currency: e.target.value })}
+            className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+          >
+            <option value="">Select currency</option>
+            {UNKNOWN_CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </Field>
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <a
+          href={canSubmit ? `mailto:hello@samral.com?subject=${encodeURIComponent("Card verification: " + value.cardName)}&body=${mailtoBody}` : undefined}
+          onClick={(e) => { if (!canSubmit) e.preventDefault(); }}
+          className={`inline-flex items-center rounded-sm px-4 py-2 text-[13px] ${canSubmit ? "bg-ink text-background hover:-translate-y-0.5 transition-transform" : "cursor-not-allowed bg-ink/30 text-background/70"}`}
+        >
+          Submit card for verification
+        </a>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="text-[12px] text-ink/60 underline underline-offset-4 hover:text-ink"
+        >
+          Pick a different card
+        </button>
+      </div>
+    </div>
+  );
+}
+
 
 function Field({ label, htmlFor, children }: { label: string; htmlFor: string; children: React.ReactNode }) {
   return (
@@ -1109,14 +1235,21 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
   }, [portfolio]);
 
   const cabinsPresent = useMemo(() => verifiedCabinsPresent(), []);
+  // Programme filter is the UNION of programmes actually reachable from the
+  // user's calculated portfolio (never a fixed catalogue). Falls back to all
+  // targeted programmes only when no balances have been entered.
   const programmeOptions = useMemo(() => {
-    const ids = new Set<string>();
-    for (const t of redemptionTargets) if (isTargetPublic(t)) ids.add(t.loyaltyProgrammeId);
-    return Array.from(ids).map((id) => {
-      const prog = loyaltyProgrammes.find((p) => p.id === id);
-      return { id, name: prog?.name ?? id };
-    });
-  }, []);
+    const targetProgrammeIds = new Set<string>();
+    for (const t of redemptionTargets) if (isTargetPublic(t)) targetProgrammeIds.add(t.loyaltyProgrammeId);
+    const portfolioIds = new Set(portfolio.map((p) => p.programmeId));
+    const source = portfolioIds.size > 0
+      ? Array.from(portfolioIds).filter((id) => targetProgrammeIds.has(id))
+      : Array.from(targetProgrammeIds);
+    return source
+      .map((id) => ({ id, name: loyaltyProgrammes.find((p) => p.id === id)?.name ?? id }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [portfolio]);
+
 
   const [region, setRegion] = useState<Region | "">("");
   const [cabin, setCabin] = useState<Cabin | "">("");
