@@ -37,10 +37,13 @@ import {
   CABINS,
   computeRequiredPoints,
   isTargetPublic,
+  outboundPointsForParty,
+  pointsPerPersonPerDirection,
   RedemptionTarget,
   redemptionTargets,
   Region,
   REGIONS,
+  SUPPORTED_PROGRAMMES,
   verifiedCabinsPresent,
 } from "@/data/redemptionTargets";
 import { getActivePromotions, Promotion } from "@/data/promotions";
@@ -1044,6 +1047,11 @@ function ResultsDashboard({
 
         <PromoBanner portfolio={portfolio} />
 
+        {portfolio.length > 1 && (
+          <div className="mt-6 rounded-sm border border-ink/30 bg-background p-4 text-[13px] leading-relaxed text-ink/80">
+            Your bank points can be transferred into different loyalty programmes. The full balances shown are alternative transfer scenarios unless you choose to split your bank points between programmes.
+          </div>
+        )}
 
         {/* Programme balance cards */}
         <div className="mt-10 space-y-10">
@@ -1354,69 +1362,117 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
   }, [portfolio]);
 
   const cabinsPresent = useMemo(() => verifiedCabinsPresent(), []);
-  // Programme filter is the UNION of programmes actually reachable from the
-  // user's calculated portfolio (never a fixed catalogue). Falls back to all
-  // targeted programmes only when no balances have been entered.
+
+  // Programme filter = intersection of programmes reachable from the user's
+  // portfolio AND programmes with a completed redemption engine. Never a fixed
+  // catalogue and never hard-coded to a single programme.
   const programmeOptions = useMemo(() => {
-    const targetProgrammeIds = new Set<string>();
-    for (const t of redemptionTargets) if (isTargetPublic(t)) targetProgrammeIds.add(t.loyaltyProgrammeId);
-    const portfolioIds = new Set(portfolio.map((p) => p.programmeId));
-    const source = portfolioIds.size > 0
-      ? Array.from(portfolioIds).filter((id) => targetProgrammeIds.has(id))
-      : Array.from(targetProgrammeIds);
+    const supported = new Set<string>(SUPPORTED_PROGRAMMES);
+    const portfolioIds = new Set<string>(portfolio.map((p) => p.programmeId));
+    // If the user hasn't entered any balances yet, show all supported engines
+    // so the page still functions as a browse view.
+    const source: string[] = portfolioIds.size > 0
+      ? Array.from(portfolioIds).filter((id) => supported.has(id))
+      : Array.from(supported);
     return source
       .map((id) => ({ id, name: loyaltyProgrammes.find((p) => p.id === id)?.name ?? id }))
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [portfolio]);
 
-
   const [region, setRegion] = useState<Region | "">("");
   const [cabin, setCabin] = useState<Cabin | "">("");
-  const [tripType, setTripType] = useState<"one_way" | "return">("one_way");
+  const [tripType, setTripType] = useState<"one_way" | "return">("return");
   const [travellers, setTravellers] = useState(1);
   const [programmeId, setProgrammeId] = useState<string>("");
+  const [showAll, setShowAll] = useState(false);
 
   const emitFilter = useCallback((key: string, value: unknown) => {
     track("destination_filter_changed", { key, value });
   }, []);
 
+  // Only targets whose programme is both supported AND reachable from the
+  // user's portfolio (falls back to all supported when portfolio is empty).
+  const eligibleProgrammes = useMemo(() => new Set(programmeOptions.map((o) => o.id)), [programmeOptions]);
+
   const targets = useMemo(() => {
     return redemptionTargets.filter((t) => {
       if (!isTargetPublic(t)) return false;
+      if (!eligibleProgrammes.has(t.programmeId)) return false;
       if (region && t.region !== region) return false;
       if (cabin && t.cabin !== cabin) return false;
-      if (programmeId && t.loyaltyProgrammeId !== programmeId) return false;
+      if (programmeId && t.programmeId !== programmeId) return false;
       return true;
     });
-  }, [region, cabin, programmeId]);
+  }, [region, cabin, programmeId, eligibleProgrammes]);
 
   interface Enriched {
     t: RedemptionTarget;
-    required: number;
+    required: number;              // full points needed for the selected trip type (party size included)
+    perDirectionPerPerson: number; // useful for Enrich wording
+    outboundPartyTotal: number;    // one-way for the whole party
     balance: number;
-    delta: number; // balance - required (positive = unlocked)
-    ratio: number; // balance / required
+    delta: number;                 // balance - required (positive = unlocked)
+    ratio: number;
+    /** True when the user chose one-way but the programme requires return. */
+    tripTypeMismatch: boolean;
   }
 
   const enriched: Enriched[] = useMemo(() => {
     return targets.map((t) => {
       const required = computeRequiredPoints(t, tripType, travellers);
-      const balance = balances.get(t.loyaltyProgrammeId) ?? 0;
+      const balance = balances.get(t.programmeId) ?? 0;
       const delta = balance - required;
       const ratio = required > 0 ? balance / required : 0;
-      return { t, required, balance, delta, ratio };
+      const outboundPartyTotal = outboundPointsForParty(t, travellers);
+      return {
+        t,
+        required,
+        perDirectionPerPerson: pointsPerPersonPerDirection(t),
+        outboundPartyTotal,
+        balance,
+        delta,
+        ratio,
+        tripTypeMismatch: t.returnBookingRequired && tripType === "one_way",
+      };
     });
   }, [targets, tripType, travellers, balances]);
 
-  const unlocked = enriched
-    .filter((e) => e.delta >= 0)
-    .sort((a, b) => a.required - b.required);
-  const almost = enriched
-    .filter((e) => e.delta < 0 && e.ratio >= 0.75)
-    .sort((a, b) => b.ratio - a.ratio || a.required - b.required);
-  const future = enriched
-    .filter((e) => e.ratio < 0.75)
-    .sort((a, b) => a.required - b.required);
+  // Ranking: threshold met > direct > larger remaining > smaller shortfall >
+  // more recent verifiedOn. Then cap per programme so no single programme
+  // dominates the "reach these now" band.
+  const rankUnlocked = (a: Enriched, b: Enriched) => {
+    if ((a.t.directOrConnecting === "direct") !== (b.t.directOrConnecting === "direct")) {
+      return a.t.directOrConnecting === "direct" ? -1 : 1;
+    }
+    if (b.delta !== a.delta) return b.delta - a.delta;
+    return b.t.verifiedOn.localeCompare(a.t.verifiedOn);
+  };
+  const rankAlmost = (a: Enriched, b: Enriched) => b.ratio - a.ratio || a.required - b.required;
+  const rankFuture = (a: Enriched, b: Enriched) => a.required - b.required;
+
+  const unlockedAll = enriched.filter((e) => e.delta >= 0 && !e.tripTypeMismatch).sort(rankUnlocked);
+  const almostAll = enriched.filter((e) => (e.delta < 0 || e.tripTypeMismatch) && e.ratio >= 0.75).sort(rankAlmost);
+  const futureAll = enriched.filter((e) => e.ratio < 0.75).sort(rankFuture);
+
+  // Per-programme cap of 3 when "All programmes" is selected and the user
+  // hasn't asked for the unfiltered view.
+  const capPerProgramme = (list: Enriched[]) => {
+    if (programmeId || showAll) return list;
+    const counts = new Map<string, number>();
+    const out: Enriched[] = [];
+    for (const e of list) {
+      const c = counts.get(e.t.programmeId) ?? 0;
+      if (c >= 3) continue;
+      counts.set(e.t.programmeId, c + 1);
+      out.push(e);
+    }
+    return out;
+  };
+  const unlocked = capPerProgramme(unlockedAll);
+  const almost = capPerProgramme(almostAll);
+  const future = capPerProgramme(futureAll);
+  const capped = !programmeId && !showAll &&
+    (unlocked.length < unlockedAll.length || almost.length < almostAll.length || future.length < futureAll.length);
 
   useEffect(() => {
     if (unlocked.length > 0) {
@@ -1428,15 +1484,15 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
   const availableCabins = CABINS.filter((c) => cabinsPresent.has(c));
 
   const handlePlan = (e: Enriched) => {
-    const prog = loyaltyProgrammes.find((p) => p.id === e.t.loyaltyProgrammeId);
+    const prog = loyaltyProgrammes.find((p) => p.id === e.t.programmeId);
     const ctx: TripContext = {
       origin: e.t.origin,
       destination: e.t.destination,
       destinationName: e.t.destinationName,
       cabin: e.t.cabin,
-      tripType,
+      tripType: e.t.returnBookingRequired ? "return" : tripType,
       travellers,
-      loyaltyProgrammeId: e.t.loyaltyProgrammeId,
+      loyaltyProgrammeId: e.t.programmeId,
       loyaltyProgrammeName: prog?.name ?? "",
       operatingAirline: e.t.operatingAirline,
       redemptionType: e.t.redemptionType,
@@ -1447,13 +1503,13 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
       createdAt: new Date().toISOString(),
     };
     saveTripContext(ctx);
-    track("plan_trip_clicked", { destination: e.t.destination, cabin: e.t.cabin, programme: e.t.loyaltyProgrammeId });
+    track("plan_trip_clicked", { destination: e.t.destination, cabin: e.t.cabin, programme: e.t.programmeId });
     navigate("/trip-planning");
   };
 
   const handleStrategy = (e: Enriched, event: "almost" | "future") => {
-    track(event === "almost" ? "points_strategy_clicked" : "points_strategy_clicked", {
-      state: event, destination: e.t.destination, programme: e.t.loyaltyProgrammeId,
+    track("points_strategy_clicked", {
+      state: event, destination: e.t.destination, programme: e.t.programmeId,
     });
     navigate(STRATEGY_URL);
   };
@@ -1465,7 +1521,7 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
           Where can your points take you?
         </h2>
         <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-ink/70">
-          Explore indicative redemption opportunities departing Kuala Lumpur.
+          Verified redemption opportunities across the programmes your cards can reach. Programme balances shown are alternative transfer scenarios — the same bank points cannot become their full potential balance in more than one programme at the same time.
         </p>
       </div>
 
@@ -1501,8 +1557,8 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
             onChange={(e) => { setTripType(e.target.value as "one_way" | "return"); emitFilter("tripType", e.target.value); }}
             className="mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-ink"
           >
-            <option value="one_way">One way</option>
             <option value="return">Return</option>
+            <option value="one_way">One way</option>
           </select>
         </FilterField>
 
@@ -1523,7 +1579,7 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
         <FilterField label="Programme">
           <select
             value={programmeId}
-            onChange={(e) => { setProgrammeId(e.target.value); emitFilter("programme", e.target.value); }}
+            onChange={(e) => { setProgrammeId(e.target.value); setShowAll(false); emitFilter("programme", e.target.value); }}
             className="mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-ink"
           >
             <option value="">All programmes</option>
@@ -1539,6 +1595,8 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
           empty="No unlocked destinations yet. Adjust filters or add more balances."
           items={unlocked}
           state="unlocked"
+          tripType={tripType}
+          travellers={travellers}
           onPrimary={handlePlan}
           onSecondary={handleStrategy}
         />
@@ -1547,6 +1605,8 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
           empty="Nothing within 25% of a target right now."
           items={almost}
           state="almost"
+          tripType={tripType}
+          travellers={travellers}
           onPrimary={handlePlan}
           onSecondary={handleStrategy}
         />
@@ -1555,13 +1615,27 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
           empty="No further destinations to display."
           items={future}
           state="future"
+          tripType={tripType}
+          travellers={travellers}
           onPrimary={handlePlan}
           onSecondary={handleStrategy}
         />
+        {capped && (
+          <div>
+            <button
+              type="button"
+              onClick={() => { setShowAll(true); track("destination_view_all_clicked"); }}
+              className="inline-flex items-center rounded-sm border border-ink px-4 py-2 text-[13px] text-ink hover:bg-ink hover:text-background"
+            >
+              View all results
+            </button>
+            <p className="mt-2 text-[11px] text-ink/55">Showing up to three results per programme. Filter by programme or click above to see the full list.</p>
+          </div>
+        )}
       </div>
 
       <p className="mt-10 rounded-sm border border-border bg-background p-4 text-[12px] leading-relaxed text-ink/65">
-        Points requirements shown do not indicate award-seat availability. Taxes, fees and surcharges may apply. Confirm availability before transferring bank points. Enrich Saver awards apply to Malaysia Airlines-operated flights only, in selected fare classes and subject to availability. Displayed figures are per person; one-way and return are shown separately.
+        Award-seat availability has not been checked. Taxes, fees and airline surcharges apply on top of the points requirement. Enrich Saver is valid for round-trip bookings on Malaysia Airlines-operated flights only. KrisFlyer Saver uses the Singapore Airlines award chart effective 1 November 2025 for Singapore Airlines-operated itineraries. Asia Miles opportunities cover Cathay Pacific-operated flights only. Partner-airline awards on any programme require separate pricing and are not shown here.
       </p>
     </section>
   );
@@ -1579,18 +1653,23 @@ function FilterField({ label, children }: { label: string; children: React.React
 interface EnrichedT {
   t: RedemptionTarget;
   required: number;
+  perDirectionPerPerson: number;
+  outboundPartyTotal: number;
   balance: number;
   delta: number;
   ratio: number;
+  tripTypeMismatch: boolean;
 }
 
 function DestinationGroup({
-  title, empty, items, state, onPrimary, onSecondary,
+  title, empty, items, state, tripType, travellers, onPrimary, onSecondary,
 }: {
   title: string;
   empty: string;
   items: EnrichedT[];
   state: "unlocked" | "almost" | "future";
+  tripType: "one_way" | "return";
+  travellers: number;
   onPrimary: (e: EnrichedT) => void;
   onSecondary: (e: EnrichedT, state: "almost" | "future") => void;
 }) {
@@ -1606,6 +1685,8 @@ function DestinationGroup({
               key={e.t.id + state}
               e={e}
               state={state}
+              tripType={tripType}
+              travellers={travellers}
               onPrimary={() => onPrimary(e)}
               onSecondary={() => state !== "unlocked" && onSecondary(e, state)}
             />
@@ -1616,73 +1697,128 @@ function DestinationGroup({
   );
 }
 
+function itineraryLabel(t: RedemptionTarget): string {
+  if (t.connectionAirports.length === 0) return `${t.origin} → ${t.destination}`;
+  return `${t.origin} → ${t.connectionAirports.join(" → ")} → ${t.destination}`;
+}
+
+function connectionLabel(t: RedemptionTarget): string | null {
+  if (t.connectionAirports.length === 0) return null;
+  if (t.connectionAirports[0] === "SIN") return "Connecting via Singapore";
+  if (t.connectionAirports[0] === "HKG") return "Connecting via Hong Kong";
+  return `Connecting via ${t.connectionAirports.join(", ")}`;
+}
+
 function DestinationCard({
-  e, state, onPrimary, onSecondary,
+  e, state, tripType, travellers, onPrimary, onSecondary,
 }: {
   e: EnrichedT;
   state: "unlocked" | "almost" | "future";
+  tripType: "one_way" | "return";
+  travellers: number;
   onPrimary: () => void;
   onSecondary: () => void;
 }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const prog = loyaltyProgrammes.find((p) => p.id === e.t.loyaltyProgrammeId);
-  const progName = prog?.name ?? "";
+  const t = e.t;
   const shortfall = Math.max(0, -e.delta);
   const remaining = Math.max(0, e.delta);
+  const isEnrich = t.programmeId === "enrich";
+  const isNeedsReview = t.status === "needs_review";
 
-  const badge =
-    state === "unlocked" ? { label: "Points threshold met", cls: "bg-ink text-background" } :
-    state === "almost" ? { label: "Almost there", cls: "border border-ink text-ink" } :
-    { label: "Future goal", cls: "border border-ink/40 text-ink/70" };
+  const badge = isNeedsReview
+    ? { label: "Verification needed", cls: "border border-ink/40 text-ink/70" }
+    : state === "unlocked" ? { label: "Points threshold met", cls: "bg-ink text-background" }
+    : state === "almost" ? { label: "Almost there", cls: "border border-ink text-ink" }
+    : { label: "Future goal", cls: "border border-ink/40 text-ink/70" };
 
-  const primaryLabel =
-    state === "unlocked" ? "Find My Best Redemption" :
-    state === "almost" ? "Get My Points Strategy" :
-    "Get My Points Strategy";
+  const primaryLabel = state === "unlocked" ? "Find My Best Redemption" : "Get My Points Strategy";
+  const conn = connectionLabel(t);
+  const effectiveTripType: "one_way" | "return" = t.returnBookingRequired ? "return" : tripType;
+  const tripLabel = effectiveTripType === "return" ? "return" : "one way";
 
   return (
     <article className="rounded-sm border border-border bg-background p-6">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">{e.t.origin} → {e.t.destination} · {e.t.country}</p>
-          <h4 className="mt-1 font-display text-2xl text-ink md:text-3xl">{e.t.destinationName}</h4>
-          <p className="mt-1 text-[13px] text-ink/70">{e.t.cabin} · {progName}</p>
+          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">
+            {itineraryLabel(t)} · {t.country}
+          </p>
+          <h4 className="mt-1 font-display text-2xl text-ink md:text-3xl">{t.destinationName}</h4>
+          <p className="mt-1 text-[13px] text-ink/70">
+            {t.cabin} · {t.operatingAirline}
+          </p>
+          <p className="mt-0.5 text-[12px] text-ink/60">{t.awardType}</p>
+          {conn && <p className="mt-1 text-[12px] text-ink/60">{conn}</p>}
         </div>
         <span className={`inline-flex shrink-0 items-center rounded-sm px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] ${badge.cls}`}>
           {badge.label}
         </span>
       </div>
 
-      <div className="mt-5 border-t border-border pt-4">
-        <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">Points required</p>
-        <p className="mt-1 font-display text-3xl text-ink">{formatInt(e.required)} <span className="text-base text-ink/70">{progName}</span></p>
-        <p className="mt-1 text-[12px] text-ink/60">
-          {e.t.tripType === "return" ? "Return" : "One way"} · {formatInt(e.t.pointsPerPerson)} per person · {e.t.redemptionType.replace("_", " ")}
-        </p>
-      </div>
+      {isNeedsReview ? (
+        <div className="mt-5 border-t border-border pt-4">
+          <p className="text-[13px] text-ink">Current points requirement needs verification.</p>
+          <p className="mt-1 text-[12px] text-ink/60">We’ll confirm the live award chart before recommending a transfer.</p>
+        </div>
+      ) : isEnrich ? (
+        <div className="mt-5 border-t border-border pt-4">
+          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">Per person, per direction</p>
+          <p className="mt-1 font-display text-2xl text-ink">
+            {formatInt(e.perDirectionPerPerson)} <span className="text-sm text-ink/70">Enrich</span>
+          </p>
+          <dl className="mt-4 grid grid-cols-1 gap-y-1.5 text-[12px] sm:grid-cols-2">
+            <dt className="text-ink/55">Outbound requirement for {travellers}</dt>
+            <dd className="text-ink sm:text-right">{formatInt(e.outboundPartyTotal)} Enrich</dd>
+            <dt className="text-ink/55">Return requirement for {travellers}</dt>
+            <dd className="text-ink sm:text-right">{formatInt(e.required)} Enrich</dd>
+          </dl>
+          <p className="mt-3 text-[12px] text-ink/70">
+            Return booking required under Enrich Saver rules.
+          </p>
+        </div>
+      ) : (
+        <div className="mt-5 border-t border-border pt-4">
+          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">
+            Required for {travellers} traveller{travellers === 1 ? "" : "s"}, {tripLabel}
+          </p>
+          <p className="mt-1 font-display text-3xl text-ink">
+            {formatInt(e.required)} <span className="text-base text-ink/70">{t.programmeName === "Cathay — Asia Miles" ? "Asia Miles" : t.programmeName}</span>
+          </p>
+          <p className="mt-1 text-[12px] text-ink/60">
+            {formatInt(e.perDirectionPerPerson)} per person, one way
+          </p>
+        </div>
+      )}
 
       <dl className="mt-4 grid grid-cols-2 gap-y-1.5 text-[12px]">
-        <dt className="text-ink/55">Your potential balance</dt>
+        <dt className="text-ink/55">Your potential {t.programmeName === "Cathay — Asia Miles" ? "Asia Miles" : t.programmeName} balance</dt>
         <dd className="text-right text-ink">{formatInt(e.balance)}</dd>
-        {state === "unlocked" ? (
-          <>
-            <dt className="text-ink/55">Remaining after redemption</dt>
-            <dd className="text-right text-ink">{formatInt(remaining)}</dd>
-          </>
-        ) : (
-          <>
-            <dt className="text-ink/55">Shortfall</dt>
-            <dd className="text-right text-ink">{formatInt(shortfall)}</dd>
-          </>
+        {!isNeedsReview && (
+          state === "unlocked" ? (
+            <>
+              <dt className="text-ink/55">Remaining</dt>
+              <dd className="text-right text-ink">{formatInt(remaining)}</dd>
+            </>
+          ) : (
+            <>
+              <dt className="text-ink/55">Shortfall</dt>
+              <dd className="text-right text-ink">{formatInt(shortfall)}</dd>
+            </>
+          )
         )}
       </dl>
 
+      {e.tripTypeMismatch && (
+        <p className="mt-3 rounded-sm border border-ink/30 bg-sand/40 p-3 text-[11px] leading-relaxed text-ink/75">
+          You selected one way, but {t.awardType} requires a return booking. The requirement above reflects the return itinerary.
+        </p>
+      )}
+
       <p className="mt-4 text-[11px] leading-relaxed text-ink/60">
-        {state === "unlocked"
-          ? "Your potential balance meets the displayed Saver points requirement. Award-seat availability has not been checked. We'll assess real award availability, compare cash and points, and prepare the safest transfer and booking plan before you move irreversible points."
-          : state === "almost"
-          ? `You are ${formatInt(shortfall)} points away from this displayed target. Get a personalised review of your cards, spending pattern and travel goals.`
-          : "Get a personalised review of your cards, spending pattern and travel goals."}
+        {isEnrich && "Malaysia Airlines-operated flight only. "}
+        Award-seat availability has not been checked.
+        {state === "almost" && ` You are ${formatInt(shortfall)} points away from this target.`}
       </p>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
@@ -1698,7 +1834,7 @@ function DestinationCard({
           onClick={() => {
             const next = !detailsOpen;
             setDetailsOpen(next);
-            if (next) track("destination_details_opened", { destination: e.t.destination });
+            if (next) track("destination_details_opened", { destination: t.destination });
           }}
           className="text-[12px] text-ink underline underline-offset-4 hover:no-underline"
         >
@@ -1710,29 +1846,39 @@ function DestinationCard({
         <div className="mt-4 border-t border-border pt-4 text-[12px] leading-relaxed text-ink/70">
           <dl className="grid grid-cols-2 gap-y-1.5">
             <dt className="text-ink/55">Operating airline</dt>
-            <dd className="text-right text-ink">{e.t.operatingAirline ?? "—"}</dd>
-            <dt className="text-ink/55">Redemption type</dt>
-            <dd className="text-right text-ink">{e.t.redemptionType.replace("_", " ")}</dd>
+            <dd className="text-right text-ink">{t.operatingAirline}</dd>
+            <dt className="text-ink/55">Award type</dt>
+            <dd className="text-right text-ink">{t.awardType}</dd>
+            <dt className="text-ink/55">Itinerary</dt>
+            <dd className="text-right text-ink">{itineraryLabel(t)}</dd>
+            <dt className="text-ink/55">Segments</dt>
+            <dd className="text-right text-ink">{t.numberOfSegments} · {t.directOrConnecting}</dd>
             <dt className="text-ink/55">Trip basis</dt>
-            <dd className="text-right text-ink">{e.t.tripType === "return" ? "Return" : "One way"}</dd>
+            <dd className="text-right text-ink">{effectiveTripType === "return" ? "Return" : "One way"}</dd>
             <dt className="text-ink/55">Travellers</dt>
-            <dd className="text-right text-ink">1</dd>
+            <dd className="text-right text-ink">{travellers}</dd>
             <dt className="text-ink/55">Verified</dt>
             <dd className="text-right text-ink">
-              <a href={e.t.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:underline">
-                {formatDate(e.t.verifiedOn)} <ExternalLink className="h-3 w-3" />
+              <a href={t.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:underline">
+                {formatDate(t.verifiedOn)} <ExternalLink className="h-3 w-3" />
               </a>
             </dd>
+            {t.effectiveFrom && (
+              <>
+                <dt className="text-ink/55">Chart effective from</dt>
+                <dd className="text-right text-ink">{formatDate(t.effectiveFrom)}</dd>
+              </>
+            )}
           </dl>
-          <p className="mt-3 text-[11px] text-ink/55">
-            Points requirement shown does not indicate award-seat availability. Your balance meets the displayed points requirement — confirm availability with the airline before transferring bank points.
-          </p>
-          {e.t.notes && <p className="mt-2 text-[11px] text-ink/55">{e.t.notes}</p>}
+          <p className="mt-3 text-[11px] text-ink/55">{t.taxesAndFeesNote}</p>
+          {t.notes && <p className="mt-2 text-[11px] text-ink/55">{t.notes}</p>}
         </div>
       )}
     </article>
   );
 }
+
+
 
 /* ---------- Points remaining ---------- */
 
