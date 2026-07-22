@@ -1093,14 +1093,27 @@ export const cards: Card[] = [
   mkCard("alliance-virtual", "alliance", "Alliance Bank Virtual Credit Card", "cg-alliance-tbp", { aliases: ["Alliance Virtual"] }),
 
   // ---------- CIMB ----------
-  mkCard("cimb-travel-world-elite", "cimb", "CIMB Travel World Elite", "cg-cimb-bonus"),
-  mkCard("cimb-travel-world", "cimb", "CIMB Travel World", "cg-cimb-bonus"),
-  mkCard("cimb-travel-platinum", "cimb", "CIMB Travel Platinum", "cg-cimb-bonus"),
+  // Bonus Points cards (11) — every current CIMB credit card that earns
+  // CIMB Bonus Points and can be transferred to airline partners.
   mkCard("cimb-preferred-vi", "cimb", "CIMB Preferred Visa Infinite", "cg-cimb-bonus"),
   mkCard("cimb-preferred-vi-i", "cimb", "CIMB Preferred Visa Infinite-i", "cg-cimb-bonus"),
+  mkCard("cimb-travel-world-elite", "cimb", "CIMB Travel World Elite", "cg-cimb-bonus", {
+    aliases: ["CIMB Private Wealth World Elite", "Private Wealth World Elite"],
+    subtitle: "Also issued as CIMB Private Wealth World Elite (effective 22 June 2026)",
+  }),
+  mkCard("cimb-travel-world", "cimb", "CIMB Travel World", "cg-cimb-bonus"),
+  mkCard("cimb-travel-platinum", "cimb", "CIMB Travel Platinum", "cg-cimb-bonus"),
   mkCard("cimb-visa-infinite", "cimb", "CIMB Visa Infinite", "cg-cimb-bonus"),
   mkCard("cimb-visa-signature", "cimb", "CIMB Visa Signature", "cg-cimb-bonus"),
-  mkCard("cimb-petronas-vi-i", "cimb", "CIMB PETRONAS Visa Infinite-i", "cg-cimb-bonus"),
+  mkCard("cimb-world-mc", "cimb", "CIMB World Mastercard", "cg-cimb-bonus"),
+  mkCard("cimb-visa-platinum", "cimb", "CIMB Visa Platinum", "cg-cimb-bonus"),
+  mkCard("cimb-platinum-i", "cimb", "CIMB Platinum-i", "cg-cimb-bonus"),
+  mkCard("cimb-e-credit", "cimb", "CIMB e Credit Card", "cg-cimb-bonus", { aliases: ["e Credit"] }),
+  // Cashback / non-convertible cards — must NEVER inherit a Bonus Points profile.
+  mkCard("cimb-petronas-vi-i", "cimb", "CIMB PETRONAS Visa Infinite-i", "cg-cimb-cashback", { status: "cashback_only" }),
+  mkCard("cimb-petronas-vp-i", "cimb", "CIMB PETRONAS Visa Platinum-i", "cg-cimb-cashback", { status: "cashback_only" }),
+  mkCard("cimb-cash-rebate-plat", "cimb", "CIMB Cash Rebate Platinum", "cg-cimb-cashback", { status: "cashback_only", aliases: ["Cash Rebate"] }),
+
 
   // ---------- HSBC ----------
   mkCard("hsbc-travelone", "hsbc", "HSBC TravelOne Credit Card", "cg-hsbc-travelone"),
