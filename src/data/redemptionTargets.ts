@@ -424,21 +424,19 @@ export function verifiedCabinsPresent(): Set<Cabin> {
   return s;
 }
 
-/** Total points required for the requested trip type and party size, respecting
- * per-direction quotes and return-only rules. */
+/** Total points required for the requested trip type and party size.
+ *
+ * Source-conflict note: The Enrich Saver landing page and detailed terms
+ * currently use inconsistent wording regarding one-way eligibility. The
+ * calculator follows the more detailed current Terms and Conditions, which
+ * expressly permit one-way and round-trip point-to-point itineraries. For
+ * Enrich Saver, pointsPerPerson is quoted per direction; a return booking
+ * requires twice the one-way figure.
+ */
 export function computeRequiredPoints(t: RedemptionTarget, tripType: TripType, travellers: number): number {
   const pax = Math.max(1, Math.floor(travellers));
-  // Enrich Saver: pointsPerPerson is per direction and a return booking is
-  // mandatory. Whichever trip type the user selects we compare against the
-  // return requirement, because a one-way Enrich Saver is not bookable.
-  if (t.returnBookingRequired && t.perDirection) {
-    return t.pointsPerPerson * 2 * pax;
-  }
-  // KrisFlyer Saver / Asia Miles standard: one-way is bookable; return doubles.
-  if (tripType === "return") {
-    return t.pointsPerPerson * 2 * pax;
-  }
-  return t.pointsPerPerson * pax;
+  const multiplier = tripType === "return" ? 2 : 1;
+  return t.pointsPerPerson * multiplier * pax;
 }
 
 /** Points quoted per person for a single direction, useful for wording. */
