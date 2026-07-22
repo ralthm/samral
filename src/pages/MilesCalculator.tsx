@@ -976,13 +976,16 @@ const GROUP_LABEL: Record<GroupKey, string> = {
 };
 
 function ResultsDashboard({
-  snapshot, isStale, onEdit,
+  snapshot, isStale, onEdit, registeredPromotionIds, onToggleRegistration,
 }: {
   snapshot: Snapshot;
   isStale: boolean;
   onEdit: () => void;
+  registeredPromotionIds: string[];
+  onToggleRegistration: (promotionId: string, registered: boolean) => void;
 }) {
   const { results, portfolio, entryContext } = snapshot;
+  const registeredSet = useMemo(() => new Set(registeredPromotionIds), [registeredPromotionIds]);
 
   const grouped = useMemo(() => {
     const g: Record<GroupKey, ProgrammeTotal[]> = { airline: [], travel: [], hotel: [] };
