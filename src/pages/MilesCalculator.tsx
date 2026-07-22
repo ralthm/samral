@@ -174,63 +174,7 @@ function upsertLink(rel: string, href: string) {
 /* ---------- Nav ---------- */
 
 function Nav() {
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [open]);
-
-  const links = [
-    { label: "Home", to: "/" },
-    { label: "Miles Calculator", to: "/miles-calculator" },
-    { label: "Cards Strategy", to: "/points-strategy" },
-    { label: "About", to: "/about" },
-  ];
-
-  return (
-    <header className="border-b border-border bg-background">
-      <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-5 sm:px-6 md:px-12 md:py-8">
-        <Link to="/" aria-label="Samral home" className="font-display text-2xl leading-none text-ink md:text-[26px]">
-          Samral
-        </Link>
-        <nav className="hidden items-center gap-9 text-[13px] text-ink/80 md:flex">
-          {links.map((l) => (
-            <Link key={l.to} to={l.to} className="transition-opacity hover:opacity-70">
-              {l.label}
-            </Link>
-          ))}
-        </nav>
-        <button
-          type="button"
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-          className="inline-flex h-11 w-11 items-center justify-center text-ink md:hidden"
-        >
-          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
-      </div>
-      {open && (
-        <div className="fixed inset-0 z-40 flex flex-col bg-background text-ink md:hidden">
-          <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-5 sm:px-6">
-            <Link to="/" onClick={() => setOpen(false)} className="font-display text-2xl leading-none text-ink">
-              Samral
-            </Link>
-            <button type="button" aria-label="Close menu" onClick={() => setOpen(false)} className="inline-flex h-11 w-11 items-center justify-center">
-              <X className="h-6 w-6" />
-            </button>
-          </div>
-          <nav className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-2 px-5 pt-6 sm:px-6">
-            {links.map((l) => (
-              <Link key={l.to} to={l.to} onClick={() => setOpen(false)} className="border-b border-border py-4 font-display text-2xl leading-tight text-ink">
-                {l.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      )}
-    </header>
-  );
+  return <SiteHeader />;
 }
 
 /* ---------- Hero ---------- */
