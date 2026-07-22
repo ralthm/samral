@@ -50,7 +50,7 @@ export const promotions: Promotion[] = [
     registrationRequired: false,
     startDate: "2026-07-11",
     endDate: "2026-08-18",
-    postingTimeline: "Bonus Enrich Points post to the member account after the standard transfer completes.",
+    postingTimeline: "The base and bonus Enrich Points are expected to be credited within 14 working days after the bank submits the conversion. Bonus Enrich Points are valid for one year. Transfers are irreversible. The legal name on the credit-card account and Enrich account must match.",
     officialSource: "https://www.malaysiaairlines.com/my/en/enrich/enrich-promotions.html",
     active: true,
   },
