@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import TravellersInput from "@/components/TravellersInput";
 import {
   banks,
   Card,
