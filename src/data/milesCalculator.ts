@@ -276,6 +276,7 @@ export const rewardProducts: RewardProduct[] = [
   { id: "mbb-legacy-unverified", bankId: "maybank", name: "Maybank legacy card — conversion pending verification", slug: "mbb-legacy-unverified", rewardCurrencyName: "Not currently calculable", active: true, displayOrder: 10 },
   // CIMB
   { id: "cimb-bonus", bankId: "cimb", name: "CIMB Bonus Points", slug: "cimb-bonus", rewardCurrencyName: "Bonus Points", active: true, displayOrder: 1 },
+  { id: "cimb-cashback", bankId: "cimb", name: "CIMB cashback / non-convertible cards", slug: "cimb-cashback", rewardCurrencyName: "Cashback", active: true, displayOrder: 2 },
   // Alliance
   { id: "alliance-tbp", bankId: "alliance", name: "Alliance Three-year Bonus Points (TBP)", slug: "alliance-tbp", rewardCurrencyName: "TBP", active: true, displayOrder: 1 },
   // UOB — one currency (UNIRM), multiple entitlement tiers by card.
