@@ -758,6 +758,64 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     active: true,
     displayOrder: 4,
   },
+
+  // ------- OCBC Malaysia -------
+  {
+    id: "cg-ocbc-voyage",
+    rewardProductId: "ocbc-voyage",
+    name: "OCBC Premier Voyage Mastercard — 3,000 Voyage Miles per 1,000 KrisFlyer miles",
+    description:
+      "Voyage Miles do not expire. Only KrisFlyer is a currently verified airline transfer partner for OCBC Malaysia. OCBC Malaysia is not a listed Enrich bank-points conversion partner, so no Enrich route is offered.",
+    eligibleCards: [
+      "OCBC Premier Voyage Mastercard — Premier Banking",
+      "OCBC Premier Voyage Mastercard — Premier Private Client",
+    ],
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-ocbc-travel-dollar",
+    rewardProductId: "ocbc-travel-dollar",
+    name: "OCBC 90°N Visa Card — Travel$ (not transferable to airlines)",
+    description:
+      "Travel$ are redeemed as cash credit against eligible travel spending (5,000 Travel$ = RM10 cash credit), subject to eligible travel-related spending within the preceding 12 months. Travel$ are not transferable to any airline or hotel loyalty programme.",
+    eligibleCards: ["OCBC 90°N Visa Card"],
+    unverifiedNotice:
+      "OCBC Travel$ cannot currently be transferred to an airline loyalty programme. They may be redeemed as cash credit against eligible travel spending (5,000 Travel$ = RM10 cash credit).",
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-ocbc-ocbc-dollar",
+    rewardProductId: "ocbc-ocbc-dollar",
+    name: "OCBC Titanium / OCBC 365 — OCBC$ (cash credit only)",
+    description:
+      "OCBC$ from these cards are redeemable as OCBC cash credit through the OCBC Malaysia Mobile Banking app. They are not transferable airline or hotel points.",
+    eligibleCards: [
+      "OCBC Titanium Mastercard",
+      "OCBC 365 Mastercard",
+    ],
+    unverifiedNotice:
+      "OCBC$ from this card are currently redeemable as OCBC cash credit, not transferable airline or hotel points.",
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-ocbc-cashback",
+    rewardProductId: "ocbc-cashback",
+    name: "OCBC Cashflo / Great Eastern Platinum / World Mastercard — no transferable points",
+    description:
+      "These cards either focus on instalments or earn cashback. They do not currently earn a supported points or miles currency.",
+    eligibleCards: [
+      "OCBC Cashflo Mastercard",
+      "OCBC Great Eastern Platinum Mastercard",
+      "OCBC World Mastercard",
+    ],
+    unverifiedNotice:
+      "This card does not currently earn a supported points or miles currency that can be transferred to an airline or hotel programme.",
+    active: true,
+    displayOrder: 1,
+  },
 ];
 
 /* -------------------- Conversion rules -------------------- */
