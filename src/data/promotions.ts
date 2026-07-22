@@ -48,7 +48,7 @@ export const promotions: Promotion[] = [
     bonusType: "percentage",
     bonusPercentage: 10,
     registrationRequired: false,
-    startDate: "2026-05-19",
+    startDate: "2026-07-11",
     endDate: "2026-08-18",
     postingTimeline: "Bonus Enrich Points post to the member account after the standard transfer completes.",
     officialSource: "https://www.malaysiaairlines.com/my/en/enrich/enrich-promotions.html",
