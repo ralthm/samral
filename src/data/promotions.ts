@@ -44,7 +44,7 @@ export const promotions: Promotion[] = [
     id: "mh-enrich-10pct-2026",
     programmeId: "enrich",
     name: "10% Bonus Enrich Points",
-    participatingBanks: ["maybank", "cimb", "alliance", "uob"],
+    participatingBanks: ["maybank", "cimb", "alliance", "uob", "hsbc", "hongleong", "affin", "ambank", "publicbank", "bankrakyat"],
     bonusType: "percentage",
     bonusPercentage: 10,
     registrationRequired: false,

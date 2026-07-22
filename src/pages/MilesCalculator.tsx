@@ -719,10 +719,14 @@ function EntryCard({
 
       {rateUnconfirmed && card && (
         <div role="note" className="mt-3 rounded-sm border border-ink/30 bg-background p-3 text-[12px] leading-relaxed text-ink/80">
-          <p className="font-medium text-ink">Current air-mile rate requires confirmation</p>
+          <p className="font-medium text-ink">
+            {card.status === "direct_airline"
+              ? "Direct airline-earning card"
+              : "Current air-mile rate requires confirmation"}
+          </p>
           <p className="mt-1">
             {selectedGroup?.unverifiedNotice ??
-              "We cannot confirm a preferential UNIRM conversion rate for this card from the currently recorded official source. Check the Air Miles section in UOB TMRW, or select another UOB card you hold."}
+              "We cannot confirm a preferential conversion rate for this card from the currently recorded official source. Select another card you hold, or submit this card for verification."}
           </p>
         </div>
       )}
