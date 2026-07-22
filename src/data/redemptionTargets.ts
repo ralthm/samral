@@ -301,33 +301,27 @@ interface AmSeed {
   status?: TargetStatus;
 }
 
-// Cathay Pacific-operated standard flight awards. Figures are indicative of the
-// current Asia Miles standard award pricing for CX-operated itineraries
-// departing KUL via HKG and must be re-verified at booking time.
+// Cathay Pacific-operated standard flight awards.
+//
+// The previous Asia Miles dataset (KUL–HKG–onward records priced at 55k /
+// 75k / 105k / 130k / 140k / 155k Business one-way) was built from an
+// outdated Cathay award chart and has been disabled. Do not repopulate any
+// connecting itinerary by adding sector prices together — Cathay prices the
+// award on total great-circle distance of the whole itinerary, not per
+// sector.
+//
+// Current published Cathay Business Class Standard Award bands are:
+//   Short Type 2   (751–2,750 mi)   : 32,000 one-way
+//   Medium         (2,751–5,000 mi) : 58,000 one-way
+//   Long           (5,001–7,500 mi) : 84,000 one-way
+//   Ultra-long     (7,501+ mi)      : 110,000 one-way
+// Short Type 1 (≤750 mi) is priced separately at its current official price.
+//
+// Until every KUL-origin itinerary has been re-verified in Cathay's official
+// award calculator or current official chart, only KUL–HKG (a directly
+// verified 30,000 Asia Miles one-way Business Class award) is retained.
 const asiaMilesSeeds: AmSeed[] = [
   { code: "hkg", destination: "HKG", destinationName: "Hong Kong", country: "Hong Kong SAR", region: "North Asia", connection: [], economy: 12000, premiumEconomy: 18000, business: 30000 },
-  { code: "bkk", destination: "BKK", destinationName: "Bangkok", country: "Thailand", region: "Malaysia and Southeast Asia", connection: ["HKG"], economy: 22000, business: 55000 },
-  { code: "sgn", destination: "SGN", destinationName: "Ho Chi Minh City", country: "Vietnam", region: "Malaysia and Southeast Asia", connection: ["HKG"], economy: 22000, business: 55000 },
-  { code: "mnl", destination: "MNL", destinationName: "Manila", country: "Philippines", region: "Malaysia and Southeast Asia", connection: ["HKG"], economy: 22000, business: 55000 },
-  { code: "tpe", destination: "TPE", destinationName: "Taipei", country: "Taiwan", region: "North Asia", connection: ["HKG"], economy: 22000, business: 55000 },
-  { code: "icn", destination: "ICN", destinationName: "Seoul (Incheon)", country: "South Korea", region: "North Asia", connection: ["HKG"], economy: 30000, business: 75000 },
-  { code: "nrt", destination: "NRT", destinationName: "Tokyo (Narita)", country: "Japan", region: "North Asia", connection: ["HKG"], economy: 30000, premiumEconomy: 45000, business: 75000, first: 135000 },
-  { code: "hnd", destination: "HND", destinationName: "Tokyo (Haneda)", country: "Japan", region: "North Asia", connection: ["HKG"], economy: 30000, business: 75000 },
-  { code: "kix", destination: "KIX", destinationName: "Osaka", country: "Japan", region: "North Asia", connection: ["HKG"], economy: 30000, business: 75000 },
-  { code: "del", destination: "DEL", destinationName: "Delhi", country: "India", region: "South Asia", connection: ["HKG"], economy: 30000, business: 75000 },
-  { code: "bom", destination: "BOM", destinationName: "Mumbai", country: "India", region: "South Asia", connection: ["HKG"], economy: 30000, business: 75000 },
-  { code: "syd", destination: "SYD", destinationName: "Sydney", country: "Australia", region: "Australia and New Zealand", connection: ["HKG"], economy: 40000, premiumEconomy: 60000, business: 105000, first: 190000 },
-  { code: "mel", destination: "MEL", destinationName: "Melbourne", country: "Australia", region: "Australia and New Zealand", connection: ["HKG"], economy: 40000, business: 105000 },
-  { code: "per", destination: "PER", destinationName: "Perth", country: "Australia", region: "Australia and New Zealand", connection: ["HKG"], economy: 40000, business: 105000 },
-  { code: "akl", destination: "AKL", destinationName: "Auckland", country: "New Zealand", region: "Australia and New Zealand", connection: ["HKG"], economy: 55000, business: 130000 },
-  { code: "dxb", destination: "DXB", destinationName: "Dubai", country: "United Arab Emirates", region: "Middle East", connection: ["HKG"], economy: 40000, business: 105000 },
-  { code: "lhr", destination: "LHR", destinationName: "London (Heathrow)", country: "United Kingdom", region: "Europe", connection: ["HKG"], economy: 55000, premiumEconomy: 85000, business: 140000, first: 250000 },
-  { code: "cdg", destination: "CDG", destinationName: "Paris (Charles de Gaulle)", country: "France", region: "Europe", connection: ["HKG"], economy: 55000, business: 140000 },
-  { code: "fra", destination: "FRA", destinationName: "Frankfurt", country: "Germany", region: "Europe", connection: ["HKG"], economy: 55000, business: 140000 },
-  { code: "jfk", destination: "JFK", destinationName: "New York (JFK)", country: "United States", region: "North America", connection: ["HKG"], economy: 55000, business: 140000, first: 250000 },
-  { code: "lax", destination: "LAX", destinationName: "Los Angeles", country: "United States", region: "North America", connection: ["HKG"], economy: 55000, business: 140000 },
-  { code: "yvr", destination: "YVR", destinationName: "Vancouver", country: "Canada", region: "North America", connection: ["HKG"], economy: 55000, business: 140000 },
-  { code: "jnb", destination: "JNB", destinationName: "Johannesburg", country: "South Africa", region: "Africa", connection: ["HKG"], economy: 70000, business: 155000 },
 ];
 
 function buildAsiaMilesTargets(): RedemptionTarget[] {
