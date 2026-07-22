@@ -50,6 +50,14 @@ export interface RuleResult {
   monthlyCapApplied?: boolean;
   minimumTransferPartnerPoints?: number;
   transferIncrementPartnerPoints?: number;
+  /** Bonus partner points from an applied promotion (0 if none). Additive, never modifies base. */
+  bonusPartnerPoints: number;
+  /** Total transferred INCLUDING bonus (standard + bonus). */
+  promotionalPartnerPoints: number;
+  promotionId?: string;
+  promotionName?: string;
+  promotionEndDate?: string;
+  promotionBonusPercentage?: number;
 }
 
 export function calculateEntry(input: CalcInput): RuleResult[] {
