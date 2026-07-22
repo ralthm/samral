@@ -228,6 +228,15 @@ export const banks: Bank[] = [
     displayOrder: 11,
     officialRewardsUrl: "https://www.sc.com/my/credit-cards/journey/",
   },
+  {
+    id: "ocbc",
+    name: "OCBC Malaysia",
+    slug: "ocbc-malaysia",
+    country: "MY",
+    active: true,
+    displayOrder: 12,
+    officialRewardsUrl: "https://www.ocbc.com.my/personal-banking/cards/credit-cards",
+  },
 ];
 
 /* -------------------- Loyalty programmes -------------------- */
@@ -298,6 +307,11 @@ export const rewardProducts: RewardProduct[] = [
   // Standard Chartered
   { id: "sc-journey", bankId: "sc", name: "SC Journey Miles", slug: "sc-journey", rewardCurrencyName: "Journey Miles", active: true, displayOrder: 1 },
   { id: "sc-360-rewards", bankId: "sc", name: "SC 360° Rewards Points", slug: "sc-360-rewards", rewardCurrencyName: "360° Rewards Points", active: true, displayOrder: 2 },
+  // OCBC Malaysia
+  { id: "ocbc-voyage", bankId: "ocbc", name: "OCBC Voyage Miles", slug: "ocbc-voyage", rewardCurrencyName: "Voyage Miles", active: true, displayOrder: 1 },
+  { id: "ocbc-travel-dollar", bankId: "ocbc", name: "OCBC Travel$ (cash credit)", slug: "ocbc-travel-dollar", rewardCurrencyName: "Travel$", active: true, displayOrder: 2 },
+  { id: "ocbc-ocbc-dollar", bankId: "ocbc", name: "OCBC$ (cash credit)", slug: "ocbc-ocbc-dollar", rewardCurrencyName: "OCBC$", active: true, displayOrder: 3 },
+  { id: "ocbc-cashback", bankId: "ocbc", name: "OCBC cashback / non-points cards", slug: "ocbc-cashback", rewardCurrencyName: "Cashback", active: true, displayOrder: 4 },
 ];
 
 /* -------------------- Card groups (entitlement tiers) -------------------- */
@@ -744,6 +758,64 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     active: true,
     displayOrder: 4,
   },
+
+  // ------- OCBC Malaysia -------
+  {
+    id: "cg-ocbc-voyage",
+    rewardProductId: "ocbc-voyage",
+    name: "OCBC Premier Voyage Mastercard — 3,000 Voyage Miles per 1,000 KrisFlyer miles",
+    description:
+      "Voyage Miles do not expire. Only KrisFlyer is a currently verified airline transfer partner for OCBC Malaysia. OCBC Malaysia is not a listed Enrich bank-points conversion partner, so no Enrich route is offered.",
+    eligibleCards: [
+      "OCBC Premier Voyage Mastercard — Premier Banking",
+      "OCBC Premier Voyage Mastercard — Premier Private Client",
+    ],
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-ocbc-travel-dollar",
+    rewardProductId: "ocbc-travel-dollar",
+    name: "OCBC 90°N Visa Card — Travel$ (not transferable to airlines)",
+    description:
+      "Travel$ are redeemed as cash credit against eligible travel spending (5,000 Travel$ = RM10 cash credit), subject to eligible travel-related spending within the preceding 12 months. Travel$ are not transferable to any airline or hotel loyalty programme.",
+    eligibleCards: ["OCBC 90°N Visa Card"],
+    unverifiedNotice:
+      "OCBC Travel$ cannot currently be transferred to an airline loyalty programme. They may be redeemed as cash credit against eligible travel spending (5,000 Travel$ = RM10 cash credit).",
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-ocbc-ocbc-dollar",
+    rewardProductId: "ocbc-ocbc-dollar",
+    name: "OCBC Titanium / OCBC 365 — OCBC$ (cash credit only)",
+    description:
+      "OCBC$ from these cards are redeemable as OCBC cash credit through the OCBC Malaysia Mobile Banking app. They are not transferable airline or hotel points.",
+    eligibleCards: [
+      "OCBC Titanium Mastercard",
+      "OCBC 365 Mastercard",
+    ],
+    unverifiedNotice:
+      "OCBC$ from this card are currently redeemable as OCBC cash credit, not transferable airline or hotel points.",
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-ocbc-cashback",
+    rewardProductId: "ocbc-cashback",
+    name: "OCBC Cashflo / Great Eastern Platinum / World Mastercard — no transferable points",
+    description:
+      "These cards either focus on instalments or earn cashback. They do not currently earn a supported points or miles currency.",
+    eligibleCards: [
+      "OCBC Cashflo Mastercard",
+      "OCBC Great Eastern Platinum Mastercard",
+      "OCBC World Mastercard",
+    ],
+    unverifiedNotice:
+      "This card does not currently earn a supported points or miles currency that can be transferred to an airline or hotel programme.",
+    active: true,
+    displayOrder: 1,
+  },
 ];
 
 /* -------------------- Conversion rules -------------------- */
@@ -1065,6 +1137,18 @@ export const conversionRules: ConversionRule[] = [
     transferIncrementPartnerPoints: 1000,
     reviewNotes: "Other 360 Points Cards: 46,000 Rewards Points = 1,000 Enrich Points, redeem in multiples of 46,000 Rewards Points. Only attach to individually confirmed 360° Rewards Points cards; never to cashback-only cards.",
   }),
+
+  // ---- OCBC Malaysia — Voyage Miles to KrisFlyer (verified) ----
+  rule("ocbc-voyage-krisflyer", "cg-ocbc-voyage", "krisflyer", [3000, 1000], {
+    sourceUrl: "https://www.ocbc.com.my/personal-banking/cards/credit-cards/ocbc-voyage",
+    sourceTitle: "OCBC Premier Voyage Mastercard — Voyage Miles to KrisFlyer",
+    sourcePublisher: "OCBC Bank (Malaysia) Berhad",
+    verifiedOn: "2026-07-22",
+    minimumTransferPartnerPoints: 1000,
+    transferIncrementPartnerPoints: 1000,
+    reviewNotes:
+      "Only publicly verified airline transfer for a current OCBC Malaysia card programme. Voyage Miles do not expire. OCBC Malaysia is not listed as an Enrich bank-points conversion partner — do not add an Enrich route or apply an Enrich promotional bonus to any OCBC balance. Do not infer Cathay/Emirates/Qatar/Etihad partners from Singapore OCBC rules.",
+  }),
 ];
 
 /* -------------------- Cards (searchable) -------------------- */
@@ -1243,6 +1327,19 @@ export const cards: Card[] = [
   mkCard("sc-platinum-mc-basic", "sc", "Standard Chartered Platinum Mastercard Basic", "cg-sc-360-unverified", { status: "rate_unconfirmed", aliases: ["Platinum Mastercard Basic"] }),
   mkCard("sc-beyond-priority-private", "sc", "Standard Chartered Beyond Credit Card — Priority Private", "cg-sc-360-unverified", { status: "rate_unconfirmed", aliases: ["Beyond Priority Private"] }),
   mkCard("sc-beyond-priority-banking", "sc", "Standard Chartered Beyond Credit Card — Priority Banking", "cg-sc-360-unverified", { status: "rate_unconfirmed", aliases: ["Beyond Priority Banking"] }),
+
+  // ---------- OCBC Malaysia ----------
+  // Only publicly verified airline transfer: Premier Voyage → KrisFlyer (3,000:1,000).
+  // OCBC Malaysia is NOT an Enrich bank-points conversion partner: no Enrich route,
+  // no Enrich promotional bonus, no Singapore OCBC rules inherited.
+  mkCard("ocbc_premier_voyage_premier_banking", "ocbc", "OCBC Premier Voyage Mastercard — Premier Banking", "cg-ocbc-voyage", { aliases: ["Voyage", "Premier Voyage", "OCBC Voyage"] }),
+  mkCard("ocbc_premier_voyage_premier_private_client", "ocbc", "OCBC Premier Voyage Mastercard — Premier Private Client", "cg-ocbc-voyage", { aliases: ["Voyage Private Client", "Premier Private Client"] }),
+  mkCard("ocbc_90n_visa", "ocbc", "OCBC 90°N Visa Card", "cg-ocbc-travel-dollar", { aliases: ["90N", "Travel Dollar", "Travel$"] }),
+  mkCard("ocbc_titanium_mastercard", "ocbc", "OCBC Titanium Mastercard", "cg-ocbc-ocbc-dollar", { aliases: ["Titanium", "Blue Titanium", "Pink Titanium"] }),
+  mkCard("ocbc_365_mastercard", "ocbc", "OCBC 365 Mastercard", "cg-ocbc-ocbc-dollar", { aliases: ["OCBC 365"] }),
+  mkCard("ocbc_cashflo_mastercard", "ocbc", "OCBC Cashflo Mastercard", "cg-ocbc-cashback", { status: "cashback_only", aliases: ["Cashflo"] }),
+  mkCard("ocbc_great_eastern_platinum_mastercard", "ocbc", "OCBC Great Eastern Platinum Mastercard", "cg-ocbc-cashback", { status: "cashback_only", aliases: ["Great Eastern Platinum", "GE Platinum"] }),
+  mkCard("ocbc_world_mastercard", "ocbc", "OCBC World Mastercard", "cg-ocbc-cashback", { status: "cashback_only", aliases: ["OCBC World"] }),
 ];
 
 /* -------------------- Helpers -------------------- */
