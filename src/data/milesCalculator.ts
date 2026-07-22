@@ -645,3 +645,34 @@ export function summaryCounters() {
     routes: publicRules.length,
   };
 }
+
+/* -------------------- Card helpers -------------------- */
+
+export function getCardById(id: string): Card | undefined {
+  return cards.find((c) => c.id === id);
+}
+
+export function getCardsByBank(bankId: string): Card[] {
+  return cards
+    .filter((c) => c.bankId === bankId)
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/** Rewards currency (bank-side) for a given card. Derived from the card group. */
+export function getRewardCurrencyForCard(card: Card): { productId: string; currencyName: string } | undefined {
+  const group = getCardGroupById(card.cardGroupId);
+  const product = group ? getRewardProductById(group.rewardProductId) : undefined;
+  if (!product) return undefined;
+  return { productId: product.id, currencyName: product.rewardCurrencyName };
+}
+
+/** Simple case-insensitive search across name + aliases. Empty query returns all bank cards. */
+export function searchCardsInBank(bankId: string, query: string): Card[] {
+  const list = getCardsByBank(bankId);
+  const q = query.trim().toLowerCase();
+  if (!q) return list;
+  return list.filter((c) => {
+    if (c.name.toLowerCase().includes(q)) return true;
+    return (c.aliases ?? []).some((a) => a.toLowerCase().includes(q));
+  });
+}
