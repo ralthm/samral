@@ -532,7 +532,10 @@ function EntryCard({
   const selectedGroup = card ? getCardGroupById(card.cardGroupId) : undefined;
   const rulesForSelected = card ? getPublicRulesForCardGroup(card.cardGroupId) : [];
   const hasNoRules = !!card && rulesForSelected.length === 0;
-  const rateUnconfirmed = card?.status === "rate_unconfirmed" || hasNoRules;
+  const rateUnconfirmed =
+    card?.status === "rate_unconfirmed" ||
+    card?.status === "rate_pending_verification" ||
+    hasNoRules;
 
   const [query, setQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
