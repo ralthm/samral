@@ -503,6 +503,21 @@ function EntryCard({
   const product = entry.rewardProductId ? getRewardProductById(entry.rewardProductId) : undefined;
   const cardGroups = entry.rewardProductId ? getCardGroupsByRewardProduct(entry.rewardProductId) : [];
   const bank = entry.bankId ? getBankById(entry.bankId) : undefined;
+  const selectedGroup = entry.cardGroupId ? eligibleCardGroups.find((g) => g.id === entry.cardGroupId) : undefined;
+  const rulesForSelected = entry.cardGroupId ? getPublicRulesForCardGroup(entry.cardGroupId) : [];
+  const hasNoRules = !!entry.cardGroupId && rulesForSelected.length === 0;
+
+  const [eligibleOpen, setEligibleOpen] = useState(false);
+
+  // Auto-pick a reward product if the bank exposes only one.
+  useEffect(() => {
+    if (entry.bankId && !entry.rewardProductId && bankProducts.length === 1) {
+      const only = bankProducts[0];
+      const groups = getCardGroupsByRewardProduct(only.id);
+      onChange({ ...entry, rewardProductId: only.id, cardGroupId: groups.length === 1 ? groups[0].id : "" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entry.bankId, entry.rewardProductId, bankProducts.length]);
 
   const pointsValue = parseIntSafe(entry.rawInput);
   const pointsError = entry.rawInput && !Number.isFinite(pointsValue)
@@ -516,6 +531,8 @@ function EntryCard({
       onFirstValid();
     }
   }, [entry.cardGroupId, pointsValue, onFirstValid]);
+
+  const currencyLabel = product?.rewardCurrencyName ?? "Points";
 
   return (
     <div className="rounded-sm border border-border bg-background p-5">
@@ -550,35 +567,37 @@ function EntryCard({
           </select>
         </Field>
 
-        <Field label="Card group / rewards programme" htmlFor={`product-${entry.id}`}>
-          <select
-            id={`product-${entry.id}`}
-            value={entry.rewardProductId}
-            onChange={(e) => {
-              const productId = e.target.value;
-              const groups = productId ? getCardGroupsByRewardProduct(productId) : [];
-              const cardGroupId = groups.length === 1 ? groups[0].id : "";
-              onChange({ ...entry, rewardProductId: productId, cardGroupId });
-            }}
-            disabled={!entry.bankId}
-            className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none disabled:bg-muted"
-          >
-            <option value="">{entry.bankId ? "Select card group" : "Select bank first"}</option>
-            {bankProducts.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
-        </Field>
+        {bankProducts.length > 1 && (
+          <Field label="Rewards programme" htmlFor={`product-${entry.id}`}>
+            <select
+              id={`product-${entry.id}`}
+              value={entry.rewardProductId}
+              onChange={(e) => {
+                const productId = e.target.value;
+                const groups = productId ? getCardGroupsByRewardProduct(productId) : [];
+                const cardGroupId = groups.length === 1 ? groups[0].id : "";
+                onChange({ ...entry, rewardProductId: productId, cardGroupId });
+              }}
+              disabled={!entry.bankId}
+              className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none disabled:bg-muted"
+            >
+              <option value="">{entry.bankId ? "Select rewards programme" : "Select bank first"}</option>
+              {bankProducts.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          </Field>
+        )}
 
         {cardGroups.length > 1 && (
-          <Field label="Specific eligible cards" htmlFor={`cardgroup-${entry.id}`}>
+          <Field label="Which card do you hold?" htmlFor={`cardgroup-${entry.id}`}>
             <select
               id={`cardgroup-${entry.id}`}
               value={entry.cardGroupId}
               onChange={(e) => onChange({ ...entry, cardGroupId: e.target.value })}
               className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
             >
-              <option value="">Select card group</option>
+              <option value="">Select your exact card</option>
               {cardGroups.map((g) => (
                 <option key={g.id} value={g.id}>{g.name}</option>
               ))}
@@ -586,7 +605,7 @@ function EntryCard({
           </Field>
         )}
 
-        <Field label={`${product?.rewardCurrencyName ?? "Points"} balance`} htmlFor={`points-${entry.id}`}>
+        <Field label={`${currencyLabel} balance`} htmlFor={`points-${entry.id}`}>
           <input
             id={`points-${entry.id}`}
             type="text"
@@ -608,6 +627,35 @@ function EntryCard({
           )}
         </Field>
       </div>
+
+      {selectedGroup && selectedGroup.eligibleCards.length > 0 && (
+        <div className="mt-4 rounded-sm border border-border/70 bg-sand/40 p-3 text-[12px] text-ink/75">
+          <button
+            type="button"
+            onClick={() => setEligibleOpen((v) => !v)}
+            aria-expanded={eligibleOpen}
+            className="inline-flex items-center gap-1.5 text-ink hover:opacity-70"
+          >
+            <ChevronDown className={`h-3.5 w-3.5 transition-transform ${eligibleOpen ? "rotate-180" : ""}`} />
+            {eligibleOpen ? "Hide" : "Show"} the {selectedGroup.eligibleCards.length} card{selectedGroup.eligibleCards.length === 1 ? "" : "s"} included in this group
+          </button>
+          {eligibleOpen && (
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-ink/70">
+              {selectedGroup.eligibleCards.map((c) => <li key={c}>{c}</li>)}
+            </ul>
+          )}
+          {selectedGroup.description && (
+            <p className="mt-2 text-[11px] leading-relaxed text-ink/55">{selectedGroup.description}</p>
+          )}
+        </div>
+      )}
+
+      {hasNoRules && selectedGroup?.unverifiedNotice && (
+        <div role="note" className="mt-3 rounded-sm border border-ink/30 bg-background p-3 text-[12px] leading-relaxed text-ink/80">
+          <p className="font-medium text-ink">Rate not confirmed</p>
+          <p className="mt-1">{selectedGroup.unverifiedNotice}</p>
+        </div>
+      )}
 
       <div className="mt-4">
         {entry.showLabel || entry.nickname ? (
@@ -908,8 +956,32 @@ function ProgrammeBalanceCard({
   entryContext: Snapshot["entryContext"];
 }) {
   const [open, setOpen] = useState(false);
-  const totalRemainingInBanks = rowResults.reduce((s, r) => s + r.bankPointsRemaining, 0);
-  const totalBankUsed = rowResults.reduce((s, r) => s + r.bankPointsUsed, 0);
+
+  // Breakdown by bank-side currency (never sum different currencies).
+  const byCurrency = useMemo(() => {
+    const m = new Map<string, { bankName: string; currency: string; used: number; remaining: number }>();
+    for (const r of rowResults) {
+      const key = `${r.bankName}::${r.rewardCurrencyName}`;
+      const existing = m.get(key) ?? { bankName: r.bankName, currency: r.rewardCurrencyName, used: 0, remaining: 0 };
+      existing.used += r.bankPointsUsed;
+      m.set(key, existing);
+    }
+    // Remaining per entry uses the min across rules for that entry (points not used by best route).
+    const perEntryRemaining = new Map<string, { bankName: string; currency: string; remaining: number }>();
+    for (const [entryId, ctx] of entryContext) {
+      const rs = rowResults.filter((r) => r.entryId === entryId);
+      if (rs.length === 0) continue;
+      const minRemaining = rs.reduce((min, r) => Math.min(min, r.bankPointsRemaining), ctx.entered);
+      const currency = rs[0].rewardCurrencyName;
+      perEntryRemaining.set(entryId, { bankName: rs[0].bankName, currency, remaining: minRemaining });
+    }
+    for (const { bankName, currency, remaining } of perEntryRemaining.values()) {
+      const key = `${bankName}::${currency}`;
+      const existing = m.get(key);
+      if (existing) existing.remaining += remaining;
+    }
+    return Array.from(m.values());
+  }, [rowResults, entryContext]);
 
   return (
     <div className="rounded-sm border border-border bg-background p-6">
@@ -921,14 +993,26 @@ function ProgrammeBalanceCard({
 
       <dl className="mt-5 grid grid-cols-2 gap-y-2 border-t border-border pt-4 text-[12px]">
         <dt className="text-ink/55">From bank transfers</dt>
-        <dd className="text-right text-ink">{formatInt(programme.transferredTotal)}</dd>
+        <dd className="text-right text-ink">{formatInt(programme.transferredTotal)} {programme.programmeName}</dd>
         <dt className="text-ink/55">Existing balance</dt>
-        <dd className="text-right text-ink">{formatInt(programme.existingBalance)}</dd>
-        <dt className="text-ink/55">Bank points used</dt>
-        <dd className="text-right text-ink">{formatInt(totalBankUsed)}</dd>
-        <dt className="text-ink/55">Bank points remaining</dt>
-        <dd className="text-right text-ink">{formatInt(totalRemainingInBanks)}</dd>
+        <dd className="text-right text-ink">{formatInt(programme.existingBalance)} {programme.programmeName}</dd>
       </dl>
+
+      {byCurrency.length > 0 && (
+        <div className="mt-4 border-t border-border pt-4">
+          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">Bank points used &amp; remaining</p>
+          <ul className="mt-2 space-y-1.5 text-[12px]">
+            {byCurrency.map((c) => (
+              <li key={c.bankName + c.currency} className="grid grid-cols-[1fr_auto_auto] gap-3">
+                <span className="text-ink/70">{c.bankName} {c.currency}</span>
+                <span className="text-ink">used {formatInt(c.used)}</span>
+                <span className="text-ink/70">left {formatInt(c.remaining)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-[11px] text-ink/50">Bank point currencies are shown separately and are never summed.</p>
+        </div>
+      )}
 
       <button
         type="button"
@@ -1295,14 +1379,14 @@ function DestinationCard({
   const remaining = Math.max(0, e.delta);
 
   const badge =
-    state === "unlocked" ? { label: "Unlocked", cls: "bg-ink text-background" } :
+    state === "unlocked" ? { label: "Points threshold met", cls: "bg-ink text-background" } :
     state === "almost" ? { label: "Almost there", cls: "border border-ink text-ink" } :
     { label: "Future goal", cls: "border border-ink/40 text-ink/70" };
 
   const primaryLabel =
-    state === "unlocked" ? "Plan This Trip" :
-    state === "almost" ? "Build My Points Plan" :
-    "Create My Points Strategy";
+    state === "unlocked" ? "Find My Best Redemption" :
+    state === "almost" ? "Get My Points Strategy" :
+    "Get My Points Strategy";
 
   return (
     <article className="rounded-sm border border-border bg-background p-6">
@@ -1343,10 +1427,10 @@ function DestinationCard({
 
       <p className="mt-4 text-[11px] leading-relaxed text-ink/60">
         {state === "unlocked"
-          ? "Your potential balance meets the displayed points requirement. Samral can help you assess the transfer route, practical redemption options and booking plan before you move your points."
+          ? "Your potential balance meets the displayed Saver points requirement. Award-seat availability has not been checked. We'll assess real award availability, compare cash and points, and prepare the safest transfer and booking plan before you move irreversible points."
           : state === "almost"
-          ? `You are ${formatInt(shortfall)} points away from this displayed target. Get a strategy for closing the gap using your cards and spending.`
-          : "Turn this trip into a practical points goal based on your cards, spending and timeline."}
+          ? `You are ${formatInt(shortfall)} points away from this displayed target. Get a personalised review of your cards, spending pattern and travel goals.`
+          : "Get a personalised review of your cards, spending pattern and travel goals."}
       </p>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">

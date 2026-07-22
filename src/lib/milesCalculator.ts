@@ -21,6 +21,7 @@ export interface RuleResult {
   cardGroupId: string;
   cardGroupName: string;
   bankName: string;
+  bankId: string;
   rewardProductName: string;
   rewardCurrencyName: string;
   programmeId: string;
@@ -40,6 +41,10 @@ export interface RuleResult {
   effectiveFrom?: string;
   notes?: string;
   annualCapPartnerPoints?: number;
+  monthlyCapPartnerPoints?: number;
+  monthlyCapApplied?: boolean;
+  minimumTransferPartnerPoints?: number;
+  transferIncrementPartnerPoints?: number;
 }
 
 export function calculateEntry(input: CalcInput): RuleResult[] {
@@ -52,6 +57,7 @@ export function calculateEntry(input: CalcInput): RuleResult[] {
   return rules.map((r) => buildResult(input, r, {
     cardGroupName: group.name,
     bankName: bank.name,
+    bankId: bank.id,
     rewardProductName: product.name,
     rewardCurrencyName: product.rewardCurrencyName,
   }));
@@ -60,14 +66,25 @@ export function calculateEntry(input: CalcInput): RuleResult[] {
 function buildResult(
   input: CalcInput,
   r: ConversionRule,
-  ctx: { cardGroupName: string; bankName: string; rewardProductName: string; rewardCurrencyName: string },
+  ctx: { cardGroupName: string; bankName: string; bankId: string; rewardProductName: string; rewardCurrencyName: string },
 ): RuleResult {
   const programme = getProgrammeById(r.loyaltyProgrammeId)!;
   const points = Math.max(0, Math.floor(input.bankPoints || 0));
-  const fullBlocks = Math.floor(points / r.bankPointsPerBlock);
+
+  let fullBlocks = Math.floor(points / r.bankPointsPerBlock);
+  let partnerPointsReceived = fullBlocks * r.partnerPointsPerBlock;
+  let monthlyCapApplied = false;
+  if (
+    typeof r.monthlyCapPartnerPoints === "number" &&
+    partnerPointsReceived > r.monthlyCapPartnerPoints
+  ) {
+    const cappedBlocks = Math.floor(r.monthlyCapPartnerPoints / r.partnerPointsPerBlock);
+    fullBlocks = cappedBlocks;
+    partnerPointsReceived = cappedBlocks * r.partnerPointsPerBlock;
+    monthlyCapApplied = true;
+  }
   const bankPointsUsed = fullBlocks * r.bankPointsPerBlock;
   const bankPointsRemaining = points - bankPointsUsed;
-  const partnerPointsReceived = fullBlocks * r.partnerPointsPerBlock;
   const pointsShortOfNextBlock =
     fullBlocks === 0 ? Math.max(0, r.bankPointsPerBlock - points) : 0;
 
@@ -76,6 +93,7 @@ function buildResult(
     cardGroupId: input.cardGroupId,
     cardGroupName: ctx.cardGroupName,
     bankName: ctx.bankName,
+    bankId: ctx.bankId,
     rewardProductName: ctx.rewardProductName,
     rewardCurrencyName: ctx.rewardCurrencyName,
     programmeId: programme.id,
@@ -95,6 +113,10 @@ function buildResult(
     effectiveFrom: r.effectiveFrom,
     notes: r.notes,
     annualCapPartnerPoints: r.annualCapPartnerPoints,
+    monthlyCapPartnerPoints: r.monthlyCapPartnerPoints,
+    monthlyCapApplied,
+    minimumTransferPartnerPoints: r.minimumTransferPartnerPoints,
+    transferIncrementPartnerPoints: r.transferIncrementPartnerPoints,
   };
 }
 
