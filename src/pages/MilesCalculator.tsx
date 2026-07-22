@@ -1514,6 +1514,30 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
     navigate(STRATEGY_URL);
   };
 
+  if (!hasVerifiedBalance) {
+    return (
+      <section className="mt-16 border-t border-border pt-12">
+        <div>
+          <h2 className="font-display text-3xl text-ink md:text-4xl">
+            Where can your points take you?
+          </h2>
+          <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-ink/70">
+            Redemption planning is unavailable right now.
+          </p>
+        </div>
+        <div className="mt-6 rounded-sm border border-ink/30 bg-background p-5 text-[13px] leading-relaxed text-ink/80">
+          <p className="font-medium text-ink">No verified transferable balance yet</p>
+          <p className="mt-2">
+            We only show destination opportunities once a card you&rsquo;ve entered has a verified conversion route into a supported loyalty programme. The cards in your portfolio either have no confirmed conversion rate on record, earn miles directly with an airline (so their balance belongs in Step&nbsp;2), or convert only into programmes whose redemption engine isn&rsquo;t live yet.
+          </p>
+          <p className="mt-2">
+            Add a card with a verified transfer route, or enter an existing balance in an airline programme in Step&nbsp;2, and destination results will appear here.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="mt-16 border-t border-border pt-12">
       <div>
@@ -1524,6 +1548,7 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
           Verified redemption opportunities across the programmes your cards can reach. Programme balances shown are alternative transfer scenarios — the same bank points cannot become their full potential balance in more than one programme at the same time.
         </p>
       </div>
+
 
       {/* Filters */}
       <div className="mt-6 grid gap-3 rounded-sm border border-border bg-background p-4 sm:grid-cols-2 md:grid-cols-5">
