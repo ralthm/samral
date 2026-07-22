@@ -1137,6 +1137,18 @@ export const conversionRules: ConversionRule[] = [
     transferIncrementPartnerPoints: 1000,
     reviewNotes: "Other 360 Points Cards: 46,000 Rewards Points = 1,000 Enrich Points, redeem in multiples of 46,000 Rewards Points. Only attach to individually confirmed 360° Rewards Points cards; never to cashback-only cards.",
   }),
+
+  // ---- OCBC Malaysia — Voyage Miles to KrisFlyer (verified) ----
+  rule("ocbc-voyage-krisflyer", "cg-ocbc-voyage", "krisflyer", [3000, 1000], {
+    sourceUrl: "https://www.ocbc.com.my/personal-banking/cards/credit-cards/ocbc-voyage",
+    sourceTitle: "OCBC Premier Voyage Mastercard — Voyage Miles to KrisFlyer",
+    sourcePublisher: "OCBC Bank (Malaysia) Berhad",
+    verifiedOn: "2026-07-22",
+    minimumTransferPartnerPoints: 1000,
+    transferIncrementPartnerPoints: 1000,
+    reviewNotes:
+      "Only publicly verified airline transfer for a current OCBC Malaysia card programme. Voyage Miles do not expire. OCBC Malaysia is not listed as an Enrich bank-points conversion partner — do not add an Enrich route or apply an Enrich promotional bonus to any OCBC balance. Do not infer Cathay/Emirates/Qatar/Etihad partners from Singapore OCBC rules.",
+  }),
 ];
 
 /* -------------------- Cards (searchable) -------------------- */
