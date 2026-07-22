@@ -297,6 +297,7 @@ export const rewardProducts: RewardProduct[] = [
   { id: "rakyat-points", bankId: "bankrakyat", name: "Rakyat Reward Points", slug: "rakyat-points", rewardCurrencyName: "Rakyat Reward Points", active: true, displayOrder: 1 },
   // Standard Chartered
   { id: "sc-journey", bankId: "sc", name: "SC Journey Miles", slug: "sc-journey", rewardCurrencyName: "Journey Miles", active: true, displayOrder: 1 },
+  { id: "sc-360-rewards", bankId: "sc", name: "SC 360° Rewards Points", slug: "sc-360-rewards", rewardCurrencyName: "360° Rewards Points", active: true, displayOrder: 2 },
 ];
 
 /* -------------------- Card groups (entitlement tiers) -------------------- */
@@ -693,18 +694,55 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     displayOrder: 1,
   },
 
-  // ------- Standard Chartered (partially verified) -------
+  // ------- Standard Chartered -------
   {
     id: "cg-sc-journey",
     rewardProductId: "sc-journey",
-    name: "SC Journey Credit Card — programme-level transfer requires verification",
+    name: "SC Journey Credit Card — Journey Miles to Enrich (2,000 → 1,000)",
     description:
-      "Partially verified. Headline earn ratio: 2 Journey Miles = 1 AirMile. Per-partner conversion denominations, minimum transfers and increments still need confirmation from the current Journey catalogue.",
+      "Verified Enrich conversion for the Standard Chartered Journey Credit Card. Additional airline transfer partners will be added once their partner-specific transfer rules are confirmed.",
     eligibleCards: ["Standard Chartered Journey Credit Card"],
-    unverifiedNotice:
-      "Programme-level transfer details for SC Journey Miles require verification. The headline earn ratio (2 Journey Miles = 1 AirMile) is documented, but per-partner conversion denominations, minimum transfer sizes and increments are not currently confirmed. Balances cannot be converted until the catalogue is verified.",
     active: true,
     displayOrder: 1,
+  },
+  {
+    id: "cg-sc-360-7k",
+    rewardProductId: "sc-360-rewards",
+    name: "SC 360° Rewards — 7,000 Points to 1,000 Enrich",
+    description:
+      "Verified Enrich conversion for the Standard Chartered Priority Banking Visa Infinite and Standard Chartered Visa Infinite Credit Cards. Rewards Points redeem in multiples of 7,000.",
+    eligibleCards: [
+      "Standard Chartered Priority Banking Visa Infinite Credit Card",
+      "Standard Chartered Visa Infinite Credit Card",
+    ],
+    active: true,
+    displayOrder: 2,
+  },
+  {
+    id: "cg-sc-360-46k",
+    rewardProductId: "sc-360-rewards",
+    name: "SC 360° Rewards — 46,000 Points to 1,000 Enrich (Other 360 Points Cards)",
+    description:
+      "Verified Enrich conversion for other Standard Chartered 360° Rewards Points cards (e.g. Visa Platinum). Rewards Points redeem in multiples of 46,000.",
+    eligibleCards: ["Standard Chartered Visa Platinum Credit Card"],
+    active: true,
+    displayOrder: 3,
+  },
+  {
+    id: "cg-sc-360-unverified",
+    rewardProductId: "sc-360-rewards",
+    name: "SC 360° Rewards — Enrich rate requires verification",
+    description:
+      "Applies to Standard Chartered cards that earn 360° Rewards Points but whose Enrich conversion has not yet been individually confirmed by Standard Chartered or Enrich.",
+    eligibleCards: [
+      "Standard Chartered Platinum Mastercard Basic",
+      "Standard Chartered Beyond Credit Card — Priority Private",
+      "Standard Chartered Beyond Credit Card — Priority Banking",
+    ],
+    unverifiedNotice:
+      "Enrich conversion for this card is pending verification. Enable it only after Standard Chartered's live Online Rewards portal, an updated Enrich partner page, or written Standard Chartered confirmation identifies the exact rate.",
+    active: true,
+    displayOrder: 4,
   },
 ];
 
@@ -998,6 +1036,35 @@ export const conversionRules: ConversionRule[] = [
     verifiedOn: "2026-07-01",
     reviewNotes: "Only attach this profile to cards that currently issue Rakyat Reward Points.",
   }),
+
+  // ---- Standard Chartered — Enrich (verified) ----
+  rule("sc-journey-enrich", "cg-sc-journey", "enrich", [2000, 1000], {
+    sourceUrl: "https://www.malaysiaairlines.com/my/en/enrich/earn/partners/financial/standard-chartered.html",
+    sourceTitle: "Enrich — Standard Chartered Bank",
+    sourcePublisher: "Malaysia Airlines Enrich",
+    verifiedOn: "2026-07-22",
+    minimumTransferPartnerPoints: 1000,
+    transferIncrementPartnerPoints: 1000,
+    reviewNotes: "Journey Cards: 2,000 Journey Miles = 1,000 Enrich Points. Floor-block calculation only; partial blocks are never issued.",
+  }),
+  rule("sc-360-7k-enrich", "cg-sc-360-7k", "enrich", [7000, 1000], {
+    sourceUrl: "https://www.malaysiaairlines.com/my/en/enrich/earn/partners/financial/standard-chartered.html",
+    sourceTitle: "Enrich — Standard Chartered Bank",
+    sourcePublisher: "Malaysia Airlines Enrich",
+    verifiedOn: "2026-07-22",
+    minimumTransferPartnerPoints: 1000,
+    transferIncrementPartnerPoints: 1000,
+    reviewNotes: "Priority Banking Visa Infinite / Visa Infinite: 7,000 Rewards Points = 1,000 Enrich Points, redeem in multiples of 7,000 Rewards Points. Floor-block calculation only.",
+  }),
+  rule("sc-360-46k-enrich", "cg-sc-360-46k", "enrich", [46000, 1000], {
+    sourceUrl: "https://www.malaysiaairlines.com/my/en/enrich/earn/partners/financial/standard-chartered.html",
+    sourceTitle: "Enrich — Standard Chartered Bank",
+    sourcePublisher: "Malaysia Airlines Enrich",
+    verifiedOn: "2026-07-22",
+    minimumTransferPartnerPoints: 1000,
+    transferIncrementPartnerPoints: 1000,
+    reviewNotes: "Other 360 Points Cards: 46,000 Rewards Points = 1,000 Enrich Points, redeem in multiples of 46,000 Rewards Points. Only attach to individually confirmed 360° Rewards Points cards; never to cashback-only cards.",
+  }),
 ];
 
 /* -------------------- Cards (searchable) -------------------- */
@@ -1169,7 +1236,13 @@ export const cards: Card[] = [
   mkCard("rakyat-card", "bankrakyat", "Bank Rakyat credit card (Rakyat Reward Points)", "cg-rakyat"),
 
   // ---------- Standard Chartered ----------
-  mkCard("sc-journey", "sc", "Standard Chartered Journey Credit Card", "cg-sc-journey", { status: "rate_unconfirmed" }),
+  mkCard("sc-journey", "sc", "Standard Chartered Journey Credit Card", "cg-sc-journey", { aliases: ["SC Journey", "Journey Credit Card", "Journey Miles"] }),
+  mkCard("sc-priority-banking-visa-infinite", "sc", "Standard Chartered Priority Banking Visa Infinite Credit Card", "cg-sc-360-7k", { aliases: ["Priority Banking Visa Infinite", "SC Priority VI"] }),
+  mkCard("sc-visa-infinite", "sc", "Standard Chartered Visa Infinite Credit Card", "cg-sc-360-7k", { aliases: ["SC Visa Infinite"] }),
+  mkCard("sc-visa-platinum", "sc", "Standard Chartered Visa Platinum Credit Card", "cg-sc-360-46k", { aliases: ["SC Visa Platinum"] }),
+  mkCard("sc-platinum-mc-basic", "sc", "Standard Chartered Platinum Mastercard Basic", "cg-sc-360-unverified", { status: "rate_unconfirmed", aliases: ["Platinum Mastercard Basic"] }),
+  mkCard("sc-beyond-priority-private", "sc", "Standard Chartered Beyond Credit Card — Priority Private", "cg-sc-360-unverified", { status: "rate_unconfirmed", aliases: ["Beyond Priority Private"] }),
+  mkCard("sc-beyond-priority-banking", "sc", "Standard Chartered Beyond Credit Card — Priority Banking", "cg-sc-360-unverified", { status: "rate_unconfirmed", aliases: ["Beyond Priority Banking"] }),
 ];
 
 /* -------------------- Helpers -------------------- */
