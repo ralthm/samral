@@ -1,5 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
 const NotFound = () => {
   const location = useLocation();
@@ -11,13 +13,7 @@ const NotFound = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <header className="border-b border-border">
-        <div className="mx-auto flex w-full max-w-[1440px] items-center px-5 py-5 sm:px-6 md:px-12 md:py-8">
-          <Link to="/" className="font-display text-2xl leading-none text-ink md:text-[26px]">
-            Samral
-          </Link>
-        </div>
-      </header>
+      <SiteHeader />
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-start justify-center px-5 py-20 sm:px-6">
         <p className="eyebrow mb-6 text-clay">404</p>
         <h1 className="font-display text-4xl text-ink md:text-6xl">
@@ -33,6 +29,7 @@ const NotFound = () => {
           Return to homepage &nbsp;&rarr;
         </Link>
       </main>
+      <SiteFooter />
     </div>
   );
 };
