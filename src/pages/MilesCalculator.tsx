@@ -657,11 +657,25 @@ function EntryCard({
                       key={c.id}
                       type="button"
                       onClick={() => pickCard(c)}
-                      className="flex w-full items-center justify-between gap-3 border-b border-border/60 px-3 py-2 text-left text-[13px] text-ink hover:bg-sand/50"
+                      className="flex w-full items-start justify-between gap-3 border-b border-border/60 px-3 py-2 text-left text-[13px] text-ink hover:bg-sand/50"
                     >
-                      <span className="truncate">{c.name}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate">{c.name}</span>
+                        {c.subtitle && (
+                          <span className="block truncate text-[11px] text-ink/55">{c.subtitle}</span>
+                        )}
+                      </span>
                       {(c.status === "rate_unconfirmed" || c.status === "rate_pending_verification") && (
                         <span className="shrink-0 text-[10px] uppercase tracking-[0.14em] text-ink/50">Rate to confirm</span>
+                      )}
+                      {c.status === "legacy" && (
+                        <span className="shrink-0 text-[10px] uppercase tracking-[0.14em] text-ink/50">Legacy</span>
+                      )}
+                      {c.status === "direct_airline" && (
+                        <span className="shrink-0 text-[10px] uppercase tracking-[0.14em] text-ink/50">Direct-earning</span>
+                      )}
+                      {c.status === "cashback_only" && (
+                        <span className="shrink-0 text-[10px] uppercase tracking-[0.14em] text-ink/50">Not convertible</span>
                       )}
                     </button>
                   ))}
