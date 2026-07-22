@@ -14,6 +14,8 @@ export type ProgrammeType =
 
 export type RuleStatus =
   | "verified"
+  | "partially_verified"
+  | "announced_rate_unverified"
   | "needs_review"
   | "expired"
   | "temporarily_unavailable";
@@ -83,6 +85,10 @@ export interface ConversionRule {
   annualCapPartnerPoints?: number;
   campaignCapPartnerPoints?: number;
   notes?: string;
+  sourcePublisher?: string;
+  redemptionChannel?: string;
+  processingTime?: string;
+  reviewNotes?: string;
   status: RuleStatus;
   active: boolean;
 }
@@ -152,6 +158,69 @@ export const banks: Bank[] = [
     officialRewardsUrl:
       "https://www.uob.com.my/personal/cards/rewards/uniringgit.page",
   },
+  {
+    id: "hsbc",
+    name: "HSBC Malaysia",
+    slug: "hsbc-malaysia",
+    country: "MY",
+    active: true,
+    displayOrder: 5,
+    officialRewardsUrl: "https://www.hsbc.com.my/credit-cards/offers/travelone/",
+  },
+  {
+    id: "hongleong",
+    name: "Hong Leong Bank",
+    slug: "hong-leong-bank",
+    country: "MY",
+    active: true,
+    displayOrder: 6,
+    officialRewardsUrl: "https://www.hlb.com.my/en/personal-banking/help-support/rewards.html",
+  },
+  {
+    id: "affin",
+    name: "AFFIN Bank",
+    slug: "affin-bank",
+    country: "MY",
+    active: true,
+    displayOrder: 7,
+    officialRewardsUrl: "https://www.affinalways.com/en/personal/cards/rewards",
+  },
+  {
+    id: "ambank",
+    name: "AmBank",
+    slug: "ambank",
+    country: "MY",
+    active: true,
+    displayOrder: 8,
+    officialRewardsUrl: "https://www.ambank.com.my/eng/cards/credit-cards/ambonus-points",
+  },
+  {
+    id: "publicbank",
+    name: "Public Bank",
+    slug: "public-bank",
+    country: "MY",
+    active: true,
+    displayOrder: 9,
+    officialRewardsUrl: "https://www.pbebank.com/Personal/Cards/Rewards.aspx",
+  },
+  {
+    id: "bankrakyat",
+    name: "Bank Rakyat",
+    slug: "bank-rakyat",
+    country: "MY",
+    active: true,
+    displayOrder: 10,
+    officialRewardsUrl: "https://www.bankrakyat.com.my/",
+  },
+  {
+    id: "sc",
+    name: "Standard Chartered",
+    slug: "standard-chartered",
+    country: "MY",
+    active: true,
+    displayOrder: 11,
+    officialRewardsUrl: "https://www.sc.com/my/credit-cards/journey/",
+  },
 ];
 
 /* -------------------- Loyalty programmes -------------------- */
@@ -175,6 +244,12 @@ export const loyaltyProgrammes: LoyaltyProgramme[] = [
   { id: "ihg", name: "IHG One Rewards", slug: "ihg-one-rewards", programmeType: "hotel_points", active: true, displayOrder: 16 },
   { id: "marriott", name: "Marriott Bonvoy", slug: "marriott-bonvoy", programmeType: "hotel_points", active: true, displayOrder: 17 },
   { id: "accor", name: "ALL Accor", slug: "all-accor", programmeType: "hotel_points", active: true, displayOrder: 18 },
+  { id: "aeroplan", name: "Aeroplan", slug: "aeroplan", programmeType: "airline_miles", airlineName: "Air Canada", active: true, displayOrder: 19 },
+  { id: "qantas", name: "Qantas Frequent Flyer", slug: "qantas-frequent-flyer", programmeType: "airline_miles", airlineName: "Qantas", active: true, displayOrder: 20 },
+  { id: "fortune-wings", name: "Fortune Wings Club", slug: "fortune-wings-club", programmeType: "airline_miles", airlineName: "Hainan Airlines", active: true, displayOrder: 21 },
+  { id: "vietnam", name: "Vietnam Airlines Lotusmiles", slug: "vietnam-lotusmiles", programmeType: "airline_miles", airlineName: "Vietnam Airlines", active: true, displayOrder: 22 },
+  { id: "united", name: "United MileagePlus", slug: "united-mileageplus", programmeType: "airline_miles", airlineName: "United Airlines", active: true, displayOrder: 23 },
+  { id: "wyndham", name: "Wyndham Rewards", slug: "wyndham-rewards", programmeType: "hotel_points", active: true, displayOrder: 24 },
 ];
 
 /* -------------------- Reward products (bank-side currencies) -------------------- */
@@ -192,6 +267,22 @@ export const rewardProducts: RewardProduct[] = [
   { id: "alliance-tbp", bankId: "alliance", name: "Alliance Three-year Bonus Points (TBP)", slug: "alliance-tbp", rewardCurrencyName: "TBP", active: true, displayOrder: 1 },
   // UOB — one currency (UNIRM), multiple entitlement tiers by card.
   { id: "uob-unirm", bankId: "uob", name: "UOB UNIRinggit (UNIRM)", slug: "uob-unirm", rewardCurrencyName: "UNIRM", active: true, displayOrder: 1 },
+  // HSBC
+  { id: "hsbc-rewards", bankId: "hsbc", name: "HSBC Reward Points — TravelOne", slug: "hsbc-rewards", rewardCurrencyName: "HSBC Reward Points", active: true, displayOrder: 1 },
+  // Hong Leong
+  { id: "hlb-rewards", bankId: "hongleong", name: "HLB Reward Points", slug: "hlb-rewards", rewardCurrencyName: "HLB Reward Points", active: true, displayOrder: 1 },
+  { id: "hlb-direct", bankId: "hongleong", name: "HLB direct Enrich earning cards", slug: "hlb-direct", rewardCurrencyName: "Enrich Points (earned directly)", active: true, displayOrder: 2 },
+  // AFFIN
+  { id: "affin-rewards", bankId: "affin", name: "AFFIN Rewards Points", slug: "affin-rewards", rewardCurrencyName: "AFFIN Rewards Points", active: true, displayOrder: 1 },
+  // AmBank
+  { id: "ambank-bonus", bankId: "ambank", name: "AmBonus Points", slug: "ambank-bonus", rewardCurrencyName: "AmBonus Points", active: true, displayOrder: 1 },
+  { id: "ambank-direct", bankId: "ambank", name: "AmBank direct Enrich earning cards", slug: "ambank-direct", rewardCurrencyName: "Enrich Points (earned directly)", active: true, displayOrder: 2 },
+  // Public Bank
+  { id: "pb-points", bankId: "publicbank", name: "PB Points", slug: "pb-points", rewardCurrencyName: "PB Points", active: true, displayOrder: 1 },
+  // Bank Rakyat
+  { id: "rakyat-points", bankId: "bankrakyat", name: "Rakyat Reward Points", slug: "rakyat-points", rewardCurrencyName: "Rakyat Reward Points", active: true, displayOrder: 1 },
+  // Standard Chartered
+  { id: "sc-journey", bankId: "sc", name: "SC Journey Miles", slug: "sc-journey", rewardCurrencyName: "Journey Miles", active: true, displayOrder: 1 },
 ];
 
 /* -------------------- Card groups (entitlement tiers) -------------------- */
@@ -343,6 +434,181 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     active: true,
     displayOrder: 9,
   },
+
+  // ------- HSBC -------
+  {
+    id: "cg-hsbc-travelone",
+    rewardProductId: "hsbc-rewards",
+    name: "HSBC TravelOne Credit Card",
+    description:
+      "HSBC Reward Points earned on the HSBC TravelOne Credit Card. Airline, hotel and lifestyle transfers use the block ratios published on the HSBC Malaysia TravelOne partner table.",
+    eligibleCards: ["HSBC TravelOne Credit Card"],
+    active: true,
+    displayOrder: 1,
+  },
+
+  // ------- Hong Leong -------
+  {
+    id: "cg-hlb-sutera",
+    rewardProductId: "hlb-rewards",
+    name: "HLB Sutera Platinum — 24,000 HLB Points per 1,000 Enrich (online)",
+    description:
+      "Hong Leong Sutera Platinum online redemption route. Contact-centre route (28,800 HLB Points per 1,000 Enrich) is documented but not used as the default calculation.",
+    eligibleCards: ["HLB Sutera Platinum"],
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-hlb-direct-enrich",
+    rewardProductId: "hlb-direct",
+    name: "HLB Infinite / Infinite P / Infinite Doctor's Edition — direct Enrich earning",
+    description:
+      "These cards earn Enrich Points directly. There is no HLB Reward Points balance to convert.",
+    eligibleCards: [
+      "HLB Infinite P",
+      "HLB Infinite",
+      "HLB Infinite Doctor's Edition",
+    ],
+    unverifiedNotice:
+      "This card earns Enrich Points directly. Enter your accumulated Enrich balance under Step 2 (Existing airline or hotel balances). Current earn rates — HLB Infinite P: RM1 = 1 Enrich (dining), RM3 = 1 (travel & retail), RM5 = 1 (other). HLB Infinite and Infinite Doctor's Edition: RM1 = 1 (dining), RM4 = 1 (travel & retail), RM6 = 1 (other).",
+    active: true,
+    displayOrder: 2,
+  },
+
+  // ------- AFFIN -------
+  {
+    id: "cg-affin-p1",
+    rewardProductId: "affin-rewards",
+    name: "AFFIN INVIKTA / DIVENTIUM — 8,000 AFFIN Rewards Points per 1,000 Enrich",
+    eligibleCards: [
+      "AFFIN INVIKTA Visa Infinite",
+      "AFFIN INVIKTA Visa Infinite-i",
+      "AFFIN INVIKTA World Mastercard",
+      "AFFIN INVIKTA World Mastercard-i",
+      "AFFIN DIVENTIUM",
+      "AFFIN DIVENTIUM-i",
+    ],
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-affin-p2",
+    rewardProductId: "affin-rewards",
+    name: "AFFIN World Mastercard / UKM Alumni Premier World — 15,000 AFFIN Rewards Points per 1,000 Enrich",
+    description:
+      "The UKM/UTM Alumni card naming across AFFIN pages is inconsistent and requires manual confirmation before splitting into separate records.",
+    eligibleCards: [
+      "AFFIN World Mastercard",
+      "AFFIN World Mastercard-i",
+      "AFFIN UKM Alumni Premier World Mastercard",
+      "AFFIN UKM Alumni Premier World Mastercard-i",
+    ],
+    active: true,
+    displayOrder: 2,
+  },
+  {
+    id: "cg-affin-p3",
+    rewardProductId: "affin-rewards",
+    name: "Other AFFIN Rewards Points cards — 20,000 AFFIN Rewards Points per 1,000 Enrich",
+    eligibleCards: ["Other current AFFIN cards that issue AFFIN Rewards Points"],
+    active: true,
+    displayOrder: 3,
+  },
+
+  // ------- AmBank -------
+  {
+    id: "cg-ambank-p1",
+    rewardProductId: "ambank-bonus",
+    name: "AmBank SIGNATURE Priority Banking / Visa Infinite — 12,000 AmBonus per 1,000 Enrich",
+    description:
+      "Effective 1 April 2026. Previous 10,000 / 12,000 / 15,000 rates are no longer applied.",
+    eligibleCards: [
+      "AmBank SIGNATURE Priority Banking — The Metal Visa Infinite",
+      "AmBank SIGNATURE Priority Banking Visa Infinite",
+      "AmBank SIGNATURE Priority Banking World Mastercard",
+      "AmBank Islamic SIGNATURE Priority Banking World Mastercard-i",
+      "AmBank Visa Infinite",
+      "AmBank Islamic Visa Infinite-i",
+    ],
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-ambank-p2",
+    rewardProductId: "ambank-bonus",
+    name: "AmBank World / Signature / Platinum / Gold — 18,000 AmBonus per 1,000 Enrich",
+    description: "Effective 1 April 2026.",
+    eligibleCards: [
+      "AmBank World Mastercard",
+      "AmBank Islamic World Mastercard-i",
+      "AmBank Visa Signature",
+      "AmBank Islamic Visa Signature-i",
+      "AmBank Visa Platinum",
+      "AmBank Islamic Visa Platinum-i",
+      "AmBank Visa Platinum Business",
+      "AmBank Visa Gold",
+      "AmBank Islamic Visa Gold-i",
+    ],
+    active: true,
+    displayOrder: 2,
+  },
+  {
+    id: "cg-ambank-direct-enrich",
+    rewardProductId: "ambank-direct",
+    name: "AmBank Enrich Visa Infinite / Platinum — direct Enrich earning",
+    eligibleCards: [
+      "AmBank Enrich Visa Infinite",
+      "AmBank Enrich Visa Platinum",
+    ],
+    unverifiedNotice:
+      "This card earns Enrich Points directly. Do not enter an AmBonus balance. Enter your accumulated Enrich balance under Step 2 (Existing airline or hotel balances).",
+    active: true,
+    displayOrder: 3,
+  },
+
+  // ------- Public Bank -------
+  {
+    id: "cg-pb-standard",
+    rewardProductId: "pb-points",
+    name: "Public Bank credit cards — 12,500 PB Points per 1,000 Enrich / 2,000 AirAsia",
+    description:
+      "Effective 1 May 2026. Transfers in complete 12,500 PB Point blocks.",
+    eligibleCards: [
+      "PB World Mastercard",
+      "PB Visa Signature",
+      "PB Platinum Mastercard",
+      "PB Quantum Visa",
+      "PB Quantum Mastercard",
+      "PB RCB Gold",
+      "PB RCB Elite",
+    ],
+    active: true,
+    displayOrder: 1,
+  },
+
+  // ------- Bank Rakyat -------
+  {
+    id: "cg-rakyat",
+    rewardProductId: "rakyat-points",
+    name: "Bank Rakyat credit cards — 5,500 Rakyat Reward Points per 1,000 Enrich",
+    eligibleCards: ["Bank Rakyat credit cards that issue Rakyat Reward Points"],
+    active: true,
+    displayOrder: 1,
+  },
+
+  // ------- Standard Chartered (partially verified) -------
+  {
+    id: "cg-sc-journey",
+    rewardProductId: "sc-journey",
+    name: "SC Journey Credit Card — programme-level transfer requires verification",
+    description:
+      "Partially verified. Headline earn ratio: 2 Journey Miles = 1 AirMile. Per-partner conversion denominations, minimum transfers and increments still need confirmation from the current Journey catalogue.",
+    eligibleCards: ["Standard Chartered Journey Credit Card"],
+    unverifiedNotice:
+      "Programme-level transfer details for SC Journey Miles require verification. The headline earn ratio (2 Journey Miles = 1 AirMile) is documented, but per-partner conversion denominations, minimum transfer sizes and increments are not currently confirmed. Balances cannot be converted until the catalogue is verified.",
+    active: true,
+    displayOrder: 1,
+  },
 ];
 
 /* -------------------- Conversion rules -------------------- */
@@ -492,6 +758,124 @@ export const conversionRules: ConversionRule[] = [
   rule("uob-vi-prvi-enrich", "cg-uob-vi-prvi", "enrich", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
   rule("uob-vi-prvi-krisflyer", "cg-uob-vi-prvi", "krisflyer", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
   rule("uob-vi-prvi-cathay", "cg-uob-vi-prvi", "asia-miles", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+
+  // ---- HSBC TravelOne — 21 verified partner routes ----
+  ...(([
+    ["enrich", 21],
+    ["airasia", 12],
+    ["krisflyer", 25],
+    ["asia-miles", 25],
+    ["aeroplan", 55],
+    ["flying-blue", 35],
+    ["ba", 30],
+    ["etihad", 35],
+    ["eva", 40],
+    ["fortune-wings", 45],
+    ["jal", 60],
+    ["qantas", 35],
+    ["qatar", 45],
+    ["rop", 45],
+    ["turkish", 45],
+    ["united", 50],
+    ["vietnam", 35],
+    ["marriott", 25],
+    ["ihg", 25],
+    ["wyndham", 40],
+    ["accor", 70],
+  ] as [string, number][]).map(([prog, hsbc]): ConversionRule => ({
+    id: `hsbc-travelone-${prog}`,
+    eligibleCardGroupId: "cg-hsbc-travelone",
+    loyaltyProgrammeId: prog,
+    bankPointsPerBlock: hsbc,
+    partnerPointsPerBlock: 1,
+    verifiedOn: "2026-07-01",
+    sourceUrl: "https://www.hsbc.com.my/credit-cards/offers/travelone/",
+    sourceTitle: "HSBC Malaysia TravelOne — Reward Points partner conversion table",
+    sourcePublisher: "HSBC Bank Malaysia Berhad",
+    status: "verified",
+    active: true,
+    reviewNotes:
+      "Emirates Skywards deliberately not added — not listed on the current HSBC Malaysia TravelOne partner table.",
+  }))),
+
+  // ---- Hong Leong Sutera Platinum (online default) ----
+  rule("hlb-sutera-enrich-online", "cg-hlb-sutera", "enrich", [24000, 1000], {
+    sourceUrl: "https://www.hlb.com.my/en/personal-banking/help-support/rewards.html",
+    sourceTitle: "Hong Leong Bank Rewards — Sutera Platinum Enrich conversion",
+    sourcePublisher: "Hong Leong Bank Berhad",
+    verifiedOn: "2026-07-01",
+    redemptionChannel: "Online (HLB Connect). Alternative contact-centre route: 28,800 HLB Points = 1,000 Enrich Points.",
+    reviewNotes: "Online rate used as default. Contact-centre rate documented but not applied automatically.",
+  }),
+
+  // ---- AFFIN — three profiles, Enrich only ----
+  rule("affin-p1-enrich", "cg-affin-p1", "enrich", [8000, 1000], {
+    sourceUrl: "https://www.affinalways.com/en/personal/cards/rewards",
+    sourceTitle: "AFFIN Rewards Points redemption",
+    sourcePublisher: "AFFIN Bank Berhad",
+    verifiedOn: "2026-07-01",
+    reviewNotes:
+      "Expired 2024 promotional rates are not used. AirAsia and Batik Air Club routes intentionally not enabled until a current official conversion block is recorded.",
+  }),
+  rule("affin-p2-enrich", "cg-affin-p2", "enrich", [15000, 1000], {
+    sourceUrl: "https://www.affinalways.com/en/personal/cards/rewards",
+    sourceTitle: "AFFIN Rewards Points redemption",
+    sourcePublisher: "AFFIN Bank Berhad",
+    verifiedOn: "2026-07-01",
+    reviewNotes:
+      "AFFIN UKM / UTM Alumni Premier World card naming discrepancy flagged for manual confirmation. Single card group used to avoid duplicate records.",
+  }),
+  rule("affin-p3-enrich", "cg-affin-p3", "enrich", [20000, 1000], {
+    sourceUrl: "https://www.affinalways.com/en/personal/cards/rewards",
+    sourceTitle: "AFFIN Rewards Points redemption",
+    sourcePublisher: "AFFIN Bank Berhad",
+    verifiedOn: "2026-07-01",
+  }),
+
+  // ---- AmBank AmBonus (effective 1 April 2026) — Enrich only ----
+  rule("ambank-p1-enrich", "cg-ambank-p1", "enrich", [12000, 1000], {
+    sourceUrl: "https://www.ambank.com.my/eng/cards/credit-cards/ambonus-points",
+    sourceTitle: "AmBank AmBonus Points redemption",
+    sourcePublisher: "AmBank (M) Berhad",
+    verifiedOn: "2026-07-01",
+    effectiveFrom: "2026-04-01",
+    reviewNotes:
+      "Previous 10,000 / 12,000 / 15,000 AmBonus rates are no longer applied. Do not reuse this Enrich ratio for KrisFlyer, Asia Miles or AirAsia unless separate current rates are verified.",
+  }),
+  rule("ambank-p2-enrich", "cg-ambank-p2", "enrich", [18000, 1000], {
+    sourceUrl: "https://www.ambank.com.my/eng/cards/credit-cards/ambonus-points",
+    sourceTitle: "AmBank AmBonus Points redemption",
+    sourcePublisher: "AmBank (M) Berhad",
+    verifiedOn: "2026-07-01",
+    effectiveFrom: "2026-04-01",
+  }),
+
+  // ---- Public Bank PB Points (effective 1 May 2026) ----
+  rule("pb-enrich", "cg-pb-standard", "enrich", [12500, 1000], {
+    sourceUrl: "https://www.pbebank.com/Personal/Cards/Rewards.aspx",
+    sourceTitle: "Public Bank PB Points redemption",
+    sourcePublisher: "Public Bank Berhad",
+    verifiedOn: "2026-07-01",
+    effectiveFrom: "2026-05-01",
+    reviewNotes: "Enforced in complete 12,500 PB Point blocks.",
+  }),
+  rule("pb-airasia", "cg-pb-standard", "airasia", [12500, 2000], {
+    sourceUrl: "https://www.pbebank.com/Personal/Cards/Rewards.aspx",
+    sourceTitle: "Public Bank PB Points redemption",
+    sourcePublisher: "Public Bank Berhad",
+    verifiedOn: "2026-07-01",
+    effectiveFrom: "2026-05-01",
+    reviewNotes: "AirAsia appears under transfer balances only — no fixed-price destination card is generated for AirAsia points.",
+  }),
+
+  // ---- Bank Rakyat ----
+  rule("rakyat-enrich", "cg-rakyat", "enrich", [5500, 1000], {
+    sourceUrl: "https://www.bankrakyat.com.my/",
+    sourceTitle: "Bank Rakyat Rakyat Reward Points",
+    sourcePublisher: "Bank Rakyat",
+    verifiedOn: "2026-07-01",
+    reviewNotes: "Only attach this profile to cards that currently issue Rakyat Reward Points.",
+  }),
 ];
 
 /* -------------------- Cards (searchable) -------------------- */
@@ -572,6 +956,62 @@ export const cards: Card[] = [
   mkCard("cimb-visa-infinite", "cimb", "CIMB Visa Infinite", "cg-cimb-bonus"),
   mkCard("cimb-visa-signature", "cimb", "CIMB Visa Signature", "cg-cimb-bonus"),
   mkCard("cimb-petronas-vi-i", "cimb", "CIMB PETRONAS Visa Infinite-i", "cg-cimb-bonus"),
+
+  // ---------- HSBC ----------
+  mkCard("hsbc-travelone", "hsbc", "HSBC TravelOne Credit Card", "cg-hsbc-travelone"),
+
+  // ---------- Hong Leong ----------
+  mkCard("hlb-sutera-platinum", "hongleong", "HLB Sutera Platinum", "cg-hlb-sutera"),
+  mkCard("hlb-infinite-p", "hongleong", "HLB Infinite P", "cg-hlb-direct-enrich", { status: "direct_airline" }),
+  mkCard("hlb-infinite", "hongleong", "HLB Infinite", "cg-hlb-direct-enrich", { status: "direct_airline" }),
+  mkCard("hlb-infinite-doctor", "hongleong", "HLB Infinite Doctor's Edition", "cg-hlb-direct-enrich", { status: "direct_airline", aliases: ["Doctors Edition", "Doctor Edition"] }),
+
+  // ---------- AFFIN ----------
+  mkCard("affin-invikta-vi", "affin", "AFFIN INVIKTA Visa Infinite", "cg-affin-p1"),
+  mkCard("affin-invikta-vi-i", "affin", "AFFIN INVIKTA Visa Infinite-i", "cg-affin-p1"),
+  mkCard("affin-invikta-world", "affin", "AFFIN INVIKTA World Mastercard", "cg-affin-p1"),
+  mkCard("affin-invikta-world-i", "affin", "AFFIN INVIKTA World Mastercard-i", "cg-affin-p1"),
+  mkCard("affin-diventium", "affin", "AFFIN DIVENTIUM", "cg-affin-p1"),
+  mkCard("affin-diventium-i", "affin", "AFFIN DIVENTIUM-i", "cg-affin-p1"),
+  mkCard("affin-world", "affin", "AFFIN World Mastercard", "cg-affin-p2"),
+  mkCard("affin-world-i", "affin", "AFFIN World Mastercard-i", "cg-affin-p2"),
+  mkCard("affin-ukm", "affin", "AFFIN UKM Alumni Premier World Mastercard", "cg-affin-p2", { aliases: ["UTM Alumni Premier World", "UKM Alumni"] }),
+  mkCard("affin-ukm-i", "affin", "AFFIN UKM Alumni Premier World Mastercard-i", "cg-affin-p2", { aliases: ["UTM Alumni Premier World-i"] }),
+  mkCard("affin-other", "affin", "Other AFFIN card earning Rewards Points", "cg-affin-p3"),
+
+  // ---------- AmBank ----------
+  mkCard("ambank-sig-metal", "ambank", "AmBank SIGNATURE Priority Banking — The Metal Visa Infinite", "cg-ambank-p1", { aliases: ["Metal Visa Infinite"] }),
+  mkCard("ambank-sig-vi", "ambank", "AmBank SIGNATURE Priority Banking Visa Infinite", "cg-ambank-p1"),
+  mkCard("ambank-sig-world", "ambank", "AmBank SIGNATURE Priority Banking World Mastercard", "cg-ambank-p1"),
+  mkCard("ambank-islamic-sig-world", "ambank", "AmBank Islamic SIGNATURE Priority Banking World Mastercard-i", "cg-ambank-p1"),
+  mkCard("ambank-vi", "ambank", "AmBank Visa Infinite", "cg-ambank-p1"),
+  mkCard("ambank-islamic-vi", "ambank", "AmBank Islamic Visa Infinite-i", "cg-ambank-p1"),
+  mkCard("ambank-world", "ambank", "AmBank World Mastercard", "cg-ambank-p2"),
+  mkCard("ambank-islamic-world", "ambank", "AmBank Islamic World Mastercard-i", "cg-ambank-p2"),
+  mkCard("ambank-vsig", "ambank", "AmBank Visa Signature", "cg-ambank-p2"),
+  mkCard("ambank-islamic-vsig", "ambank", "AmBank Islamic Visa Signature-i", "cg-ambank-p2"),
+  mkCard("ambank-vplat", "ambank", "AmBank Visa Platinum", "cg-ambank-p2"),
+  mkCard("ambank-islamic-vplat", "ambank", "AmBank Islamic Visa Platinum-i", "cg-ambank-p2"),
+  mkCard("ambank-vplat-biz", "ambank", "AmBank Visa Platinum Business", "cg-ambank-p2"),
+  mkCard("ambank-vgold", "ambank", "AmBank Visa Gold", "cg-ambank-p2"),
+  mkCard("ambank-islamic-vgold", "ambank", "AmBank Islamic Visa Gold-i", "cg-ambank-p2"),
+  mkCard("ambank-enrich-vi", "ambank", "AmBank Enrich Visa Infinite", "cg-ambank-direct-enrich", { status: "direct_airline" }),
+  mkCard("ambank-enrich-vplat", "ambank", "AmBank Enrich Visa Platinum", "cg-ambank-direct-enrich", { status: "direct_airline" }),
+
+  // ---------- Public Bank ----------
+  mkCard("pb-world", "publicbank", "PB World Mastercard", "cg-pb-standard"),
+  mkCard("pb-vsig", "publicbank", "PB Visa Signature", "cg-pb-standard"),
+  mkCard("pb-plat", "publicbank", "PB Platinum Mastercard", "cg-pb-standard"),
+  mkCard("pb-quantum-visa", "publicbank", "PB Quantum Visa", "cg-pb-standard"),
+  mkCard("pb-quantum-mc", "publicbank", "PB Quantum Mastercard", "cg-pb-standard"),
+  mkCard("pb-rcb-gold", "publicbank", "PB RCB Gold", "cg-pb-standard"),
+  mkCard("pb-rcb-elite", "publicbank", "PB RCB Elite", "cg-pb-standard"),
+
+  // ---------- Bank Rakyat ----------
+  mkCard("rakyat-card", "bankrakyat", "Bank Rakyat credit card (Rakyat Reward Points)", "cg-rakyat"),
+
+  // ---------- Standard Chartered ----------
+  mkCard("sc-journey", "sc", "Standard Chartered Journey Credit Card", "cg-sc-journey", { status: "rate_unconfirmed" }),
 ];
 
 /* -------------------- Helpers -------------------- */
