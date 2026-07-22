@@ -1120,7 +1120,7 @@ function PromoBanner({ portfolio }: { portfolio: ProgrammeTotal[] }) {
                 </p>
                 <p className="mt-2 font-display text-2xl text-ink md:text-3xl">{bonusLabel}</p>
                 <p className="mt-1 text-[13px] text-ink/70">
-                  Valid until {formatDate(p.endDate)}. Eligible bank conversions receive an additional {" "}
+                  Valid from {formatDate(p.startDate)} to {formatDate(p.endDate)}. Eligible bank conversions receive an additional {" "}
                   {p.bonusType === "percentage" ? `${p.bonusPercentage}% ${programme?.name ?? ""}` : `${formatInt(p.bonusFixed ?? 0)} ${programme?.name ?? ""}`} after successful transfer.
                 </p>
               </div>

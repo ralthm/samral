@@ -48,7 +48,7 @@ export const promotions: Promotion[] = [
     bonusType: "percentage",
     bonusPercentage: 10,
     registrationRequired: false,
-    startDate: "2026-05-19",
+    startDate: "2026-07-11",
     endDate: "2026-08-18",
     postingTimeline: "Bonus Enrich Points post to the member account after the standard transfer completes.",
     officialSource: "https://www.malaysiaairlines.com/my/en/enrich/enrich-promotions.html",
@@ -58,7 +58,18 @@ export const promotions: Promotion[] = [
 
 /* -------------------- Helpers -------------------- */
 
-const today = () => new Date().toISOString().slice(0, 10);
+// Campaign windows are evaluated in Asia/Kuala_Lumpur time so promotions
+// activate and expire on the correct local calendar day regardless of the
+// viewer's timezone.
+const today = () => {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kuala_Lumpur",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+  return parts; // en-CA formats as YYYY-MM-DD
+};
 
 export function isPromotionActive(p: Promotion, date = today()): boolean {
   if (!p.active) return false;
