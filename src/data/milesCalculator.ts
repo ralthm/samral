@@ -342,22 +342,86 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
   {
     id: "cg-mbb-treats-standard",
     rewardProductId: "mbb-treats-standard",
-    name: "Classic / Gold / Platinum / Visa Signature — 20,000 TP per 1,000 miles",
+    name: "General TreatsPoints — 20,000 TP per 1,000 miles",
     description:
-      "Standard Maybank TreatsPoints tier for all Classic, Gold, Platinum and Visa Signature cards not included in the preferential Visa Infinite / World Elite / Maybank 2 Cards Premier tier. Includes Maybank 2 Platinum Cards (note: not the same product as Maybank 2 Cards Premier).",
-    eligibleCards: [
-      "All Maybank Classic, Gold, Platinum and Visa Signature cards not in the preferential tier",
-      "Maybank 2 Platinum Cards",
-    ],
+      "General Maybank TreatsPoints tier for Classic, Gold, Platinum, Visa Signature and Maybank 2 Platinum Cards that are not part of the Premium tier. Selection is by explicit card ID, not name inheritance.",
+    eligibleCards: ["See card list — matched by explicit card ID, not by name inheritance."],
     active: true,
     displayOrder: 1,
   },
-
-  // ------- CIMB -------
   {
-    id: "cg-cimb-bonus",
-    rewardProductId: "cimb-bonus",
-    name: "CIMB Bonus Points — all eligible credit cards",
+    id: "cg-mbb-myimpact",
+    rewardProductId: "mbb-treats-existing-only",
+    name: "Maybank myimpact — existing TreatsPoints only",
+    description:
+      "Effective 1 January 2026, myimpact cards no longer earn new TreatsPoints. Previously earned balances remain valid until they expire per Maybank's TreatsPoints terms.",
+    eligibleCards: [
+      "Maybank myimpact Visa Signature Credit Card",
+      "Maybank Islamic myimpact Ikhwan Mastercard Platinum Credit Card-i",
+    ],
+    unverifiedNotice:
+      "This card no longer earns new TreatsPoints (effective 1 January 2026). You may enter previously earned TreatsPoints that remain valid. No result will be calculated automatically until Maybank confirms whether the existing-points conversion route for myimpact cards remains active.",
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-mbb-krisflyer-direct",
+    rewardProductId: "mbb-krisflyer-direct",
+    name: "Singapore Airlines KrisFlyer Amex — direct earning",
+    description:
+      "These Maybank-issued Singapore Airlines KrisFlyer American Express cards earn KrisFlyer miles directly. There is no Maybank-side points balance to convert.",
+    eligibleCards: [
+      "Singapore Airlines KrisFlyer American Express Platinum Credit Card",
+      "Singapore Airlines KrisFlyer American Express Gold Credit Card",
+    ],
+    unverifiedNotice:
+      "This card earns KrisFlyer miles directly. Enter your KrisFlyer balance under Step 2 (Existing airline or hotel balances).",
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-mbb-cashback",
+    rewardProductId: "mbb-cashback",
+    name: "Maybank cashback cards",
+    eligibleCards: [
+      "Maybank FC Barcelona Visa Signature",
+      "American Express Cash Back Gold Credit Card",
+    ],
+    unverifiedNotice:
+      "This card earns cashback, not Maybank points that can be converted to the supported airline programmes.",
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-mbb-grab",
+    rewardProductId: "mbb-grabrewards",
+    name: "Maybank Grab Mastercard — GrabRewards",
+    eligibleCards: ["Maybank Grab Mastercard Platinum Credit Card"],
+    unverifiedNotice:
+      "This card earns GrabRewards. GrabRewards do not convert to the supported airline programmes.",
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-mbb-shopee",
+    rewardProductId: "mbb-shopee",
+    name: "Maybank Shopee Visa — Shopee Coins",
+    eligibleCards: ["Maybank Shopee Visa Platinum Credit Card"],
+    unverifiedNotice:
+      "This card earns Shopee Coins. Shopee Coins do not convert to the supported airline programmes.",
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-mbb-legacy-unverified",
+    rewardProductId: "mbb-legacy-unverified",
+    name: "Older or discontinued Maybank card — conversion pending",
+    eligibleCards: ["Legacy Maybank cards without a currently verified conversion route"],
+    unverifiedNotice:
+      "We recognise this older card, but its current conversion eligibility requires confirmation. No numeric result is calculated until the current rate is verified.",
+    active: true,
+    displayOrder: 1,
+  },
     description:
       "CIMB Bonus Points transfers are available to twelve airline partners at published ratios. Earning rates differ by card, but the conversion route does not.",
     eligibleCards: [
