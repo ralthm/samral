@@ -715,7 +715,7 @@ const MBB_SRC =
 const MBB_TITLE = "Maybank Service Tax Redemption and Air Miles Conversion Rate";
 const CIMB_SRC =
   "https://www.cimb.com.my/en/personal/day-to-day-banking/cards/credit-cards/bonus-points.html";
-const CIMB_TITLE = "CIMB Bonus Points Redemption";
+const CIMB_TITLE = "CIMB Member Rewards Catalogue 2026/27";
 const ALLIANCE_SRC = "https://www.alliancebank.com.my/Personal/Cards/Rewards.aspx";
 const ALLIANCE_TITLE =
   "Alliance Bank Three-year Bonus Points (TBP) Redemption";
