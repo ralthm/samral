@@ -236,6 +236,7 @@ function CalculatorFlow() {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [startedTracked, setStartedTracked] = useState(false);
+  const [registeredPromotionIds, setRegisteredPromotionIds] = useState<string[]>([]);
 
   const calcRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
@@ -258,6 +259,39 @@ function CalculatorFlow() {
     if (snapshot) setState("stale");
     markStarted();
   }, [snapshot, markStarted]);
+
+  const runCalculation = useCallback((regIds: string[]) => {
+    const results: RuleResult[] = [];
+    const entryContext = new Map<string, { bankName: string; groupName: string; nickname: string; entered: number }>();
+    const usableEntries = entries.filter((e) => e.bankId || e.cardId || e.rawInput.trim());
+    for (const e of usableEntries) {
+      const points = parseIntSafe(e.rawInput);
+      const bank = getBankById(e.bankId);
+      const group = eligibleCardGroups.find((g) => g.id === e.cardGroupId);
+      entryContext.set(e.id, {
+        bankName: bank?.name ?? "",
+        groupName: group?.name ?? "",
+        nickname: e.nickname,
+        entered: points,
+      });
+      results.push(
+        ...calculateEntry({
+          entryId: e.id,
+          cardGroupId: e.cardGroupId,
+          nickname: e.nickname,
+          bankPoints: points,
+          registeredPromotionIds: regIds,
+        }),
+      );
+    }
+    const existingBalances: Record<string, number> = {};
+    for (const r of existingRows) {
+      const n = parseIntSafe(r.rawInput);
+      if (Number.isFinite(n) && n > 0 && r.programmeId) existingBalances[r.programmeId] = n;
+    }
+    const portfolio = computePortfolioTotals(results, existingBalances);
+    return { results, portfolio, entryContext };
+  }, [entries, existingRows]);
 
   const handleCalculate = () => {
     // Validate
@@ -296,38 +330,11 @@ function CalculatorFlow() {
     setIsCalculating(true);
 
     setTimeout(() => {
-      const results: RuleResult[] = [];
-      const entryContext = new Map<string, { bankName: string; groupName: string; nickname: string; entered: number }>();
-      for (const e of usableEntries) {
-        const points = parseIntSafe(e.rawInput);
-        const bank = getBankById(e.bankId);
-        const group = eligibleCardGroups.find((g) => g.id === e.cardGroupId);
-        entryContext.set(e.id, {
-          bankName: bank?.name ?? "",
-          groupName: group?.name ?? "",
-          nickname: e.nickname,
-          entered: points,
-        });
-        results.push(
-          ...calculateEntry({
-            entryId: e.id,
-            cardGroupId: e.cardGroupId,
-            nickname: e.nickname,
-            bankPoints: points,
-          }),
-        );
-      }
-      const existingBalances: Record<string, number> = {};
-      for (const r of existingRows) {
-        const n = parseIntSafe(r.rawInput);
-        if (Number.isFinite(n) && n > 0 && r.programmeId) existingBalances[r.programmeId] = n;
-      }
-      const portfolio = computePortfolioTotals(results, existingBalances);
-
-      setSnapshot({ results, portfolio, entryContext });
+      const next = runCalculation(registeredPromotionIds);
+      setSnapshot(next);
       setState("calculated");
       setIsCalculating(false);
-      track("calculation_completed", { programmes: portfolio.length });
+      track("calculation_completed", { programmes: next.portfolio.length });
 
       requestAnimationFrame(() => {
         const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -338,6 +345,24 @@ function CalculatorFlow() {
       });
     }, 350);
   };
+
+  const handleToggleRegistration = useCallback((promotionId: string, registered: boolean) => {
+    setRegisteredPromotionIds((prev) => {
+      const set = new Set(prev);
+      if (registered) set.add(promotionId);
+      else set.delete(promotionId);
+      const nextIds = Array.from(set);
+      // Recompute snapshot immediately if we already have one.
+      if (snapshot) {
+        const next = runCalculation(nextIds);
+        setSnapshot(next);
+        setState("calculated");
+      }
+      track("promotion_registration_toggled", { promotion: promotionId, registered });
+      return nextIds;
+    });
+  }, [snapshot, runCalculation]);
+
 
   const scrollToCalculator = () => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -441,7 +466,10 @@ function CalculatorFlow() {
             snapshot={snapshot}
             isStale={state === "stale"}
             onEdit={scrollToCalculator}
+            registeredPromotionIds={registeredPromotionIds}
+            onToggleRegistration={handleToggleRegistration}
           />
+
           <StrategyCTA />
         </div>
       )}
@@ -948,13 +976,16 @@ const GROUP_LABEL: Record<GroupKey, string> = {
 };
 
 function ResultsDashboard({
-  snapshot, isStale, onEdit,
+  snapshot, isStale, onEdit, registeredPromotionIds, onToggleRegistration,
 }: {
   snapshot: Snapshot;
   isStale: boolean;
   onEdit: () => void;
+  registeredPromotionIds: string[];
+  onToggleRegistration: (promotionId: string, registered: boolean) => void;
 }) {
   const { results, portfolio, entryContext } = snapshot;
+  const registeredSet = useMemo(() => new Set(registeredPromotionIds), [registeredPromotionIds]);
 
   const grouped = useMemo(() => {
     const g: Record<GroupKey, ProgrammeTotal[]> = { airline: [], travel: [], hotel: [] };
@@ -1031,7 +1062,11 @@ function ResultsDashboard({
           </div>
         )}
 
-        <PromoBanner portfolio={portfolio} />
+        <PromoBanner
+          portfolio={portfolio}
+          registeredSet={registeredSet}
+          onToggleRegistration={onToggleRegistration}
+        />
 
         {portfolio.length > 1 && (
           <div className="mt-6 rounded-sm border border-ink/30 bg-background p-4 text-[13px] leading-relaxed text-ink/80">
@@ -1052,6 +1087,8 @@ function ResultsDashboard({
                       programme={p}
                       rowResults={resultsByProgramme.get(p.programmeId) ?? []}
                       entryContext={entryContext}
+                      registeredSet={registeredSet}
+                      onToggleRegistration={onToggleRegistration}
                     />
                   ))}
                 </div>
@@ -1061,7 +1098,8 @@ function ResultsDashboard({
         </div>
 
         {/* Destination discovery */}
-        <DestinationDiscovery portfolio={portfolio} />
+        <DestinationDiscovery portfolio={portfolio} registeredSet={registeredSet} />
+
 
         {/* Points remaining */}
         <PointsRemaining entryContext={entryContext} totalUsedByEntry={totalUsedByEntry} />
@@ -1072,52 +1110,104 @@ function ResultsDashboard({
 
 /* ---------- Promotion banner ---------- */
 
-function PromoBanner({ portfolio }: { portfolio: ProgrammeTotal[] }) {
-  const active = useMemo(() => {
-    const promos = getActivePromotions();
-    const portfolioProgrammeIds = new Set(portfolio.map((p) => p.programmeId));
-    return promos.filter((p) => portfolioProgrammeIds.has(p.programmeId));
+function PromoBanner({
+  portfolio, registeredSet, onToggleRegistration,
+}: {
+  portfolio: ProgrammeTotal[];
+  registeredSet: Set<string>;
+  onToggleRegistration: (promotionId: string, registered: boolean) => void;
+}) {
+  // Group the currently-applicable promotions by programme so we can render
+  // a stacked "Up to X% Extra …" campaign card when multiple sponsors share
+  // the same destination programme (e.g. Cathay + CIMB Asia Miles).
+  const groups = useMemo(() => {
+    const byProgramme = new Map<string, ProgrammeTotal>();
+    for (const p of portfolio) {
+      if (p.promotions.length > 0) byProgramme.set(p.programmeId, p);
+    }
+    return Array.from(byProgramme.values());
   }, [portfolio]);
 
   useEffect(() => {
-    for (const p of active) track("promotion_shown", { promotion: p.id });
-  }, [active]);
+    for (const g of groups) {
+      for (const p of g.promotions) track("promotion_shown", { promotion: p.id });
+    }
+  }, [groups]);
 
-  if (active.length === 0) return null;
+  if (groups.length === 0) return null;
 
   return (
     <div className="mt-6 space-y-3">
-      {active.map((p) => {
-        const programme = loyaltyProgrammes.find((lp) => lp.id === p.programmeId);
-        const bonusLabel = p.bonusType === "percentage"
-          ? `${p.bonusPercentage ?? 0}% Bonus ${programme?.name ?? "Points"}`
-          : `+${formatInt(p.bonusFixed ?? 0)} Bonus ${programme?.name ?? "Points"}`;
+      {groups.map((g) => {
+        const totalPercent = g.promotions
+          .filter((p) => p.bonusType === "percentage")
+          .reduce((s, p) => s + (p.bonusPercentage ?? 0), 0);
+        const title = totalPercent > 0
+          ? `Up to ${totalPercent}% Extra ${g.programmeName}`
+          : `Bonus ${g.programmeName}`;
         return (
-          <div
-            key={p.id}
-            role="status"
-            className="rounded-sm border border-ink bg-background p-5"
-          >
+          <div key={g.programmeId} role="status" className="rounded-sm border border-ink bg-background p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
+              <div className="min-w-0">
                 <p className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-ink">
                   <span aria-hidden className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
                   Promotion currently active
                 </p>
-                <p className="mt-2 font-display text-2xl text-ink md:text-3xl">{bonusLabel}</p>
-                <p className="mt-1 text-[13px] text-ink/70">
-                  Valid from {formatDate(p.startDate)} to {formatDate(p.endDate)}. Eligible bank conversions receive an additional {" "}
-                  {p.bonusType === "percentage" ? `${p.bonusPercentage}% ${programme?.name ?? ""}` : `${formatInt(p.bonusFixed ?? 0)} ${programme?.name ?? ""}`} after successful transfer.
+                <p className="mt-2 font-display text-2xl text-ink md:text-3xl">{title}</p>
+                <ul className="mt-3 space-y-2 text-[13px] text-ink/80">
+                  {g.promotions.map((p) => {
+                    const registered = registeredSet.has(p.id);
+                    return (
+                      <li key={p.id} className="rounded-sm border border-border bg-sand/40 p-3">
+                        <div className="flex flex-wrap items-baseline justify-between gap-2">
+                          <span className="font-medium text-ink">
+                            {p.sponsor === "airline" ? "Airline-funded" : "Bank-funded"} · {p.bonusPercentage ?? 0}% bonus
+                          </span>
+                          <span className="text-[11px] text-ink/60">Ends {formatDate(p.endDate)}</span>
+                        </div>
+                        <p className="mt-1 text-[12px] text-ink/70">{p.name}</p>
+                        {p.registrationRequired && (
+                          <label className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-ink">
+                            <input
+                              type="checkbox"
+                              checked={registered}
+                              onChange={(e) => onToggleRegistration(p.id, e.target.checked)}
+                              className="h-4 w-4"
+                            />
+                            <span>Yes, I have registered for this bonus.</span>
+                          </label>
+                        )}
+                        {p.registrationRequired && !registered && (
+                          <p className="mt-1 text-[11px] text-ink/60">
+                            Registration must be completed BEFORE converting for this bonus to apply.
+                          </p>
+                        )}
+                        {p.overallBonusCap && (
+                          <p className="mt-1 text-[11px] text-ink/55">
+                            Subject to a campaign-wide cap of {formatInt(p.overallBonusCap)} {g.programmeName}.
+                          </p>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+                <p className="mt-3 text-[11px] leading-relaxed text-ink/60">
+                  Confirm the promotion requirements and your loyalty membership details before transferring. Points conversions are generally irreversible.
                 </p>
               </div>
-              <a
-                href={p.officialSource}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex shrink-0 items-center gap-1 text-[12px] text-ink underline underline-offset-4 hover:no-underline"
-              >
-                See terms <ExternalLink className="h-3 w-3" />
-              </a>
+              <div className="flex shrink-0 flex-col items-end gap-2">
+                {Array.from(new Set(g.promotions.map((p) => p.officialSource))).map((src) => (
+                  <a
+                    key={src}
+                    href={src}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[12px] text-ink underline underline-offset-4 hover:no-underline"
+                  >
+                    See terms <ExternalLink className="h-3 w-3" />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         );
@@ -1126,14 +1216,17 @@ function PromoBanner({ portfolio }: { portfolio: ProgrammeTotal[] }) {
   );
 }
 
+
 /* ---------- Programme balance card ---------- */
 
 function ProgrammeBalanceCard({
-  programme, rowResults, entryContext,
+  programme, rowResults, entryContext, registeredSet, onToggleRegistration,
 }: {
   programme: ProgrammeTotal;
   rowResults: RuleResult[];
   entryContext: Snapshot["entryContext"];
+  registeredSet: Set<string>;
+  onToggleRegistration: (promotionId: string, registered: boolean) => void;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -1163,14 +1256,17 @@ function ProgrammeBalanceCard({
     return Array.from(m.values());
   }, [rowResults, entryContext]);
 
-  const hasPromo = programme.bonusTotal > 0;
-  const activePromos = programme.activePromotionIds
-    .map((id) => getActivePromotions().find((p) => p.id === id))
-    .filter(Boolean) as Promotion[];
+  const applicablePromos = programme.promotions;
+  const hasApplicablePromo = applicablePromos.length > 0;
+  const hasAppliedBonus = programme.bonusTotal > 0;
+  const hasConditionalBonus = programme.conditionalBonusTotal > 0;
+  const headlineTotal = programme.maxPromotionalTotal > programme.potentialTotal
+    ? programme.maxPromotionalTotal
+    : programme.potentialTotal;
 
   return (
-    <div className={`rounded-sm border bg-background p-6 ${hasPromo ? "border-ink" : "border-border"}`}>
-      {hasPromo ? (
+    <div className={`rounded-sm border bg-background p-6 ${hasApplicablePromo ? "border-ink" : "border-border"}`}>
+      {hasApplicablePromo ? (
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
             <p className="text-[11px] uppercase tracking-[0.16em] text-ink/55">Standard</p>
@@ -1181,13 +1277,13 @@ function ProgrammeBalanceCard({
           </div>
           <div className="sm:border-l sm:border-border sm:pl-5">
             <p className="text-[11px] uppercase tracking-[0.16em] text-ink">
-              During current promotion
+              {hasConditionalBonus ? "Maximum promotional potential" : "During current promotion"}
             </p>
             <p className="mt-2 font-display text-4xl leading-none text-ink md:text-[44px]">
-              {formatInt(programme.promotionalTotal)}
+              {formatInt(headlineTotal)}
             </p>
             <p className="mt-2 text-[12px] text-ink">
-              +{formatInt(programme.bonusTotal)} bonus {programme.programmeName}
+              up to +{formatInt(programme.bonusTotal + programme.conditionalBonusTotal)} bonus {programme.programmeName}
             </p>
           </div>
         </div>
@@ -1202,39 +1298,71 @@ function ProgrammeBalanceCard({
       )}
 
       <dl className="mt-5 grid grid-cols-2 gap-y-2 border-t border-border pt-4 text-[12px]">
-        <dt className="text-ink/55">Standard transfer</dt>
-        <dd className="text-right text-ink">{formatInt(programme.transferredTotal)} {programme.programmeName}</dd>
-        {hasPromo && (
-          <>
-            <dt className="text-ink">
-              {activePromos[0]?.bonusType === "percentage" && activePromos[0]?.bonusPercentage
-                ? `${activePromos[0].bonusPercentage}% bonus`
-                : "Promotional bonus"}
-            </dt>
-            <dd className="text-right text-ink">+{formatInt(programme.bonusTotal)} {programme.programmeName}</dd>
-          </>
-        )}
+        <dt className="text-ink/55">Regular {programme.programmeName}</dt>
+        <dd className="text-right text-ink">{formatInt(programme.transferredTotal)}</dd>
+        {applicablePromos.map((p) => {
+          const isRegistered = registeredSet.has(p.id);
+          const contributes = p.applied || !p.registrationRequired;
+          const label = p.sponsor === "airline"
+            ? `${p.name} (${p.bonusPercentage ?? 0}%)`
+            : `${p.name} (${p.bonusPercentage ?? 0}%)`;
+          // Per-programme bonus contribution = sum across rowResults for this promo id.
+          const contribution = rowResults.reduce((s, r) => {
+            const a = r.promotions.find((x) => x.id === p.id);
+            return s + (a ? a.bonus : 0);
+          }, 0);
+          if (contribution <= 0) return null;
+          return (
+            <FragmentRow
+              key={p.id}
+              label={label}
+              value={contributes
+                ? `+${formatInt(contribution)}`
+                : `+${formatInt(contribution)} (after registration)`}
+              muted={!contributes}
+            />
+          );
+        })}
         <dt className="text-ink/55">Existing balance</dt>
-        <dd className="text-right text-ink">{formatInt(programme.existingBalance)} {programme.programmeName}</dd>
-        {hasPromo && (
+        <dd className="text-right text-ink">{formatInt(programme.existingBalance)}</dd>
+        {hasApplicablePromo && (
           <>
-            <dt className="border-t border-border pt-2 font-medium text-ink">Final promotional balance</dt>
+            <dt className="border-t border-border pt-2 font-medium text-ink">
+              {hasConditionalBonus ? "Potential after an eligible registered transfer" : "Final promotional balance"}
+            </dt>
             <dd className="border-t border-border pt-2 text-right font-medium text-ink">
-              {formatInt(programme.promotionalTotal)} {programme.programmeName}
+              up to {formatInt(headlineTotal)} {programme.programmeName}
             </dd>
           </>
         )}
       </dl>
 
-      {hasPromo && activePromos[0] && (
+      {applicablePromos.map((p) => {
+        const isRegistered = registeredSet.has(p.id);
+        if (!p.registrationRequired || isRegistered) return null;
+        const contribution = rowResults.reduce((s, r) => {
+          const a = r.promotions.find((x) => x.id === p.id);
+          return s + (a ? a.bonus : 0);
+        }, 0);
+        if (contribution <= 0) return null;
+        return (
+          <div key={p.id} className="mt-3 rounded-sm border border-ink/30 bg-sand/40 p-3 text-[12px] text-ink">
+            <p className="font-medium">
+              Additional {formatInt(contribution)} {programme.programmeName} available after registration
+            </p>
+            <p className="mt-1 text-ink/70">
+              {p.name} requires registration BEFORE the conversion. Confirm registration above to include this bonus in your balance.
+            </p>
+          </div>
+        );
+      })}
+
+      {hasApplicablePromo && (
         <p className="mt-3 text-[11px] leading-relaxed text-ink/60">
-          Bonus from <span className="text-ink">{activePromos[0].name}</span> · valid until {formatDate(activePromos[0].endDate)}.
-          {activePromos[0].postingTimeline ? " " + activePromos[0].postingTimeline : ""}
+          {applicablePromos.map((p) => `${p.name} — valid until ${formatDate(p.endDate)}`).join(" · ")}
         </p>
       )}
-      {!hasPromo && (
-        <p className="mt-3 text-[11px] text-ink/50">No active transfer promotion for this programme.</p>
-      )}
+
 
 
       {byCurrency.length > 0 && (
@@ -1274,6 +1402,17 @@ function ProgrammeBalanceCard({
     </div>
   );
 }
+
+function FragmentRow({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
+  return (
+    <>
+      <dt className={muted ? "text-ink/55" : "text-ink"}>{label}</dt>
+      <dd className={muted ? "text-right text-ink/60" : "text-right text-ink"}>{value}</dd>
+    </>
+  );
+}
+
+
 
 function ProgrammeDetails({
   p, rowResults, entryContext,
@@ -1339,12 +1478,11 @@ function ProgrammeDetails({
 
 /* ---------- Destination discovery ---------- */
 
-function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
+function DestinationDiscovery({ portfolio, registeredSet }: { portfolio: ProgrammeTotal[]; registeredSet: Set<string> }) {
   const navigate = useNavigate();
-  // Use the promotional balance (base + verified bonus) when a live promotion
-  // applies — that is the balance the user will actually receive in the
-  // destination programme, so it is what the redemption engine must compare
-  // requiredPoints against. Falls back to potentialTotal when no bonus applies.
+  // Redemption gating uses the currently-applied promotional balance
+  // (base + unconditional + confirmed-registered bonuses). It never assumes
+  // an unregistered conditional bonus is available.
   const balances = useMemo(() => {
     const m = new Map<string, number>();
     for (const p of portfolio) {
@@ -1353,6 +1491,14 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
     }
     return m;
   }, [portfolio]);
+  // Track whether a programme has additional headroom the user could unlock
+  // by registering for a conditional promotion.
+  const hasConditionalHeadroom = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of portfolio) m.set(p.programmeId, p.conditionalBonusTotal ?? 0);
+    return m;
+  }, [portfolio]);
+
 
   const cabinsPresent = useMemo(() => verifiedCabinsPresent(), []);
 
