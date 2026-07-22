@@ -1487,7 +1487,7 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
       destination: e.t.destination,
       destinationName: e.t.destinationName,
       cabin: e.t.cabin,
-      tripType: e.t.returnBookingRequired ? "return" : tripType,
+      tripType,
       travellers,
       loyaltyProgrammeId: e.t.programmeId,
       loyaltyProgrammeName: prog?.name ?? "",
