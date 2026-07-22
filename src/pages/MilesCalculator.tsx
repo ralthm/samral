@@ -908,8 +908,32 @@ function ProgrammeBalanceCard({
   entryContext: Snapshot["entryContext"];
 }) {
   const [open, setOpen] = useState(false);
-  const totalRemainingInBanks = rowResults.reduce((s, r) => s + r.bankPointsRemaining, 0);
-  const totalBankUsed = rowResults.reduce((s, r) => s + r.bankPointsUsed, 0);
+
+  // Breakdown by bank-side currency (never sum different currencies).
+  const byCurrency = useMemo(() => {
+    const m = new Map<string, { bankName: string; currency: string; used: number; remaining: number }>();
+    for (const r of rowResults) {
+      const key = `${r.bankName}::${r.rewardCurrencyName}`;
+      const existing = m.get(key) ?? { bankName: r.bankName, currency: r.rewardCurrencyName, used: 0, remaining: 0 };
+      existing.used += r.bankPointsUsed;
+      m.set(key, existing);
+    }
+    // Remaining per entry uses the min across rules for that entry (points not used by best route).
+    const perEntryRemaining = new Map<string, { bankName: string; currency: string; remaining: number }>();
+    for (const [entryId, ctx] of entryContext) {
+      const rs = rowResults.filter((r) => r.entryId === entryId);
+      if (rs.length === 0) continue;
+      const minRemaining = rs.reduce((min, r) => Math.min(min, r.bankPointsRemaining), ctx.entered);
+      const currency = rs[0].rewardCurrencyName;
+      perEntryRemaining.set(entryId, { bankName: rs[0].bankName, currency, remaining: minRemaining });
+    }
+    for (const { bankName, currency, remaining } of perEntryRemaining.values()) {
+      const key = `${bankName}::${currency}`;
+      const existing = m.get(key);
+      if (existing) existing.remaining += remaining;
+    }
+    return Array.from(m.values());
+  }, [rowResults, entryContext]);
 
   return (
     <div className="rounded-sm border border-border bg-background p-6">
@@ -921,14 +945,26 @@ function ProgrammeBalanceCard({
 
       <dl className="mt-5 grid grid-cols-2 gap-y-2 border-t border-border pt-4 text-[12px]">
         <dt className="text-ink/55">From bank transfers</dt>
-        <dd className="text-right text-ink">{formatInt(programme.transferredTotal)}</dd>
+        <dd className="text-right text-ink">{formatInt(programme.transferredTotal)} {programme.programmeName}</dd>
         <dt className="text-ink/55">Existing balance</dt>
-        <dd className="text-right text-ink">{formatInt(programme.existingBalance)}</dd>
-        <dt className="text-ink/55">Bank points used</dt>
-        <dd className="text-right text-ink">{formatInt(totalBankUsed)}</dd>
-        <dt className="text-ink/55">Bank points remaining</dt>
-        <dd className="text-right text-ink">{formatInt(totalRemainingInBanks)}</dd>
+        <dd className="text-right text-ink">{formatInt(programme.existingBalance)} {programme.programmeName}</dd>
       </dl>
+
+      {byCurrency.length > 0 && (
+        <div className="mt-4 border-t border-border pt-4">
+          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">Bank points used &amp; remaining</p>
+          <ul className="mt-2 space-y-1.5 text-[12px]">
+            {byCurrency.map((c) => (
+              <li key={c.bankName + c.currency} className="grid grid-cols-[1fr_auto_auto] gap-3">
+                <span className="text-ink/70">{c.bankName} {c.currency}</span>
+                <span className="text-ink">used {formatInt(c.used)}</span>
+                <span className="text-ink/70">left {formatInt(c.remaining)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-[11px] text-ink/50">Bank point currencies are shown separately and are never summed.</p>
+        </div>
+      )}
 
       <button
         type="button"
