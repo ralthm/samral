@@ -43,6 +43,7 @@ import {
   REGIONS,
   verifiedCabinsPresent,
 } from "@/data/redemptionTargets";
+import { getActivePromotions, Promotion } from "@/data/promotions";
 import { saveTripContext, TripContext } from "@/lib/tripContext";
 
 
