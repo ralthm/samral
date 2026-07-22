@@ -980,39 +980,62 @@ const mkCard = (
 });
 
 export const cards: Card[] = [
-  // ---------- Maybank — Profile A: 12,500 TP → 1,000 miles ----------
-  mkCard("mbb-visa-infinite", "maybank", "Maybank Visa Infinite", "cg-mbb-treats-premium"),
-  mkCard("mbb-islamic-visa-infinite", "maybank", "Maybank Islamic Ikhwan Visa Infinite Card-i", "cg-mbb-treats-premium", { aliases: ["Ikhwan Visa Infinite", "Islamic Visa Infinite"] }),
-  mkCard("mbb-mu-visa-infinite", "maybank", "Maybank Manchester United Visa Infinite", "cg-mbb-treats-premium", { aliases: ["MU Visa Infinite"] }),
-  mkCard("mbb-visa-infinite-diamante", "maybank", "Maybank Visa Infinite Diamanté", "cg-mbb-treats-premium", { aliases: ["Diamante"] }),
-  mkCard("mbb-mercedes", "maybank", "Maybank Mercedes-Benz Card", "cg-mbb-treats-premium"),
-  mkCard("mbb-m2-premier-amex", "maybank", "Maybank 2 Cards Premier — American Express Reserve", "cg-mbb-treats-premium", { aliases: ["M2 Premier Amex Reserve"] }),
-  mkCard("mbb-m2-premier-visa", "maybank", "Maybank 2 Cards Premier — Visa Infinite", "cg-mbb-treats-premium", { aliases: ["M2 Premier Visa Infinite"] }),
+  // ---------- Maybank — Profile A: Premium TreatsPoints (12,500 TP → 1,000 miles) ----------
   mkCard("mbb-world-elite", "maybank", "Maybank World Elite Mastercard", "cg-mbb-treats-premium"),
-  mkCard("mbb-islamic-world-elite", "maybank", "Maybank Islamic World Elite Mastercard-i", "cg-mbb-treats-premium"),
+  mkCard("mbb-islamic-world-elite", "maybank", "Maybank Islamic World Elite Mastercard Ikhwan", "cg-mbb-treats-premium", { aliases: ["Ikhwan World Elite"] }),
+  mkCard("mbb-mu-visa-infinite", "maybank", "Maybank Manchester United Visa Infinite", "cg-mbb-treats-premium", { aliases: ["MU Visa Infinite"] }),
+  mkCard("mbb-visa-infinite", "maybank", "Maybank Visa Infinite", "cg-mbb-treats-premium"),
+  mkCard("mbb-m2-premier", "maybank", "Maybank 2 Cards Premier", "cg-mbb-treats-premium", { subtitle: "Reserve American Express + Visa Infinite", aliases: ["M2 Premier", "Maybank 2 Premier"] }),
+  mkCard("mbb-islamic-ikhwan-vi", "maybank", "Maybank Islamic Ikhwan Visa Infinite Card-i", "cg-mbb-treats-premium", { aliases: ["Ikhwan Visa Infinite"] }),
+  mkCard("mbb-visa-infinite-diamante", "maybank", "Maybank Visa Infinite Diamanté", "cg-mbb-treats-premium", { status: "legacy", aliases: ["Diamante"] }),
+  mkCard("mbb-mercedes", "maybank", "Maybank Mercedes-Benz Card", "cg-mbb-treats-premium", { status: "legacy" }),
 
-  // ---------- Maybank — Profile B: 12,500 MR → 1,000 miles ----------
+  // ---------- Maybank — Profile B: Selected Amex Membership Rewards (12,500 MR → 1,000 miles) ----------
   mkCard("mbb-amex-plat-credit", "maybank", "American Express Platinum Credit Card", "cg-mbb-mr-selected-amex", { aliases: ["Amex Platinum Credit"] }),
-  mkCard("mbb-amex-charge", "maybank", "American Express Charge Card", "cg-mbb-mr-selected-amex", { aliases: ["Amex Green Charge"] }),
-  mkCard("mbb-amex-gold-charge", "maybank", "American Express Gold Charge Card", "cg-mbb-mr-selected-amex", { aliases: ["Amex Gold Charge"] }),
+  mkCard("mbb-amex-card", "maybank", "American Express Card", "cg-mbb-mr-selected-amex", { subtitle: "Charge card", aliases: ["Amex Green Charge"] }),
+  mkCard("mbb-amex-gold", "maybank", "American Express Gold Card", "cg-mbb-mr-selected-amex", { subtitle: "Charge card", aliases: ["Amex Gold Charge"] }),
 
-  // ---------- Maybank — Profile C: 7,000 MR → 1,000 miles ----------
-  mkCard("mbb-amex-plat-charge", "maybank", "American Express Platinum Charge Card", "cg-mbb-mr-plat-charge", { aliases: ["Amex Platinum Charge"] }),
+  // ---------- Maybank — Profile C: The Platinum Card (7,000 MR → 1,000 miles) ----------
+  mkCard("mbb-the-platinum-card", "maybank", "The Platinum Card", "cg-mbb-mr-plat-charge", { subtitle: "American Express Platinum Charge Card", aliases: ["Amex Platinum Charge", "Platinum Charge Card"] }),
 
-  // ---------- Maybank — Profile D: 20,000 TP → 1,000 miles ----------
-  mkCard("mbb-m2-platinum", "maybank", "Maybank 2 Platinum Cards", "cg-mbb-treats-standard", { aliases: ["M2 Platinum", "Maybank 2 Platinum"] }),
-  mkCard("mbb-m2-gold", "maybank", "Maybank 2 Gold Cards", "cg-mbb-treats-standard"),
+  // ---------- Maybank — Profile D: General TreatsPoints (20,000 TP → 1,000 miles) ----------
+  mkCard("mbb-visa-signature", "maybank", "Maybank Visa Signature", "cg-mbb-treats-standard"),
+  mkCard("mbb-petronas-visa-plat", "maybank", "Maybank PETRONAS Visa Platinum", "cg-mbb-treats-standard"),
   mkCard("mbb-visa-platinum", "maybank", "Maybank Visa Platinum", "cg-mbb-treats-standard"),
   mkCard("mbb-mc-platinum", "maybank", "Maybank Mastercard Platinum", "cg-mbb-treats-standard"),
+  mkCard("mbb-m2-platinum", "maybank", "Maybank 2 Platinum Cards", "cg-mbb-treats-standard", { aliases: ["M2 Platinum"] }),
+  mkCard("mbb-islamic-petronas-plat", "maybank", "Maybank Islamic PETRONAS Ikhwan Visa Platinum Card-i", "cg-mbb-treats-standard"),
+  mkCard("mbb-islamic-ikhwan-amex-plat", "maybank", "Maybank Islamic Ikhwan American Express Platinum Credit Card-i", "cg-mbb-treats-standard"),
+  mkCard("mbb-islamic-ikhwan-mc-plat", "maybank", "Maybank Islamic Ikhwan Mastercard Platinum Credit Card-i", "cg-mbb-treats-standard"),
   mkCard("mbb-visa-gold", "maybank", "Maybank Visa Gold", "cg-mbb-treats-standard"),
   mkCard("mbb-mc-gold", "maybank", "Maybank Mastercard Gold", "cg-mbb-treats-standard"),
+  mkCard("mbb-petronas-visa-gold", "maybank", "Maybank PETRONAS Visa Gold", "cg-mbb-treats-standard"),
+  mkCard("mbb-m2-gold", "maybank", "Maybank 2 Gold Cards", "cg-mbb-treats-standard"),
+  mkCard("mbb-mu-visa", "maybank", "Maybank Manchester United Visa Card", "cg-mbb-treats-standard", { aliases: ["MU Visa"] }),
+  mkCard("mbb-islamic-petronas-gold", "maybank", "Maybank Islamic PETRONAS Ikhwan Visa Gold Card-i", "cg-mbb-treats-standard"),
+  mkCard("mbb-islamic-ikhwan-mc-gold", "maybank", "Maybank Islamic Ikhwan Mastercard Gold Credit Card-i", "cg-mbb-treats-standard"),
   mkCard("mbb-visa-classic", "maybank", "Maybank Visa Classic", "cg-mbb-treats-standard"),
   mkCard("mbb-mc-classic", "maybank", "Maybank Mastercard Classic", "cg-mbb-treats-standard"),
-  mkCard("mbb-visa-signature", "maybank", "Maybank Visa Signature", "cg-mbb-treats-standard"),
-  mkCard("mbb-mu-visa", "maybank", "Maybank Manchester United Visa", "cg-mbb-treats-standard"),
-  mkCard("mbb-petronas-visa-gold", "maybank", "PETRONAS Maybank Visa Gold", "cg-mbb-treats-standard"),
-  mkCard("mbb-petronas-ikhwan", "maybank", "PETRONAS Ikhwan Visa Platinum Card-i", "cg-mbb-treats-standard"),
-  mkCard("mbb-ikhwan-amex-plat", "maybank", "Ikhwan American Express Platinum Card-i", "cg-mbb-treats-standard"),
+
+  // ---------- Maybank — myimpact (existing TreatsPoints only, no new points from 1 Jan 2026) ----------
+  mkCard("mbb-myimpact-vsig", "maybank", "Maybank myimpact Visa Signature Credit Card", "cg-mbb-myimpact", { status: "cashback_only", aliases: ["myimpact Visa Signature"] }),
+  mkCard("mbb-myimpact-islamic-plat", "maybank", "Maybank Islamic myimpact Ikhwan Mastercard Platinum Credit Card-i", "cg-mbb-myimpact", { status: "cashback_only" }),
+
+  // ---------- Maybank — Direct KrisFlyer earning ----------
+  mkCard("mbb-sq-krisflyer-plat", "maybank", "Singapore Airlines KrisFlyer American Express Platinum Credit Card", "cg-mbb-krisflyer-direct", { status: "direct_airline", aliases: ["SQ KrisFlyer Amex Platinum"] }),
+  mkCard("mbb-sq-krisflyer-gold", "maybank", "Singapore Airlines KrisFlyer American Express Gold Credit Card", "cg-mbb-krisflyer-direct", { status: "direct_airline", aliases: ["SQ KrisFlyer Amex Gold"] }),
+
+  // ---------- Maybank — Cashback / non-convertible reward cards ----------
+  mkCard("mbb-fc-barcelona", "maybank", "Maybank FC Barcelona Visa Signature", "cg-mbb-cashback", { status: "cashback_only", aliases: ["Barcelona", "FCB"] }),
+  mkCard("mbb-amex-cashback-gold", "maybank", "American Express Cash Back Gold Credit Card", "cg-mbb-cashback", { status: "cashback_only", aliases: ["Amex Cashback Gold"] }),
+  mkCard("mbb-grab-mc-plat", "maybank", "Maybank Grab Mastercard Platinum Credit Card", "cg-mbb-grab", { status: "cashback_only", aliases: ["Grab Mastercard"] }),
+  mkCard("mbb-shopee-visa-plat", "maybank", "Maybank Shopee Visa Platinum Credit Card", "cg-mbb-shopee", { status: "cashback_only", aliases: ["Shopee Visa"] }),
+
+  // ---------- Maybank — Legacy cards (current conversion eligibility requires confirmation) ----------
+  mkCard("mbb-legacy-islamic-world-mc", "maybank", "Maybank Islamic World Mastercard Ikhwan", "cg-mbb-legacy-unverified", { status: "legacy" }),
+  mkCard("mbb-legacy-world-mc", "maybank", "Maybank World Mastercard", "cg-mbb-legacy-unverified", { status: "legacy" }),
+  mkCard("mbb-legacy-amex-gold-credit", "maybank", "American Express Gold Credit Card", "cg-mbb-legacy-unverified", { status: "legacy" }),
+
 
   // ---------- UOB ----------
   mkCard("uob-metal", "uob", "UOB Visa Infinite Metal Card", "cg-uob-metal", { aliases: ["Visa Infinite Metal", "UOB Metal"] }),
