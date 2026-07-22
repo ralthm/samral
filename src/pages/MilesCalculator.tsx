@@ -655,7 +655,7 @@ function EntryCard({
                       className="flex w-full items-center justify-between gap-3 border-b border-border/60 px-3 py-2 text-left text-[13px] text-ink hover:bg-sand/50"
                     >
                       <span className="truncate">{c.name}</span>
-                      {c.status === "rate_unconfirmed" && (
+                      {(c.status === "rate_unconfirmed" || c.status === "rate_pending_verification") && (
                         <span className="shrink-0 text-[10px] uppercase tracking-[0.14em] text-ink/50">Rate to confirm</span>
                       )}
                     </button>
