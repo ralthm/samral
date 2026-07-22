@@ -466,7 +466,10 @@ function CalculatorFlow() {
             snapshot={snapshot}
             isStale={state === "stale"}
             onEdit={scrollToCalculator}
+            registeredPromotionIds={registeredPromotionIds}
+            onToggleRegistration={handleToggleRegistration}
           />
+
           <StrategyCTA />
         </div>
       )}
