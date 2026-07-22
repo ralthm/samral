@@ -1447,8 +1447,8 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
   const rankAlmost = (a: Enriched, b: Enriched) => b.ratio - a.ratio || a.required - b.required;
   const rankFuture = (a: Enriched, b: Enriched) => a.required - b.required;
 
-  const unlockedAll = enriched.filter((e) => e.delta >= 0 && !e.tripTypeMismatch).sort(rankUnlocked);
-  const almostAll = enriched.filter((e) => (e.delta < 0 || e.tripTypeMismatch) && e.ratio >= 0.75).sort(rankAlmost);
+  const unlockedAll = enriched.filter((e) => e.delta >= 0).sort(rankUnlocked);
+  const almostAll = enriched.filter((e) => e.delta < 0 && e.ratio >= 0.75).sort(rankAlmost);
   const futureAll = enriched.filter((e) => e.ratio < 0.75).sort(rankFuture);
 
   // Per-programme cap of 3 when "All programmes" is selected and the user
