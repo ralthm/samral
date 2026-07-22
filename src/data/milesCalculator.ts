@@ -1036,6 +1036,35 @@ export const conversionRules: ConversionRule[] = [
     verifiedOn: "2026-07-01",
     reviewNotes: "Only attach this profile to cards that currently issue Rakyat Reward Points.",
   }),
+
+  // ---- Standard Chartered — Enrich (verified) ----
+  rule("sc-journey-enrich", "cg-sc-journey", "enrich", [2000, 1000], {
+    sourceUrl: "https://www.malaysiaairlines.com/my/en/enrich/earn/partners/financial/standard-chartered.html",
+    sourceTitle: "Enrich — Standard Chartered Bank",
+    sourcePublisher: "Malaysia Airlines Enrich",
+    verifiedOn: "2026-07-22",
+    minimumTransferPartnerPoints: 1000,
+    transferIncrementPartnerPoints: 1000,
+    reviewNotes: "Journey Cards: 2,000 Journey Miles = 1,000 Enrich Points. Floor-block calculation only; partial blocks are never issued.",
+  }),
+  rule("sc-360-7k-enrich", "cg-sc-360-7k", "enrich", [7000, 1000], {
+    sourceUrl: "https://www.malaysiaairlines.com/my/en/enrich/earn/partners/financial/standard-chartered.html",
+    sourceTitle: "Enrich — Standard Chartered Bank",
+    sourcePublisher: "Malaysia Airlines Enrich",
+    verifiedOn: "2026-07-22",
+    minimumTransferPartnerPoints: 1000,
+    transferIncrementPartnerPoints: 1000,
+    reviewNotes: "Priority Banking Visa Infinite / Visa Infinite: 7,000 Rewards Points = 1,000 Enrich Points, redeem in multiples of 7,000 Rewards Points. Floor-block calculation only.",
+  }),
+  rule("sc-360-46k-enrich", "cg-sc-360-46k", "enrich", [46000, 1000], {
+    sourceUrl: "https://www.malaysiaairlines.com/my/en/enrich/earn/partners/financial/standard-chartered.html",
+    sourceTitle: "Enrich — Standard Chartered Bank",
+    sourcePublisher: "Malaysia Airlines Enrich",
+    verifiedOn: "2026-07-22",
+    minimumTransferPartnerPoints: 1000,
+    transferIncrementPartnerPoints: 1000,
+    reviewNotes: "Other 360 Points Cards: 46,000 Rewards Points = 1,000 Enrich Points, redeem in multiples of 46,000 Rewards Points. Only attach to individually confirmed 360° Rewards Points cards; never to cashback-only cards.",
+  }),
 ];
 
 /* -------------------- Cards (searchable) -------------------- */
