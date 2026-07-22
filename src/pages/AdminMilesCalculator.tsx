@@ -10,6 +10,7 @@ import {
   getRewardProductById,
   isRulePublic,
   auditMaybankInventory,
+  auditCimbInventory,
 } from "@/data/milesCalculator";
 import { calculateEntry, formatInt } from "@/lib/milesCalculator";
 
