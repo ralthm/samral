@@ -307,6 +307,11 @@ export const rewardProducts: RewardProduct[] = [
   // Standard Chartered
   { id: "sc-journey", bankId: "sc", name: "SC Journey Miles", slug: "sc-journey", rewardCurrencyName: "Journey Miles", active: true, displayOrder: 1 },
   { id: "sc-360-rewards", bankId: "sc", name: "SC 360° Rewards Points", slug: "sc-360-rewards", rewardCurrencyName: "360° Rewards Points", active: true, displayOrder: 2 },
+  // OCBC Malaysia
+  { id: "ocbc-voyage", bankId: "ocbc", name: "OCBC Voyage Miles", slug: "ocbc-voyage", rewardCurrencyName: "Voyage Miles", active: true, displayOrder: 1 },
+  { id: "ocbc-travel-dollar", bankId: "ocbc", name: "OCBC Travel$ (cash credit)", slug: "ocbc-travel-dollar", rewardCurrencyName: "Travel$", active: true, displayOrder: 2 },
+  { id: "ocbc-ocbc-dollar", bankId: "ocbc", name: "OCBC$ (cash credit)", slug: "ocbc-ocbc-dollar", rewardCurrencyName: "OCBC$", active: true, displayOrder: 3 },
+  { id: "ocbc-cashback", bankId: "ocbc", name: "OCBC cashback / non-points cards", slug: "ocbc-cashback", rewardCurrencyName: "Cashback", active: true, displayOrder: 4 },
 ];
 
 /* -------------------- Card groups (entitlement tiers) -------------------- */
