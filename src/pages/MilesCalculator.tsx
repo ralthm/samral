@@ -1110,52 +1110,104 @@ function ResultsDashboard({
 
 /* ---------- Promotion banner ---------- */
 
-function PromoBanner({ portfolio }: { portfolio: ProgrammeTotal[] }) {
-  const active = useMemo(() => {
-    const promos = getActivePromotions();
-    const portfolioProgrammeIds = new Set(portfolio.map((p) => p.programmeId));
-    return promos.filter((p) => portfolioProgrammeIds.has(p.programmeId));
+function PromoBanner({
+  portfolio, registeredSet, onToggleRegistration,
+}: {
+  portfolio: ProgrammeTotal[];
+  registeredSet: Set<string>;
+  onToggleRegistration: (promotionId: string, registered: boolean) => void;
+}) {
+  // Group the currently-applicable promotions by programme so we can render
+  // a stacked "Up to X% Extra …" campaign card when multiple sponsors share
+  // the same destination programme (e.g. Cathay + CIMB Asia Miles).
+  const groups = useMemo(() => {
+    const byProgramme = new Map<string, ProgrammeTotal>();
+    for (const p of portfolio) {
+      if (p.promotions.length > 0) byProgramme.set(p.programmeId, p);
+    }
+    return Array.from(byProgramme.values());
   }, [portfolio]);
 
   useEffect(() => {
-    for (const p of active) track("promotion_shown", { promotion: p.id });
-  }, [active]);
+    for (const g of groups) {
+      for (const p of g.promotions) track("promotion_shown", { promotion: p.id });
+    }
+  }, [groups]);
 
-  if (active.length === 0) return null;
+  if (groups.length === 0) return null;
 
   return (
     <div className="mt-6 space-y-3">
-      {active.map((p) => {
-        const programme = loyaltyProgrammes.find((lp) => lp.id === p.programmeId);
-        const bonusLabel = p.bonusType === "percentage"
-          ? `${p.bonusPercentage ?? 0}% Bonus ${programme?.name ?? "Points"}`
-          : `+${formatInt(p.bonusFixed ?? 0)} Bonus ${programme?.name ?? "Points"}`;
+      {groups.map((g) => {
+        const totalPercent = g.promotions
+          .filter((p) => p.bonusType === "percentage")
+          .reduce((s, p) => s + (p.bonusPercentage ?? 0), 0);
+        const title = totalPercent > 0
+          ? `Up to ${totalPercent}% Extra ${g.programmeName}`
+          : `Bonus ${g.programmeName}`;
         return (
-          <div
-            key={p.id}
-            role="status"
-            className="rounded-sm border border-ink bg-background p-5"
-          >
+          <div key={g.programmeId} role="status" className="rounded-sm border border-ink bg-background p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
+              <div className="min-w-0">
                 <p className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-ink">
                   <span aria-hidden className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
                   Promotion currently active
                 </p>
-                <p className="mt-2 font-display text-2xl text-ink md:text-3xl">{bonusLabel}</p>
-                <p className="mt-1 text-[13px] text-ink/70">
-                  Valid from {formatDate(p.startDate)} to {formatDate(p.endDate)}. Eligible bank conversions receive an additional {" "}
-                  {p.bonusType === "percentage" ? `${p.bonusPercentage}% ${programme?.name ?? ""}` : `${formatInt(p.bonusFixed ?? 0)} ${programme?.name ?? ""}`} after successful transfer.
+                <p className="mt-2 font-display text-2xl text-ink md:text-3xl">{title}</p>
+                <ul className="mt-3 space-y-2 text-[13px] text-ink/80">
+                  {g.promotions.map((p) => {
+                    const registered = registeredSet.has(p.id);
+                    return (
+                      <li key={p.id} className="rounded-sm border border-border bg-sand/40 p-3">
+                        <div className="flex flex-wrap items-baseline justify-between gap-2">
+                          <span className="font-medium text-ink">
+                            {p.sponsor === "airline" ? "Airline-funded" : "Bank-funded"} · {p.bonusPercentage ?? 0}% bonus
+                          </span>
+                          <span className="text-[11px] text-ink/60">Ends {formatDate(p.endDate)}</span>
+                        </div>
+                        <p className="mt-1 text-[12px] text-ink/70">{p.name}</p>
+                        {p.registrationRequired && (
+                          <label className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-ink">
+                            <input
+                              type="checkbox"
+                              checked={registered}
+                              onChange={(e) => onToggleRegistration(p.id, e.target.checked)}
+                              className="h-4 w-4"
+                            />
+                            <span>Yes, I have registered for this bonus.</span>
+                          </label>
+                        )}
+                        {p.registrationRequired && !registered && (
+                          <p className="mt-1 text-[11px] text-ink/60">
+                            Registration must be completed BEFORE converting for this bonus to apply.
+                          </p>
+                        )}
+                        {p.overallBonusCap && (
+                          <p className="mt-1 text-[11px] text-ink/55">
+                            Subject to a campaign-wide cap of {formatInt(p.overallBonusCap)} {g.programmeName}.
+                          </p>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+                <p className="mt-3 text-[11px] leading-relaxed text-ink/60">
+                  Confirm the promotion requirements and your loyalty membership details before transferring. Points conversions are generally irreversible.
                 </p>
               </div>
-              <a
-                href={p.officialSource}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex shrink-0 items-center gap-1 text-[12px] text-ink underline underline-offset-4 hover:no-underline"
-              >
-                See terms <ExternalLink className="h-3 w-3" />
-              </a>
+              <div className="flex shrink-0 flex-col items-end gap-2">
+                {Array.from(new Set(g.promotions.map((p) => p.officialSource))).map((src) => (
+                  <a
+                    key={src}
+                    href={src}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[12px] text-ink underline underline-offset-4 hover:no-underline"
+                  >
+                    See terms <ExternalLink className="h-3 w-3" />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         );
@@ -1163,6 +1215,7 @@ function PromoBanner({ portfolio }: { portfolio: ProgrammeTotal[] }) {
     </div>
   );
 }
+
 
 /* ---------- Programme balance card ---------- */
 
