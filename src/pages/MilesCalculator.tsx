@@ -1044,6 +1044,11 @@ function ResultsDashboard({
 
         <PromoBanner portfolio={portfolio} />
 
+        {portfolio.length > 1 && (
+          <div className="mt-6 rounded-sm border border-ink/30 bg-background p-4 text-[13px] leading-relaxed text-ink/80">
+            Your bank points can be transferred into different loyalty programmes. The full balances shown are alternative transfer scenarios unless you choose to split your bank points between programmes.
+          </div>
+        )}
 
         {/* Programme balance cards */}
         <div className="mt-10 space-y-10">
