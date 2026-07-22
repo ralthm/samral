@@ -4,6 +4,7 @@ import { readTripContext, clearTripContext, TripContext } from "@/lib/tripContex
 import { formatInt } from "@/lib/milesCalculator";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import TravellersInput from "@/components/TravellersInput";
 
 const track = (event: string, payload: Record<string, unknown> = {}) => {
   try {
@@ -167,7 +168,7 @@ export default function PlanMyTrip() {
 
             <div className="grid gap-6 md:grid-cols-3">
               <FormRow label="Travellers">
-                <input type="number" min={1} max={9} value={form.travellers} onChange={(e) => update("travellers", Math.max(1, Math.min(9, Math.floor(Number(e.target.value) || 1))))} className="input" />
+                <TravellersInput value={form.travellers} onChange={(n) => update("travellers", n)} className="input" />
               </FormRow>
               <FormRow label="Cabin">
                 <select value={form.cabin} onChange={(e) => update("cabin", e.target.value)} className="input">

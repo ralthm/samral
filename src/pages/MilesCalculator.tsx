@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import TravellersInput from "@/components/TravellersInput";
 import {
   banks,
   Card,
@@ -1576,15 +1577,9 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
         </FilterField>
 
         <FilterField label="Travellers">
-          <input
-            type="number"
-            min={1}
-            max={9}
+          <TravellersInput
             value={travellers}
-            onChange={(e) => {
-              const n = Math.max(1, Math.min(9, Math.floor(Number(e.target.value) || 1)));
-              setTravellers(n); emitFilter("travellers", n);
-            }}
+            onChange={(n) => { setTravellers(n); emitFilter("travellers", n); }}
             className="mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-ink"
           />
         </FilterField>
