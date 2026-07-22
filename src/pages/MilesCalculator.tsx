@@ -503,6 +503,21 @@ function EntryCard({
   const product = entry.rewardProductId ? getRewardProductById(entry.rewardProductId) : undefined;
   const cardGroups = entry.rewardProductId ? getCardGroupsByRewardProduct(entry.rewardProductId) : [];
   const bank = entry.bankId ? getBankById(entry.bankId) : undefined;
+  const selectedGroup = entry.cardGroupId ? eligibleCardGroups.find((g) => g.id === entry.cardGroupId) : undefined;
+  const rulesForSelected = entry.cardGroupId ? getPublicRulesForCardGroup(entry.cardGroupId) : [];
+  const hasNoRules = !!entry.cardGroupId && rulesForSelected.length === 0;
+
+  const [eligibleOpen, setEligibleOpen] = useState(false);
+
+  // Auto-pick a reward product if the bank exposes only one.
+  useEffect(() => {
+    if (entry.bankId && !entry.rewardProductId && bankProducts.length === 1) {
+      const only = bankProducts[0];
+      const groups = getCardGroupsByRewardProduct(only.id);
+      onChange({ ...entry, rewardProductId: only.id, cardGroupId: groups.length === 1 ? groups[0].id : "" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entry.bankId, entry.rewardProductId, bankProducts.length]);
 
   const pointsValue = parseIntSafe(entry.rawInput);
   const pointsError = entry.rawInput && !Number.isFinite(pointsValue)
@@ -516,6 +531,8 @@ function EntryCard({
       onFirstValid();
     }
   }, [entry.cardGroupId, pointsValue, onFirstValid]);
+
+  const currencyLabel = product?.rewardCurrencyName ?? "Points";
 
   return (
     <div className="rounded-sm border border-border bg-background p-5">
@@ -550,35 +567,37 @@ function EntryCard({
           </select>
         </Field>
 
-        <Field label="Card group / rewards programme" htmlFor={`product-${entry.id}`}>
-          <select
-            id={`product-${entry.id}`}
-            value={entry.rewardProductId}
-            onChange={(e) => {
-              const productId = e.target.value;
-              const groups = productId ? getCardGroupsByRewardProduct(productId) : [];
-              const cardGroupId = groups.length === 1 ? groups[0].id : "";
-              onChange({ ...entry, rewardProductId: productId, cardGroupId });
-            }}
-            disabled={!entry.bankId}
-            className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none disabled:bg-muted"
-          >
-            <option value="">{entry.bankId ? "Select card group" : "Select bank first"}</option>
-            {bankProducts.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
-        </Field>
+        {bankProducts.length > 1 && (
+          <Field label="Rewards programme" htmlFor={`product-${entry.id}`}>
+            <select
+              id={`product-${entry.id}`}
+              value={entry.rewardProductId}
+              onChange={(e) => {
+                const productId = e.target.value;
+                const groups = productId ? getCardGroupsByRewardProduct(productId) : [];
+                const cardGroupId = groups.length === 1 ? groups[0].id : "";
+                onChange({ ...entry, rewardProductId: productId, cardGroupId });
+              }}
+              disabled={!entry.bankId}
+              className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none disabled:bg-muted"
+            >
+              <option value="">{entry.bankId ? "Select rewards programme" : "Select bank first"}</option>
+              {bankProducts.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          </Field>
+        )}
 
         {cardGroups.length > 1 && (
-          <Field label="Specific eligible cards" htmlFor={`cardgroup-${entry.id}`}>
+          <Field label="Which card do you hold?" htmlFor={`cardgroup-${entry.id}`}>
             <select
               id={`cardgroup-${entry.id}`}
               value={entry.cardGroupId}
               onChange={(e) => onChange({ ...entry, cardGroupId: e.target.value })}
               className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
             >
-              <option value="">Select card group</option>
+              <option value="">Select your exact card</option>
               {cardGroups.map((g) => (
                 <option key={g.id} value={g.id}>{g.name}</option>
               ))}
@@ -586,7 +605,7 @@ function EntryCard({
           </Field>
         )}
 
-        <Field label={`${product?.rewardCurrencyName ?? "Points"} balance`} htmlFor={`points-${entry.id}`}>
+        <Field label={`${currencyLabel} balance`} htmlFor={`points-${entry.id}`}>
           <input
             id={`points-${entry.id}`}
             type="text"
@@ -608,6 +627,35 @@ function EntryCard({
           )}
         </Field>
       </div>
+
+      {selectedGroup && selectedGroup.eligibleCards.length > 0 && (
+        <div className="mt-4 rounded-sm border border-border/70 bg-sand/40 p-3 text-[12px] text-ink/75">
+          <button
+            type="button"
+            onClick={() => setEligibleOpen((v) => !v)}
+            aria-expanded={eligibleOpen}
+            className="inline-flex items-center gap-1.5 text-ink hover:opacity-70"
+          >
+            <ChevronDown className={`h-3.5 w-3.5 transition-transform ${eligibleOpen ? "rotate-180" : ""}`} />
+            {eligibleOpen ? "Hide" : "Show"} the {selectedGroup.eligibleCards.length} card{selectedGroup.eligibleCards.length === 1 ? "" : "s"} included in this group
+          </button>
+          {eligibleOpen && (
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-ink/70">
+              {selectedGroup.eligibleCards.map((c) => <li key={c}>{c}</li>)}
+            </ul>
+          )}
+          {selectedGroup.description && (
+            <p className="mt-2 text-[11px] leading-relaxed text-ink/55">{selectedGroup.description}</p>
+          )}
+        </div>
+      )}
+
+      {hasNoRules && selectedGroup?.unverifiedNotice && (
+        <div role="note" className="mt-3 rounded-sm border border-ink/30 bg-background p-3 text-[12px] leading-relaxed text-ink/80">
+          <p className="font-medium text-ink">Rate not confirmed</p>
+          <p className="mt-1">{selectedGroup.unverifiedNotice}</p>
+        </div>
+      )}
 
       <div className="mt-4">
         {entry.showLabel || entry.nickname ? (
