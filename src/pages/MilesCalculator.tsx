@@ -1367,11 +1367,11 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
   // portfolio AND programmes with a completed redemption engine. Never a fixed
   // catalogue and never hard-coded to a single programme.
   const programmeOptions = useMemo(() => {
-    const supported = new Set(SUPPORTED_PROGRAMMES);
-    const portfolioIds = new Set(portfolio.map((p) => p.programmeId));
+    const supported = new Set<string>(SUPPORTED_PROGRAMMES);
+    const portfolioIds = new Set<string>(portfolio.map((p) => p.programmeId));
     // If the user hasn't entered any balances yet, show all supported engines
     // so the page still functions as a browse view.
-    const source = portfolioIds.size > 0
+    const source: string[] = portfolioIds.size > 0
       ? Array.from(portfolioIds).filter((id) => supported.has(id))
       : Array.from(supported);
     return source
