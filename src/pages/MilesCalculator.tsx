@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronDown,
   ExternalLink,
@@ -29,6 +29,19 @@ import {
   ProgrammeTotal,
   RuleResult,
 } from "@/lib/milesCalculator";
+import {
+  Cabin,
+  CABINS,
+  computeRequiredPoints,
+  isTargetPublic,
+  RedemptionTarget,
+  redemptionTargets,
+  Region,
+  REGIONS,
+  verifiedCabinsPresent,
+} from "@/data/redemptionTargets";
+import { saveTripContext, TripContext } from "@/lib/tripContext";
+
 
 const STRATEGY_URL = "/points-strategy";
 const PRIORITY_PROGRAMMES = ["enrich", "krisflyer", "asia-miles"];
