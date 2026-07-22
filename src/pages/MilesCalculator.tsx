@@ -1062,7 +1062,11 @@ function ResultsDashboard({
           </div>
         )}
 
-        <PromoBanner portfolio={portfolio} />
+        <PromoBanner
+          portfolio={portfolio}
+          registeredSet={registeredSet}
+          onToggleRegistration={onToggleRegistration}
+        />
 
         {portfolio.length > 1 && (
           <div className="mt-6 rounded-sm border border-ink/30 bg-background p-4 text-[13px] leading-relaxed text-ink/80">
@@ -1083,6 +1087,8 @@ function ResultsDashboard({
                       programme={p}
                       rowResults={resultsByProgramme.get(p.programmeId) ?? []}
                       entryContext={entryContext}
+                      registeredSet={registeredSet}
+                      onToggleRegistration={onToggleRegistration}
                     />
                   ))}
                 </div>
@@ -1092,7 +1098,8 @@ function ResultsDashboard({
         </div>
 
         {/* Destination discovery */}
-        <DestinationDiscovery portfolio={portfolio} />
+        <DestinationDiscovery portfolio={portfolio} registeredSet={registeredSet} />
+
 
         {/* Points remaining */}
         <PointsRemaining entryContext={entryContext} totalUsedByEntry={totalUsedByEntry} />
