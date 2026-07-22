@@ -767,9 +767,8 @@ export const conversionRules: ConversionRule[] = [
   rule("uob-prvi-elite-cathay", "cg-uob-prvi-elite", "asia-miles", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
   rule("uob-prvi-elite-airasia", "cg-uob-prvi-elite", "airasia", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
 
-  rule("uob-vi-prvi-enrich", "cg-uob-vi-prvi", "enrich", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-vi-prvi-krisflyer", "cg-uob-vi-prvi", "krisflyer", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-vi-prvi-cathay", "cg-uob-vi-prvi", "asia-miles", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+
+
 
   // ---- HSBC TravelOne — 21 verified partner routes ----
   ...(([
