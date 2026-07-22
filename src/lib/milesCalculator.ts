@@ -369,4 +369,4 @@ export function parseIntSafe(s: string): number {
   return Math.floor(n);
 }
 
-export { Promotion };
+export type { Promotion };
