@@ -260,10 +260,16 @@ export const loyaltyProgrammes: LoyaltyProgramme[] = [
 export const rewardProducts: RewardProduct[] = [
   // Maybank has two distinct bank-side currencies — TreatsPoints and Membership Rewards —
   // and multiple entitlement tiers within each.
-  { id: "mbb-treats-premium", bankId: "maybank", name: "Maybank TreatsPoints — Selected Visa Infinite / World Elite / M2 Premier", slug: "mbb-treats-premium", rewardCurrencyName: "TreatsPoints", active: true, displayOrder: 1 },
-  { id: "mbb-mr-selected-amex", bankId: "maybank", name: "Maybank Membership Rewards — Selected Amex Credit & Charge", slug: "mbb-mr-selected-amex", rewardCurrencyName: "Membership Rewards", active: true, displayOrder: 2 },
-  { id: "mbb-mr-plat-charge", bankId: "maybank", name: "Maybank Membership Rewards — Amex Platinum Charge", slug: "mbb-mr-plat-charge", rewardCurrencyName: "Membership Rewards", active: true, displayOrder: 3 },
-  { id: "mbb-treats-standard", bankId: "maybank", name: "Maybank TreatsPoints — Classic / Gold / Platinum / Visa Signature", slug: "mbb-treats-standard", rewardCurrencyName: "TreatsPoints", active: true, displayOrder: 5 },
+  { id: "mbb-treats-premium", bankId: "maybank", name: "Maybank TreatsPoints — Premium tier (12,500 → 1,000)", slug: "mbb-treats-premium", rewardCurrencyName: "TreatsPoints", active: true, displayOrder: 1 },
+  { id: "mbb-mr-selected-amex", bankId: "maybank", name: "Maybank Membership Rewards — Selected Amex credit & charge", slug: "mbb-mr-selected-amex", rewardCurrencyName: "Membership Rewards", active: true, displayOrder: 2 },
+  { id: "mbb-mr-plat-charge", bankId: "maybank", name: "Maybank Membership Rewards — The Platinum Card", slug: "mbb-mr-plat-charge", rewardCurrencyName: "Membership Rewards", active: true, displayOrder: 3 },
+  { id: "mbb-treats-standard", bankId: "maybank", name: "Maybank TreatsPoints — General tier (20,000 → 1,000)", slug: "mbb-treats-standard", rewardCurrencyName: "TreatsPoints", active: true, displayOrder: 4 },
+  { id: "mbb-treats-existing-only", bankId: "maybank", name: "Maybank TreatsPoints — existing balance only (myimpact)", slug: "mbb-treats-existing-only", rewardCurrencyName: "TreatsPoints (existing balance)", active: true, displayOrder: 5 },
+  { id: "mbb-krisflyer-direct", bankId: "maybank", name: "Maybank direct KrisFlyer-earning cards", slug: "mbb-krisflyer-direct", rewardCurrencyName: "KrisFlyer miles (earned directly)", active: true, displayOrder: 6 },
+  { id: "mbb-cashback", bankId: "maybank", name: "Maybank cashback cards", slug: "mbb-cashback", rewardCurrencyName: "Cashback", active: true, displayOrder: 7 },
+  { id: "mbb-grabrewards", bankId: "maybank", name: "Maybank Grab — GrabRewards", slug: "mbb-grabrewards", rewardCurrencyName: "GrabRewards", active: true, displayOrder: 8 },
+  { id: "mbb-shopee", bankId: "maybank", name: "Maybank Shopee — Shopee Coins", slug: "mbb-shopee", rewardCurrencyName: "Shopee Coins", active: true, displayOrder: 9 },
+  { id: "mbb-legacy-unverified", bankId: "maybank", name: "Maybank legacy card — conversion pending verification", slug: "mbb-legacy-unverified", rewardCurrencyName: "Not currently calculable", active: true, displayOrder: 10 },
   // CIMB
   { id: "cimb-bonus", bankId: "cimb", name: "CIMB Bonus Points", slug: "cimb-bonus", rewardCurrencyName: "Bonus Points", active: true, displayOrder: 1 },
   // Alliance
