@@ -412,7 +412,7 @@ function CalculatorFlow() {
           <div className="max-w-[640px]">
             <p className="eyebrow text-ink/60">Step 1</p>
             <h2 className="mt-3 font-display text-3xl text-ink md:text-4xl">
-              Your credit card balances
+              Your credit card points
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-ink/70">
               Add one card group per entry. You can add several from the same bank.
