@@ -9,6 +9,7 @@ import {
   getProgrammeById,
   getRewardProductById,
   isRulePublic,
+  auditMaybankInventory,
 } from "@/data/milesCalculator";
 import { calculateEntry, formatInt } from "@/lib/milesCalculator";
 
@@ -160,6 +161,8 @@ function Dashboard() {
           { label: "Needs review", value: needsReview.length },
           { label: `Verified > ${STALE_DAYS} days ago`, value: stale.length },
         ]} />
+        <MaybankAuditPanel />
+
 
         <Section title={`Rules needing review`} count={needsReview.length}>
           <RuleTable rows={needsReview} />
@@ -326,5 +329,38 @@ function RuleTable({ rows }: { rows: Row[] }) {
         </tbody>
       </table>
     </div>
+  );
+}
+
+function MaybankAuditPanel() {
+  const audit = auditMaybankInventory();
+  const ok = audit.present === audit.expected && audit.missingIds.length === 0 && audit.unexpectedIds.length === 0;
+  return (
+    <section>
+      <h2 className="font-display text-2xl text-ink">
+        Maybank inventory audit{" "}
+        <span className={ok ? "text-emerald-700" : "text-red-700"}>
+          ({audit.present}/{audit.expected})
+        </span>
+      </h2>
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <div className="rounded-sm border border-border bg-background p-4 text-[13px] text-ink/80">
+          <p className="font-medium text-ink">Current catalogue</p>
+          <p className="mt-1">Expected: {audit.expected}</p>
+          <p>Present: {audit.present}</p>
+          <p className="mt-2 text-ink/70">Missing card IDs ({audit.missingIds.length}):</p>
+          <p className="font-mono text-[11px] text-ink/70">{audit.missingIds.length ? audit.missingIds.join(", ") : "—"}</p>
+          <p className="mt-2 text-ink/70">Unexpected current card IDs ({audit.unexpectedIds.length}):</p>
+          <p className="font-mono text-[11px] text-ink/70">{audit.unexpectedIds.length ? audit.unexpectedIds.join(", ") : "—"}</p>
+        </div>
+        <div className="rounded-sm border border-border bg-background p-4 text-[13px] text-ink/80">
+          <p className="font-medium text-ink">Legacy inventory</p>
+          <p className="mt-1 text-ink/70">Legacy card IDs ({audit.legacyIds.length}):</p>
+          <p className="font-mono text-[11px] text-ink/70">{audit.legacyIds.length ? audit.legacyIds.join(", ") : "—"}</p>
+          <p className="mt-2 text-ink/70">Unverified legacy card IDs ({audit.unverifiedLegacyIds.length}):</p>
+          <p className="font-mono text-[11px] text-ink/70">{audit.unverifiedLegacyIds.length ? audit.unverifiedLegacyIds.join(", ") : "—"}</p>
+        </div>
+      </div>
+    </section>
   );
 }
