@@ -7,10 +7,10 @@ import {
   getBankById,
   getCardGroupsByRewardProduct,
   getProgrammeById,
+  getPublicRulesForCardGroup,
   getRewardProductById,
   getRewardProductsByBank,
   loyaltyProgrammes,
-  rewardProducts,
   summaryCounters,
 } from "@/data/milesCalculator";
 import {
