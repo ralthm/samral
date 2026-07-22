@@ -1042,6 +1042,9 @@ function ResultsDashboard({
           </div>
         )}
 
+        <PromoBanner portfolio={portfolio} />
+
+
         {/* Programme balance cards */}
         <div className="mt-10 space-y-10">
           {(Object.keys(grouped) as GroupKey[]).map((k) =>
