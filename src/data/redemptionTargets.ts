@@ -268,30 +268,89 @@ interface KfSeed {
   status?: TargetStatus;
 }
 
-// KrisFlyer Saver chart effective 1 November 2025. Figures are indicative
-// origin-to-destination totals for KUL→SIN→<dest> Singapore Airlines-operated
-// itineraries and should be re-verified against the live chart at booking.
+// KrisFlyer Saver chart effective 1 November 2025 — KUL/PEN origin figures
+// confirmed against the BolehMiles KUL/PEN chart (rate reference last updated
+// June 2026), which mirrors the official Singapore Airlines chart.
+//
+// Pricing rule: for a Singapore Airlines through itinerary booked from Kuala
+// Lumpur or Penang via Singapore to the final destination, use the published
+// KUL/PEN origin-to-destination amount. Do NOT sum KUL–SIN + SIN–destination.
+//
+// Every record is one-way per traveller. Return = one-way × 2.
+// Premium Economy is only stored where the KUL/PEN chart publishes an exact
+// value. A caret ("^") in the source chart means "use the calculator" and
+// must NOT be recorded as zero or estimated.
 const krisflyerSeeds: KfSeed[] = [
-  { code: "sin", destination: "SIN", destinationName: "Singapore", country: "Singapore", region: "Malaysia and Southeast Asia", connection: [], economy: 7500, business: 20500, notes: "Direct KUL–SIN on SilkAir-successor Singapore Airlines service." },
-  { code: "bkk", destination: "BKK", destinationName: "Bangkok", country: "Thailand", region: "Malaysia and Southeast Asia", connection: ["SIN"], economy: 12500, premiumEconomy: 20000, business: 32000 },
-  { code: "cgk", destination: "CGK", destinationName: "Jakarta", country: "Indonesia", region: "Malaysia and Southeast Asia", connection: ["SIN"], economy: 12500, business: 30000 },
-  { code: "dps", destination: "DPS", destinationName: "Bali (Denpasar)", country: "Indonesia", region: "Malaysia and Southeast Asia", connection: ["SIN"], economy: 15500, business: 38000 },
-  { code: "hkg", destination: "HKG", destinationName: "Hong Kong", country: "Hong Kong SAR", region: "North Asia", connection: ["SIN"], economy: 22000, premiumEconomy: 35000, business: 55000 },
-  { code: "tpe", destination: "TPE", destinationName: "Taipei", country: "Taiwan", region: "North Asia", connection: ["SIN"], economy: 25000, business: 58000 },
-  { code: "icn", destination: "ICN", destinationName: "Seoul (Incheon)", country: "South Korea", region: "North Asia", connection: ["SIN"], economy: 32500, premiumEconomy: 50000, business: 78000 },
-  { code: "nrt", destination: "NRT", destinationName: "Tokyo (Narita)", country: "Japan", region: "North Asia", connection: ["SIN"], economy: 43000, premiumEconomy: 65000, business: 110000, suites: 175000 },
-  { code: "hnd", destination: "HND", destinationName: "Tokyo (Haneda)", country: "Japan", region: "North Asia", connection: ["SIN"], economy: 43000, business: 110000 },
-  { code: "syd", destination: "SYD", destinationName: "Sydney", country: "Australia", region: "Australia and New Zealand", connection: ["SIN"], economy: 43000, premiumEconomy: 65000, business: 95000, suites: 150000 },
-  { code: "mel", destination: "MEL", destinationName: "Melbourne", country: "Australia", region: "Australia and New Zealand", connection: ["SIN"], economy: 43000, business: 95000 },
-  { code: "del", destination: "DEL", destinationName: "Delhi", country: "India", region: "South Asia", connection: ["SIN"], economy: 25000, business: 55000 },
-  { code: "bom", destination: "BOM", destinationName: "Mumbai", country: "India", region: "South Asia", connection: ["SIN"], economy: 25000, business: 55000 },
-  { code: "dxb", destination: "DXB", destinationName: "Dubai", country: "United Arab Emirates", region: "Middle East", connection: ["SIN"], economy: 43000, business: 92000 },
-  { code: "lhr", destination: "LHR", destinationName: "London (Heathrow)", country: "United Kingdom", region: "Europe", connection: ["SIN"], economy: 86500, premiumEconomy: 130000, business: 200000, suites: 320000 },
-  { code: "cdg", destination: "CDG", destinationName: "Paris (Charles de Gaulle)", country: "France", region: "Europe", connection: ["SIN"], economy: 86500, business: 200000 },
-  { code: "fra", destination: "FRA", destinationName: "Frankfurt", country: "Germany", region: "Europe", connection: ["SIN"], economy: 86500, business: 200000 },
-  { code: "jfk", destination: "JFK", destinationName: "New York (JFK)", country: "United States", region: "North America", connection: ["SIN"], economy: 120000, business: 240000, suites: 400000 },
-  { code: "lax", destination: "LAX", destinationName: "Los Angeles", country: "United States", region: "North America", connection: ["SIN"], economy: 105000, business: 220000 },
-  { code: "jnb", destination: "JNB", destinationName: "Johannesburg", country: "South Africa", region: "Africa", connection: ["SIN"], economy: 62000, business: 130000 },
+  // KUL → SIN (direct)
+  { code: "sin", destination: "SIN", destinationName: "Singapore", country: "Singapore", region: "Malaysia and Southeast Asia", connection: [], economy: 8000, business: 22000, suites: 32000 },
+  // KUL → SIN → BKK (Zone 3)
+  { code: "bkk", destination: "BKK", destinationName: "Bangkok", country: "Thailand", region: "Malaysia and Southeast Asia", connection: ["SIN"], economy: 13500, business: 26500, suites: 39500 },
+  // KUL → SIN → DPS (Zone 2)
+  { code: "dps", destination: "DPS", destinationName: "Bali (Denpasar)", country: "Indonesia", region: "Malaysia and Southeast Asia", connection: ["SIN"], economy: 8500, business: 23000, suites: 33500 },
+  // KUL → SIN → HKG (Zone 4)
+  { code: "hkg", destination: "HKG", destinationName: "Hong Kong", country: "Hong Kong SAR", region: "North Asia", connection: ["SIN"], economy: 16000, premiumEconomy: 28500, business: 36500, suites: 48500 },
+  // KUL → SIN → TPE (Zone 4)
+  { code: "tpe", destination: "TPE", destinationName: "Taipei", country: "Taiwan", region: "North Asia", connection: ["SIN"], economy: 16000, premiumEconomy: 28500, business: 36500, suites: 48500 },
+  // KUL → SIN → DEL (Zone 6)
+  { code: "del", destination: "DEL", destinationName: "Delhi", country: "India", region: "South Asia", connection: ["SIN"], economy: 20000, premiumEconomy: 38000, business: 47500, suites: 64500 },
+  // KUL → SIN → BOM (Zone 6)
+  { code: "bom", destination: "BOM", destinationName: "Mumbai", country: "India", region: "South Asia", connection: ["SIN"], economy: 20000, premiumEconomy: 38000, business: 47500, suites: 64500 },
+  // KUL → SIN → NRT (Zone 7)
+  { code: "nrt", destination: "NRT", destinationName: "Tokyo (Narita)", country: "Japan", region: "North Asia", connection: ["SIN"], economy: 27000, premiumEconomy: 41500, business: 57000, suites: 84500 },
+  // KUL → SIN → HND (Zone 7)
+  { code: "hnd", destination: "HND", destinationName: "Tokyo (Haneda)", country: "Japan", region: "North Asia", connection: ["SIN"], economy: 27000, premiumEconomy: 41500, business: 57000, suites: 84500 },
+  // KUL → SIN → ICN (Zone 7)
+  { code: "icn", destination: "ICN", destinationName: "Seoul (Incheon)", country: "South Korea", region: "North Asia", connection: ["SIN"], economy: 27000, premiumEconomy: 41500, business: 57000, suites: 84500 },
+  // KUL → SIN → SYD (Zone 9)
+  { code: "syd", destination: "SYD", destinationName: "Sydney", country: "Australia", region: "Australia and New Zealand", connection: ["SIN"], economy: 30500, premiumEconomy: 56000, business: 75500, suites: 103000 },
+  // KUL → SIN → MEL (Zone 9)
+  { code: "mel", destination: "MEL", destinationName: "Melbourne", country: "Australia", region: "Australia and New Zealand", connection: ["SIN"], economy: 30500, premiumEconomy: 56000, business: 75500, suites: 103000 },
+  // KUL → SIN → DXB (Zone 10)
+  { code: "dxb", destination: "DXB", destinationName: "Dubai", country: "United Arab Emirates", region: "Middle East", connection: ["SIN"], economy: 33500, premiumEconomy: 54000, business: 70500, suites: 99500 },
+  // KUL → SIN → LHR (Zone 11)
+  { code: "lhr", destination: "LHR", destinationName: "London (Heathrow)", country: "United Kingdom", region: "Europe", connection: ["SIN"], economy: 46000, premiumEconomy: 78000, business: 114000, suites: 155000 },
+  // KUL → SIN → CDG (Zone 11)
+  { code: "cdg", destination: "CDG", destinationName: "Paris (Charles de Gaulle)", country: "France", region: "Europe", connection: ["SIN"], economy: 46000, premiumEconomy: 78000, business: 114000, suites: 155000 },
+  // KUL → SIN → FRA (Zone 11)
+  { code: "fra", destination: "FRA", destinationName: "Frankfurt", country: "Germany", region: "Europe", connection: ["SIN"], economy: 46000, premiumEconomy: 78000, business: 114000, suites: 155000 },
+  // KUL → SIN → LAX (Zone 12)
+  { code: "lax", destination: "LAX", destinationName: "Los Angeles", country: "United States", region: "North America", connection: ["SIN"], economy: 46000, premiumEconomy: 82500, business: 117500, suites: 161000 },
+  // KUL → SIN → JFK (Zone 13)
+  { code: "jfk", destination: "JFK", destinationName: "New York (JFK)", country: "United States", region: "North America", connection: ["SIN"], economy: 48500, premiumEconomy: 88500, business: 122500, suites: 163500 },
+];
+
+/* Scoot Saver — operated by Scoot (low-cost carrier), redeemed with KrisFlyer
+ * miles. Priced per traveller, one-way, transiting Singapore. Stored as a
+ * separate award product so cards can clearly label it "Scoot Saver" and
+ * disclose that inclusions differ from Singapore Airlines Economy Saver. */
+interface ScootSeed {
+  code: string;
+  destination: string;
+  destinationName: string;
+  country: string;
+  region: Region;
+  economy: number;
+}
+
+const scootSeeds: ScootSeed[] = [
+  { code: "sc-sin", destination: "SIN", destinationName: "Singapore", country: "Singapore", region: "Malaysia and Southeast Asia", economy: 1500 },
+  { code: "sc-cgk", destination: "CGK", destinationName: "Jakarta", country: "Indonesia", region: "Malaysia and Southeast Asia", economy: 4000 },
+  { code: "sc-dps", destination: "DPS", destinationName: "Bali (Denpasar)", country: "Indonesia", region: "Malaysia and Southeast Asia", economy: 6000 },
+  { code: "sc-sub", destination: "SUB", destinationName: "Surabaya", country: "Indonesia", region: "Malaysia and Southeast Asia", economy: 6000 },
+  { code: "sc-bkk", destination: "BKK", destinationName: "Bangkok", country: "Thailand", region: "Malaysia and Southeast Asia", economy: 4000 },
+  { code: "sc-hkt", destination: "HKT", destinationName: "Phuket", country: "Thailand", region: "Malaysia and Southeast Asia", economy: 4000 },
+  { code: "sc-cnx", destination: "CNX", destinationName: "Chiang Mai", country: "Thailand", region: "Malaysia and Southeast Asia", economy: 12000 },
+  { code: "sc-sgn", destination: "SGN", destinationName: "Ho Chi Minh City", country: "Vietnam", region: "Malaysia and Southeast Asia", economy: 6000 },
+  { code: "sc-han", destination: "HAN", destinationName: "Hanoi", country: "Vietnam", region: "Malaysia and Southeast Asia", economy: 6000 },
+  { code: "sc-mnl", destination: "MNL", destinationName: "Manila", country: "Philippines", region: "Malaysia and Southeast Asia", economy: 7500 },
+  { code: "sc-hkg", destination: "HKG", destinationName: "Hong Kong", country: "Hong Kong SAR", region: "North Asia", economy: 8000 },
+  { code: "sc-tpe", destination: "TPE", destinationName: "Taipei", country: "Taiwan", region: "North Asia", economy: 8000 },
+  { code: "sc-can", destination: "CAN", destinationName: "Guangzhou", country: "China", region: "North Asia", economy: 8000 },
+  { code: "sc-nrt", destination: "NRT", destinationName: "Tokyo (Narita)", country: "Japan", region: "North Asia", economy: 14000 },
+  { code: "sc-icn", destination: "ICN", destinationName: "Seoul (Incheon)", country: "South Korea", region: "North Asia", economy: 14000 },
+  { code: "sc-per", destination: "PER", destinationName: "Perth", country: "Australia", region: "Australia and New Zealand", economy: 8000 },
+  { code: "sc-syd", destination: "SYD", destinationName: "Sydney", country: "Australia", region: "Australia and New Zealand", economy: 14000 },
+  { code: "sc-mel", destination: "MEL", destinationName: "Melbourne", country: "Australia", region: "Australia and New Zealand", economy: 14000 },
 ];
 
 function buildKrisflyerTargets(): RedemptionTarget[] {
@@ -337,6 +396,27 @@ function buildKrisflyerTargets(): RedemptionTarget[] {
     if (s.premiumEconomy) push(s, "Premium Economy", s.premiumEconomy, "w");
     if (s.business) push(s, "Business", s.business, "j");
     if (s.suites) push(s, "First or Business Suite", s.suites, "f");
+  }
+  // Scoot Saver — separate award product on the KrisFlyer programme.
+  for (const s of scootSeeds) {
+    out.push({
+      ...shared,
+      id: `kf-${s.code}-y`,
+      operatingAirline: "Scoot",
+      marketingAirline: "Scoot",
+      awardType: "Scoot Saver",
+      destination: s.destination,
+      destinationName: s.destinationName,
+      country: s.country,
+      region: s.region,
+      connectionAirports: s.destination === "SIN" ? [] : ["SIN"],
+      numberOfSegments: s.destination === "SIN" ? 1 : 2,
+      directOrConnecting: s.destination === "SIN" ? "direct" : "connecting",
+      cabin: "Economy",
+      pointsPerPerson: s.economy,
+      status: "verified",
+      notes: "Scoot is a low-cost carrier. Checked baggage, meals and seat selection are not included and must be purchased separately.",
+    });
   }
   return out;
 }
