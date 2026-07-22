@@ -1343,10 +1343,10 @@ function DestinationCard({
 
       <p className="mt-4 text-[11px] leading-relaxed text-ink/60">
         {state === "unlocked"
-          ? "Your potential balance meets the displayed points requirement. Samral can help you assess the transfer route, practical redemption options and booking plan before you move your points."
+          ? "Your potential balance meets the displayed Saver points requirement. Award-seat availability has not been checked. We'll assess real award availability, compare cash and points, and prepare the safest transfer and booking plan before you move irreversible points."
           : state === "almost"
-          ? `You are ${formatInt(shortfall)} points away from this displayed target. Get a strategy for closing the gap using your cards and spending.`
-          : "Turn this trip into a practical points goal based on your cards, spending and timeline."}
+          ? `You are ${formatInt(shortfall)} points away from this displayed target. Get a personalised review of your cards, spending pattern and travel goals.`
+          : "Get a personalised review of your cards, spending pattern and travel goals."}
       </p>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
