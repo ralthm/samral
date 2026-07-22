@@ -799,29 +799,38 @@ export const conversionRules: ConversionRule[] = [
 
 
 
-  // ---- CIMB ----
-  rule("cimb-airasia", "cg-cimb-bonus", "airasia", [40000, 5000], {
-    sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE,
-    minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000,
-    notes: "Transfers must be made by the principal cardholder into a matching-name loyalty account, in multiples of 5,000 partner points.",
-  }),
-  rule("cimb-enrich", "cg-cimb-bonus", "enrich", [62500, 5000], {
-    sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE,
-    minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000,
-  }),
-  rule("cimb-krisflyer", "cg-cimb-bonus", "krisflyer", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-flyingblue", "cg-cimb-bonus", "flying-blue", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-eva", "cg-cimb-bonus", "eva", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-ba", "cg-cimb-bonus", "ba", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-etihad", "cg-cimb-bonus", "etihad", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-cathay", "cg-cimb-bonus", "asia-miles", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-qatar", "cg-cimb-bonus", "qatar", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-emirates", "cg-cimb-bonus", "emirates", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-jal", "cg-cimb-bonus", "jal", [100000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-turkish", "cg-cimb-bonus", "turkish", [75000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-ihg", "cg-cimb-bonus", "ihg", [50000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-marriott", "cg-cimb-bonus", "marriott", [50000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
-  rule("cimb-accor", "cg-cimb-bonus", "accor", [125000, 5000], { sourceUrl: CIMB_SRC, sourceTitle: CIMB_TITLE, minimumTransferPartnerPoints: 5000, transferIncrementPartnerPoints: 5000 }),
+  // ---- CIMB — Member Rewards Catalogue 2026/27 (1 Apr 2026 – 30 Apr 2027) ----
+  // Transfers must be in complete 5,000 partner-mile blocks. Partial blocks are
+  // never issued. Product codes come from the CIMB Member Rewards Catalogue.
+  ...([
+    ["cimb-enrich",       "enrich",       40000,  "10047"  ],
+    ["cimb-airasia",      "airasia",      50000,  "AA0001" ],
+    ["cimb-krisflyer",    "krisflyer",    62500,  "KF0001" ],
+    ["cimb-flyingblue",   "flying-blue",  75000,  "PT21001"],
+    ["cimb-eva",          "eva",          75000,  "PT21002"],
+    ["cimb-ba",           "ba",           75000,  "PT21003"],
+    ["cimb-etihad",       "etihad",       75000,  "PT21004"],
+    ["cimb-cathay",       "asia-miles",   75000,  "PT21007"],
+    ["cimb-qatar",        "qatar",        75000,  "PT21008"],
+    ["cimb-emirates",     "emirates",     75000,  "PT21009"],
+    ["cimb-jal",          "jal",         100000,  "PT21010"],
+    ["cimb-turkish",      "turkish",      75000,  "PT21012"],
+  ] as [string, string, number, string][]).map(([id, prog, bp, code]) =>
+    rule(id, "cg-cimb-bonus", prog, [bp, 5000], {
+      sourceUrl: CIMB_SRC,
+      sourceTitle: CIMB_TITLE,
+      sourcePublisher: "CIMB Bank Berhad",
+      sourcePage: 53,
+      productCode: code,
+      effectiveFrom: "2026-04-01",
+      effectiveUntil: "2027-04-30",
+      verifiedOn: "2026-07-22",
+      minimumTransferPartnerPoints: 5000,
+      transferIncrementPartnerPoints: 5000,
+      notes:
+        "Transfers must be made by the principal cardholder into a matching-name loyalty account, in complete blocks of 5,000 partner miles/points. Partial blocks are not issued.",
+    }),
+  ),
 
   // ---- Alliance TBP (75,000 → 5,000 Enrich, cap 20,000 Enrich/month) ----
   rule("alliance-enrich", "cg-alliance-tbp", "enrich", [75000, 5000], {
