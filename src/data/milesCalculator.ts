@@ -99,7 +99,8 @@ export type CardStatus =
   | "discontinued"
   | "cashback_only"
   | "direct_airline"
-  | "rate_unconfirmed";
+  | "rate_unconfirmed"
+  | "rate_pending_verification";
 
 export interface Card {
   id: string;
