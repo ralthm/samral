@@ -741,14 +741,31 @@ export const conversionRules: ConversionRule[] = [
       "Effective 1 December 2025, compulsory 5,000-point transfer blocks. Maximum 20,000 AirAsia points per cardholder per month (equivalent to 120,000 TBP).",
   }),
 
-  // ---- UOB — three verified card tiers ----
+  // ---- UOB — verified per-card tiers (Enrich, KrisFlyer, Asia Miles, AirAsia) ----
   rule("uob-metal-enrich", "cg-uob-metal", "enrich", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
   rule("uob-metal-krisflyer", "cg-uob-metal", "krisflyer", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
   rule("uob-metal-cathay", "cg-uob-metal", "asia-miles", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-metal-airasia", "cg-uob-metal", "airasia", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+
+  rule("uob-zenith-enrich", "cg-uob-zenith", "enrich", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-zenith-krisflyer", "cg-uob-zenith", "krisflyer", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-zenith-cathay", "cg-uob-zenith", "asia-miles", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-zenith-airasia", "cg-uob-zenith", "airasia", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
 
   rule("uob-privilege-enrich", "cg-uob-privilege", "enrich", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
   rule("uob-privilege-krisflyer", "cg-uob-privilege", "krisflyer", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
   rule("uob-privilege-cathay", "cg-uob-privilege", "asia-miles", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-privilege-airasia", "cg-uob-privilege", "airasia", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+
+  rule("uob-vi-enrich", "cg-uob-visa-infinite", "enrich", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-vi-krisflyer", "cg-uob-visa-infinite", "krisflyer", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-vi-cathay", "cg-uob-visa-infinite", "asia-miles", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-vi-airasia", "cg-uob-visa-infinite", "airasia", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+
+  rule("uob-prvi-elite-enrich", "cg-uob-prvi-elite", "enrich", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-prvi-elite-krisflyer", "cg-uob-prvi-elite", "krisflyer", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-prvi-elite-cathay", "cg-uob-prvi-elite", "asia-miles", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-prvi-elite-airasia", "cg-uob-prvi-elite", "airasia", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
 
   rule("uob-vi-prvi-enrich", "cg-uob-vi-prvi", "enrich", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
   rule("uob-vi-prvi-krisflyer", "cg-uob-vi-prvi", "krisflyer", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
