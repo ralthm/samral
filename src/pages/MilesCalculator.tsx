@@ -1395,9 +1395,16 @@ function ProgrammeDetails({
 
 function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
   const navigate = useNavigate();
+  // Use the promotional balance (base + verified bonus) when a live promotion
+  // applies — that is the balance the user will actually receive in the
+  // destination programme, so it is what the redemption engine must compare
+  // requiredPoints against. Falls back to potentialTotal when no bonus applies.
   const balances = useMemo(() => {
     const m = new Map<string, number>();
-    for (const p of portfolio) m.set(p.programmeId, p.potentialTotal);
+    for (const p of portfolio) {
+      const usable = Math.max(p.promotionalTotal ?? 0, p.potentialTotal ?? 0);
+      m.set(p.programmeId, usable);
+    }
     return m;
   }, [portfolio]);
 
@@ -1411,10 +1418,10 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
   const programmeOptions = useMemo(() => {
     const supported = new Set<string>(SUPPORTED_PROGRAMMES);
     return portfolio
-      .filter((p) => supported.has(p.programmeId) && p.potentialTotal > 0)
+      .filter((p) => supported.has(p.programmeId) && (balances.get(p.programmeId) ?? 0) > 0)
       .map((p) => ({ id: p.programmeId, name: loyaltyProgrammes.find((lp) => lp.id === p.programmeId)?.name ?? p.programmeId }))
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [portfolio]);
+  }, [portfolio, balances]);
 
   const hasVerifiedBalance = programmeOptions.length > 0;
 
