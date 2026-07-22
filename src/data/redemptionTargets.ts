@@ -155,7 +155,7 @@ function buildEnrichTargets(): RedemptionTarget[] {
     connectionAirports: [] as string[],
     numberOfSegments: 1,
     directOrConnecting: "direct" as const,
-    returnBookingRequired: true,
+    returnBookingRequired: false,
     perDirection: true,
     verifiedOn: V_ENRICH,
     sourceUrl: SRC_ENRICH,
