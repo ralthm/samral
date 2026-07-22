@@ -422,6 +422,12 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     active: true,
     displayOrder: 1,
   },
+
+  // ------- CIMB -------
+  {
+    id: "cg-cimb-bonus",
+    rewardProductId: "cimb-bonus",
+    name: "CIMB Bonus Points — all eligible credit cards",
     description:
       "CIMB Bonus Points transfers are available to twelve airline partners at published ratios. Earning rates differ by card, but the conversion route does not.",
     eligibleCards: [
