@@ -1760,14 +1760,18 @@ function DestinationCard({
 
   const badge = isNeedsReview
     ? { label: "Verification needed", cls: "border border-ink/40 text-ink/70" }
-    : state === "unlocked" ? { label: "Points threshold met", cls: "bg-ink text-background" }
+    : state === "unlocked" ? { label: "Enough points", cls: "bg-ink text-background" }
     : state === "almost" ? { label: "Almost there", cls: "border border-ink text-ink" }
     : { label: "Future goal", cls: "border border-ink/40 text-ink/70" };
 
-  const primaryLabel = state === "unlocked" ? "Find My Best Redemption" : "Get My Points Strategy";
+  const primaryLabel =
+    state === "unlocked" ? "Find My Best Redemption"
+    : state === "almost" ? "Close My Points Gap"
+    : "Build My Points Strategy";
   const conn = connectionLabel(t);
   const tripLabel = tripType === "return" ? "return" : "one way";
   const tripLabelTitle = tripType === "return" ? "Return" : "One way";
+  const isObserved = t.verificationLevel === "observed-redemption-data";
 
   return (
     <article className="rounded-sm border border-border bg-background p-6">
