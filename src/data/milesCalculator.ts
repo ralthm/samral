@@ -228,6 +228,15 @@ export const banks: Bank[] = [
     displayOrder: 11,
     officialRewardsUrl: "https://www.sc.com/my/credit-cards/journey/",
   },
+  {
+    id: "ocbc",
+    name: "OCBC Malaysia",
+    slug: "ocbc-malaysia",
+    country: "MY",
+    active: true,
+    displayOrder: 12,
+    officialRewardsUrl: "https://www.ocbc.com.my/personal-banking/cards/credit-cards",
+  },
 ];
 
 /* -------------------- Loyalty programmes -------------------- */
