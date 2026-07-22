@@ -6,6 +6,11 @@ import {
   getRewardProductById,
   getBankById,
 } from "@/data/milesCalculator";
+import {
+  computeBonus,
+  findApplicablePromotion,
+  Promotion,
+} from "@/data/promotions";
 
 /* Integer-only, floor-only conversion. Never invents partial blocks. */
 
@@ -45,6 +50,14 @@ export interface RuleResult {
   monthlyCapApplied?: boolean;
   minimumTransferPartnerPoints?: number;
   transferIncrementPartnerPoints?: number;
+  /** Bonus partner points from an applied promotion (0 if none). Additive, never modifies base. */
+  bonusPartnerPoints: number;
+  /** Total transferred INCLUDING bonus (standard + bonus). */
+  promotionalPartnerPoints: number;
+  promotionId?: string;
+  promotionName?: string;
+  promotionEndDate?: string;
+  promotionBonusPercentage?: number;
 }
 
 export function calculateEntry(input: CalcInput): RuleResult[] {
@@ -117,6 +130,35 @@ function buildResult(
     monthlyCapApplied,
     minimumTransferPartnerPoints: r.minimumTransferPartnerPoints,
     transferIncrementPartnerPoints: r.transferIncrementPartnerPoints,
+    ...applyPromotionToResult(ctx.bankId, programme.id, r.eligibleCardGroupId, partnerPointsReceived),
+  };
+}
+
+function applyPromotionToResult(
+  bankId: string,
+  programmeId: string,
+  cardGroupId: string,
+  basePartnerPoints: number,
+): {
+  bonusPartnerPoints: number;
+  promotionalPartnerPoints: number;
+  promotionId?: string;
+  promotionName?: string;
+  promotionEndDate?: string;
+  promotionBonusPercentage?: number;
+} {
+  const promo = findApplicablePromotion(bankId, programmeId, cardGroupId);
+  if (!promo || basePartnerPoints <= 0) {
+    return { bonusPartnerPoints: 0, promotionalPartnerPoints: basePartnerPoints };
+  }
+  const bonus = computeBonus(promo, basePartnerPoints);
+  return {
+    bonusPartnerPoints: bonus,
+    promotionalPartnerPoints: basePartnerPoints + bonus,
+    promotionId: promo.id,
+    promotionName: promo.name,
+    promotionEndDate: promo.endDate,
+    promotionBonusPercentage: promo.bonusType === "percentage" ? promo.bonusPercentage : undefined,
   };
 }
 
@@ -129,10 +171,19 @@ export interface ProgrammeTotal {
     bankName: string;
     rewardProductName: string;
     partnerPointsReceived: number;
+    bonusPartnerPoints: number;
+    promotionId?: string;
   }[];
   transferredTotal: number;
+  /** Bonus partner points from active promotions (0 if none apply). */
+  bonusTotal: number;
   existingBalance: number;
+  /** Standard potential: transferredTotal + existingBalance (no promotion). */
   potentialTotal: number;
+  /** With active promotion(s) applied: potentialTotal + bonusTotal. */
+  promotionalTotal: number;
+  /** Distinct promotions that contributed a bonus to this programme. */
+  activePromotionIds: string[];
 }
 
 export function computePortfolioTotals(
@@ -149,16 +200,25 @@ export function computePortfolioTotals(
       programmeType: r.programmeType,
       transferredFromEntries: [],
       transferredTotal: 0,
+      bonusTotal: 0,
       existingBalance: 0,
       potentialTotal: 0,
+      promotionalTotal: 0,
+      activePromotionIds: [],
     };
     existing.transferredFromEntries.push({
       entryId: r.entryId,
       bankName: r.bankName,
       rewardProductName: r.rewardProductName,
       partnerPointsReceived: r.partnerPointsReceived,
+      bonusPartnerPoints: r.bonusPartnerPoints,
+      promotionId: r.promotionId,
     });
     existing.transferredTotal += r.partnerPointsReceived;
+    existing.bonusTotal += r.bonusPartnerPoints;
+    if (r.promotionId && !existing.activePromotionIds.includes(r.promotionId)) {
+      existing.activePromotionIds.push(r.promotionId);
+    }
     byProgramme.set(r.programmeId, existing);
   }
 
@@ -173,16 +233,22 @@ export function computePortfolioTotals(
       programmeType: programme.programmeType,
       transferredFromEntries: [],
       transferredTotal: 0,
+      bonusTotal: 0,
       existingBalance: 0,
       potentialTotal: 0,
+      promotionalTotal: 0,
+      activePromotionIds: [],
     };
     existing.existingBalance = Math.max(0, Math.floor(bal));
     byProgramme.set(pid, existing);
   }
 
   const totals = Array.from(byProgramme.values());
-  for (const t of totals) t.potentialTotal = t.transferredTotal + t.existingBalance;
-  totals.sort((a, b) => b.potentialTotal - a.potentialTotal);
+  for (const t of totals) {
+    t.potentialTotal = t.transferredTotal + t.existingBalance;
+    t.promotionalTotal = t.potentialTotal + t.bonusTotal;
+  }
+  totals.sort((a, b) => b.promotionalTotal - a.promotionalTotal);
   return totals;
 }
 

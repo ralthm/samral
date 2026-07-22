@@ -43,6 +43,7 @@ import {
   REGIONS,
   verifiedCabinsPresent,
 } from "@/data/redemptionTargets";
+import { getActivePromotions, Promotion } from "@/data/promotions";
 import { saveTripContext, TripContext } from "@/lib/tripContext";
 
 
@@ -1041,6 +1042,9 @@ function ResultsDashboard({
           </div>
         )}
 
+        <PromoBanner portfolio={portfolio} />
+
+
         {/* Programme balance cards */}
         <div className="mt-10 space-y-10">
           {(Object.keys(grouped) as GroupKey[]).map((k) =>
@@ -1069,6 +1073,62 @@ function ResultsDashboard({
         <PointsRemaining entryContext={entryContext} totalUsedByEntry={totalUsedByEntry} />
       </div>
     </section>
+  );
+}
+
+/* ---------- Promotion banner ---------- */
+
+function PromoBanner({ portfolio }: { portfolio: ProgrammeTotal[] }) {
+  const active = useMemo(() => {
+    const promos = getActivePromotions();
+    const portfolioProgrammeIds = new Set(portfolio.map((p) => p.programmeId));
+    return promos.filter((p) => portfolioProgrammeIds.has(p.programmeId));
+  }, [portfolio]);
+
+  useEffect(() => {
+    for (const p of active) track("promotion_shown", { promotion: p.id });
+  }, [active]);
+
+  if (active.length === 0) return null;
+
+  return (
+    <div className="mt-6 space-y-3">
+      {active.map((p) => {
+        const programme = loyaltyProgrammes.find((lp) => lp.id === p.programmeId);
+        const bonusLabel = p.bonusType === "percentage"
+          ? `${p.bonusPercentage ?? 0}% Bonus ${programme?.name ?? "Points"}`
+          : `+${formatInt(p.bonusFixed ?? 0)} Bonus ${programme?.name ?? "Points"}`;
+        return (
+          <div
+            key={p.id}
+            role="status"
+            className="rounded-sm border border-ink bg-background p-5"
+          >
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-ink">
+                  <span aria-hidden className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+                  Promotion currently active
+                </p>
+                <p className="mt-2 font-display text-2xl text-ink md:text-3xl">{bonusLabel}</p>
+                <p className="mt-1 text-[13px] text-ink/70">
+                  Valid until {formatDate(p.endDate)}. Eligible bank conversions receive an additional {" "}
+                  {p.bonusType === "percentage" ? `${p.bonusPercentage}% ${programme?.name ?? ""}` : `${formatInt(p.bonusFixed ?? 0)} ${programme?.name ?? ""}`} after successful transfer.
+                </p>
+              </div>
+              <a
+                href={p.officialSource}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex shrink-0 items-center gap-1 text-[12px] text-ink underline underline-offset-4 hover:no-underline"
+              >
+                See terms <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -1109,20 +1169,79 @@ function ProgrammeBalanceCard({
     return Array.from(m.values());
   }, [rowResults, entryContext]);
 
+  const hasPromo = programme.bonusTotal > 0;
+  const activePromos = programme.activePromotionIds
+    .map((id) => getActivePromotions().find((p) => p.id === id))
+    .filter(Boolean) as Promotion[];
+
   return (
-    <div className="rounded-sm border border-border bg-background p-6">
-      <p className="text-[11px] uppercase tracking-[0.16em] text-ink/55">Potential balance</p>
-      <p className="mt-2 font-display text-4xl leading-none text-ink md:text-[44px]">
-        {formatInt(programme.potentialTotal)}
-      </p>
-      <p className="mt-2 text-[13px] text-ink/70">{programme.programmeName}</p>
+    <div className={`rounded-sm border bg-background p-6 ${hasPromo ? "border-ink" : "border-border"}`}>
+      {hasPromo ? (
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.16em] text-ink/55">Standard</p>
+            <p className="mt-2 font-display text-3xl leading-none text-ink/70 md:text-[36px]">
+              {formatInt(programme.potentialTotal)}
+            </p>
+            <p className="mt-2 text-[12px] text-ink/60">{programme.programmeName}</p>
+          </div>
+          <div className="sm:border-l sm:border-border sm:pl-5">
+            <p className="text-[11px] uppercase tracking-[0.16em] text-ink">
+              During current promotion
+            </p>
+            <p className="mt-2 font-display text-4xl leading-none text-ink md:text-[44px]">
+              {formatInt(programme.promotionalTotal)}
+            </p>
+            <p className="mt-2 text-[12px] text-ink">
+              +{formatInt(programme.bonusTotal)} bonus {programme.programmeName}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <p className="text-[11px] uppercase tracking-[0.16em] text-ink/55">Potential balance</p>
+          <p className="mt-2 font-display text-4xl leading-none text-ink md:text-[44px]">
+            {formatInt(programme.potentialTotal)}
+          </p>
+          <p className="mt-2 text-[13px] text-ink/70">{programme.programmeName}</p>
+        </>
+      )}
 
       <dl className="mt-5 grid grid-cols-2 gap-y-2 border-t border-border pt-4 text-[12px]">
-        <dt className="text-ink/55">From bank transfers</dt>
+        <dt className="text-ink/55">Standard transfer</dt>
         <dd className="text-right text-ink">{formatInt(programme.transferredTotal)} {programme.programmeName}</dd>
+        {hasPromo && (
+          <>
+            <dt className="text-ink">
+              {activePromos[0]?.bonusType === "percentage" && activePromos[0]?.bonusPercentage
+                ? `${activePromos[0].bonusPercentage}% bonus`
+                : "Promotional bonus"}
+            </dt>
+            <dd className="text-right text-ink">+{formatInt(programme.bonusTotal)} {programme.programmeName}</dd>
+          </>
+        )}
         <dt className="text-ink/55">Existing balance</dt>
         <dd className="text-right text-ink">{formatInt(programme.existingBalance)} {programme.programmeName}</dd>
+        {hasPromo && (
+          <>
+            <dt className="border-t border-border pt-2 font-medium text-ink">Final promotional balance</dt>
+            <dd className="border-t border-border pt-2 text-right font-medium text-ink">
+              {formatInt(programme.promotionalTotal)} {programme.programmeName}
+            </dd>
+          </>
+        )}
       </dl>
+
+      {hasPromo && activePromos[0] && (
+        <p className="mt-3 text-[11px] leading-relaxed text-ink/60">
+          Bonus from <span className="text-ink">{activePromos[0].name}</span> · valid until {formatDate(activePromos[0].endDate)}.
+          {activePromos[0].postingTimeline ? " " + activePromos[0].postingTimeline : ""}
+        </p>
+      )}
+      {!hasPromo && (
+        <p className="mt-3 text-[11px] text-ink/50">No active transfer promotion for this programme.</p>
+      )}
+
 
       {byCurrency.length > 0 && (
         <div className="mt-4 border-t border-border pt-4">
