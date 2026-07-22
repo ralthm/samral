@@ -218,16 +218,6 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     displayOrder: 1,
   },
   {
-    id: "cg-mbb-mr-other",
-    rewardProductId: "mbb-mr-other",
-    name: "All Maybank Amex — transfers to AirAsia, Delta, Etihad, Emirates, Royal Orchid Plus, Batik",
-    description:
-      "Additional Membership Rewards partner routes for Maybank American Express credit and charge cards.",
-    eligibleCards: ["All Maybank American Express credit and charge cards"],
-    active: true,
-    displayOrder: 1,
-  },
-  {
     id: "cg-mbb-treats-standard",
     rewardProductId: "mbb-treats-standard",
     name: "Classic / Gold / Platinum / Visa Signature — 20,000 TP per 1,000 miles",
@@ -237,15 +227,6 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
       "All Maybank Classic, Gold, Platinum and Visa Signature cards not in the preferential tier",
       "Maybank 2 Platinum Cards",
     ],
-    active: true,
-    displayOrder: 1,
-  },
-  {
-    id: "cg-mbb-all-cards-lowtier",
-    rewardProductId: "mbb-all-cards-lowtier",
-    name: "All Maybank credit cards — AirAsia points / Batik Air Club",
-    description: "Available to all Maybank credit cards for the AirAsia and Batik routes.",
-    eligibleCards: ["All Maybank credit cards"],
     active: true,
     displayOrder: 1,
   },
