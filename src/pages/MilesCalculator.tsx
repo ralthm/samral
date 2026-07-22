@@ -748,7 +748,13 @@ function EntryCard({
               ? "Direct airline-earning card"
               : card.status === "rate_pending_verification"
                 ? "Conversion profile pending verification"
-                : "Current air-mile rate requires confirmation"}
+                : card.status === "cashback_only"
+                  ? (card.cardGroupId === "cg-mbb-myimpact"
+                      ? "Existing points only — no new points earned"
+                      : "Card does not earn convertible points")
+                  : card.status === "legacy"
+                    ? "Older or discontinued card"
+                    : "Current air-mile rate requires confirmation"}
           </p>
           <p className="mt-1">
             {card.status === "rate_pending_verification"
