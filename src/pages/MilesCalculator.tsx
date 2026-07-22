@@ -1785,6 +1785,11 @@ function DestinationCard({
             {t.cabin} · {t.operatingAirline}
           </p>
           <p className="mt-0.5 text-[12px] text-ink/60">{t.awardType}</p>
+          {isObserved && (
+            <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-ink/60">
+              Observed Enrich Saver pricing
+            </p>
+          )}
           {conn && <p className="mt-1 text-[12px] text-ink/60">{conn}</p>}
         </div>
         <span className={`inline-flex shrink-0 items-center rounded-sm px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] ${badge.cls}`}>
@@ -1799,14 +1804,14 @@ function DestinationCard({
         </div>
       ) : isEnrich ? (
         <div className="mt-5 border-t border-border pt-4">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">
-            {tripLabelTitle} · {formatInt(e.perDirectionPerPerson)} Enrich per person
+          <p className="font-display text-3xl text-ink">
+            {formatInt(e.required)} <span className="text-base text-ink/70">Enrich total</span>
           </p>
-          <p className="mt-1 font-display text-3xl text-ink">
-            {formatInt(e.required)} <span className="text-base text-ink/70">Enrich</span>
+          <p className="mt-2 text-[13px] text-ink/75">
+            {formatInt(e.perDirectionPerPerson)} each way, per traveller
           </p>
           <p className="mt-1 text-[12px] text-ink/60">
-            {travellers} traveller{travellers === 1 ? "" : "s"} · {tripLabel} · quoted per person, per direction
+            {travellers} traveller{travellers === 1 ? "" : "s"} · {tripLabel}
           </p>
         </div>
       ) : (
