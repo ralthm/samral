@@ -544,7 +544,9 @@ function EntryCard({
 
   const matches = useMemo(() => {
     if (!entry.bankId) return [];
-    return searchCardsInBank(entry.bankId, query).slice(0, 12);
+    // Search operates over the FULL inventory for the selected bank, not a truncated view.
+    // The dropdown container is scrollable (max-h + overflow-auto), so every match is reachable.
+    return searchCardsInBank(entry.bankId, query);
   }, [entry.bankId, query]);
 
   const pointsValue = parseIntSafe(entry.rawInput);
