@@ -42,8 +42,7 @@ export const SUPPORTED_PROGRAMMES: readonly string[] = ["enrich", "krisflyer", "
 
 export interface RedemptionTarget {
   id: string;
-  programmeId: string; // "enrich" | "krisflyer" | "asia-miles"
-  /** Alias kept for compatibility with older calculator code paths. */
+  programmeId: string;
   loyaltyProgrammeId: string;
   programmeName: string;
   operatingAirline: string;
@@ -53,20 +52,22 @@ export interface RedemptionTarget {
   destinationName: string;
   country: string;
   region: Region;
-  connectionAirports: string[]; // [] = direct
+  connectionAirports: string[];
   numberOfSegments: number;
   directOrConnecting: "direct" | "connecting";
   cabin: Cabin;
-  awardType: string; // e.g. "Enrich Saver", "KrisFlyer Saver", "Asia Miles standard flight award"
+  awardType: string;
   redemptionType: RedemptionType;
   pricingBasis: "fixed_chart_per_direction" | "fixed_chart_one_way" | "zone_based";
-  /** Points quoted by the airline, per person. For Enrich this is per direction. */
   pointsPerPerson: number;
-  /** When true the programme requires a return itinerary and pointsPerPerson is
-   * per direction; per brief this applies to Enrich Saver. */
   returnBookingRequired: boolean;
-  /** Programmes that quote per-direction (Enrich). Doubled for a full return. */
   perDirection: boolean;
+  /** Whether the seed is a transcription of the official published chart, or
+   * observed redemption pricing (e.g. BolehMiles). Rendered on the card. */
+  verificationLevel?: "official-chart-transcription" | "observed-redemption-data";
+  /** Secondary reference source (e.g. BolehMiles chart mirror). */
+  rateReferenceSource?: string;
+  nonstopOnly?: boolean;
   effectiveFrom?: string;
   effectiveUntil?: string;
   verifiedOn: string;
