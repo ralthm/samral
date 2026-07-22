@@ -1612,12 +1612,28 @@ function DestinationDiscovery({ portfolio }: { portfolio: ProgrammeTotal[] }) {
 
       <div className="mt-10 space-y-12">
         {cabinMissingFromDataset ? (
-          <div className="rounded-sm border border-border bg-background p-6 text-sm leading-relaxed text-ink/75">
-            <p className="font-medium text-ink">No verified {cabin} redemption has been added to our database yet.</p>
-            <p className="mt-2 text-ink/65">
-              This reflects a gap in our verified dataset for the programmes you hold — not an indication of whether the airline operates {cabin} on any given route. Switch cabin or check back as we expand coverage.
-            </p>
-          </div>
+          (() => {
+            const eligibleFilter = programmeId ? new Set([programmeId]) : eligibleProgrammes;
+            const enrichOnlyPE = cabin === "Premium Economy" && eligibleFilter.size > 0 && Array.from(eligibleFilter).every((p) => p === "enrich");
+            if (enrichOnlyPE) {
+              return (
+                <div className="rounded-sm border border-border bg-background p-6 text-sm leading-relaxed text-ink/75">
+                  <p className="font-medium text-ink">No published Enrich Saver Premium Economy awards match these filters.</p>
+                  <p className="mt-2 text-ink/65">
+                    The current Enrich Saver chart publishes Economy and Business Saver pricing. This does not necessarily mean that no Malaysia Airlines flight has a Premium Economy cabin.
+                  </p>
+                </div>
+              );
+            }
+            return (
+              <div className="rounded-sm border border-border bg-background p-6 text-sm leading-relaxed text-ink/75">
+                <p className="font-medium text-ink">No verified {cabin} redemption has been added to our database yet.</p>
+                <p className="mt-2 text-ink/65">
+                  This reflects a gap in our verified dataset for the programmes you hold — not an indication of whether the airline operates {cabin} on any given route. Switch cabin or check back as we expand coverage.
+                </p>
+              </div>
+            );
+          })()
         ) : (
           <>
             <DestinationGroup
