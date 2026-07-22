@@ -11,14 +11,17 @@ import {
 } from "lucide-react";
 import {
   banks,
+  Card,
   eligibleCardGroups,
   getBankById,
-  getCardGroupsByRewardProduct,
+  getCardById,
+  getCardGroupById,
   getProgrammeById,
   getPublicRulesForCardGroup,
+  getRewardCurrencyForCard,
   getRewardProductById,
-  getRewardProductsByBank,
   loyaltyProgrammes,
+  searchCardsInBank,
   summaryCounters,
 } from "@/data/milesCalculator";
 import {
