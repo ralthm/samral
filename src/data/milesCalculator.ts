@@ -796,7 +796,7 @@ export const conversionRules: ConversionRule[] = [
     active: true,
     reviewNotes:
       "Emirates Skywards deliberately not added — not listed on the current HSBC Malaysia TravelOne partner table.",
-  })),
+  }))),
 
   // ---- Hong Leong Sutera Platinum (online default) ----
   rule("hlb-sutera-enrich-online", "cg-hlb-sutera", "enrich", [24000, 1000], {
