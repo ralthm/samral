@@ -236,6 +236,7 @@ function CalculatorFlow() {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [startedTracked, setStartedTracked] = useState(false);
+  const [registeredPromotionIds, setRegisteredPromotionIds] = useState<string[]>([]);
 
   const calcRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
@@ -258,6 +259,39 @@ function CalculatorFlow() {
     if (snapshot) setState("stale");
     markStarted();
   }, [snapshot, markStarted]);
+
+  const runCalculation = useCallback((regIds: string[]) => {
+    const results: RuleResult[] = [];
+    const entryContext = new Map<string, { bankName: string; groupName: string; nickname: string; entered: number }>();
+    const usableEntries = entries.filter((e) => e.bankId || e.cardId || e.rawInput.trim());
+    for (const e of usableEntries) {
+      const points = parseIntSafe(e.rawInput);
+      const bank = getBankById(e.bankId);
+      const group = eligibleCardGroups.find((g) => g.id === e.cardGroupId);
+      entryContext.set(e.id, {
+        bankName: bank?.name ?? "",
+        groupName: group?.name ?? "",
+        nickname: e.nickname,
+        entered: points,
+      });
+      results.push(
+        ...calculateEntry({
+          entryId: e.id,
+          cardGroupId: e.cardGroupId,
+          nickname: e.nickname,
+          bankPoints: points,
+          registeredPromotionIds: regIds,
+        }),
+      );
+    }
+    const existingBalances: Record<string, number> = {};
+    for (const r of existingRows) {
+      const n = parseIntSafe(r.rawInput);
+      if (Number.isFinite(n) && n > 0 && r.programmeId) existingBalances[r.programmeId] = n;
+    }
+    const portfolio = computePortfolioTotals(results, existingBalances);
+    return { results, portfolio, entryContext };
+  }, [entries, existingRows]);
 
   const handleCalculate = () => {
     // Validate
@@ -296,38 +330,11 @@ function CalculatorFlow() {
     setIsCalculating(true);
 
     setTimeout(() => {
-      const results: RuleResult[] = [];
-      const entryContext = new Map<string, { bankName: string; groupName: string; nickname: string; entered: number }>();
-      for (const e of usableEntries) {
-        const points = parseIntSafe(e.rawInput);
-        const bank = getBankById(e.bankId);
-        const group = eligibleCardGroups.find((g) => g.id === e.cardGroupId);
-        entryContext.set(e.id, {
-          bankName: bank?.name ?? "",
-          groupName: group?.name ?? "",
-          nickname: e.nickname,
-          entered: points,
-        });
-        results.push(
-          ...calculateEntry({
-            entryId: e.id,
-            cardGroupId: e.cardGroupId,
-            nickname: e.nickname,
-            bankPoints: points,
-          }),
-        );
-      }
-      const existingBalances: Record<string, number> = {};
-      for (const r of existingRows) {
-        const n = parseIntSafe(r.rawInput);
-        if (Number.isFinite(n) && n > 0 && r.programmeId) existingBalances[r.programmeId] = n;
-      }
-      const portfolio = computePortfolioTotals(results, existingBalances);
-
-      setSnapshot({ results, portfolio, entryContext });
+      const next = runCalculation(registeredPromotionIds);
+      setSnapshot(next);
       setState("calculated");
       setIsCalculating(false);
-      track("calculation_completed", { programmes: portfolio.length });
+      track("calculation_completed", { programmes: next.portfolio.length });
 
       requestAnimationFrame(() => {
         const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -338,6 +345,24 @@ function CalculatorFlow() {
       });
     }, 350);
   };
+
+  const handleToggleRegistration = useCallback((promotionId: string, registered: boolean) => {
+    setRegisteredPromotionIds((prev) => {
+      const set = new Set(prev);
+      if (registered) set.add(promotionId);
+      else set.delete(promotionId);
+      const nextIds = Array.from(set);
+      // Recompute snapshot immediately if we already have one.
+      if (snapshot) {
+        const next = runCalculation(nextIds);
+        setSnapshot(next);
+        setState("calculated");
+      }
+      track("promotion_registration_toggled", { promotion: promotionId, registered });
+      return nextIds;
+    });
+  }, [snapshot, runCalculation]);
+
 
   const scrollToCalculator = () => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
