@@ -1444,6 +1444,36 @@ export const cards: Card[] = [
   mkCard("ocbc_cashflo_mastercard", "ocbc", "OCBC Cashflo Mastercard", "cg-ocbc-cashback", { status: "cashback_only", aliases: ["Cashflo"] }),
   mkCard("ocbc_great_eastern_platinum_mastercard", "ocbc", "OCBC Great Eastern Platinum Mastercard", "cg-ocbc-cashback", { status: "cashback_only", aliases: ["Great Eastern Platinum", "GE Platinum"] }),
   mkCard("ocbc_world_mastercard", "ocbc", "OCBC World Mastercard", "cg-ocbc-cashback", { status: "cashback_only", aliases: ["OCBC World"] }),
+
+  // ---------- RHB ----------
+  // Each card tier is exposed twice — once per live bank-side rewards currency
+  // (LoyaltyPlus Points vs. legacy Loyalty Points) — because the same card
+  // account can be on either programme depending on when the customer was
+  // migrated. Selecting the entry automatically applies the correct ratio.
+  mkCard("rhb-premier-vi-loyaltyplus", "rhb", "RHB Premier Visa Infinite Credit Card /-i", "cg-rhb-premier-vi-loyaltyplus", {
+    subtitle: "LoyaltyPlus Points — 8,000 : 1,000 Enrich",
+    aliases: ["RHB Premier VI", "Premier Visa Infinite", "Premier Visa Infinite-i"],
+  }),
+  mkCard("rhb-premier-vi-legacy", "rhb", "RHB Premier Visa Infinite Credit Card /-i", "cg-rhb-premier-vi-legacy", {
+    subtitle: "Loyalty Points (Legacy) — 15,000 : 1,000 Enrich",
+    aliases: ["RHB Premier VI Legacy", "Premier Visa Infinite Legacy"],
+  }),
+  mkCard("rhb-vi-loyaltyplus", "rhb", "RHB Visa Infinite Credit Card", "cg-rhb-vi-loyaltyplus", {
+    subtitle: "LoyaltyPlus Points — 10,000 : 1,000 Enrich",
+    aliases: ["RHB Visa Infinite"],
+  }),
+  mkCard("rhb-vi-legacy", "rhb", "RHB Visa Infinite Credit Card", "cg-rhb-vi-legacy", {
+    subtitle: "Loyalty Points (Legacy) — 24,100 : 1,000 Enrich",
+    aliases: ["RHB Visa Infinite Legacy"],
+  }),
+  mkCard("rhb-other-loyaltyplus", "rhb", "Other RHB Credit Card /-i", "cg-rhb-other-loyaltyplus", {
+    subtitle: "LoyaltyPlus Points — 14,000 : 1,000 Enrich",
+    aliases: ["Other RHB", "RHB other card"],
+  }),
+  mkCard("rhb-other-legacy", "rhb", "Other RHB Credit Card /-i", "cg-rhb-other-legacy", {
+    subtitle: "Loyalty Points (Legacy) — 24,100 : 1,000 Enrich",
+    aliases: ["Other RHB Legacy"],
+  }),
 ];
 
 /* -------------------- Helpers -------------------- */
