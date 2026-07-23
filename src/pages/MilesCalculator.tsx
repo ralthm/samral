@@ -50,6 +50,7 @@ import {
 } from "@/data/redemptionTargets";
 import { getActivePromotions, Promotion } from "@/data/promotions";
 import { saveTripContext, TripContext } from "@/lib/tripContext";
+import { AllianceBadge, AllianceInfo } from "@/components/AllianceInfo";
 
 
 const STRATEGY_URL = "/points-strategy";
