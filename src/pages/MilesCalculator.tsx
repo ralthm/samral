@@ -210,7 +210,7 @@ function Hero() {
         <dl className="mt-12 grid grid-cols-2 gap-y-6 border-t border-border pt-8 md:grid-cols-4">
           <Counter label="Banks covered" value={counters.banks} />
           <Counter label="Card programmes" value={counters.cardProgrammes} />
-          <Counter label="Travel partners" value={counters.partners} />
+          <Counter label="Airline and hotel programmes" value={counters.partners} />
           <Counter label="Conversion routes" value={counters.routes} />
         </dl>
       </div>
