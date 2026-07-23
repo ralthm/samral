@@ -831,6 +831,66 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     active: true,
     displayOrder: 1,
   },
+
+  // ------- RHB -------
+  // Three card tiers × two live bank-side currencies (LoyaltyPlus + legacy
+  // Loyalty Points) = six explicit groups. Transfers to Enrich only, verified
+  // against RHB's 2026 rewards conversion tables. Minimum transfer block:
+  // 1,000 Enrich Points; floor-block calculation only.
+  {
+    id: "cg-rhb-premier-vi-loyaltyplus",
+    rewardProductId: "rhb-loyaltyplus",
+    name: "RHB Premier Visa Infinite /-i — 8,000 LoyaltyPlus Points per 1,000 Enrich",
+    eligibleCards: [
+      "RHB Premier Visa Infinite Credit Card",
+      "RHB Premier Visa Infinite Credit Card-i",
+    ],
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-rhb-premier-vi-legacy",
+    rewardProductId: "rhb-loyalty-legacy",
+    name: "RHB Premier Visa Infinite /-i — 15,000 Loyalty Points (Legacy) per 1,000 Enrich",
+    eligibleCards: [
+      "RHB Premier Visa Infinite Credit Card",
+      "RHB Premier Visa Infinite Credit Card-i",
+    ],
+    active: true,
+    displayOrder: 2,
+  },
+  {
+    id: "cg-rhb-vi-loyaltyplus",
+    rewardProductId: "rhb-loyaltyplus",
+    name: "RHB Visa Infinite — 10,000 LoyaltyPlus Points per 1,000 Enrich",
+    eligibleCards: ["RHB Visa Infinite Credit Card"],
+    active: true,
+    displayOrder: 3,
+  },
+  {
+    id: "cg-rhb-vi-legacy",
+    rewardProductId: "rhb-loyalty-legacy",
+    name: "RHB Visa Infinite — 24,100 Loyalty Points (Legacy) per 1,000 Enrich",
+    eligibleCards: ["RHB Visa Infinite Credit Card"],
+    active: true,
+    displayOrder: 4,
+  },
+  {
+    id: "cg-rhb-other-loyaltyplus",
+    rewardProductId: "rhb-loyaltyplus",
+    name: "Other RHB Credit Card /-i — 14,000 LoyaltyPlus Points per 1,000 Enrich",
+    eligibleCards: ["Other RHB credit cards that earn LoyaltyPlus Points"],
+    active: true,
+    displayOrder: 5,
+  },
+  {
+    id: "cg-rhb-other-legacy",
+    rewardProductId: "rhb-loyalty-legacy",
+    name: "Other RHB Credit Card /-i — 24,100 Loyalty Points (Legacy) per 1,000 Enrich",
+    eligibleCards: ["Other RHB credit cards on the legacy Loyalty Points programme"],
+    active: true,
+    displayOrder: 6,
+  },
 ];
 
 /* -------------------- Conversion rules -------------------- */
