@@ -322,6 +322,11 @@ export const rewardProducts: RewardProduct[] = [
   { id: "ocbc-travel-dollar", bankId: "ocbc", name: "OCBC Travel$ (cash credit)", slug: "ocbc-travel-dollar", rewardCurrencyName: "Travel$", active: true, displayOrder: 2 },
   { id: "ocbc-ocbc-dollar", bankId: "ocbc", name: "OCBC$ (cash credit)", slug: "ocbc-ocbc-dollar", rewardCurrencyName: "OCBC$", active: true, displayOrder: 3 },
   { id: "ocbc-cashback", bankId: "ocbc", name: "OCBC cashback / non-points cards", slug: "ocbc-cashback", rewardCurrencyName: "Cashback", active: true, displayOrder: 4 },
+  // RHB — two live bank-side currencies. Many customers have been migrated to
+  // LoyaltyPlus Points, but some card accounts still hold the legacy Loyalty
+  // Points balance, so both are supported explicitly.
+  { id: "rhb-loyaltyplus", bankId: "rhb", name: "RHB LoyaltyPlus Points", slug: "rhb-loyaltyplus", rewardCurrencyName: "LoyaltyPlus Points", active: true, displayOrder: 1 },
+  { id: "rhb-loyalty-legacy", bankId: "rhb", name: "RHB Loyalty Points (Legacy)", slug: "rhb-loyalty-legacy", rewardCurrencyName: "Loyalty Points (Legacy)", active: true, displayOrder: 2 },
 ];
 
 /* -------------------- Card groups (entitlement tiers) -------------------- */
