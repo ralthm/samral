@@ -237,6 +237,16 @@ export const banks: Bank[] = [
     displayOrder: 12,
     officialRewardsUrl: "https://www.ocbc.com.my/personal-banking/cards/credit-cards",
   },
+  {
+    id: "rhb",
+    name: "RHB Bank",
+    slug: "rhb-bank",
+    country: "MY",
+    active: true,
+    displayOrder: 13,
+    officialRewardsUrl:
+      "https://www.rhbgroup.com/personal/cards/credit-cards/rewards/index.html",
+  },
 ];
 
 /* -------------------- Loyalty programmes -------------------- */
