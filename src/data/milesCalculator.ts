@@ -1224,6 +1224,35 @@ export const conversionRules: ConversionRule[] = [
     reviewNotes:
       "Only publicly verified airline transfer for a current OCBC Malaysia card programme. Voyage Miles do not expire. OCBC Malaysia is not listed as an Enrich bank-points conversion partner — do not add an Enrich route or apply an Enrich promotional bonus to any OCBC balance. Do not infer Cathay/Emirates/Qatar/Etihad partners from Singapore OCBC rules.",
   }),
+
+  // ---- RHB — LoyaltyPlus Points + legacy Loyalty Points to Enrich ----
+  // Verified against RHB's 2026 rewards conversion tables. Minimum transfer
+  // block: 1,000 Enrich Points. Floor-block calculation only — no partial
+  // blocks and no rounding up.
+  ...(([
+    ["rhb-premier-vi-loyaltyplus-enrich", "cg-rhb-premier-vi-loyaltyplus",  8_000],
+    ["rhb-premier-vi-legacy-enrich",      "cg-rhb-premier-vi-legacy",      15_000],
+    ["rhb-vi-loyaltyplus-enrich",         "cg-rhb-vi-loyaltyplus",         10_000],
+    ["rhb-vi-legacy-enrich",              "cg-rhb-vi-legacy",              24_100],
+    ["rhb-other-loyaltyplus-enrich",      "cg-rhb-other-loyaltyplus",      14_000],
+    ["rhb-other-legacy-enrich",           "cg-rhb-other-legacy",           24_100],
+  ] as [string, string, number][]).map(([id, cg, bp]): ConversionRule => ({
+    id,
+    eligibleCardGroupId: cg,
+    loyaltyProgrammeId: "enrich",
+    bankPointsPerBlock: bp,
+    partnerPointsPerBlock: 1_000,
+    minimumTransferPartnerPoints: 1_000,
+    transferIncrementPartnerPoints: 1_000,
+    verifiedOn: "2026-07-23",
+    sourceUrl: "https://www.rhbgroup.com/personal/cards/credit-cards/rewards/index.html",
+    sourceTitle: "RHB Credit Card Rewards — Enrich conversion (2026)",
+    sourcePublisher: "RHB Bank Berhad",
+    status: "verified",
+    active: true,
+    reviewNotes:
+      "Floor-block calculation only: full 1,000 Enrich blocks are issued from each qualifying batch of RHB points; the remainder stays in the RHB balance and is never rounded up.",
+  }))),
 ];
 
 /* -------------------- Cards (searchable) -------------------- */
