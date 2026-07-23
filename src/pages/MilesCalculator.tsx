@@ -1273,7 +1273,10 @@ function ProgrammeBalanceCard({
             <p className="mt-2 font-display text-3xl leading-none text-ink/70 md:text-[36px]">
               {formatInt(programme.potentialTotal)}
             </p>
-            <p className="mt-2 text-[12px] text-ink/60">{programme.programmeName}</p>
+            <p className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-ink/60">
+              <span>{programme.programmeName}</span>
+              <AllianceBadge programmeId={programme.programmeId} />
+            </p>
           </div>
           <div className="sm:border-l sm:border-border sm:pl-5">
             <p className="text-[11px] uppercase tracking-[0.16em] text-ink">
@@ -1293,7 +1296,10 @@ function ProgrammeBalanceCard({
           <p className="mt-2 font-display text-4xl leading-none text-ink md:text-[44px]">
             {formatInt(programme.potentialTotal)}
           </p>
-          <p className="mt-2 text-[13px] text-ink/70">{programme.programmeName}</p>
+          <p className="mt-2 flex flex-wrap items-center gap-2 text-[13px] text-ink/70">
+            <span>{programme.programmeName}</span>
+            <AllianceBadge programmeId={programme.programmeId} />
+          </p>
         </>
       )}
 
@@ -1362,6 +1368,12 @@ function ProgrammeBalanceCard({
           {applicablePromos.map((p) => `${p.name} — valid until ${formatDate(p.endDate)}`).join(" · ")}
         </p>
       )}
+
+      <AllianceInfo
+        programmeId={programme.programmeId}
+        programmeName={programme.programmeName}
+        ctaContext={{ calculatedBalance: programme.maxPromotionalTotal || programme.potentialTotal }}
+      />
 
 
 
