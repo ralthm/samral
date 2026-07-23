@@ -32,7 +32,7 @@ function DiscoveryCTA({
       {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       className={`${base} ${styles} ${className}`}
     >
-      Book a Free 10-Minute Call &nbsp;&rarr;
+      Book a Strategy Call &nbsp;&rarr;
     </a>
   );
 }
@@ -164,8 +164,8 @@ function WhatYouReceive() {
               What you receive
             </h2>
             <div className="mt-6">
-              <p className="text-[15px] text-ink/70">Card Strategy</p>
-              <p className="mt-1 font-display text-4xl text-ink">US$ 200</p>
+              <p className="text-[15px] text-ink/70">{"\n"}</p>
+              <p className="mt-1 font-display text-4xl text-ink">{"\n"}</p>
             </div>
           </div>
           <div className="md:col-span-7">
@@ -298,7 +298,7 @@ function FAQ() {
       a: "No. Personal recommendations require proper research and are provided as part of the paid Card Strategy.",
     },
     {
-      q: "What does the US$ 200 fee include?",
+      q: "What does the fee include?",
       a: "It includes a review of your current cards and spending, clear written recommendations, a rewards direction, a personal written Card Strategy, and a follow-up call to walk through it together.",
     },
     {
