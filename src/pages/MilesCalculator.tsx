@@ -25,6 +25,7 @@ import {
   getRewardCurrencyForCard,
   getRewardProductById,
   isDirectEarnCard,
+  isNonConvertibleCard,
   loyaltyProgrammes,
   searchCardsInBank,
   summaryCounters,
