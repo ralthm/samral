@@ -519,15 +519,23 @@ function CalculatorFlow() {
             <button
               type="button"
               onClick={handleCalculate}
-              disabled={isCalculating}
-              className="inline-flex w-full items-center justify-center rounded-sm bg-ink px-8 py-5 text-base font-medium text-background transition-transform hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-70 md:w-auto md:min-w-[320px]"
+              disabled={isCalculating || !hasCalculableInput}
+              aria-disabled={!hasCalculableInput}
+              data-testid="calculate-button"
+              className="inline-flex w-full items-center justify-center rounded-sm bg-ink px-8 py-5 text-base font-medium text-background transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 md:w-auto md:min-w-[320px]"
             >
               {isCalculating ? "Calculating full transfer blocks…" : buttonLabel}
             </button>
+            {!hasCalculableInput && (
+              <p className="mt-3 text-[13px] text-ink/70">
+                Add another points-earning card or an existing loyalty balance to calculate.
+              </p>
+            )}
             <p className="mt-3 text-[12px] text-ink/55">
               We calculate locally in your browser. Nothing is sent to a server.
             </p>
           </div>
+
         </div>
       </section>
 
