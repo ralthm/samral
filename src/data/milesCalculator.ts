@@ -30,6 +30,24 @@ export interface Bank {
   officialRewardsUrl: string;
 }
 
+/**
+ * How a card accrues value.
+ *
+ * - `transferable_bank_points`: the bank holds a rewards currency the customer
+ *   later converts into a loyalty programme in fixed blocks.
+ * - `direct_airline_earn`: spend credits the airline/loyalty programme directly.
+ *   There is no bank-side balance, no conversion block, no leftover points and
+ *   no transfer promotion. The customer's real balance is entered in Step 2.
+ */
+export type RewardType = "transferable_bank_points" | "direct_airline_earn";
+
+export interface EarnRate {
+  /** Spend category as published by the issuer. */
+  category: string;
+  /** Human-readable rate, e.g. "RM1 = 1 Enrich Point". */
+  rate: string;
+}
+
 export interface RewardProduct {
   id: string;
   bankId: string;
@@ -38,6 +56,10 @@ export interface RewardProduct {
   /** The bank-side points currency users type into the calculator. */
   rewardCurrencyName: string;
   description?: string;
+  /** Defaults to "transferable_bank_points" when omitted. */
+  rewardType?: RewardType;
+  /** For direct-earning products: the loyalty programme credited directly. */
+  directProgrammeId?: string;
   active: boolean;
   displayOrder: number;
 }
@@ -51,9 +73,16 @@ export interface EligibleCardGroup {
   eligibleCards: string[];
   /** Optional message shown when a group is intentionally seeded with no rules. */
   unverifiedNotice?: string;
+  /** Overrides the reward product's type when a group differs. */
+  rewardType?: RewardType;
+  /** For direct-earning groups: the loyalty programme credited directly. */
+  directProgrammeId?: string;
+  /** Reference-only earn rates shown for direct-earning cards. */
+  earnRates?: EarnRate[];
   active: boolean;
   displayOrder: number;
 }
+
 
 export interface LoyaltyProgramme {
   id: string;
@@ -124,6 +153,8 @@ export interface Card {
   /** Card-group id that acts as the reusable conversion profile. */
   cardGroupId: string;
   status: CardStatus;
+  /** Card-level override of the group's reference earn rates (direct-earning cards only). */
+  directEarnRates?: EarnRate[];
   officialSourceUrl?: string;
   lastVerifiedDate?: string;
 }
@@ -294,7 +325,7 @@ export const rewardProducts: RewardProduct[] = [
   { id: "mbb-mr-plat-charge", bankId: "maybank", name: "Maybank Membership Rewards — The Platinum Card", slug: "mbb-mr-plat-charge", rewardCurrencyName: "Membership Rewards", active: true, displayOrder: 3 },
   { id: "mbb-treats-standard", bankId: "maybank", name: "Maybank TreatsPoints — General tier (20,000 → 1,000)", slug: "mbb-treats-standard", rewardCurrencyName: "TreatsPoints", active: true, displayOrder: 4 },
   { id: "mbb-treats-existing-only", bankId: "maybank", name: "Maybank TreatsPoints — existing balance only (myimpact)", slug: "mbb-treats-existing-only", rewardCurrencyName: "TreatsPoints (existing balance)", active: true, displayOrder: 5 },
-  { id: "mbb-krisflyer-direct", bankId: "maybank", name: "Maybank direct KrisFlyer-earning cards", slug: "mbb-krisflyer-direct", rewardCurrencyName: "KrisFlyer miles (earned directly)", active: true, displayOrder: 6 },
+  { id: "mbb-krisflyer-direct", bankId: "maybank", name: "Maybank direct KrisFlyer-earning cards", slug: "mbb-krisflyer-direct", rewardCurrencyName: "KrisFlyer miles (earned directly)", rewardType: "direct_airline_earn", directProgrammeId: "krisflyer", active: true, displayOrder: 6 },
   { id: "mbb-cashback", bankId: "maybank", name: "Maybank cashback cards", slug: "mbb-cashback", rewardCurrencyName: "Cashback", active: true, displayOrder: 7 },
   { id: "mbb-grabrewards", bankId: "maybank", name: "Maybank Grab — GrabRewards", slug: "mbb-grabrewards", rewardCurrencyName: "GrabRewards", active: true, displayOrder: 8 },
   { id: "mbb-shopee", bankId: "maybank", name: "Maybank Shopee — Shopee Coins", slug: "mbb-shopee", rewardCurrencyName: "Shopee Coins", active: true, displayOrder: 9 },
@@ -310,12 +341,12 @@ export const rewardProducts: RewardProduct[] = [
   { id: "hsbc-rewards", bankId: "hsbc", name: "HSBC Reward Points — TravelOne", slug: "hsbc-rewards", rewardCurrencyName: "HSBC Reward Points", active: true, displayOrder: 1 },
   // Hong Leong
   { id: "hlb-rewards", bankId: "hongleong", name: "HLB Reward Points", slug: "hlb-rewards", rewardCurrencyName: "HLB Reward Points", active: true, displayOrder: 1 },
-  { id: "hlb-direct", bankId: "hongleong", name: "HLB direct Enrich earning cards", slug: "hlb-direct", rewardCurrencyName: "Enrich Points (earned directly)", active: true, displayOrder: 2 },
+  { id: "hlb-direct", bankId: "hongleong", name: "HLB direct Enrich earning cards", slug: "hlb-direct", rewardCurrencyName: "Enrich Points (earned directly)", rewardType: "direct_airline_earn", directProgrammeId: "enrich", active: true, displayOrder: 2 },
   // AFFIN
   { id: "affin-rewards", bankId: "affin", name: "AFFIN Rewards Points", slug: "affin-rewards", rewardCurrencyName: "AFFIN Rewards Points", active: true, displayOrder: 1 },
   // AmBank
   { id: "ambank-bonus", bankId: "ambank", name: "AmBonus Points", slug: "ambank-bonus", rewardCurrencyName: "AmBonus Points", active: true, displayOrder: 1 },
-  { id: "ambank-direct", bankId: "ambank", name: "AmBank direct Enrich earning cards", slug: "ambank-direct", rewardCurrencyName: "Enrich Points (earned directly)", active: true, displayOrder: 2 },
+  { id: "ambank-direct", bankId: "ambank", name: "AmBank direct Enrich earning cards", slug: "ambank-direct", rewardCurrencyName: "Enrich Points (earned directly)", rewardType: "direct_airline_earn", directProgrammeId: "enrich", active: true, displayOrder: 2 },
   // Public Bank
   { id: "pb-points", bankId: "publicbank", name: "PB Points", slug: "pb-points", rewardCurrencyName: "PB Points", active: true, displayOrder: 1 },
   // Bank Rakyat
@@ -417,6 +448,8 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     ],
     unverifiedNotice:
       "This card earns KrisFlyer miles directly. Enter your KrisFlyer balance under Step 2 (Existing airline or hotel balances).",
+    rewardType: "direct_airline_earn",
+    directProgrammeId: "krisflyer",
     active: true,
     displayOrder: 1,
   },
@@ -603,7 +636,16 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
       "HLB Infinite Doctor's Edition",
     ],
     unverifiedNotice:
-      "This card earns Enrich Points directly. Enter your accumulated Enrich balance under Step 2 (Existing airline or hotel balances). Current earn rates — HLB Infinite P: RM1 = 1 Enrich (dining), RM3 = 1 (travel & retail), RM5 = 1 (other). HLB Infinite and Infinite Doctor's Edition: RM1 = 1 (dining), RM4 = 1 (travel & retail), RM6 = 1 (other).",
+      "This card earns Enrich Points directly into your Enrich account. There is no bank-points balance to transfer. Add your current Enrich balance under Step 2.",
+    rewardType: "direct_airline_earn",
+    directProgrammeId: "enrich",
+    // Earn-rate reference only. These rates are never used to infer a balance.
+    earnRates: [
+      { category: "Dining", rate: "RM1 = 1 Enrich Point" },
+      { category: "Travel", rate: "RM4 = 1 Enrich Point" },
+      { category: "Retail shopping", rate: "RM4 = 1 Enrich Point" },
+      { category: "Other eligible spend", rate: "RM6 = 1 Enrich Point" },
+    ],
     active: true,
     displayOrder: 2,
   },
@@ -694,7 +736,9 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
       "AmBank Enrich Visa Platinum",
     ],
     unverifiedNotice:
-      "This card earns Enrich Points directly. Do not enter an AmBonus balance. Enter your accumulated Enrich balance under Step 2 (Existing airline or hotel balances).",
+      "This card earns Enrich Points directly into your Enrich account. There is no bank-points balance to transfer. Add your current Enrich balance under Step 2.",
+    rewardType: "direct_airline_earn",
+    directProgrammeId: "enrich",
     active: true,
     displayOrder: 3,
   },
@@ -1386,7 +1430,15 @@ export const cards: Card[] = [
 
   // ---------- Hong Leong ----------
   mkCard("hlb-sutera-platinum", "hongleong", "HLB Sutera Platinum", "cg-hlb-sutera"),
-  mkCard("hlb-infinite-p", "hongleong", "HLB Infinite P", "cg-hlb-direct-enrich", { status: "direct_airline" }),
+  mkCard("hlb-infinite-p", "hongleong", "HLB Infinite P", "cg-hlb-direct-enrich", {
+    status: "direct_airline",
+    directEarnRates: [
+      { category: "Dining", rate: "RM1 = 1 Enrich Point" },
+      { category: "Travel", rate: "RM3 = 1 Enrich Point" },
+      { category: "Retail shopping", rate: "RM3 = 1 Enrich Point" },
+      { category: "Other eligible spend", rate: "RM5 = 1 Enrich Point" },
+    ],
+  }),
   mkCard("hlb-infinite", "hongleong", "HLB Infinite", "cg-hlb-direct-enrich", { status: "direct_airline" }),
   mkCard("hlb-infinite-doctor", "hongleong", "HLB Infinite Doctor's Edition", "cg-hlb-direct-enrich", { status: "direct_airline", aliases: ["Doctors Edition", "Doctor Edition"] }),
 
@@ -1577,6 +1629,41 @@ export function getRewardCurrencyForCard(card: Card): { productId: string; curre
   const product = group ? getRewardProductById(group.rewardProductId) : undefined;
   if (!product) return undefined;
   return { productId: product.id, currencyName: product.rewardCurrencyName };
+}
+
+/**
+ * Reward type for a card. Groups may override their reward product; anything
+ * unmarked is treated as a transferable bank-points currency.
+ */
+export function getRewardTypeForCardGroup(cardGroupId: string): RewardType {
+  const group = getCardGroupById(cardGroupId);
+  if (group?.rewardType) return group.rewardType;
+  const product = group ? getRewardProductById(group.rewardProductId) : undefined;
+  return product?.rewardType ?? "transferable_bank_points";
+}
+
+/** True when the card credits an airline/loyalty programme directly (no bank balance). */
+export function isDirectEarnCardGroup(cardGroupId: string): boolean {
+  return getRewardTypeForCardGroup(cardGroupId) === "direct_airline_earn";
+}
+
+export function isDirectEarnCard(card: Card | undefined): boolean {
+  return !!card && isDirectEarnCardGroup(card.cardGroupId);
+}
+
+/** The loyalty programme a direct-earning card credits, if known. */
+export function getDirectEarnProgrammeId(cardGroupId: string): string | undefined {
+  const group = getCardGroupById(cardGroupId);
+  if (!group || !isDirectEarnCardGroup(cardGroupId)) return undefined;
+  if (group.directProgrammeId) return group.directProgrammeId;
+  return getRewardProductById(group.rewardProductId)?.directProgrammeId;
+}
+
+/** Reference-only earn rates for a direct-earning card. Never used in arithmetic. */
+export function getDirectEarnRates(card: Card | undefined): EarnRate[] {
+  if (!isDirectEarnCard(card)) return [];
+  if (card!.directEarnRates?.length) return card!.directEarnRates;
+  return getCardGroupById(card!.cardGroupId)?.earnRates ?? [];
 }
 
 /** Simple case-insensitive search across name + aliases. Empty query returns all bank cards. */
