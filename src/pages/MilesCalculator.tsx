@@ -926,16 +926,31 @@ function Field({ label, htmlFor, children }: { label: string; htmlFor: string; c
 
 /* ---------- Existing balances panel ---------- */
 
-function ExistingBalancesPanel({
-  rows, onAdd, onRemove,
-}: {
+const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
   rows: ExistingRow[];
   onAdd: (row: ExistingRow) => void;
   onRemove: (id: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
+  /** Controlled open state so a direct-earning card can expand Step 2. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** Programme preselected when Step 2 is opened from a direct-earning card. */
+  preselectProgrammeId?: string;
+}>(function ExistingBalancesPanel({
+  rows, onAdd, onRemove, open: openProp, onOpenChange, preselectProgrammeId,
+}, ref) {
+  const [openState, setOpenState] = useState(false);
+  const open = openProp ?? openState;
+  const setOpen = (next: boolean) => {
+    setOpenState(next);
+    onOpenChange?.(next);
+  };
   const [programmeId, setProgrammeId] = useState("");
   const [raw, setRaw] = useState("");
+
+  useEffect(() => {
+    if (preselectProgrammeId) setProgrammeId(preselectProgrammeId);
+  }, [preselectProgrammeId]);
+
 
   const supported = useMemo(
     () => loyaltyProgrammes
