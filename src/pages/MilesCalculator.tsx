@@ -2294,18 +2294,33 @@ function PointsRemaining({
   entryContext: Snapshot["entryContext"];
   totalUsedByEntry: Map<string, number>;
 }) {
-  const rows: { id: string; label: string; remaining: number; currency: string }[] = [];
+  const rows: { id: string; label: string; bankName: string; remaining: number; currency: string }[] = [];
   for (const [id, ctx] of entryContext) {
     const remaining = totalUsedByEntry.get(id) ?? ctx.entered;
     if (remaining <= 0) continue;
     rows.push({
       id,
       label: ctx.nickname || `${ctx.bankName} — ${ctx.groupName}`,
+      bankName: ctx.bankName,
       remaining,
       currency: currencyForEntry(id, entryContext),
     });
   }
   if (rows.length === 0) return null;
+
+  // Conversion blocks are calculated per card entry, so leftovers are card
+  // level too. We roll them up by bank + rewards currency purely so the
+  // headline figure matches the aggregated total shown above — we never
+  // aggregate for conversion and then split the remainder back out.
+  const groups = new Map<string, { bankName: string; currency: string; total: number; rows: typeof rows }>();
+  for (const r of rows) {
+    const key = `${r.bankName}::${r.currency}`;
+    const g = groups.get(key) ?? { bankName: r.bankName, currency: r.currency, total: 0, rows: [] };
+    g.total += r.remaining;
+    g.rows.push(r);
+    groups.set(key, g);
+  }
+
   return (
     <div className="mt-12 rounded-sm border border-border bg-background p-6">
       <h3 className="font-display text-xl text-ink md:text-2xl">Points remaining in your bank accounts</h3>
@@ -2313,16 +2328,36 @@ function PointsRemaining({
         Left over after your best-utilised transfer. They stay in your account.
       </p>
       <ul className="mt-4 divide-y divide-border border-y border-border">
-        {rows.map((r) => (
-          <li key={r.id} className="flex items-baseline justify-between gap-4 py-3 text-[13px]">
-            <span className="text-ink">{r.label}</span>
-            <span className="font-display text-lg text-ink">{formatInt(r.remaining)} {r.currency}</span>
+        {Array.from(groups.values()).map((g) => (
+          <li key={`${g.bankName}::${g.currency}`} className="py-3">
+            <div className="flex items-baseline justify-between gap-4 text-[13px]">
+              <span className="text-ink">{g.bankName} — {g.currency}</span>
+              <span className="font-display text-lg text-ink">{formatInt(g.total)} {g.currency}</span>
+            </div>
+            {g.rows.length > 1 && (
+              <>
+                <ul className="mt-2 space-y-1">
+                  {g.rows.map((r) => (
+                    <li key={r.id} className="flex items-baseline justify-between gap-4 text-[12px] text-ink/60">
+                      <span>{r.label}</span>
+                      <span>{formatInt(r.remaining)} {r.currency}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-2 text-[11px] leading-relaxed text-ink/55">
+                  Transfer blocks are calculated separately for each card entry, so each card keeps its own
+                  leftover. If {g.bankName} pools {g.currency} across your cards, confirm with the bank &mdash;
+                  a pooled balance could convert one further block.
+                </p>
+              </>
+            )}
           </li>
         ))}
       </ul>
     </div>
   );
 }
+
 
 function currencyForEntry(entryId: string, entryContext: Snapshot["entryContext"]): string {
   const ctx = entryContext.get(entryId);
