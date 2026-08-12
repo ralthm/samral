@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import About from "./pages/About.tsx";
 import AdminMilesCalculator from "./pages/AdminMilesCalculator.tsx";
+import GuideArticle from "./pages/GuideArticle.tsx";
 import Index from "./pages/Index.tsx";
 import MilesCalculator from "./pages/MilesCalculator.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/plan-my-trip" element={<PlanMyTrip />} />
           <Route path="/trip-planning" element={<PlanMyTrip />} />
+          <Route path="/guides/:slug" element={<GuideArticle />} />
           <Route path="/points-strategy" element={<PointsStrategy />} />
           <Route path="/products" element={<Products />} />
           <Route path="/terms" element={<Terms />} />
