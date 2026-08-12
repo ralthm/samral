@@ -78,6 +78,8 @@ export interface EligibleCardGroup {
   eligibleCards: string[];
   /** Optional message shown when a group is intentionally seeded with no rules. */
   unverifiedNotice?: string;
+  /** Optional heading override for the not-calculable state. */
+  unverifiedHeadline?: string;
   /** Overrides the reward product's type when a group differs. */
   rewardType?: RewardType;
   /** For direct-earning groups: the loyalty programme credited directly. */
@@ -623,6 +625,7 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
       "UOB Lazada Card",
       "UOB Basic Card",
     ],
+    unverifiedHeadline: "Air-mile redemption supported; exact rate not yet verified",
     unverifiedNotice:
       "Air-mile redemption appears to be supported through UOB Rewards+, but Samral has not yet verified the current conversion rate for this card.",
     active: true,
