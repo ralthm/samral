@@ -18,10 +18,13 @@ import {
   getBankById,
   getCardById,
   getCardGroupById,
+  getDirectEarnProgrammeId,
+  getDirectEarnRates,
   getProgrammeById,
   getPublicRulesForCardGroup,
   getRewardCurrencyForCard,
   getRewardProductById,
+  isDirectEarnCard,
   loyaltyProgrammes,
   searchCardsInBank,
   summaryCounters,
@@ -243,6 +246,21 @@ function CalculatorFlow() {
 
   const calcRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
+  const existingRef = useRef<HTMLDivElement>(null);
+  const [existingOpen, setExistingOpen] = useState(false);
+  const [existingPreselect, setExistingPreselect] = useState("");
+
+  /** Direct-earning cards route the customer to Step 2 instead of a bank balance. */
+  const focusExistingBalances = useCallback((programmeId: string) => {
+    setExistingPreselect(programmeId);
+    setExistingOpen(true);
+    requestAnimationFrame(() => {
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      existingRef.current?.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "center" });
+      document.getElementById("existing-bal")?.focus();
+    });
+    track("direct_earn_step2_focused", { programme: programmeId });
+  }, []);
 
   const markStarted = useCallback(() => {
     if (!startedTracked) {
@@ -268,6 +286,11 @@ function CalculatorFlow() {
     const entryContext = new Map<string, { bankName: string; groupName: string; nickname: string; entered: number }>();
     const usableEntries = entries.filter((e) => e.bankId || e.cardId || e.rawInput.trim());
     for (const e of usableEntries) {
+      // Direct airline-earning cards hold no bank balance: no conversion
+      // blocks, no leftover points, no transfer promotion. They only tell us
+      // which programme the customer can reach; the balance itself comes from
+      // Step 2.
+      if (isDirectEarnCard(getCardById(e.cardId))) continue;
       const points = parseIntSafe(e.rawInput);
       const bank = getBankById(e.bankId);
       const group = eligibleCardGroups.find((g) => g.id === e.cardGroupId);
@@ -308,6 +331,7 @@ function CalculatorFlow() {
       if (!e.bankId) errs.push("Select a bank for every entry.");
       else if (e.notFound) errs.push("We need to verify your unlisted card before calculating. Submit it for verification or pick another card.");
       else if (!e.cardId) errs.push("Select the exact credit card for every entry.");
+      if (isDirectEarnCard(getCardById(e.cardId))) continue;
       const pts = parseIntSafe(e.rawInput);
       if (!Number.isFinite(pts) || pts <= 0) errs.push("Enter a valid points balance greater than zero.");
     }
@@ -403,6 +427,7 @@ function CalculatorFlow() {
                 onChange={(next) => mutateEntries((prev) => prev.map((e) => (e.id === entry.id ? next : e)))}
                 onRemove={() => mutateEntries((prev) => prev.filter((e) => e.id !== entry.id))}
                 onFirstValid={() => track("bank_balance_added")}
+                onAddProgrammeBalance={focusExistingBalances}
               />
             ))}
           </div>
@@ -417,7 +442,7 @@ function CalculatorFlow() {
             <Plus className="h-4 w-4" /> Add another bank balance
           </button>
 
-          <div className="mt-14 max-w-[640px]">
+          <div id="step-2" className="mt-14 max-w-[640px]">
             <p className="eyebrow text-ink/60">Step 2 · optional</p>
             <h2 className="mt-3 font-display text-3xl text-ink md:text-4xl">
               Existing airline or hotel balances
@@ -425,6 +450,10 @@ function CalculatorFlow() {
           </div>
 
           <ExistingBalancesPanel
+            ref={existingRef}
+            open={existingOpen}
+            onOpenChange={setExistingOpen}
+            preselectProgrammeId={existingPreselect}
             rows={existingRows}
             onAdd={(row) => {
               mutateExisting((prev) => [...prev, row]);
