@@ -1162,7 +1162,7 @@ function PromoBanner({
                       <li key={p.id} className="rounded-sm border border-border bg-sand/40 p-3">
                         <div className="flex flex-wrap items-baseline justify-between gap-2">
                           <span className="font-medium text-ink">
-                            {p.sponsor === "airline" ? "Airline-funded" : "Bank-funded"} · {p.bonusPercentage ?? 0}% bonus
+                            {promotionSponsorLabel(p)} · {p.bonusPercentage ?? 0}% bonus
                           </span>
                           <span className="text-[11px] text-ink/60">Ends {formatDate(p.endDate)}</span>
                         </div>
@@ -1188,6 +1188,9 @@ function PromoBanner({
                             Subject to a campaign-wide cap of {formatInt(p.overallBonusCap)} {g.programmeName}.
                           </p>
                         )}
+                        {promotionValidityLines(p).map((line) => (
+                          <p key={line} className="mt-1 text-[11px] text-ink/55">{line}</p>
+                        ))}
                       </li>
                     );
                   })}
@@ -1287,8 +1290,13 @@ function ProgrammeBalanceCard({
               {formatInt(headlineTotal)}
             </p>
             <p className="mt-2 text-[12px] text-ink">
-              up to +{formatInt(programme.bonusTotal + programme.conditionalBonusTotal)} bonus {programme.programmeName}
+              {hasConditionalBonus ? "up to " : ""}+{formatInt(programme.bonusTotal + programme.conditionalBonusTotal)} bonus {programme.programmeName}
             </p>
+            {fullTransferBasis && (
+              <p className="mt-1 text-[11px] leading-relaxed text-ink/60">
+                {formatInt(headlineTotal)} {programme.programmeName} if all {formatInt(fullTransferBasis.points)} {fullTransferBasis.currency} are transferred to {programme.programmeName}.
+              </p>
+            )}
           </div>
         </div>
       ) : (
