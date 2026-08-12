@@ -30,6 +30,24 @@ export interface Bank {
   officialRewardsUrl: string;
 }
 
+/**
+ * How a card accrues value.
+ *
+ * - `transferable_bank_points`: the bank holds a rewards currency the customer
+ *   later converts into a loyalty programme in fixed blocks.
+ * - `direct_airline_earn`: spend credits the airline/loyalty programme directly.
+ *   There is no bank-side balance, no conversion block, no leftover points and
+ *   no transfer promotion. The customer's real balance is entered in Step 2.
+ */
+export type RewardType = "transferable_bank_points" | "direct_airline_earn";
+
+export interface EarnRate {
+  /** Spend category as published by the issuer. */
+  category: string;
+  /** Human-readable rate, e.g. "RM1 = 1 Enrich Point". */
+  rate: string;
+}
+
 export interface RewardProduct {
   id: string;
   bankId: string;
@@ -38,6 +56,10 @@ export interface RewardProduct {
   /** The bank-side points currency users type into the calculator. */
   rewardCurrencyName: string;
   description?: string;
+  /** Defaults to "transferable_bank_points" when omitted. */
+  rewardType?: RewardType;
+  /** For direct-earning products: the loyalty programme credited directly. */
+  directProgrammeId?: string;
   active: boolean;
   displayOrder: number;
 }
@@ -51,9 +73,16 @@ export interface EligibleCardGroup {
   eligibleCards: string[];
   /** Optional message shown when a group is intentionally seeded with no rules. */
   unverifiedNotice?: string;
+  /** Overrides the reward product's type when a group differs. */
+  rewardType?: RewardType;
+  /** For direct-earning groups: the loyalty programme credited directly. */
+  directProgrammeId?: string;
+  /** Reference-only earn rates shown for direct-earning cards. */
+  earnRates?: EarnRate[];
   active: boolean;
   displayOrder: number;
 }
+
 
 export interface LoyaltyProgramme {
   id: string;
