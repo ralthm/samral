@@ -9,6 +9,8 @@
  * - `non_convertible` cards (cashback, merchant coins) never reach a
  *   conversion-route lookup, block calculation, promotion evaluation,
  *   programme reachability, redemption matching or leftover-points row.
+ * - `conversion_unverified` cards (no confirmed current route) are
+ *   non-calculable: skipped entirely rather than estimated or treated as zero.
  * - `direct_airline_earn` cards hold no bank balance: their programme comes
  *   from Step 2, never from conversion arithmetic.
  * - When nothing valid remains, no pipeline work runs at all.
@@ -17,6 +19,7 @@ import {
   eligibleCardGroups,
   getBankById,
   getCardById,
+  isConversionUnverifiedCard,
   isDirectEarnCard,
   isNonConvertibleCard,
 } from "@/data/milesCalculator";
@@ -72,6 +75,7 @@ export function isConvertibleEntry(e: CalculatorEntry): boolean {
   const card = getCardById(e.cardId);
   if (isNonConvertibleCard(card)) return false;
   if (isDirectEarnCard(card)) return false;
+  if (isConversionUnverifiedCard(card)) return false;
   return true;
 }
 
@@ -107,7 +111,7 @@ export function runCalculation(
   const skippedEntryIds = usableEntries
     .filter((e) => {
       const card = getCardById(e.cardId);
-      return isNonConvertibleCard(card) || isDirectEarnCard(card);
+      return isNonConvertibleCard(card) || isDirectEarnCard(card) || isConversionUnverifiedCard(card);
     })
     .map((e) => e.id);
 
@@ -124,6 +128,9 @@ export function runCalculation(
     if (isNonConvertibleCard(card)) continue;
     // Direct-earning: no bank balance, no blocks, no promotions.
     if (isDirectEarnCard(card)) continue;
+    // Unverified route: non-calculable. No conversion lookup, no promotion
+    // eligibility, no reachability, no leftover row, no assumed rate.
+    if (isConversionUnverifiedCard(card)) continue;
 
     const points = parseIntSafe(e.rawInput);
     const bank = getBankById(e.bankId);
