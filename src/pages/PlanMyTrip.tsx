@@ -108,8 +108,8 @@ function FlowDiagram() {
     { n: "3", title: "Talk", sub: "Book a free 20-minute discovery call" },
   ];
   return (
-    <ol className="relative space-y-5">
-      {steps.map((s, i) => (
+    <ol className="space-y-3">
+      {steps.map((s) => (
         <li key={s.n} className="flex items-start gap-4">
           <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-sm border border-ink/25 font-display text-2xl text-ink">
             {s.n}
@@ -118,9 +118,6 @@ function FlowDiagram() {
             <p className="font-display text-xl text-ink">{s.title}</p>
             <p className="mt-0.5 text-[13px] text-ink/65">{s.sub}</p>
           </div>
-          {i < steps.length - 1 && (
-            <span aria-hidden className="absolute left-6 top-12 h-5 w-px bg-ink/15" style={{ top: `${48 + i * 76}px` }} />
-          )}
         </li>
       ))}
     </ol>
