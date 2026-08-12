@@ -1268,6 +1268,30 @@ function ProgrammeBalanceCard({
     ? programme.maxPromotionalTotal
     : programme.potentialTotal;
 
+  // When this programme's balance comes from exactly one bank-point currency
+  // and there are no unresolved conditional bonuses, the figure represents one
+  // defined full-transfer scenario, so we can state it precisely rather than
+  // hedging with "up to".
+  const fullTransferBasis = useMemo(() => {
+    if (hasConditionalBonus) return null;
+    const currencies = new Set(rowResults.map((r) => r.rewardCurrencyName));
+    if (currencies.size !== 1) return null;
+    const points = rowResults.reduce((sum, r) => sum + r.bankPointsUsed, 0);
+    if (points <= 0) return null;
+    return { points, currency: rowResults[0].rewardCurrencyName };
+  }, [rowResults, hasConditionalBonus]);
+
+  // Published bank conversion caps we cannot verify against the user's own
+  // transfer history.
+  const capWarnings = useMemo(
+    () => Array.from(new Set(rowResults.map((r) => r.capWarning).filter(Boolean) as string[])),
+    [rowResults],
+  );
+  const capsHit = useMemo(
+    () => rowResults.filter((r) => r.capApplied),
+    [rowResults],
+  );
+
   return (
     <div className={`rounded-sm border bg-background p-6 ${hasApplicablePromo ? "border-ink" : "border-border"}`}>
       {hasApplicablePromo ? (
@@ -1346,7 +1370,7 @@ function ProgrammeBalanceCard({
               {hasConditionalBonus ? "Potential after an eligible registered transfer" : "Final promotional balance"}
             </dt>
             <dd className="border-t border-border pt-2 text-right font-medium text-ink">
-              up to {formatInt(headlineTotal)} {programme.programmeName}
+              {hasConditionalBonus ? "up to " : ""}{formatInt(headlineTotal)} {programme.programmeName}
             </dd>
           </>
         )}
@@ -1377,6 +1401,26 @@ function ProgrammeBalanceCard({
           {applicablePromos.map((p) => `${p.name} — valid until ${formatDate(p.endDate)}`).join(" · ")}
         </p>
       )}
+
+      {capsHit.length > 0 && (
+        <div className="mt-3 rounded-sm border border-ink/30 bg-sand/40 p-3 text-[12px] text-ink">
+          {capsHit.map((r) => (
+            <p key={`${r.entryId}-cap`} className="mt-1 first:mt-0">
+              {r.bankName} limits this conversion to {formatInt(r.capApplied!.limit)} {programme.programmeName}
+              {r.capApplied!.type === "campaign"
+                ? " per customer during a bonus campaign"
+                : r.capApplied!.type === "annual"
+                  ? " per customer per calendar year"
+                  : " per customer per month"}
+              . {formatInt(r.bankPointsRemaining)} {r.rewardCurrencyName} are shown as remaining and unconverted.
+            </p>
+          ))}
+        </div>
+      )}
+
+      {capWarnings.map((w) => (
+        <p key={w} className="mt-3 text-[11px] leading-relaxed text-ink/60">{w}</p>
+      ))}
 
       <AllianceInfo
         programmeId={programme.programmeId}
