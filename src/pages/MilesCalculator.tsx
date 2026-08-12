@@ -59,6 +59,7 @@ import { AllianceBadge, AllianceInfo } from "@/components/AllianceInfo";
 
 
 const STRATEGY_URL = "/points-strategy";
+const TRIP_PLANNING_DISCOVERY_URL = "https://cal.com/samral/trip-planning-discovery-call-20-mins";
 const PRIORITY_PROGRAMMES = ["enrich", "krisflyer", "asia-miles"];
 
 type UiState = "idle" | "calculated" | "stale" | "error";
@@ -142,6 +143,7 @@ export default function MilesCalculator() {
       <Hero />
       <CalculatorFlow />
       <Explainer />
+      <TripPlanningCTA />
       <Disclaimer />
       <Footer />
     </div>
@@ -362,6 +364,7 @@ function CalculatorFlow() {
       setState("calculated");
       setIsCalculating(false);
       track("calculation_completed", { programmes: next.portfolio.length });
+      window.dispatchEvent(new CustomEvent("samral:calculation-completed"));
 
       requestAnimationFrame(() => {
         const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -2537,6 +2540,63 @@ function StrategyCTA() {
         >
           Get My Points Strategy
         </Link>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Trip Planning CTA ---------- */
+
+function TripPlanningCTA() {
+  const [calculated, setCalculated] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setCalculated(true);
+    window.addEventListener("samral:calculation-completed", handler);
+    return () => window.removeEventListener("samral:calculation-completed", handler);
+  }, []);
+
+  const handleClick = () => {
+    track("trip_planning_discovery_click", {
+      source: "miles_calculator_bottom_cta",
+      calculated,
+    });
+  };
+
+  const headline = calculated
+    ? "Found your points potential. Need help turning it into a trip?"
+    : "Have the points. Not sure what to book?";
+
+  const body = calculated
+    ? "If you're unsure which redemption to pursue or you're having trouble making the booking work, book a free 20-minute discovery call."
+    : "Book a free 20-minute discovery call and we'll look at what you're trying to do with your points, where you want to go, and what may be getting in the way of making the booking.";
+
+  const targetUrl = `${TRIP_PLANNING_DISCOVERY_URL}?source=miles_calculator_bottom_cta`;
+
+  return (
+    <section className="border-b border-border">
+      <div className="mx-auto max-w-[860px] px-5 py-20 text-center sm:px-6 md:py-28">
+        <p className="text-xs font-medium uppercase tracking-[0.18em] text-ink/55">
+          Points Trip Planning
+        </p>
+        <h2 className="mx-auto mt-5 max-w-2xl font-display text-3xl leading-tight text-ink md:text-[2.5rem]">
+          {headline}
+        </h2>
+        <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-ink/75">
+          {body}
+        </p>
+        <a
+          href={targetUrl}
+          onClick={handleClick}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-8 inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
+        >
+          Book a Free 20-Minute Call
+        </a>
+        <p className="mt-4 text-[13px] text-ink/55">
+          Free discovery call · No obligation
+        </p>
       </div>
     </section>
   );
