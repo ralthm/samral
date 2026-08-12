@@ -1658,6 +1658,24 @@ export function isDirectEarnCard(card: Card | undefined): boolean {
   return !!card && isDirectEarnCardGroup(card.cardGroupId);
 }
 
+/** True when the card's rewards currency can never enter a conversion pipeline. */
+export function isNonConvertibleCardGroup(cardGroupId: string): boolean {
+  return getRewardTypeForCardGroup(cardGroupId) === "non_convertible";
+}
+
+export function isNonConvertibleCard(card: Card | undefined): boolean {
+  return !!card && isNonConvertibleCardGroup(card.cardGroupId);
+}
+
+/**
+ * A card may contribute to conversion work only when it holds a transferable
+ * bank currency. Direct-earning and non-convertible cards are excluded.
+ */
+export function isConversionEligibleCard(card: Card | undefined): boolean {
+  return !!card && getRewardTypeForCardGroup(card.cardGroupId) === "transferable_bank_points";
+}
+
+
 /** The loyalty programme a direct-earning card credits, if known. */
 export function getDirectEarnProgrammeId(cardGroupId: string): string | undefined {
   const group = getCardGroupById(cardGroupId);
