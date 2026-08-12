@@ -104,10 +104,15 @@ export const promotions: Promotion[] = [
       { bankId: "ambank" },
       { bankId: "publicbank" },
       { bankId: "bankrakyat" },
-      // Standard Chartered: only the Journey/WorldMiles card is eligible for the
-      // Enrich Bank Conversion Promotion. 360° Rewards routes are excluded.
+      // Standard Chartered: the Journey/WorldMiles card and the verified
+      // 360° Rewards Points conversion routes all participate in the Enrich
+      // Bank Conversion Promotion. Only groups whose Enrich rate is still
+      // unverified are left out.
       { bankId: "sc", cardGroupId: "cg-sc-journey" },
+      { bankId: "sc", cardGroupId: "cg-sc-360-7k" },
+      { bankId: "sc", cardGroupId: "cg-sc-360-46k" },
     ],
+
     bonusType: "percentage",
     bonusPercentage: 10,
     registrationRequired: false,
