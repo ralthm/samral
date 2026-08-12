@@ -59,6 +59,11 @@ import { saveTripContext, TripContext } from "@/lib/tripContext";
 import { AllianceBadge, AllianceInfo } from "@/components/AllianceInfo";
 
 
+import {
+  hasCalculableInput as pipelineHasCalculableInput,
+  runCalculation as runCalculatorPipeline,
+} from "@/lib/calculatorPipeline";
+
 const STRATEGY_URL = "/points-strategy";
 const TRIP_PLANNING_DISCOVERY_URL = "https://cal.com/samral/trip-planning-discovery-call-20-mins";
 const PRIORITY_PROGRAMMES = ["enrich", "krisflyer", "asia-miles"];
@@ -284,67 +289,19 @@ function CalculatorFlow() {
     markStarted();
   }, [snapshot, markStarted]);
 
-  const runCalculation = useCallback((regIds: string[]) => {
-    const results: RuleResult[] = [];
-    const entryContext = new Map<string, { bankName: string; groupName: string; nickname: string; entered: number }>();
-    const usableEntries = entries.filter((e) => e.bankId || e.cardId || e.rawInput.trim());
-    for (const e of usableEntries) {
-      const entryCard = getCardById(e.cardId);
-      // Non-convertible cards (cashback, merchant coins) exit here: no
-      // conversion-route lookup, no blocks, no promotions, no reachability, no
-      // leftover row. They contribute exactly nothing to the portfolio.
-      if (isNonConvertibleCard(entryCard)) continue;
-      // Direct airline-earning cards hold no bank balance: no conversion
-      // blocks, no leftover points, no transfer promotion. They only tell us
-      // which programme the customer can reach; the balance itself comes from
-      // Step 2.
-      if (isDirectEarnCard(entryCard)) continue;
-
-      const points = parseIntSafe(e.rawInput);
-      const bank = getBankById(e.bankId);
-      const group = eligibleCardGroups.find((g) => g.id === e.cardGroupId);
-      entryContext.set(e.id, {
-        bankName: bank?.name ?? "",
-        groupName: group?.name ?? "",
-        nickname: e.nickname,
-        entered: points,
-      });
-      results.push(
-        ...calculateEntry({
-          entryId: e.id,
-          cardGroupId: e.cardGroupId,
-          nickname: e.nickname,
-          bankPoints: points,
-          registeredPromotionIds: regIds,
-        }),
-      );
-    }
-    const existingBalances: Record<string, number> = {};
-    for (const r of existingRows) {
-      const n = parseIntSafe(r.rawInput);
-      if (Number.isFinite(n) && n > 0 && r.programmeId) existingBalances[r.programmeId] = n;
-    }
-    const portfolio = computePortfolioTotals(results, existingBalances);
-    return { results, portfolio, entryContext };
-  }, [entries, existingRows]);
+  const runCalculation = useCallback(
+    (regIds: string[]) => runCalculatorPipeline(entries, existingRows, regIds),
+    [entries, existingRows],
+  );
 
   /**
    * Inputs that can actually contribute to a loyalty-programme balance.
    * Derived directly from state — no effects, no mirrored state.
    */
-  const convertibleEntries = useMemo(
-    () => entries.filter((e) => {
-      const card = getCardById(e.cardId);
-      if (isNonConvertibleCard(card)) return false;
-      if (isDirectEarnCard(card)) return false;
-      return !!(e.bankId || e.cardId || e.rawInput.trim());
-    }),
-    [entries],
+  const hasCalculableInput = useMemo(
+    () => pipelineHasCalculableInput(entries, existingRows),
+    [entries, existingRows],
   );
-  const hasExistingLoyaltyBalance = existingRows.some(
-    (r) => !!r.programmeId && parseIntSafe(r.rawInput) > 0,
-  );
-  const hasCalculableInput = convertibleEntries.length > 0 || hasExistingLoyaltyBalance;
 
   const handleCalculate = () => {
     // Validate
