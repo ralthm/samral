@@ -505,7 +505,7 @@ function CalculatorFlow() {
             onToggleRegistration={handleToggleRegistration}
           />
 
-          <StrategyCTA />
+          <PostCalcCTA />
         </div>
       )}
 
