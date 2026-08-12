@@ -83,7 +83,9 @@ const TODAY_ISO = () => new Date().toISOString().slice(0, 10);
 
 const V_ENRICH = "2026-07-01";
 const V_KRISFLYER = "2026-07-01";
-const V_ASIA = "2026-07-01";
+const V_ASIA = "2026-08-12";
+/** China routes re-verified in the August 2026 QA pass (CSX / SZX). */
+const V_ENRICH_CN_2026_08 = "2026-08-12";
 
 const SRC_ENRICH = "https://www.malaysiaairlines.com/my/en/enrich/use-enrich-miles/redeem-flights.html";
 const TITLE_ENRICH = "Malaysia Airlines Enrich — Redeem Flights";
@@ -110,6 +112,8 @@ interface EnrichSeed {
   verificationLevel?: "official-chart-transcription" | "observed-redemption-data";
   notes?: string;
   status?: TargetStatus;
+  /** Per-record override when a single route has been re-verified more recently. */
+  verifiedOn?: string;
 }
 
 // Malaysia Airlines Enrich Saver — every value is one-way per person from KUL
@@ -193,7 +197,8 @@ const enrichSeeds: EnrichSeed[] = [
   { code: "lhr", destination: "LHR", destinationName: "London (Heathrow)", country: "United Kingdom", region: "Europe", economy: 33000, business: 108000 },
   { code: "cdg", destination: "CDG", destinationName: "Paris (Charles de Gaulle)", country: "France", region: "Europe", economy: 43100, business: 165200 },
   // Observed pricing (not official chart transcriptions) — label as observed.
-  { code: "csx", destination: "CSX", destinationName: "Changsha", country: "China", region: "North Asia", economy: 9200, business: 54300, verificationLevel: "observed-redemption-data" },
+  { code: "csx", destination: "CSX", destinationName: "Changsha", country: "China", region: "North Asia", economy: 9500, business: 56500, verificationLevel: "observed-redemption-data", verifiedOn: V_ENRICH_CN_2026_08, notes: "Changsha and Shenzhen share the same current Enrich Saver pricing band in the verified dataset." },
+  { code: "szx", destination: "SZX", destinationName: "Shenzhen", country: "China", region: "North Asia", economy: 9500, business: 56500, verificationLevel: "observed-redemption-data", verifiedOn: V_ENRICH_CN_2026_08, notes: "Changsha and Shenzhen share the same current Enrich Saver pricing band in the verified dataset." },
   { code: "fuk", destination: "FUK", destinationName: "Fukuoka", country: "Japan", region: "North Asia", economy: 16900, business: 64000, verificationLevel: "observed-redemption-data" },
 ];
 
@@ -234,6 +239,7 @@ function buildEnrichTargets(): RedemptionTarget[] {
       pointsPerPerson: points,
       status: s.status ?? "verified",
       verificationLevel: s.verificationLevel ?? "official-chart-transcription",
+      verifiedOn: s.verifiedOn ?? V_ENRICH,
       notes: s.notes,
     });
   };
@@ -461,7 +467,7 @@ interface AmSeed {
 // award calculator or current official chart, only KUL–HKG (a directly
 // verified 30,000 Asia Miles one-way Business Class award) is retained.
 const asiaMilesSeeds: AmSeed[] = [
-  { code: "hkg", destination: "HKG", destinationName: "Hong Kong", country: "Hong Kong SAR", region: "North Asia", connection: [], economy: 12000, premiumEconomy: 18000, business: 30000 },
+  { code: "hkg", destination: "HKG", destinationName: "Hong Kong", country: "Hong Kong SAR", region: "North Asia", connection: [], economy: 12000, premiumEconomy: 18000, business: 27000 },
 ];
 
 function buildAsiaMilesTargets(): RedemptionTarget[] {
