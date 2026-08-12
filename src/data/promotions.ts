@@ -18,8 +18,15 @@ export interface Promotion {
   /** Destination loyalty programme the bonus is credited in. */
   programmeId: string;
   name: string;
-  /** Who funds the bonus. Displayed to the user. */
+  /** Who funds the bonus. Used internally for stacking logic. */
   sponsor: PromotionSponsor;
+  /**
+   * Customer-facing attribution label (e.g. "Enrich promotion"). Set this
+   * whenever "airline-funded"/"bank-funded" would misdescribe the campaign —
+   * the Enrich bank-conversion promotion is organised by Enrich in
+   * collaboration with participating banks, not "airline-funded".
+   */
+  sponsorLabel?: string;
   /**
    * Bank ids eligible for the promotion. Use ["*"] to mean "all banks".
    * These match the ids in src/data/milesCalculator.ts banks[].
@@ -62,6 +69,17 @@ export interface Promotion {
   /** Date by which the user must escalate if the bonus has not posted. */
   claimDeadline?: string;
   officialSource: string;
+  /** Provenance of the terms this record was built from. */
+  sourceType?: "official_bank" | "official_loyalty_programme" | "official_airline" | "verified_secondary";
+  sourceName?: string;
+  /** Date the terms were last read end-to-end. */
+  verifiedAt?: string;
+  /** Validity of the base points credited by the conversion. */
+  basePointsValidity?: string;
+  /** Validity of the bonus points credited by the promotion. */
+  bonusPointsValidity?: string;
+  /** Per-member cap on points credited in a single day under the promotion. */
+  dailyCapPartnerPoints?: number;
   active: boolean;
   /** Optional additional plain-text terms shown under "See terms". */
   additionalTerms?: string[];
@@ -73,6 +91,7 @@ export const promotions: Promotion[] = [
     programmeId: "enrich",
     name: "10% Bonus Enrich Points",
     sponsor: "airline",
+    sponsorLabel: "Enrich promotion",
     participatingBanks: ["maybank", "cimb", "alliance", "uob", "hsbc", "hongleong", "affin", "ambank", "publicbank", "bankrakyat", "sc"],
     eligibleTransferRoutes: [
       { bankId: "maybank" },
@@ -96,6 +115,12 @@ export const promotions: Promotion[] = [
     endDate: "2026-08-18",
     postingTimeline: "The base and bonus Enrich Points are expected to be credited within 14 working days after the bank submits the conversion. Bonus Enrich Points are valid for one year. Transfers are irreversible. The legal name on the credit-card account and Enrich account must match.",
     officialSource: "https://www.malaysiaairlines.com/my/en/enrich/enrich-promotions.html",
+    sourceName: "Enrich Bank Points Conversion Promotion Terms & Conditions",
+    sourceType: "official_loyalty_programme",
+    verifiedAt: "2026-08-12",
+    basePointsValidity: "Base Enrich Points: valid for 3 years from crediting.",
+    bonusPointsValidity: "Bonus Enrich Points: valid for 1 year from crediting.",
+    dailyCapPartnerPoints: 3_000_000,
     active: true,
   },
 
@@ -120,6 +145,10 @@ export const promotions: Promotion[] = [
     claimDeadline: "2026-11-15",
     postingTimeline: "Bonus expected to be credited by 31 October 2026. Contact Cathay by 15 November 2026 if not received. Cathay membership must remain valid when the bonus posts. Non-transferable, non-refundable, non-exchangeable for cash.",
     officialSource: "https://www.cathaypacific.com/",
+    sponsorLabel: "Cathay promotion",
+    sourceName: "Cathay campaign terms and conditions",
+    sourceType: "official_airline",
+    verifiedAt: "2026-08-12",
     active: true,
     additionalTerms: [
       "You must hold a Cathay membership with a residential address in Malaysia, Singapore, Philippines, Thailand or Indonesia.",
@@ -142,6 +171,10 @@ export const promotions: Promotion[] = [
     endDate: "2026-08-31",
     postingTimeline: "Bonus expected to be credited within three weeks after the campaign ends. Subject to a 500,000 Asia Miles overall campaign cap — bonus is not guaranteed once the cap has been exhausted.",
     officialSource: "https://www.cimb.com.my/",
+    sponsorLabel: "CIMB promotion",
+    sourceName: "CIMB campaign terms and conditions",
+    sourceType: "official_bank",
+    verifiedAt: "2026-08-12",
     active: true,
     additionalTerms: [
       "Applies to principal cardholders only.",

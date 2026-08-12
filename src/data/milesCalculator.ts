@@ -82,6 +82,12 @@ export interface ConversionRule {
   verifiedOn: string; // ISO date
   sourceUrl: string;
   sourceTitle: string;
+  /** Provenance of the published rate. Prefer official bank sources. */
+  sourceType?: "official_bank" | "official_loyalty_programme" | "official_airline" | "verified_secondary";
+  sourceName?: string;
+  /** Alias of verifiedOn in the shared source-metadata shape. */
+  verifiedAt?: string;
+  effectiveTo?: string;
   annualCapPartnerPoints?: number;
   campaignCapPartnerPoints?: number;
   notes?: string;
@@ -912,6 +918,8 @@ const MBB_EFF = "2025-02-22";
 const ALLIANCE_EFF = "2025-12-01";
 
 const MBB_ANNUAL_CAP = 2_000_000;
+/** Maximum Air Miles converted per customer during a single bonus campaign. */
+const MBB_CAMPAIGN_CAP = 250_000;
 const MBB_ANNUAL_NOTE =
   "Transfer fulfilment remains subject to Maybank's applicable individual, campaign and collective monthly conversion limits. Maybank states a maximum of 2,000,000 Air Miles per customer per calendar year and a separate 250,000 Air Mile limit during a particular bonus campaign.";
 
@@ -929,8 +937,11 @@ function rule(
     bankPointsPerBlock: block[0],
     partnerPointsPerBlock: block[1],
     verifiedOn: V,
+    verifiedAt: V,
     sourceUrl: MBB_SRC,
     sourceTitle: MBB_TITLE,
+    sourceName: MBB_TITLE,
+    sourceType: "official_bank",
     status: "verified",
     active: true,
     ...extra,
@@ -940,46 +951,46 @@ function rule(
 export const conversionRules: ConversionRule[] = [
   // ---- Maybank — Preferential TreatsPoints (12,500 → 1,000) ----
   rule("mbb-prem-enrich", "cg-mbb-treats-premium", "enrich", [12500, 1000], {
-    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
+    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-prem-krisflyer", "cg-mbb-treats-premium", "krisflyer", [12500, 1000], {
-    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
+    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-prem-cathay", "cg-mbb-treats-premium", "asia-miles", [12500, 1000], {
-    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
+    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
 
   // ---- Maybank — Selected Amex MR (12,500 → 1,000) ----
   rule("mbb-selamex-enrich", "cg-mbb-mr-selected-amex", "enrich", [12500, 1000], {
-    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
+    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-selamex-krisflyer", "cg-mbb-mr-selected-amex", "krisflyer", [12500, 1000], {
-    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
+    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-selamex-cathay", "cg-mbb-mr-selected-amex", "asia-miles", [12500, 1000], {
-    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
+    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
 
   // ---- Maybank — Amex Platinum Charge MR (7,000 → 1,000) ----
   rule("mbb-platch-enrich", "cg-mbb-mr-plat-charge", "enrich", [7000, 1000], {
-    annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
+    annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-platch-krisflyer", "cg-mbb-mr-plat-charge", "krisflyer", [7000, 1000], {
-    annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
+    annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-platch-cathay", "cg-mbb-mr-plat-charge", "asia-miles", [7000, 1000], {
-    annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
+    annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
 
   // ---- Maybank — Standard TreatsPoints (20,000 → 1,000) ----
   rule("mbb-std-enrich", "cg-mbb-treats-standard", "enrich", [20000, 1000], {
-    annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
+    annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-std-krisflyer", "cg-mbb-treats-standard", "krisflyer", [20000, 1000], {
-    annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
+    annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-std-cathay", "cg-mbb-treats-standard", "asia-miles", [20000, 1000], {
-    annualCapPartnerPoints: MBB_ANNUAL_CAP, notes: MBB_ANNUAL_NOTE,
+    annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
 
 

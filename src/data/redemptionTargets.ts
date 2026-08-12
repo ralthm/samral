@@ -36,6 +36,24 @@ export type RedemptionType =
 
 export type TargetStatus = "verified" | "needs_review" | "expired" | "unavailable";
 
+/** Provenance of a stored figure. Never label a reconstructed third-party
+ * table as an official published chart. */
+export type SourceType =
+  | "official_bank"
+  | "official_loyalty_programme"
+  | "official_airline"
+  | "verified_secondary";
+
+export interface SourceMetadata {
+  sourceName: string;
+  sourceUrl: string;
+  sourceType: SourceType;
+  verifiedAt: string;
+  effectiveFrom?: string;
+  effectiveTo?: string;
+  notes?: string;
+}
+
 /** Programmes with a complete, current redemption engine. Others may appear in
  * transfer results but not in the destination filter. */
 export const SUPPORTED_PROGRAMMES: readonly string[] = ["enrich", "krisflyer", "asia-miles"];
@@ -68,11 +86,17 @@ export interface RedemptionTarget {
   /** Secondary reference source (e.g. BolehMiles chart mirror). */
   rateReferenceSource?: string;
   nonstopOnly?: boolean;
+  /** Subtle qualification shown on connecting itineraries (e.g. KrisFlyer
+   * routing/backtracking conditions). */
+  routingNote?: string;
   effectiveFrom?: string;
   effectiveUntil?: string;
   verifiedOn: string;
   sourceUrl: string;
   sourceTitle: string;
+  /** Structured provenance. Prefer official sources; verified_secondary is
+   * only used where the programme publishes no static chart. */
+  source: SourceMetadata;
   availabilityChecked: boolean;
   taxesAndFeesNote: string;
   status: TargetStatus;
@@ -83,14 +107,19 @@ const TODAY_ISO = () => new Date().toISOString().slice(0, 10);
 
 const V_ENRICH = "2026-07-01";
 const V_KRISFLYER = "2026-07-01";
-const V_ASIA = "2026-07-01";
+const V_ASIA = "2026-08-12";
+/** China routes re-verified in the August 2026 QA pass (CSX / SZX). */
+const V_ENRICH_CN_2026_08 = "2026-08-12";
 
 const SRC_ENRICH = "https://www.malaysiaairlines.com/my/en/enrich/use-enrich-miles/redeem-flights.html";
 const TITLE_ENRICH = "Malaysia Airlines Enrich — Redeem Flights";
 const SRC_KRISFLYER = "https://www.singaporeair.com/en_UK/us/ppsclub-krisflyer/use-miles/flights/";
 const TITLE_KRISFLYER = "Singapore Airlines KrisFlyer Award Chart (effective 1 November 2025)";
 const SRC_ASIA = "https://www.cathaypacific.com/cx/en_HK/asia-miles/use-miles/redeem-flights.html";
-const TITLE_ASIA = "Cathay Asia Miles — Standard Flight Award pricing";
+const TITLE_ASIA = "Cathay Pacific Standard Flight Award — current award reference";
+
+const KF_ROUTING_NOTE =
+  "Based on the current Singapore Airlines Saver award chart. Exact mileage may depend on the itinerary accepted by KrisFlyer.";
 
 const TAX_NOTE = "Taxes, fees and airline surcharges apply and are paid on top of the points requirement.";
 
@@ -110,6 +139,8 @@ interface EnrichSeed {
   verificationLevel?: "official-chart-transcription" | "observed-redemption-data";
   notes?: string;
   status?: TargetStatus;
+  /** Per-record override when a single route has been re-verified more recently. */
+  verifiedOn?: string;
 }
 
 // Malaysia Airlines Enrich Saver — every value is one-way per person from KUL
@@ -193,7 +224,8 @@ const enrichSeeds: EnrichSeed[] = [
   { code: "lhr", destination: "LHR", destinationName: "London (Heathrow)", country: "United Kingdom", region: "Europe", economy: 33000, business: 108000 },
   { code: "cdg", destination: "CDG", destinationName: "Paris (Charles de Gaulle)", country: "France", region: "Europe", economy: 43100, business: 165200 },
   // Observed pricing (not official chart transcriptions) — label as observed.
-  { code: "csx", destination: "CSX", destinationName: "Changsha", country: "China", region: "North Asia", economy: 9200, business: 54300, verificationLevel: "observed-redemption-data" },
+  { code: "csx", destination: "CSX", destinationName: "Changsha", country: "China", region: "North Asia", economy: 9500, business: 56500, verificationLevel: "observed-redemption-data", verifiedOn: V_ENRICH_CN_2026_08, notes: "Changsha and Shenzhen share the same current Enrich Saver pricing band in the verified dataset." },
+  { code: "szx", destination: "SZX", destinationName: "Shenzhen", country: "China", region: "North Asia", economy: 9500, business: 56500, verificationLevel: "observed-redemption-data", verifiedOn: V_ENRICH_CN_2026_08, notes: "Changsha and Shenzhen share the same current Enrich Saver pricing band in the verified dataset." },
   { code: "fuk", destination: "FUK", destinationName: "Fukuoka", country: "Japan", region: "North Asia", economy: 16900, business: 64000, verificationLevel: "observed-redemption-data" },
 ];
 
@@ -218,6 +250,13 @@ function buildEnrichTargets(): RedemptionTarget[] {
     verifiedOn: V_ENRICH,
     sourceUrl: SRC_ENRICH,
     sourceTitle: TITLE_ENRICH,
+    source: {
+      sourceName: "Malaysia Airlines Enrich — Enrich Saver fixed redemption chart",
+      sourceUrl: SRC_ENRICH,
+      sourceType: "official_loyalty_programme" as const,
+      verifiedAt: V_ENRICH,
+      notes: "Observed-pricing records are corroborated against current Enrich Saver redemptions where the published chart does not list the route.",
+    },
     rateReferenceSource: "https://bolehmiles.com/enrich-redemption-chart/",
     availabilityChecked: false,
     taxesAndFeesNote: TAX_NOTE,
@@ -234,6 +273,8 @@ function buildEnrichTargets(): RedemptionTarget[] {
       pointsPerPerson: points,
       status: s.status ?? "verified",
       verificationLevel: s.verificationLevel ?? "official-chart-transcription",
+      verifiedOn: s.verifiedOn ?? V_ENRICH,
+      source: { ...shared.source, verifiedAt: s.verifiedOn ?? V_ENRICH },
       notes: s.notes,
     });
   };
@@ -371,6 +412,14 @@ function buildKrisflyerTargets(): RedemptionTarget[] {
     verifiedOn: V_KRISFLYER,
     sourceUrl: SRC_KRISFLYER,
     sourceTitle: TITLE_KRISFLYER,
+    source: {
+      sourceName: "Singapore Airlines KrisFlyer Saver award chart",
+      sourceUrl: SRC_KRISFLYER,
+      sourceType: "official_airline" as const,
+      verifiedAt: V_KRISFLYER,
+      effectiveFrom: "2025-11-01",
+      notes: "Some zone combinations carry routing and backtracking conditions. Exact mileage depends on the itinerary accepted by KrisFlyer.",
+    },
     availabilityChecked: false,
     taxesAndFeesNote: TAX_NOTE,
   };
@@ -388,6 +437,7 @@ function buildKrisflyerTargets(): RedemptionTarget[] {
       cabin,
       pointsPerPerson: points,
       status: s.status ?? "verified",
+      routingNote: s.connection.length > 0 ? KF_ROUTING_NOTE : undefined,
       notes: s.notes,
     });
   };
@@ -457,11 +507,12 @@ interface AmSeed {
 //   Ultra-long     (7,501+ mi)      : 110,000 one-way
 // Short Type 1 (≤750 mi) is priced separately at its current official price.
 //
-// Until every KUL-origin itinerary has been re-verified in Cathay's official
-// award calculator or current official chart, only KUL–HKG (a directly
-// verified 30,000 Asia Miles one-way Business Class award) is retained.
+// Until every KUL-origin itinerary has been re-verified in Cathay's live
+// award calculator, only KUL–HKG is retained. KUL–HKG sits in the Short
+// Type 1 band: 27,000 Asia Miles one-way in Business (verified August 2026;
+// supersedes the stale 30,000 figure).
 const asiaMilesSeeds: AmSeed[] = [
-  { code: "hkg", destination: "HKG", destinationName: "Hong Kong", country: "Hong Kong SAR", region: "North Asia", connection: [], economy: 12000, premiumEconomy: 18000, business: 30000 },
+  { code: "hkg", destination: "HKG", destinationName: "Hong Kong", country: "Hong Kong SAR", region: "North Asia", connection: [], economy: 12000, premiumEconomy: 18000, business: 27000 },
 ];
 
 function buildAsiaMilesTargets(): RedemptionTarget[] {
@@ -481,6 +532,16 @@ function buildAsiaMilesTargets(): RedemptionTarget[] {
     verifiedOn: V_ASIA,
     sourceUrl: SRC_ASIA,
     sourceTitle: TITLE_ASIA,
+    source: {
+      sourceName: "Cathay Pacific Standard Flight Award — verified current award reference",
+      sourceUrl: SRC_ASIA,
+      // Cathay no longer publishes a simple static chart for ordinary
+      // Cathay-operated awards; pricing is verified against the live award
+      // calculator and corroborated against a current award reference.
+      sourceType: "verified_secondary" as const,
+      verifiedAt: V_ASIA,
+      notes: "Cathay does not publish a static award chart for Cathay-operated standard awards. Pricing is verified against the live award calculator.",
+    },
     availabilityChecked: false,
     taxesAndFeesNote: TAX_NOTE,
   };

@@ -26,6 +26,8 @@ import {
   searchCardsInBank,
   summaryCounters,
 } from "@/data/milesCalculator";
+import { promotions as promotionRecords } from "@/data/promotions";
+import type { PromotionApplication } from "@/lib/milesCalculator";
 import {
   calculateEntry,
   computePortfolioTotals,
@@ -1109,6 +1111,49 @@ function ResultsDashboard({
   );
 }
 
+/** Human label for a source-provenance type. Distinguishes an official
+ * published source from a verified current award reference. */
+function sourceTypeLabel(t?: string): string {
+  switch (t) {
+    case "official_bank": return "official bank source";
+    case "official_loyalty_programme": return "official programme source";
+    case "official_airline": return "official airline source";
+    case "verified_secondary": return "verified award reference";
+    default: return "official source";
+  }
+}
+
+/* ---------- Promotion helpers ---------- */
+
+function promotionRecord(id: string) {
+  return promotionRecords.find((p) => p.id === id);
+}
+
+/** Customer-facing attribution. Never describes the Enrich bank-conversion
+ * promotion as "airline-funded" — it is an Enrich promotion run with
+ * participating banks. */
+function promotionSponsorLabel(p: PromotionApplication): string {
+  const rec = promotionRecord(p.id);
+  if (rec?.sponsorLabel) return rec.sponsorLabel;
+  return p.sponsor === "airline" ? "Airline promotion" : "Bank promotion";
+}
+
+/** Subtle supporting information (points validity, per-member daily caps). */
+function promotionValidityLines(p: PromotionApplication): string[] {
+  const rec = promotionRecord(p.id);
+  if (!rec) return [];
+  const lines: string[] = [];
+  if (rec.basePointsValidity) lines.push(rec.basePointsValidity);
+  if (rec.bonusPointsValidity) lines.push(rec.bonusPointsValidity);
+  if (rec.dailyCapPartnerPoints) {
+    lines.push(`Maximum ${formatInt(rec.dailyCapPartnerPoints)} points per member per day under this promotion.`);
+  }
+  if (rec.sourceName) {
+    lines.push(`Source: ${rec.sourceName}${rec.verifiedAt ? ` · Last verified ${formatDate(rec.verifiedAt)}` : ""}`);
+  }
+  return lines;
+}
+
 /* ---------- Promotion banner ---------- */
 
 function PromoBanner({
@@ -1162,7 +1207,7 @@ function PromoBanner({
                       <li key={p.id} className="rounded-sm border border-border bg-sand/40 p-3">
                         <div className="flex flex-wrap items-baseline justify-between gap-2">
                           <span className="font-medium text-ink">
-                            {p.sponsor === "airline" ? "Airline-funded" : "Bank-funded"} · {p.bonusPercentage ?? 0}% bonus
+                            {promotionSponsorLabel(p)} · {p.bonusPercentage ?? 0}% bonus
                           </span>
                           <span className="text-[11px] text-ink/60">Ends {formatDate(p.endDate)}</span>
                         </div>
@@ -1188,6 +1233,9 @@ function PromoBanner({
                             Subject to a campaign-wide cap of {formatInt(p.overallBonusCap)} {g.programmeName}.
                           </p>
                         )}
+                        {promotionValidityLines(p).map((line) => (
+                          <p key={line} className="mt-1 text-[11px] text-ink/55">{line}</p>
+                        ))}
                       </li>
                     );
                   })}
@@ -1265,6 +1313,30 @@ function ProgrammeBalanceCard({
     ? programme.maxPromotionalTotal
     : programme.potentialTotal;
 
+  // When this programme's balance comes from exactly one bank-point currency
+  // and there are no unresolved conditional bonuses, the figure represents one
+  // defined full-transfer scenario, so we can state it precisely rather than
+  // hedging with "up to".
+  const fullTransferBasis = useMemo(() => {
+    if (hasConditionalBonus) return null;
+    const currencies = new Set(rowResults.map((r) => r.rewardCurrencyName));
+    if (currencies.size !== 1) return null;
+    const points = rowResults.reduce((sum, r) => sum + r.bankPointsUsed, 0);
+    if (points <= 0) return null;
+    return { points, currency: rowResults[0].rewardCurrencyName };
+  }, [rowResults, hasConditionalBonus]);
+
+  // Published bank conversion caps we cannot verify against the user's own
+  // transfer history.
+  const capWarnings = useMemo(
+    () => Array.from(new Set(rowResults.map((r) => r.capWarning).filter(Boolean) as string[])),
+    [rowResults],
+  );
+  const capsHit = useMemo(
+    () => rowResults.filter((r) => r.capApplied),
+    [rowResults],
+  );
+
   return (
     <div className={`rounded-sm border bg-background p-6 ${hasApplicablePromo ? "border-ink" : "border-border"}`}>
       {hasApplicablePromo ? (
@@ -1287,8 +1359,13 @@ function ProgrammeBalanceCard({
               {formatInt(headlineTotal)}
             </p>
             <p className="mt-2 text-[12px] text-ink">
-              up to +{formatInt(programme.bonusTotal + programme.conditionalBonusTotal)} bonus {programme.programmeName}
+              {hasConditionalBonus ? "up to " : ""}+{formatInt(programme.bonusTotal + programme.conditionalBonusTotal)} bonus {programme.programmeName}
             </p>
+            {fullTransferBasis && (
+              <p className="mt-1 text-[11px] leading-relaxed text-ink/60">
+                {formatInt(headlineTotal)} {programme.programmeName} if all {formatInt(fullTransferBasis.points)} {fullTransferBasis.currency} are transferred to {programme.programmeName}.
+              </p>
+            )}
           </div>
         </div>
       ) : (
@@ -1338,7 +1415,7 @@ function ProgrammeBalanceCard({
               {hasConditionalBonus ? "Potential after an eligible registered transfer" : "Final promotional balance"}
             </dt>
             <dd className="border-t border-border pt-2 text-right font-medium text-ink">
-              up to {formatInt(headlineTotal)} {programme.programmeName}
+              {hasConditionalBonus ? "up to " : ""}{formatInt(headlineTotal)} {programme.programmeName}
             </dd>
           </>
         )}
@@ -1369,6 +1446,26 @@ function ProgrammeBalanceCard({
           {applicablePromos.map((p) => `${p.name} — valid until ${formatDate(p.endDate)}`).join(" · ")}
         </p>
       )}
+
+      {capsHit.length > 0 && (
+        <div className="mt-3 rounded-sm border border-ink/30 bg-sand/40 p-3 text-[12px] text-ink">
+          {capsHit.map((r) => (
+            <p key={`${r.entryId}-cap`} className="mt-1 first:mt-0">
+              {r.bankName} limits this conversion to {formatInt(r.capApplied!.limit)} {programme.programmeName}
+              {r.capApplied!.type === "campaign"
+                ? " per customer during a bonus campaign"
+                : r.capApplied!.type === "annual"
+                  ? " per customer per calendar year"
+                  : " per customer per month"}
+              . {formatInt(r.bankPointsRemaining)} {r.rewardCurrencyName} are shown as remaining and unconverted.
+            </p>
+          ))}
+        </div>
+      )}
+
+      {capWarnings.map((w) => (
+        <p key={w} className="mt-3 text-[11px] leading-relaxed text-ink/60">{w}</p>
+      ))}
 
       <AllianceInfo
         programmeId={programme.programmeId}
@@ -1478,8 +1575,9 @@ function ProgrammeDetails({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-ink hover:underline"
+                title={r.sourceName}
               >
-                Official source <ExternalLink className="h-3 w-3" />
+                Source: {sourceTypeLabel(r.sourceType)} <ExternalLink className="h-3 w-3" />
               </a>
             </p>
           </div>
@@ -2024,6 +2122,7 @@ function DestinationCard({
 
       <p className="mt-4 text-[11px] leading-relaxed text-ink/60">
         {isEnrich && "Malaysia Airlines-operated flight only. "}
+        {t.routingNote ? `${t.routingNote} ` : ""}
         Award-seat availability has not been checked.
         {state === "almost" && ` You are ${formatInt(shortfall)} points away from this target.`}
       </p>
@@ -2064,10 +2163,12 @@ function DestinationCard({
             <dd className="text-right text-ink">{tripLabelTitle}</dd>
             <dt className="text-ink/55">Travellers</dt>
             <dd className="text-right text-ink">{travellers}</dd>
-            <dt className="text-ink/55">Verified</dt>
+            <dt className="text-ink/55">Last verified</dt>
+            <dd className="text-right text-ink">{formatDate(t.source?.verifiedAt ?? t.verifiedOn)}</dd>
+            <dt className="text-ink/55">Source</dt>
             <dd className="text-right text-ink">
-              <a href={t.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:underline">
-                {formatDate(t.verifiedOn)} <ExternalLink className="h-3 w-3" />
+              <a href={t.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:underline" title={t.source?.sourceName}>
+                {sourceTypeLabel(t.source?.sourceType)} <ExternalLink className="h-3 w-3" />
               </a>
             </dd>
             {t.effectiveFrom && (
@@ -2078,6 +2179,7 @@ function DestinationCard({
             )}
           </dl>
           <p className="mt-3 text-[11px] text-ink/55">{t.taxesAndFeesNote}</p>
+          {t.source?.notes && <p className="mt-2 text-[11px] text-ink/55">{t.source.notes}</p>}
           {t.notes && <p className="mt-2 text-[11px] text-ink/55">{t.notes}</p>}
         </div>
       )}
