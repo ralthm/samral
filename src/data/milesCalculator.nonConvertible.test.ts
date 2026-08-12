@@ -85,7 +85,9 @@ describe("pipeline early exit", () => {
     expect(snap.processedEntryCount).toBe(0);
     expect(snap.results).toEqual([]);
     const enrich = snap.portfolio.find((p) => p.programmeId === "enrich");
-    expect(enrich?.totalMiles).toBe(80000);
+    expect(enrich?.existingBalance).toBe(80000);
+    expect(enrich?.transferredTotal).toBe(0);
+    expect(enrich?.potentialTotal).toBe(80000);
     expect(snap.entryContext.has("cashflo")).toBe(false);
   });
 
