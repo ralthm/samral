@@ -331,13 +331,13 @@ export const rewardProducts: RewardProduct[] = [
   { id: "mbb-treats-standard", bankId: "maybank", name: "Maybank TreatsPoints — General tier (20,000 → 1,000)", slug: "mbb-treats-standard", rewardCurrencyName: "TreatsPoints", active: true, displayOrder: 4 },
   { id: "mbb-treats-existing-only", bankId: "maybank", name: "Maybank TreatsPoints — existing balance only (myimpact)", slug: "mbb-treats-existing-only", rewardCurrencyName: "TreatsPoints (existing balance)", active: true, displayOrder: 5 },
   { id: "mbb-krisflyer-direct", bankId: "maybank", name: "Maybank direct KrisFlyer-earning cards", slug: "mbb-krisflyer-direct", rewardCurrencyName: "KrisFlyer miles (earned directly)", rewardType: "direct_airline_earn", directProgrammeId: "krisflyer", active: true, displayOrder: 6 },
-  { id: "mbb-cashback", bankId: "maybank", name: "Maybank cashback cards", slug: "mbb-cashback", rewardCurrencyName: "Cashback", active: true, displayOrder: 7 },
+  { id: "mbb-cashback", bankId: "maybank", name: "Maybank cashback cards", slug: "mbb-cashback", rewardCurrencyName: "Cashback", rewardType: "non_convertible", active: true, displayOrder: 7 },
   { id: "mbb-grabrewards", bankId: "maybank", name: "Maybank Grab — GrabRewards", slug: "mbb-grabrewards", rewardCurrencyName: "GrabRewards", active: true, displayOrder: 8 },
   { id: "mbb-shopee", bankId: "maybank", name: "Maybank Shopee — Shopee Coins", slug: "mbb-shopee", rewardCurrencyName: "Shopee Coins", active: true, displayOrder: 9 },
   { id: "mbb-legacy-unverified", bankId: "maybank", name: "Maybank legacy card — conversion pending verification", slug: "mbb-legacy-unverified", rewardCurrencyName: "Not currently calculable", active: true, displayOrder: 10 },
   // CIMB
   { id: "cimb-bonus", bankId: "cimb", name: "CIMB Bonus Points", slug: "cimb-bonus", rewardCurrencyName: "Bonus Points", active: true, displayOrder: 1 },
-  { id: "cimb-cashback", bankId: "cimb", name: "CIMB cashback / non-convertible cards", slug: "cimb-cashback", rewardCurrencyName: "Cashback", active: true, displayOrder: 2 },
+  { id: "cimb-cashback", bankId: "cimb", name: "CIMB cashback / non-convertible cards", slug: "cimb-cashback", rewardCurrencyName: "Cashback", rewardType: "non_convertible", active: true, displayOrder: 2 },
   // Alliance
   { id: "alliance-tbp", bankId: "alliance", name: "Alliance Three-year Bonus Points (TBP)", slug: "alliance-tbp", rewardCurrencyName: "TBP", active: true, displayOrder: 1 },
   // UOB — one currency (UNIRM), multiple entitlement tiers by card.
@@ -363,7 +363,7 @@ export const rewardProducts: RewardProduct[] = [
   { id: "ocbc-voyage", bankId: "ocbc", name: "OCBC Voyage Miles", slug: "ocbc-voyage", rewardCurrencyName: "Voyage Miles", active: true, displayOrder: 1 },
   { id: "ocbc-travel-dollar", bankId: "ocbc", name: "OCBC Travel$ (cash credit)", slug: "ocbc-travel-dollar", rewardCurrencyName: "Travel$", active: true, displayOrder: 2 },
   { id: "ocbc-ocbc-dollar", bankId: "ocbc", name: "OCBC$ (cash credit)", slug: "ocbc-ocbc-dollar", rewardCurrencyName: "OCBC$", active: true, displayOrder: 3 },
-  { id: "ocbc-cashback", bankId: "ocbc", name: "OCBC cashback / non-points cards", slug: "ocbc-cashback", rewardCurrencyName: "Cashback", active: true, displayOrder: 4 },
+  { id: "ocbc-cashback", bankId: "ocbc", name: "OCBC cashback / non-points cards", slug: "ocbc-cashback", rewardCurrencyName: "Cashback", rewardType: "non_convertible", active: true, displayOrder: 4 },
   // RHB — two live bank-side currencies. Many customers have been migrated to
   // LoyaltyPlus Points, but some card accounts still hold the legacy Loyalty
   // Points balance, so both are supported explicitly.
@@ -474,6 +474,7 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
   {
     id: "cg-mbb-grab",
     rewardProductId: "mbb-grabrewards",
+    rewardType: "non_convertible",
     name: "Maybank Grab Mastercard — GrabRewards",
     eligibleCards: ["Maybank Grab Mastercard Platinum Credit Card"],
     unverifiedNotice:
@@ -484,6 +485,7 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
   {
     id: "cg-mbb-shopee",
     rewardProductId: "mbb-shopee",
+    rewardType: "non_convertible",
     name: "Maybank Shopee Visa — Shopee Coins",
     eligibleCards: ["Maybank Shopee Visa Platinum Credit Card"],
     unverifiedNotice:
