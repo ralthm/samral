@@ -844,7 +844,9 @@ function EntryCard({
       {unverified && card && (
         <div role="note" data-testid="conversion-unverified-note" className="mt-4 rounded-sm border border-ink/30 bg-sand/40 p-4 text-[12px] leading-relaxed text-ink/80">
           <p className="text-[10px] uppercase tracking-[0.18em] text-ink/60">Not calculable yet</p>
-          <p className="mt-2 text-[13px] font-medium text-ink">Conversion not yet verified</p>
+          <p className="mt-2 text-[13px] font-medium text-ink">
+            {selectedGroup?.unverifiedHeadline ?? "Conversion not yet verified"}
+          </p>
           <p className="mt-1">
             {selectedGroup?.unverifiedNotice ??
               "Samral has not yet verified a current conversion route for this card, so we won’t estimate a transfer value."}
