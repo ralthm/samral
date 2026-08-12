@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { readTripContext, clearTripContext, TripContext } from "@/lib/tripContext";
-import { formatInt } from "@/lib/milesCalculator";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
-import TravellersInput from "@/components/TravellersInput";
+
+const DISCOVERY_CALL_URL = "https://cal.com/samral/discovery-call";
+const MILES_CALCULATOR_PATH = "/miles-calculator";
 
 const track = (event: string, payload: Record<string, unknown> = {}) => {
   try {
@@ -15,244 +15,334 @@ const track = (event: string, payload: Record<string, unknown> = {}) => {
   }
 };
 
-interface FormState {
-  departureDate: string;
-  returnDate: string;
-  flexibility: string;
-  travellers: number;
-  cabin: string;
-  destination: string;
-  loyaltyProgramme: string;
-  needsHotel: boolean;
-  accessibility: string;
-  name: string;
-  email: string;
-  phone: string;
-  notes: string;
-  consent: boolean;
-}
+const bookCall = (source: string) => {
+  track("plan_trip_book_call_clicked", { source });
+  const params = new URLSearchParams({ source: `plan_my_trip_${source}` });
+  window.open(`${DISCOVERY_CALL_URL}?${params.toString()}`, "_blank", "noopener,noreferrer");
+};
 
-const initialForm = (ctx: TripContext | null): FormState => ({
-  departureDate: "",
-  returnDate: "",
-  flexibility: "flexible-few-days",
-  travellers: ctx?.travellers ?? 1,
-  cabin: ctx?.cabin ?? "",
-  destination: ctx ? `${ctx.destinationName} (${ctx.destination})` : "",
-  loyaltyProgramme: ctx?.loyaltyProgrammeName ?? "",
-  needsHotel: false,
-  accessibility: "",
-  name: "",
-  email: "",
-  phone: "",
-  notes: "",
-  consent: false,
-});
+const goCalculator = (source: string) => {
+  track("plan_trip_calculator_clicked", { source });
+};
 
 export default function PlanMyTrip() {
-  const [ctx, setCtx] = useState<TripContext | null>(null);
-  const [form, setForm] = useState<FormState>(() => initialForm(null));
-  const [submitted, setSubmitted] = useState(false);
-  const [startedTracked, setStartedTracked] = useState(false);
-
   useEffect(() => {
-    document.title = "Plan a trip using your points | Samral";
-    const c = readTripContext();
-    setCtx(c);
-    setForm(initialForm(c));
-  }, []);
-
-  const update = <K extends keyof FormState>(key: K, value: FormState[K]) => {
-    if (!startedTracked) {
-      track("trip_planning_form_started");
-      setStartedTracked(true);
+    document.title = "Points Trip Planning | Samral";
+    const desc =
+      "Used the Samral Miles Calculator? Book a free 20-minute discovery call to talk through how to turn your points into the trip you want.";
+    let tag = document.querySelector('meta[name="description"]');
+    if (!tag) {
+      tag = document.createElement("meta");
+      tag.setAttribute("name", "description");
+      document.head.appendChild(tag);
     }
-    setForm((f) => ({ ...f, [key]: value }));
-  };
-
-  const canSubmit = useMemo(() =>
-    form.consent && form.name.trim().length > 1 && /.+@.+\..+/.test(form.email) && form.destination.trim().length > 0,
-  [form]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!canSubmit) return;
-    track("trip_planning_form_submitted", {
-      hasContext: !!ctx,
-      cabin: form.cabin || undefined,
-      programme: form.loyaltyProgramme || undefined,
-    });
-    setSubmitted(true);
-    clearTripContext();
-  };
+    tag.setAttribute("content", desc);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
-
-      <main className="mx-auto max-w-[880px] px-5 py-14 sm:px-6 md:py-20">
-        <p className="eyebrow text-ink/60">Trip planning</p>
-        <h1 className="mt-3 font-display text-4xl leading-[1.05] text-ink md:text-6xl">
-          Plan a trip using your points
-        </h1>
-        <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink/70">
-          Tell us what you&rsquo;re thinking about. We&rsquo;ll come back with the transfer route, practical redemption options and a booking plan — before you move any points.
-        </p>
-
-        {ctx && !submitted && (
-          <aside className="mt-8 rounded-sm border border-ink/25 bg-sand/50 p-5">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-ink/60">Selected from calculator</p>
-            <p className="mt-2 font-display text-2xl text-ink md:text-3xl">
-              {ctx.destinationName} · {ctx.cabin}
-            </p>
-            <dl className="mt-4 grid grid-cols-2 gap-y-1.5 text-[13px]">
-              <dt className="text-ink/60">Displayed target</dt>
-              <dd className="text-right text-ink">{formatInt(ctx.requiredPoints)} {ctx.loyaltyProgrammeName}</dd>
-              <dt className="text-ink/60">Your potential balance</dt>
-              <dd className="text-right text-ink">{formatInt(ctx.potentialProgrammeBalance)} {ctx.loyaltyProgrammeName}</dd>
-              <dt className="text-ink/60">Trip basis</dt>
-              <dd className="text-right text-ink">{ctx.tripType === "return" ? "Return" : "One way"} · {ctx.travellers} traveller{ctx.travellers === 1 ? "" : "s"}</dd>
-              {ctx.operatingAirline && (
-                <>
-                  <dt className="text-ink/60">Operating airline</dt>
-                  <dd className="text-right text-ink">{ctx.operatingAirline}</dd>
-                </>
-              )}
-            </dl>
-            <p className="mt-3 text-[11px] text-ink/55">
-              Points requirement shown does not indicate award-seat availability. Taxes, fees and surcharges may apply.
-            </p>
-          </aside>
-        )}
-
-        {submitted ? (
-          <div className="mt-10 rounded-sm border border-ink/25 bg-background p-8">
-            <h2 className="font-display text-3xl text-ink">Request received.</h2>
-            <p className="mt-3 text-[14px] leading-relaxed text-ink/75">
-              Thanks — we&rsquo;ll be in touch by email with a plan tailored to what you shared. Nothing has been transferred and no booking has been made.
-            </p>
-            <Link to="/miles-calculator" className="mt-6 inline-flex items-center gap-1.5 text-[13px] text-ink underline underline-offset-4">
-              Back to the calculator
-            </Link>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="mt-10 space-y-8">
-            <FormRow label="Destination">
-              <input
-                type="text"
-                value={form.destination}
-                onChange={(e) => update("destination", e.target.value)}
-                placeholder="City or airport"
-                className="input"
-                required
-              />
-            </FormRow>
-
-            <div className="grid gap-6 md:grid-cols-2">
-              <FormRow label="Preferred departure date">
-                <input type="date" value={form.departureDate} onChange={(e) => update("departureDate", e.target.value)} className="input" />
-              </FormRow>
-              <FormRow label="Preferred return date (optional)">
-                <input type="date" value={form.returnDate} onChange={(e) => update("returnDate", e.target.value)} className="input" />
-              </FormRow>
-            </div>
-
-            <FormRow label="Date flexibility">
-              <select value={form.flexibility} onChange={(e) => update("flexibility", e.target.value)} className="input">
-                <option value="exact">Exact dates only</option>
-                <option value="flexible-few-days">Flexible by a few days</option>
-                <option value="flexible-weeks">Flexible by a few weeks</option>
-                <option value="flexible-months">Flexible by a few months</option>
-              </select>
-            </FormRow>
-
-            <div className="grid gap-6 md:grid-cols-3">
-              <FormRow label="Travellers">
-                <TravellersInput value={form.travellers} onChange={(n) => update("travellers", n)} className="input" />
-              </FormRow>
-              <FormRow label="Cabin">
-                <select value={form.cabin} onChange={(e) => update("cabin", e.target.value)} className="input">
-                  <option value="">No preference</option>
-                  <option>Economy</option>
-                  <option>Premium Economy</option>
-                  <option>Business</option>
-                  <option>First or Business Suite</option>
-                </select>
-              </FormRow>
-              <FormRow label="Loyalty programme">
-                <input type="text" value={form.loyaltyProgramme} onChange={(e) => update("loyaltyProgramme", e.target.value)} placeholder="e.g. Enrich" className="input" />
-              </FormRow>
-            </div>
-
-            <FormRow label="Do you also need hotel planning?">
-              <label className="inline-flex items-center gap-2 text-[13px] text-ink">
-                <input type="checkbox" checked={form.needsHotel} onChange={(e) => update("needsHotel", e.target.checked)} />
-                Yes, include hotel suggestions
-              </label>
-            </FormRow>
-
-            <FormRow label="Accessibility or important travel requirements (optional)">
-              <textarea value={form.accessibility} onChange={(e) => update("accessibility", e.target.value)} rows={2} className="input" />
-            </FormRow>
-
-            <div className="grid gap-6 md:grid-cols-2">
-              <FormRow label="Your name">
-                <input type="text" value={form.name} onChange={(e) => update("name", e.target.value)} className="input" required />
-              </FormRow>
-              <FormRow label="Email">
-                <input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} className="input" required />
-              </FormRow>
-            </div>
-
-            <FormRow label="Phone (optional)">
-              <input type="tel" value={form.phone} onChange={(e) => update("phone", e.target.value)} className="input" />
-            </FormRow>
-
-            <FormRow label="Notes">
-              <textarea value={form.notes} onChange={(e) => update("notes", e.target.value)} rows={4} className="input" />
-            </FormRow>
-
-            <label className="flex items-start gap-3 text-[12px] leading-relaxed text-ink/70">
-              <input type="checkbox" checked={form.consent} onChange={(e) => update("consent", e.target.checked)} className="mt-0.5" />
-              <span>
-                I understand that Samral does not guarantee award availability or bookings, and that this request is for planning support only. Samral may contact me by email about this enquiry.
-              </span>
-            </label>
-
-            <button
-              type="submit"
-              disabled={!canSubmit}
-              className="inline-flex w-full items-center justify-center rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 md:w-auto md:min-w-[320px]"
-            >
-              Submit my trip-planning request
-            </button>
-          </form>
-        )}
-      </main>
-
+      <Hero />
+      <StartWithCalculator />
+      <WhenToBook />
+      <WhatHappens />
+      <MoreWork />
+      <ImportantInfo />
+      <FinalCTA />
       <SiteFooter />
-
-      <style>{`
-        .input {
-          width: 100%;
-          border: 1px solid hsl(var(--border));
-          background: hsl(var(--background));
-          padding: 0.65rem 0.75rem;
-          font-size: 14px;
-          color: hsl(var(--ink));
-          border-radius: 2px;
-        }
-        .input:focus { outline: none; border-color: hsl(var(--ink)); }
-      `}</style>
     </div>
   );
 }
 
-function FormRow({ label, children }: { label: string; children: React.ReactNode }) {
+/* ---------- Hero ---------- */
+
+function Hero() {
   return (
-    <div>
-      <label className="block text-[12px] font-medium uppercase tracking-[0.14em] text-ink/70">{label}</label>
-      <div className="mt-2">{children}</div>
-    </div>
+    <section className="border-b border-border bg-background">
+      <div className="mx-auto grid w-full max-w-[1440px] gap-12 px-5 py-16 sm:px-6 md:grid-cols-2 md:items-center md:gap-16 md:px-12 md:py-24">
+        <div>
+          <p className="eyebrow text-ink/60">Points Trip Planning</p>
+          <h1 className="mt-4 font-display text-4xl leading-[1.05] text-ink md:text-6xl">
+            You have the points. Now let&rsquo;s figure out the trip.
+          </h1>
+          <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-ink/70">
+            Already checked your points with the Samral Miles Calculator? If you&rsquo;re still unsure how to turn
+            them into the trip you want, book a free 20-minute discovery call with Samral.
+          </p>
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <button
+              type="button"
+              onClick={() => bookCall("hero")}
+              className="inline-flex items-center justify-center rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
+            >
+              Book a free 20-minute call
+            </button>
+            <Link
+              to={MILES_CALCULATOR_PATH}
+              onClick={() => goCalculator("hero")}
+              className="inline-flex items-center justify-center rounded-sm border border-ink/70 px-8 py-4 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-background"
+            >
+              Check my points first
+            </Link>
+          </div>
+
+          <p className="mt-4 text-[12px] text-ink/55">
+            Please use the Miles Calculator before booking your call.
+          </p>
+        </div>
+
+        {/* Flow visual */}
+        <div className="md:pl-8">
+          <FlowDiagram />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FlowDiagram() {
+  const steps = [
+    { n: "1", title: "Calculate", sub: "Check your points with the Miles Calculator" },
+    { n: "2", title: "Discover", sub: "See what your points can potentially unlock" },
+    { n: "3", title: "Talk", sub: "Book a free 20-minute discovery call" },
+  ];
+  return (
+    <ol className="space-y-3">
+      {steps.map((s) => (
+        <li key={s.n} className="flex items-start gap-4">
+          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-sm border border-ink/25 font-display text-2xl text-ink">
+            {s.n}
+          </div>
+          <div className="pt-1.5">
+            <p className="font-display text-xl text-ink">{s.title}</p>
+            <p className="mt-0.5 text-[13px] text-ink/65">{s.sub}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/* ---------- Section 2 — Start with the calculator ---------- */
+
+function StartWithCalculator() {
+  return (
+    <section className="bg-sand/40">
+      <div className="mx-auto max-w-[920px] px-5 py-16 sm:px-6 md:py-24">
+        <h2 className="font-display text-3xl leading-[1.1] text-ink md:text-4xl">
+          First, see what your points can already unlock
+        </h2>
+        <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-ink/75">
+          <p>
+            The Samral Miles Calculator is designed to answer the first questions for you &mdash; including what your
+            bank points can convert into and the destinations your available miles may potentially cover.
+          </p>
+          <p>
+            If the calculator gives you everything you need, there&rsquo;s no reason to book a call.
+          </p>
+          <p>
+            But if you have the points and are still unsure how to actually use them for the trip you want, that&rsquo;s
+            where the discovery call comes in.
+          </p>
+        </div>
+        <Link
+          to={MILES_CALCULATOR_PATH}
+          onClick={() => goCalculator("start_section")}
+          className="mt-8 inline-flex items-center justify-center rounded-sm border border-ink/70 px-8 py-3.5 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-background"
+        >
+          Use the Miles Calculator
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Section 3 — When to book a call ---------- */
+
+const WHEN_EXAMPLES = [
+  "I have enough points, but I can\u2019t find suitable award seats",
+  "I\u2019m not sure which loyalty programme or transfer route to use",
+  "I found several options and don\u2019t know which makes the most sense",
+  "I\u2019m unsure whether I should transfer my bank points yet",
+  "I understand the points requirement, but I\u2019m struggling with the actual redemption process",
+  "My dates, routing or number of travellers make the booking complicated",
+];
+
+function WhenToBook() {
+  return (
+    <section className="border-t border-border bg-background">
+      <div className="mx-auto max-w-[1440px] px-5 py-16 sm:px-6 md:px-12 md:py-24">
+        <div className="grid gap-12 md:grid-cols-12 md:gap-16">
+          <div className="md:col-span-5">
+            <h2 className="font-display text-3xl leading-[1.1] text-ink md:text-4xl">
+              The calculator says it&rsquo;s possible. But you&rsquo;re not sure what to do next.
+            </h2>
+            <p className="mt-6 text-[15px] leading-relaxed text-ink/70">
+              If that sounds familiar, let&rsquo;s talk through it.
+            </p>
+            <button
+              type="button"
+              onClick={() => bookCall("when_section")}
+              className="mt-6 inline-flex items-center justify-center rounded-sm bg-ink px-8 py-3.5 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
+            >
+              Book my discovery call
+            </button>
+          </div>
+
+          <ul className="md:col-span-7 md:pt-2">
+            {WHEN_EXAMPLES.map((ex) => (
+              <li
+                key={ex}
+                className="flex items-start gap-3 border-b border-border py-4 text-[14px] text-ink/80 first:pt-0"
+              >
+                <span aria-hidden className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-ink/40" />
+                <span>{ex}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Section 4 — What happens on the call ---------- */
+
+const CALL_STEPS = [
+  {
+    n: "1",
+    title: "You check your points first",
+    body: "Use the Samral Miles Calculator before the call so you already understand your potential balances and travel options.",
+  },
+  {
+    n: "2",
+    title: "Tell us where you\u2019re stuck",
+    body: "Your booking form gives Samral the basic context &mdash; where you want to go, when you want to travel, how many people are travelling, what points or miles you have, and what you are having difficulty with.",
+  },
+  {
+    n: "3",
+    title: "We talk it through",
+    body: "During the 20-minute call, we\u2019ll discuss your situation, what is preventing you from making the redemption yourself, and what your practical next step may be.",
+  },
+];
+
+function WhatHappens() {
+  return (
+    <section className="bg-sand/40">
+      <div className="mx-auto max-w-[1440px] px-5 py-16 sm:px-6 md:px-12 md:py-24">
+        <h2 className="max-w-2xl font-display text-3xl leading-[1.1] text-ink md:text-4xl">
+          20 minutes. Your trip, your points, your roadblock.
+        </h2>
+        <div className="mt-10 grid gap-10 md:grid-cols-3">
+          {CALL_STEPS.map((s) => (
+            <div key={s.n} className="border-t border-ink/20 pt-5">
+              <p className="font-display text-5xl text-ink/30">{s.n}</p>
+              <p className="mt-3 font-display text-xl text-ink">{s.title}</p>
+              <p
+                className="mt-2 text-[13px] leading-relaxed text-ink/70"
+                dangerouslySetInnerHTML={{ __html: s.body }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Section 5 — If your trip needs more work ---------- */
+
+function MoreWork() {
+  return (
+    <section className="border-t border-border bg-background">
+      <div className="mx-auto max-w-[920px] px-5 py-16 sm:px-6 md:py-24">
+        <h2 className="font-display text-3xl leading-[1.1] text-ink md:text-4xl">
+          Some bookings need more than 20 minutes.
+        </h2>
+        <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-ink/75">
+          <p>
+            Award travel can become complicated quickly &mdash; especially when availability is limited, dates are
+            fixed, several travellers are involved, multiple loyalty programmes need to be compared, or alternative
+            routings need to be researched.
+          </p>
+          <p>
+            The discovery call helps us understand where you&rsquo;re stuck. If your trip requires deeper research or
+            hands-on booking support, we can discuss whether additional Samral assistance would be useful.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => bookCall("more_work_section")}
+          className="mt-8 inline-flex items-center justify-center rounded-sm border border-ink/70 px-8 py-3.5 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-background"
+        >
+          Start with a free discovery call
+        </button>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Section 6 — Important information ---------- */
+
+const IMPORTANT_ITEMS = [
+  "Points requirements shown by the Samral Miles Calculator do not indicate live award-seat availability.",
+  "Award availability can change.",
+  "Taxes, fees and carrier surcharges may apply to award bookings.",
+  "Do not transfer points solely because a calculator result shows a possible redemption. Transfers may be irreversible and availability should be considered first.",
+  "The free 20-minute call does not include pre-call or post-call itinerary research, a written redemption plan or guaranteed booking assistance.",
+  "Samral does not guarantee award availability or successful bookings.",
+];
+
+function ImportantInfo() {
+  return (
+    <section className="bg-sand/40">
+      <div className="mx-auto max-w-[920px] px-5 py-14 sm:px-6 md:py-20">
+        <h2 className="font-display text-2xl text-ink md:text-3xl">Before you book</h2>
+        <ul className="mt-6 space-y-3">
+          {IMPORTANT_ITEMS.map((item) => (
+            <li
+              key={item}
+              className="flex items-start gap-3 border-t border-border pt-3 text-[13px] leading-relaxed text-ink/65"
+            >
+              <span aria-hidden className="mt-1.5 h-1 w-3 flex-shrink-0 bg-ink/30" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Final CTA ---------- */
+
+function FinalCTA() {
+  return (
+    <section className="border-t border-border bg-ink text-background">
+      <div className="mx-auto max-w-[920px] px-5 py-20 text-center sm:px-6 md:py-28">
+        <h2 className="font-display text-3xl leading-[1.1] md:text-4xl">Already checked your points?</h2>
+        <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-background/70">
+          If you know what your points can potentially unlock but still need help figuring out how to make the trip
+          happen, book a 20-minute discovery call.
+        </p>
+        <div className="mt-8 flex flex-col items-center gap-4">
+          <button
+            type="button"
+            onClick={() => bookCall("final_cta")}
+            className="inline-flex items-center justify-center rounded-sm bg-background px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
+          >
+            Book a free 20-minute call
+          </button>
+          <Link
+            to={MILES_CALCULATOR_PATH}
+            onClick={() => goCalculator("final_cta")}
+            className="text-[13px] text-background/70 underline underline-offset-4 hover:text-background"
+          >
+            Haven&rsquo;t checked yet? Use the Miles Calculator &rarr;
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 }
