@@ -974,7 +974,7 @@ const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
     <div ref={ref} className="mt-6 rounded-sm border border-border bg-background">
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => setOpen(!open)}
         aria-expanded={open}
         className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
       >
