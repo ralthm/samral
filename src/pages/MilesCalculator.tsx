@@ -328,22 +328,51 @@ function CalculatorFlow() {
     return { results, portfolio, entryContext };
   }, [entries, existingRows]);
 
+  /**
+   * Inputs that can actually contribute to a loyalty-programme balance.
+   * Derived directly from state — no effects, no mirrored state.
+   */
+  const convertibleEntries = useMemo(
+    () => entries.filter((e) => {
+      const card = getCardById(e.cardId);
+      if (isNonConvertibleCard(card)) return false;
+      if (isDirectEarnCard(card)) return false;
+      return !!(e.bankId || e.cardId || e.rawInput.trim());
+    }),
+    [entries],
+  );
+  const hasExistingLoyaltyBalance = existingRows.some(
+    (r) => !!r.programmeId && parseIntSafe(r.rawInput) > 0,
+  );
+  const hasCalculableInput = convertibleEntries.length > 0 || hasExistingLoyaltyBalance;
+
   const handleCalculate = () => {
     // Validate
     const errs: string[] = [];
     const usableEntries = entries.filter((e) => e.bankId || e.cardId || e.rawInput.trim());
 
-    if (usableEntries.length === 0) {
-      errs.push("Add at least one bank balance to calculate.");
+    // Guard clause: nothing valid to calculate — never start the pipeline.
+    if (!hasCalculableInput) {
+      setErrors([
+        usableEntries.length === 0
+          ? "Add at least one bank balance to calculate."
+          : "Add another points-earning card or an existing loyalty balance to calculate.",
+      ]);
+      setState("error");
+      return;
     }
+
     for (const e of usableEntries) {
       if (!e.bankId) errs.push("Select a bank for every entry.");
       else if (e.notFound) errs.push("We need to verify your unlisted card before calculating. Submit it for verification or pick another card.");
       else if (!e.cardId) errs.push("Select the exact credit card for every entry.");
-      if (isDirectEarnCard(getCardById(e.cardId))) continue;
+      const entryCard = getCardById(e.cardId);
+      // Non-convertible and direct-earning cards carry no bank balance to validate.
+      if (isNonConvertibleCard(entryCard) || isDirectEarnCard(entryCard)) continue;
       const pts = parseIntSafe(e.rawInput);
       if (!Number.isFinite(pts) || pts <= 0) errs.push("Enter a valid points balance greater than zero.");
     }
+
     for (const r of existingRows) {
       if (!r.programmeId) errs.push("Choose a programme for every existing balance.");
       const pts = parseIntSafe(r.rawInput);
