@@ -59,6 +59,7 @@ import { AllianceBadge, AllianceInfo } from "@/components/AllianceInfo";
 
 
 const STRATEGY_URL = "/points-strategy";
+const TRIP_PLANNING_DISCOVERY_URL = "https://cal.com/samral/trip-planning-discovery-call-20-mins";
 const PRIORITY_PROGRAMMES = ["enrich", "krisflyer", "asia-miles"];
 
 type UiState = "idle" | "calculated" | "stale" | "error";
@@ -362,6 +363,7 @@ function CalculatorFlow() {
       setState("calculated");
       setIsCalculating(false);
       track("calculation_completed", { programmes: next.portfolio.length });
+      window.dispatchEvent(new CustomEvent("samral:calculation-completed"));
 
       requestAnimationFrame(() => {
         const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
