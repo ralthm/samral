@@ -523,7 +523,7 @@ const UNKNOWN_CURRENCIES = [
 ];
 
 function EntryCard({
-  entry, index, canRemove, onChange, onRemove, onFirstValid,
+  entry, index, canRemove, onChange, onRemove, onFirstValid, onAddProgrammeBalance,
 }: {
   entry: Entry;
   index: number;
@@ -531,12 +531,19 @@ function EntryCard({
   onChange: (next: Entry) => void;
   onRemove: () => void;
   onFirstValid: () => void;
+  onAddProgrammeBalance: (programmeId: string) => void;
 }) {
   const bank = entry.bankId ? getBankById(entry.bankId) : undefined;
   const card = entry.cardId ? getCardById(entry.cardId) : undefined;
   const currency = card ? getRewardCurrencyForCard(card) : undefined;
   const selectedGroup = card ? getCardGroupById(card.cardGroupId) : undefined;
   const rulesForSelected = card ? getPublicRulesForCardGroup(card.cardGroupId) : [];
+  // Direct airline-earning cards never take a bank-points balance.
+  const directEarn = isDirectEarnCard(card);
+  const directProgrammeId = card ? getDirectEarnProgrammeId(card.cardGroupId) : undefined;
+  const directProgramme = directProgrammeId ? getProgrammeById(directProgrammeId) : undefined;
+  const directProgrammeName = directProgramme?.name ?? "airline";
+  const directEarnRates = getDirectEarnRates(card);
   const hasNoRules = !!card && rulesForSelected.length === 0;
   const rateUnconfirmed =
     card?.status === "rate_unconfirmed" ||
@@ -560,6 +567,12 @@ function EntryCard({
     ? "Enter whole numbers only (commas are fine)."
     : null;
 
+  // Never carry a stale bank balance into a direct-earning card.
+  useEffect(() => {
+    if (directEarn && entry.rawInput) onChange({ ...entry, rawInput: "" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [directEarn, entry.rawInput]);
+
   const validReported = useRef(false);
   useEffect(() => {
     if (!validReported.current && entry.cardId && !rateUnconfirmed && pointsValue > 0) {
@@ -575,6 +588,7 @@ function EntryCard({
   const pickCard = (c: Card) => {
     onChange({
       ...entry,
+      rawInput: isDirectEarnCard(c) ? "" : entry.rawInput,
       cardId: c.id,
       cardGroupId: c.cardGroupId,
       notFound: false,
@@ -705,37 +719,41 @@ function EntryCard({
           )}
           {(card || entry.notFound) && (
             <p className="mt-2 text-[11px] uppercase tracking-[0.14em] text-ink/55">
-              Rewards currency:{" "}
+              {directEarn ? "Rewards type: " : "Rewards currency: "}
               <span className="normal-case tracking-normal text-ink/80">
                 {entry.notFound
                   ? (entry.unknown?.currency || "to be confirmed")
-                  : (currency?.currencyName ?? "—")}
+                  : directEarn
+                    ? `Direct ${directProgrammeName} earning`
+                    : (currency?.currencyName ?? "—")}
               </span>
             </p>
           )}
         </Field>
 
-        <Field label={`${currencyLabel} balance`} htmlFor={`points-${entry.id}`}>
-          <input
-            id={`points-${entry.id}`}
-            type="text"
-            inputMode="numeric"
-            autoComplete="off"
-            placeholder="e.g. 163,000"
-            value={entry.rawInput}
-            onChange={(e) => onChange({ ...entry, rawInput: e.target.value })}
-            onBlur={() => {
-              const n = parseIntSafe(entry.rawInput);
-              if (Number.isFinite(n) && n > 0) onChange({ ...entry, rawInput: formatInt(n) });
-            }}
-            aria-invalid={!!pointsError}
-            aria-describedby={pointsError ? `points-err-${entry.id}` : undefined}
-            className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
-          />
-          {pointsError && (
-            <p id={`points-err-${entry.id}`} className="mt-2 text-[12px] text-destructive">{pointsError}</p>
-          )}
-        </Field>
+        {!directEarn && (
+          <Field label={`${currencyLabel} balance`} htmlFor={`points-${entry.id}`}>
+            <input
+              id={`points-${entry.id}`}
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              placeholder="e.g. 163,000"
+              value={entry.rawInput}
+              onChange={(e) => onChange({ ...entry, rawInput: e.target.value })}
+              onBlur={() => {
+                const n = parseIntSafe(entry.rawInput);
+                if (Number.isFinite(n) && n > 0) onChange({ ...entry, rawInput: formatInt(n) });
+              }}
+              aria-invalid={!!pointsError}
+              aria-describedby={pointsError ? `points-err-${entry.id}` : undefined}
+              className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+            />
+            {pointsError && (
+              <p id={`points-err-${entry.id}`} className="mt-2 text-[12px] text-destructive">{pointsError}</p>
+            )}
+          </Field>
+        )}
       </div>
 
       {entry.notFound && (
@@ -749,7 +767,42 @@ function EntryCard({
         />
       )}
 
-      {rateUnconfirmed && card && (
+      {directEarn && card && (
+        <div role="note" className="mt-4 rounded-sm border border-ink/30 bg-sand/40 p-4 text-[12px] leading-relaxed text-ink/80">
+          <p className="text-[10px] uppercase tracking-[0.18em] text-ink/60">Direct airline-earning card</p>
+          <p className="mt-2 text-[13px] text-ink">
+            This card earns {directProgrammeName} Points directly into your {directProgrammeName} account.
+            There is no bank-points balance to transfer. Add your current {directProgrammeName} balance under Step&nbsp;2.
+          </p>
+          {directEarnRates.length > 0 && (
+            <div className="mt-3">
+              <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">Current earning rates</p>
+              <ul className="mt-2 divide-y divide-border border-y border-border">
+                {directEarnRates.map((r) => (
+                  <li key={r.category} className="flex items-baseline justify-between gap-4 py-1.5">
+                    <span className="text-ink/70">{r.category}</span>
+                    <span className="text-ink">{r.rate}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-[11px] text-ink/55">
+                Earn rates are reference information only. They are never used to estimate your balance.
+              </p>
+            </div>
+          )}
+          {directProgrammeId && (
+            <button
+              type="button"
+              onClick={() => onAddProgrammeBalance(directProgrammeId)}
+              className="mt-4 inline-flex items-center gap-2 rounded-sm border border-ink px-4 py-2.5 text-[13px] text-ink transition-colors hover:bg-ink hover:text-background"
+            >
+              <Plus className="h-3.5 w-3.5" /> Add my {directProgrammeName} balance
+            </button>
+          )}
+        </div>
+      )}
+
+      {rateUnconfirmed && !directEarn && card && (
         <div role="note" className="mt-3 rounded-sm border border-ink/30 bg-background p-3 text-[12px] leading-relaxed text-ink/80">
           <p className="font-medium text-ink">
             {card.status === "direct_airline"
