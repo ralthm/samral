@@ -38,8 +38,13 @@ export interface Bank {
  * - `direct_airline_earn`: spend credits the airline/loyalty programme directly.
  *   There is no bank-side balance, no conversion block, no leftover points and
  *   no transfer promotion. The customer's real balance is entered in Step 2.
+ * - `non_convertible`: cashback, merchant coins or other rewards that Samral
+ *   does not convert into any airline or hotel programme. These cards are an
+ *   early-exit state: they never enter conversion, promotion, reachability,
+ *   redemption or leftover calculations.
  */
-export type RewardType = "transferable_bank_points" | "direct_airline_earn";
+export type RewardType = "transferable_bank_points" | "direct_airline_earn" | "non_convertible";
+
 
 export interface EarnRate {
   /** Spend category as published by the issuer. */
