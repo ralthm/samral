@@ -1111,6 +1111,18 @@ function ResultsDashboard({
   );
 }
 
+/** Human label for a source-provenance type. Distinguishes an official
+ * published source from a verified current award reference. */
+function sourceTypeLabel(t?: string): string {
+  switch (t) {
+    case "official_bank": return "official bank source";
+    case "official_loyalty_programme": return "official programme source";
+    case "official_airline": return "official airline source";
+    case "verified_secondary": return "verified award reference";
+    default: return "official source";
+  }
+}
+
 /* ---------- Promotion helpers ---------- */
 
 function promotionRecord(id: string) {
@@ -1563,8 +1575,9 @@ function ProgrammeDetails({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-ink hover:underline"
+                title={r.sourceName}
               >
-                Official source <ExternalLink className="h-3 w-3" />
+                Source: {sourceTypeLabel(r.sourceType)} <ExternalLink className="h-3 w-3" />
               </a>
             </p>
           </div>
@@ -2109,6 +2122,7 @@ function DestinationCard({
 
       <p className="mt-4 text-[11px] leading-relaxed text-ink/60">
         {isEnrich && "Malaysia Airlines-operated flight only. "}
+        {t.routingNote ? `${t.routingNote} ` : ""}
         Award-seat availability has not been checked.
         {state === "almost" && ` You are ${formatInt(shortfall)} points away from this target.`}
       </p>
@@ -2149,10 +2163,12 @@ function DestinationCard({
             <dd className="text-right text-ink">{tripLabelTitle}</dd>
             <dt className="text-ink/55">Travellers</dt>
             <dd className="text-right text-ink">{travellers}</dd>
-            <dt className="text-ink/55">Verified</dt>
+            <dt className="text-ink/55">Last verified</dt>
+            <dd className="text-right text-ink">{formatDate(t.source?.verifiedAt ?? t.verifiedOn)}</dd>
+            <dt className="text-ink/55">Source</dt>
             <dd className="text-right text-ink">
-              <a href={t.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:underline">
-                {formatDate(t.verifiedOn)} <ExternalLink className="h-3 w-3" />
+              <a href={t.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:underline" title={t.source?.sourceName}>
+                {sourceTypeLabel(t.source?.sourceType)} <ExternalLink className="h-3 w-3" />
               </a>
             </dd>
             {t.effectiveFrom && (
@@ -2163,6 +2179,7 @@ function DestinationCard({
             )}
           </dl>
           <p className="mt-3 text-[11px] text-ink/55">{t.taxesAndFeesNote}</p>
+          {t.source?.notes && <p className="mt-2 text-[11px] text-ink/55">{t.source.notes}</p>}
           {t.notes && <p className="mt-2 text-[11px] text-ink/55">{t.notes}</p>}
         </div>
       )}
