@@ -325,8 +325,13 @@ function CalculatorFlow() {
       else if (e.notFound) errs.push("We need to verify your unlisted card before calculating. Submit it for verification or pick another card.");
       else if (!e.cardId) errs.push("Select the exact credit card for every entry.");
       const entryCard = getCardById(e.cardId);
-      // Non-convertible and direct-earning cards carry no bank balance to validate.
-      if (isNonConvertibleCard(entryCard) || isDirectEarnCard(entryCard)) continue;
+      // Non-convertible, unverified and direct-earning cards carry no bank
+      // balance to validate — they are excluded from calculation entirely.
+      if (
+        isNonConvertibleCard(entryCard) ||
+        isDirectEarnCard(entryCard) ||
+        isConversionUnverifiedCard(entryCard)
+      ) continue;
       const pts = parseIntSafe(e.rawInput);
       if (!Number.isFinite(pts) || pts <= 0) errs.push("Enter a valid points balance greater than zero.");
     }
