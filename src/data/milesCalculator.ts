@@ -342,6 +342,7 @@ export const rewardProducts: RewardProduct[] = [
   { id: "alliance-tbp", bankId: "alliance", name: "Alliance Three-year Bonus Points (TBP)", slug: "alliance-tbp", rewardCurrencyName: "TBP", active: true, displayOrder: 1 },
   // UOB — one currency (UNIRM), multiple entitlement tiers by card.
   { id: "uob-unirm", bankId: "uob", name: "UOB UNIRinggit (UNIRM)", slug: "uob-unirm", rewardCurrencyName: "UNIRM", active: true, displayOrder: 1 },
+  { id: "uob-cashback", bankId: "uob", name: "UOB cashback / non-points cards", slug: "uob-cashback", rewardCurrencyName: "Cashback", rewardType: "non_convertible", active: true, displayOrder: 2 },
   // HSBC
   { id: "hsbc-rewards", bankId: "hsbc", name: "HSBC Reward Points — TravelOne", slug: "hsbc-rewards", rewardCurrencyName: "HSBC Reward Points", active: true, displayOrder: 1 },
   // Hong Leong
@@ -606,6 +607,37 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     eligibleCards: ["UOB PRVI Miles Elite Card"],
     active: true,
     displayOrder: 5,
+  },
+  {
+    id: "cg-uob-unirm-unverified",
+    rewardProductId: "uob-unirm",
+    name: "UOB UNIRM card — air-mile redemption supported, rate not yet verified",
+    description:
+      "Air-mile redemption supported; exact rate not yet verified. These cards earn UNIRinggit (UNIRM) and UOB Rewards+ lists air miles as a redemption option, but UOB Malaysia does not publish a current card-specific UNIRM-to-miles ratio for them.",
+    eligibleCards: [
+      "UOB PRVI Miles Card",
+      "UOB World Mastercard",
+      "UOB EVOL Card",
+      "UOB Lady's Card",
+      "UOB Preferred Platinum Visa",
+      "UOB Lazada Card",
+      "UOB Basic Card",
+    ],
+    unverifiedNotice:
+      "Air-mile redemption appears to be supported through UOB Rewards+, but Samral has not yet verified the current conversion rate for this card.",
+    active: true,
+    displayOrder: 6,
+  },
+  {
+    id: "cg-uob-cashback",
+    rewardProductId: "uob-cashback",
+    rewardType: "non_convertible",
+    name: "UOB cashback card — no convertible rewards currency",
+    eligibleCards: ["UOB ONE Card", "UOB YOLO / Simple Card"],
+    unverifiedNotice:
+      "This card earns cashback rather than UNIRinggit (UNIRM), so there is no rewards currency to convert into an airline or hotel programme.",
+    active: true,
+    displayOrder: 7,
   },
 
   // ------- HSBC -------
@@ -1388,20 +1420,20 @@ export const cards: Card[] = [
 
 
   // ---------- UOB ----------
-  mkCard("uob-metal", "uob", "UOB Visa Infinite Metal Card", "cg-uob-metal", { aliases: ["Visa Infinite Metal", "UOB Metal"] }),
-  mkCard("uob-privilege-vi", "uob", "UOB Privilege Banking Visa Infinite Card", "cg-uob-privilege", { aliases: ["Privilege Banking Visa Infinite"] }),
-  mkCard("uob-visa-infinite", "uob", "UOB Visa Infinite Card", "cg-uob-visa-infinite", { aliases: ["Visa Infinite"] }),
-  mkCard("uob-prvi-elite", "uob", "UOB PRVI Miles Elite Card", "cg-uob-prvi-elite", { aliases: ["PRVI Miles Elite", "PRVI Elite"] }),
+  mkCard("uob-metal", "uob", "UOB Visa Infinite Metal Card", "cg-uob-metal", { aliases: ["Visa Infinite Metal", "UOB Metal"], officialSourceUrl: "https://www.uob.com.my/personal/cards/rewards/uniringgit.page", lastVerifiedDate: "2026-08-12" }),
+  mkCard("uob-privilege-vi", "uob", "UOB Privilege Banking Visa Infinite Card", "cg-uob-privilege", { aliases: ["Privilege Banking Visa Infinite"], officialSourceUrl: "https://www.uob.com.my/personal/cards/rewards/uniringgit.page", lastVerifiedDate: "2026-08-12" }),
+  mkCard("uob-visa-infinite", "uob", "UOB Visa Infinite Card", "cg-uob-visa-infinite", { aliases: ["Visa Infinite"], officialSourceUrl: "https://www.uob.com.my/personal/cards/rewards/uniringgit.page", lastVerifiedDate: "2026-08-12" }),
+  mkCard("uob-prvi-elite", "uob", "UOB PRVI Miles Elite Card", "cg-uob-prvi-elite", { aliases: ["PRVI Miles Elite", "PRVI Elite"], officialSourceUrl: "https://www.uob.com.my/personal/cards/rewards/uniringgit.page", lastVerifiedDate: "2026-08-12" }),
   mkCard("uob-zenith", "uob", "UOB Zenith Mastercard", "cg-uob-zenith", { aliases: ["Zenith"] }),
-  mkCard("uob-prvi", "uob", "UOB PRVI Miles Card", "", { status: "rate_pending_verification", aliases: ["PRVI Miles", "PRVI Miles Card"] }),
-  mkCard("uob-world-mc", "uob", "UOB World Mastercard", "", { status: "rate_pending_verification" }),
-  mkCard("uob-one", "uob", "UOB ONE Card", "", { status: "rate_pending_verification" }),
-  mkCard("uob-evol", "uob", "UOB EVOL Card", "", { status: "rate_pending_verification" }),
-  mkCard("uob-ladys", "uob", "UOB Lady's Card", "", { status: "rate_pending_verification" }),
-  mkCard("uob-preferred", "uob", "UOB Preferred Platinum Visa", "", { status: "rate_pending_verification" }),
-  mkCard("uob-lazada", "uob", "UOB Lazada Card", "", { status: "rate_pending_verification" }),
-  mkCard("uob-simple", "uob", "UOB YOLO / Simple Card", "", { status: "rate_pending_verification" }),
-  mkCard("uob-basic", "uob", "UOB Basic Card", "", { status: "rate_pending_verification" }),
+  mkCard("uob-prvi", "uob", "UOB PRVI Miles Card", "cg-uob-unirm-unverified", { status: "rate_pending_verification", aliases: ["PRVI Miles", "PRVI Miles Card"], officialSourceUrl: "https://www.uob.com.my/personal/rewards/index.page", lastVerifiedDate: "2026-08-12" }),
+  mkCard("uob-world-mc", "uob", "UOB World Mastercard", "cg-uob-unirm-unverified", { status: "rate_pending_verification", officialSourceUrl: "https://www.uob.com.my/personal/rewards/index.page", lastVerifiedDate: "2026-08-12" }),
+  mkCard("uob-one", "uob", "UOB ONE Card", "cg-uob-cashback", { status: "cashback_only", officialSourceUrl: "https://www.uob.com.my/personal/cards/credit-cards/cashback/uob-one-card.page", lastVerifiedDate: "2026-08-12" }),
+  mkCard("uob-evol", "uob", "UOB EVOL Card", "cg-uob-unirm-unverified", { status: "rate_pending_verification", officialSourceUrl: "https://www.uob.com.my/personal/rewards/index.page", lastVerifiedDate: "2026-08-12" }),
+  mkCard("uob-ladys", "uob", "UOB Lady's Card", "cg-uob-unirm-unverified", { status: "rate_pending_verification", officialSourceUrl: "https://www.uob.com.my/personal/rewards/index.page", lastVerifiedDate: "2026-08-12" }),
+  mkCard("uob-preferred", "uob", "UOB Preferred Platinum Visa", "cg-uob-unirm-unverified", { status: "rate_pending_verification", officialSourceUrl: "https://www.uob.com.my/personal/rewards/index.page", lastVerifiedDate: "2026-08-12" }),
+  mkCard("uob-lazada", "uob", "UOB Lazada Card", "cg-uob-unirm-unverified", { status: "rate_pending_verification", officialSourceUrl: "https://www.uob.com.my/personal/rewards/index.page", lastVerifiedDate: "2026-08-12" }),
+  mkCard("uob-simple", "uob", "UOB YOLO / Simple Card", "cg-uob-cashback", { status: "cashback_only", officialSourceUrl: "https://www.uob.com.my/personal/cards/credit-cards/cashback/index.page", lastVerifiedDate: "2026-08-12" }),
+  mkCard("uob-basic", "uob", "UOB Basic Card", "cg-uob-unirm-unverified", { status: "rate_pending_verification", officialSourceUrl: "https://www.uob.com.my/personal/rewards/index.page", lastVerifiedDate: "2026-08-12" }),
 
   // ---------- Alliance Bank ----------
   mkCard("alliance-visa-infinite", "alliance", "Alliance Bank Visa Infinite", "cg-alliance-tbp"),
