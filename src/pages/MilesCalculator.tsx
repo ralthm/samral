@@ -26,6 +26,8 @@ import {
   searchCardsInBank,
   summaryCounters,
 } from "@/data/milesCalculator";
+import { promotions as promotionRecords } from "@/data/promotions";
+import type { PromotionApplication } from "@/lib/milesCalculator";
 import {
   calculateEntry,
   computePortfolioTotals,
@@ -1107,6 +1109,37 @@ function ResultsDashboard({
       </div>
     </section>
   );
+}
+
+/* ---------- Promotion helpers ---------- */
+
+function promotionRecord(id: string) {
+  return promotionRecords.find((p) => p.id === id);
+}
+
+/** Customer-facing attribution. Never describes the Enrich bank-conversion
+ * promotion as "airline-funded" — it is an Enrich promotion run with
+ * participating banks. */
+function promotionSponsorLabel(p: PromotionApplication): string {
+  const rec = promotionRecord(p.id);
+  if (rec?.sponsorLabel) return rec.sponsorLabel;
+  return p.sponsor === "airline" ? "Airline promotion" : "Bank promotion";
+}
+
+/** Subtle supporting information (points validity, per-member daily caps). */
+function promotionValidityLines(p: PromotionApplication): string[] {
+  const rec = promotionRecord(p.id);
+  if (!rec) return [];
+  const lines: string[] = [];
+  if (rec.basePointsValidity) lines.push(rec.basePointsValidity);
+  if (rec.bonusPointsValidity) lines.push(rec.bonusPointsValidity);
+  if (rec.dailyCapPartnerPoints) {
+    lines.push(`Maximum ${formatInt(rec.dailyCapPartnerPoints)} points per member per day under this promotion.`);
+  }
+  if (rec.sourceName) {
+    lines.push(`Source: ${rec.sourceName}${rec.verifiedAt ? ` · Last verified ${formatDate(rec.verifiedAt)}` : ""}`);
+  }
+  return lines;
 }
 
 /* ---------- Promotion banner ---------- */
