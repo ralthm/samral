@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronDown,
@@ -971,7 +971,7 @@ const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
   };
 
   return (
-    <div className="mt-6 rounded-sm border border-border bg-background">
+    <div ref={ref} className="mt-6 rounded-sm border border-border bg-background">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -1057,7 +1057,7 @@ const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
       )}
     </div>
   );
-}
+});
 
 /* ---------- Results dashboard ---------- */
 
