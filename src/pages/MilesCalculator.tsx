@@ -289,11 +289,17 @@ function CalculatorFlow() {
     const entryContext = new Map<string, { bankName: string; groupName: string; nickname: string; entered: number }>();
     const usableEntries = entries.filter((e) => e.bankId || e.cardId || e.rawInput.trim());
     for (const e of usableEntries) {
+      const entryCard = getCardById(e.cardId);
+      // Non-convertible cards (cashback, merchant coins) exit here: no
+      // conversion-route lookup, no blocks, no promotions, no reachability, no
+      // leftover row. They contribute exactly nothing to the portfolio.
+      if (isNonConvertibleCard(entryCard)) continue;
       // Direct airline-earning cards hold no bank balance: no conversion
       // blocks, no leftover points, no transfer promotion. They only tell us
       // which programme the customer can reach; the balance itself comes from
       // Step 2.
-      if (isDirectEarnCard(getCardById(e.cardId))) continue;
+      if (isDirectEarnCard(entryCard)) continue;
+
       const points = parseIntSafe(e.rawInput);
       const bank = getBankById(e.bankId);
       const group = eligibleCardGroups.find((g) => g.id === e.cardGroupId);
