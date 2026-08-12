@@ -584,7 +584,11 @@ function EntryCard({
   const card = entry.cardId ? getCardById(entry.cardId) : undefined;
   const currency = card ? getRewardCurrencyForCard(card) : undefined;
   const selectedGroup = card ? getCardGroupById(card.cardGroupId) : undefined;
-  const rulesForSelected = card ? getPublicRulesForCardGroup(card.cardGroupId) : [];
+  // Non-convertible cards (cashback, merchant coins) are an early-exit state:
+  // derived straight from card metadata, never through chained effects, and
+  // never routed into conversion-rule lookups.
+  const nonConvertible = isNonConvertibleCard(card);
+  const rulesForSelected = card && !nonConvertible ? getPublicRulesForCardGroup(card.cardGroupId) : [];
   // Direct airline-earning cards never take a bank-points balance.
   const directEarn = isDirectEarnCard(card);
   const directProgrammeId = card ? getDirectEarnProgrammeId(card.cardGroupId) : undefined;
@@ -593,11 +597,12 @@ function EntryCard({
   const directEarnRates = getDirectEarnRates(card);
   const hasNoRules = !!card && rulesForSelected.length === 0;
   const rateUnconfirmed =
+    !nonConvertible && (
     card?.status === "rate_unconfirmed" ||
     card?.status === "rate_pending_verification" ||
     card?.status === "direct_airline" ||
     card?.status === "cashback_only" ||
-    hasNoRules;
+    hasNoRules);
 
   const [query, setQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -614,11 +619,11 @@ function EntryCard({
     ? "Enter whole numbers only (commas are fine)."
     : null;
 
-  // Never carry a stale bank balance into a direct-earning card.
+  // Never carry a stale bank balance into a direct-earning or non-convertible card.
   useEffect(() => {
-    if (directEarn && entry.rawInput) onChange({ ...entry, rawInput: "" });
+    if ((directEarn || nonConvertible) && entry.rawInput) onChange({ ...entry, rawInput: "" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [directEarn, entry.rawInput]);
+  }, [directEarn, nonConvertible, entry.rawInput]);
 
   const validReported = useRef(false);
   useEffect(() => {
@@ -635,7 +640,7 @@ function EntryCard({
   const pickCard = (c: Card) => {
     onChange({
       ...entry,
-      rawInput: isDirectEarnCard(c) ? "" : entry.rawInput,
+      rawInput: isDirectEarnCard(c) || isNonConvertibleCard(c) ? "" : entry.rawInput,
       cardId: c.id,
       cardGroupId: c.cardGroupId,
       notFound: false,
@@ -778,7 +783,7 @@ function EntryCard({
           )}
         </Field>
 
-        {!directEarn && (
+        {!directEarn && !nonConvertible && (
           <Field label={`${currencyLabel} balance`} htmlFor={`points-${entry.id}`}>
             <input
               id={`points-${entry.id}`}
@@ -846,6 +851,24 @@ function EntryCard({
               <Plus className="h-3.5 w-3.5" /> Add my {directProgrammeName} balance
             </button>
           )}
+        </div>
+      )}
+
+      {nonConvertible && card && (
+        <div role="note" data-testid="non-convertible-note" className="mt-4 rounded-sm border border-ink/30 bg-sand/40 p-4 text-[12px] leading-relaxed text-ink/80">
+          <p className="text-[10px] uppercase tracking-[0.18em] text-ink/60">Not convertible</p>
+          <p className="mt-2 text-[13px] font-medium text-ink">Card does not earn convertible points</p>
+          <p className="mt-1">
+            This card earns cashback or another reward that Samral does not currently convert into
+            airline or hotel points. You can still add existing airline or hotel balances in Step&nbsp;2.
+          </p>
+          <button
+            type="button"
+            onClick={() => onAddProgrammeBalance("")}
+            className="mt-4 inline-flex items-center gap-2 rounded-sm border border-ink px-4 py-2.5 text-[13px] text-ink transition-colors hover:bg-ink hover:text-background"
+          >
+            <Plus className="h-3.5 w-3.5" /> Add an existing airline or hotel balance
+          </button>
         </div>
       )}
 
