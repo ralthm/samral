@@ -1668,11 +1668,36 @@ export function isNonConvertibleCard(card: Card | undefined): boolean {
 }
 
 /**
+ * Conversion not yet verified.
+ *
+ * A distinct state from `non_convertible`: the card may well have a conversion
+ * route, but Samral has not confirmed enough current official information to
+ * calculate it. Such a card is NON-CALCULABLE — never estimated, never assumed
+ * to be zero-convertible, and never pushed through conversion, promotion,
+ * reachability, leftover or redemption work.
+ *
+ * True when the card carries an unverified status, has no card group, or its
+ * group publishes no verified conversion rule. Non-convertible and
+ * direct-earning cards are excluded: they have their own explicit states.
+ */
+export function isConversionUnverifiedCard(card: Card | undefined): boolean {
+  if (!card) return false;
+  if (isNonConvertibleCard(card)) return false;
+  if (isDirectEarnCard(card)) return false;
+  if (card.status === "rate_unconfirmed" || card.status === "rate_pending_verification") return true;
+  if (!card.cardGroupId) return true;
+  if (!getCardGroupById(card.cardGroupId)) return true;
+  return getPublicRulesForCardGroup(card.cardGroupId).length === 0;
+}
+
+/**
  * A card may contribute to conversion work only when it holds a transferable
- * bank currency. Direct-earning and non-convertible cards are excluded.
+ * bank currency with a verified route. Direct-earning, non-convertible and
+ * conversion-unverified cards are excluded.
  */
 export function isConversionEligibleCard(card: Card | undefined): boolean {
-  return !!card && getRewardTypeForCardGroup(card.cardGroupId) === "transferable_bank_points";
+  if (!card || getRewardTypeForCardGroup(card.cardGroupId) !== "transferable_bank_points") return false;
+  return !isConversionUnverifiedCard(card);
 }
 
 

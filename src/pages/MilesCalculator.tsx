@@ -26,6 +26,7 @@ import {
   getRewardProductById,
   isDirectEarnCard,
   isNonConvertibleCard,
+  isConversionUnverifiedCard,
   loyaltyProgrammes,
   searchCardsInBank,
   summaryCounters,
@@ -324,8 +325,13 @@ function CalculatorFlow() {
       else if (e.notFound) errs.push("We need to verify your unlisted card before calculating. Submit it for verification or pick another card.");
       else if (!e.cardId) errs.push("Select the exact credit card for every entry.");
       const entryCard = getCardById(e.cardId);
-      // Non-convertible and direct-earning cards carry no bank balance to validate.
-      if (isNonConvertibleCard(entryCard) || isDirectEarnCard(entryCard)) continue;
+      // Non-convertible, unverified and direct-earning cards carry no bank
+      // balance to validate — they are excluded from calculation entirely.
+      if (
+        isNonConvertibleCard(entryCard) ||
+        isDirectEarnCard(entryCard) ||
+        isConversionUnverifiedCard(entryCard)
+      ) continue;
       const pts = parseIntSafe(e.rawInput);
       if (!Number.isFinite(pts) || pts <= 0) errs.push("Enter a valid points balance greater than zero.");
     }
@@ -545,6 +551,9 @@ function EntryCard({
   // derived straight from card metadata, never through chained effects, and
   // never routed into conversion-rule lookups.
   const nonConvertible = isNonConvertibleCard(card);
+  // Distinct from non-convertible: the route may exist, but Samral has not
+  // verified it, so the card is non-calculable rather than zero-earning.
+  const unverified = isConversionUnverifiedCard(card);
   const rulesForSelected = card && !nonConvertible ? getPublicRulesForCardGroup(card.cardGroupId) : [];
   // Direct airline-earning cards never take a bank-points balance.
   const directEarn = isDirectEarnCard(card);
@@ -554,7 +563,7 @@ function EntryCard({
   const directEarnRates = getDirectEarnRates(card);
   const hasNoRules = !!card && rulesForSelected.length === 0;
   const rateUnconfirmed =
-    !nonConvertible && (
+    !nonConvertible && !unverified && (
     card?.status === "rate_unconfirmed" ||
     card?.status === "rate_pending_verification" ||
     card?.status === "direct_airline" ||
@@ -578,9 +587,9 @@ function EntryCard({
 
   // Never carry a stale bank balance into a direct-earning or non-convertible card.
   useEffect(() => {
-    if ((directEarn || nonConvertible) && entry.rawInput) onChange({ ...entry, rawInput: "" });
+    if ((directEarn || nonConvertible || unverified) && entry.rawInput) onChange({ ...entry, rawInput: "" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [directEarn, nonConvertible, entry.rawInput]);
+  }, [directEarn, nonConvertible, unverified, entry.rawInput]);
 
   const validReported = useRef(false);
   useEffect(() => {
@@ -597,7 +606,10 @@ function EntryCard({
   const pickCard = (c: Card) => {
     onChange({
       ...entry,
-      rawInput: isDirectEarnCard(c) || isNonConvertibleCard(c) ? "" : entry.rawInput,
+      rawInput:
+        isDirectEarnCard(c) || isNonConvertibleCard(c) || isConversionUnverifiedCard(c)
+          ? ""
+          : entry.rawInput,
       cardId: c.id,
       cardGroupId: c.cardGroupId,
       notFound: false,
@@ -740,7 +752,7 @@ function EntryCard({
           )}
         </Field>
 
-        {!directEarn && !nonConvertible && (
+        {!directEarn && !nonConvertible && !unverified && (
           <Field label={`${currencyLabel} balance`} htmlFor={`points-${entry.id}`}>
             <input
               id={`points-${entry.id}`}
@@ -829,7 +841,28 @@ function EntryCard({
         </div>
       )}
 
-      {rateUnconfirmed && !directEarn && card && (
+      {unverified && card && (
+        <div role="note" data-testid="conversion-unverified-note" className="mt-4 rounded-sm border border-ink/30 bg-sand/40 p-4 text-[12px] leading-relaxed text-ink/80">
+          <p className="text-[10px] uppercase tracking-[0.18em] text-ink/60">Not calculable yet</p>
+          <p className="mt-2 text-[13px] font-medium text-ink">Conversion not yet verified</p>
+          <p className="mt-1">
+            {selectedGroup?.unverifiedNotice ??
+              "Samral has not yet verified a current conversion route for this card, so we won’t estimate a transfer value."}
+          </p>
+          <p className="mt-1">
+            Add another card with a verified route, or add an existing airline or hotel balance in Step&nbsp;2.
+          </p>
+          <button
+            type="button"
+            onClick={() => onAddProgrammeBalance("")}
+            className="mt-4 inline-flex items-center gap-2 rounded-sm border border-ink px-4 py-2.5 text-[13px] text-ink transition-colors hover:bg-ink hover:text-background"
+          >
+            <Plus className="h-3.5 w-3.5" /> Add an existing airline or hotel balance
+          </button>
+        </div>
+      )}
+
+      {rateUnconfirmed && !directEarn && !unverified && card && (
         <div role="note" className="mt-3 rounded-sm border border-ink/30 bg-background p-3 text-[12px] leading-relaxed text-ink/80">
           <p className="font-medium text-ink">
             {card.status === "direct_airline"
