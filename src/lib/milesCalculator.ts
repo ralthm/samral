@@ -69,6 +69,8 @@ export interface RuleResult {
   verifiedOn: string;
   sourceUrl: string;
   sourceTitle: string;
+  sourceName?: string;
+  sourceType?: string;
   effectiveFrom?: string;
   notes?: string;
   annualCapPartnerPoints?: number;
@@ -192,6 +194,8 @@ function buildResult(
     verifiedOn: r.verifiedOn,
     sourceUrl: r.sourceUrl,
     sourceTitle: r.sourceTitle,
+    sourceName: r.sourceName ?? r.sourceTitle,
+    sourceType: r.sourceType,
     effectiveFrom: r.effectiveFrom,
     notes: r.notes,
     annualCapPartnerPoints: r.annualCapPartnerPoints,
