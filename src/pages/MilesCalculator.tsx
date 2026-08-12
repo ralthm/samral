@@ -25,6 +25,7 @@ import {
   getRewardCurrencyForCard,
   getRewardProductById,
   isDirectEarnCard,
+  isNonConvertibleCard,
   loyaltyProgrammes,
   searchCardsInBank,
   summaryCounters,
@@ -57,6 +58,11 @@ import { getActivePromotions, Promotion } from "@/data/promotions";
 import { saveTripContext, TripContext } from "@/lib/tripContext";
 import { AllianceBadge, AllianceInfo } from "@/components/AllianceInfo";
 
+
+import {
+  hasCalculableInput as pipelineHasCalculableInput,
+  runCalculation as runCalculatorPipeline,
+} from "@/lib/calculatorPipeline";
 
 const STRATEGY_URL = "/points-strategy";
 const TRIP_PLANNING_DISCOVERY_URL = "https://cal.com/samral/trip-planning-discovery-call-20-mins";
@@ -283,60 +289,47 @@ function CalculatorFlow() {
     markStarted();
   }, [snapshot, markStarted]);
 
-  const runCalculation = useCallback((regIds: string[]) => {
-    const results: RuleResult[] = [];
-    const entryContext = new Map<string, { bankName: string; groupName: string; nickname: string; entered: number }>();
-    const usableEntries = entries.filter((e) => e.bankId || e.cardId || e.rawInput.trim());
-    for (const e of usableEntries) {
-      // Direct airline-earning cards hold no bank balance: no conversion
-      // blocks, no leftover points, no transfer promotion. They only tell us
-      // which programme the customer can reach; the balance itself comes from
-      // Step 2.
-      if (isDirectEarnCard(getCardById(e.cardId))) continue;
-      const points = parseIntSafe(e.rawInput);
-      const bank = getBankById(e.bankId);
-      const group = eligibleCardGroups.find((g) => g.id === e.cardGroupId);
-      entryContext.set(e.id, {
-        bankName: bank?.name ?? "",
-        groupName: group?.name ?? "",
-        nickname: e.nickname,
-        entered: points,
-      });
-      results.push(
-        ...calculateEntry({
-          entryId: e.id,
-          cardGroupId: e.cardGroupId,
-          nickname: e.nickname,
-          bankPoints: points,
-          registeredPromotionIds: regIds,
-        }),
-      );
-    }
-    const existingBalances: Record<string, number> = {};
-    for (const r of existingRows) {
-      const n = parseIntSafe(r.rawInput);
-      if (Number.isFinite(n) && n > 0 && r.programmeId) existingBalances[r.programmeId] = n;
-    }
-    const portfolio = computePortfolioTotals(results, existingBalances);
-    return { results, portfolio, entryContext };
-  }, [entries, existingRows]);
+  const runCalculation = useCallback(
+    (regIds: string[]) => runCalculatorPipeline(entries, existingRows, regIds),
+    [entries, existingRows],
+  );
+
+  /**
+   * Inputs that can actually contribute to a loyalty-programme balance.
+   * Derived directly from state — no effects, no mirrored state.
+   */
+  const hasCalculableInput = useMemo(
+    () => pipelineHasCalculableInput(entries, existingRows),
+    [entries, existingRows],
+  );
 
   const handleCalculate = () => {
     // Validate
     const errs: string[] = [];
     const usableEntries = entries.filter((e) => e.bankId || e.cardId || e.rawInput.trim());
 
-    if (usableEntries.length === 0) {
-      errs.push("Add at least one bank balance to calculate.");
+    // Guard clause: nothing valid to calculate — never start the pipeline.
+    if (!hasCalculableInput) {
+      setErrors([
+        usableEntries.length === 0
+          ? "Add at least one bank balance to calculate."
+          : "Add another points-earning card or an existing loyalty balance to calculate.",
+      ]);
+      setState("error");
+      return;
     }
+
     for (const e of usableEntries) {
       if (!e.bankId) errs.push("Select a bank for every entry.");
       else if (e.notFound) errs.push("We need to verify your unlisted card before calculating. Submit it for verification or pick another card.");
       else if (!e.cardId) errs.push("Select the exact credit card for every entry.");
-      if (isDirectEarnCard(getCardById(e.cardId))) continue;
+      const entryCard = getCardById(e.cardId);
+      // Non-convertible and direct-earning cards carry no bank balance to validate.
+      if (isNonConvertibleCard(entryCard) || isDirectEarnCard(entryCard)) continue;
       const pts = parseIntSafe(e.rawInput);
       if (!Number.isFinite(pts) || pts <= 0) errs.push("Enter a valid points balance greater than zero.");
     }
+
     for (const r of existingRows) {
       if (!r.programmeId) errs.push("Choose a programme for every existing balance.");
       const pts = parseIntSafe(r.rawInput);
@@ -483,15 +476,23 @@ function CalculatorFlow() {
             <button
               type="button"
               onClick={handleCalculate}
-              disabled={isCalculating}
-              className="inline-flex w-full items-center justify-center rounded-sm bg-ink px-8 py-5 text-base font-medium text-background transition-transform hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-70 md:w-auto md:min-w-[320px]"
+              disabled={isCalculating || !hasCalculableInput}
+              aria-disabled={!hasCalculableInput}
+              data-testid="calculate-button"
+              className="inline-flex w-full items-center justify-center rounded-sm bg-ink px-8 py-5 text-base font-medium text-background transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 md:w-auto md:min-w-[320px]"
             >
               {isCalculating ? "Calculating full transfer blocks…" : buttonLabel}
             </button>
+            {!hasCalculableInput && (
+              <p className="mt-3 text-[13px] text-ink/70">
+                Add another points-earning card or an existing loyalty balance to calculate.
+              </p>
+            )}
             <p className="mt-3 text-[12px] text-ink/55">
               We calculate locally in your browser. Nothing is sent to a server.
             </p>
           </div>
+
         </div>
       </section>
 
@@ -540,7 +541,11 @@ function EntryCard({
   const card = entry.cardId ? getCardById(entry.cardId) : undefined;
   const currency = card ? getRewardCurrencyForCard(card) : undefined;
   const selectedGroup = card ? getCardGroupById(card.cardGroupId) : undefined;
-  const rulesForSelected = card ? getPublicRulesForCardGroup(card.cardGroupId) : [];
+  // Non-convertible cards (cashback, merchant coins) are an early-exit state:
+  // derived straight from card metadata, never through chained effects, and
+  // never routed into conversion-rule lookups.
+  const nonConvertible = isNonConvertibleCard(card);
+  const rulesForSelected = card && !nonConvertible ? getPublicRulesForCardGroup(card.cardGroupId) : [];
   // Direct airline-earning cards never take a bank-points balance.
   const directEarn = isDirectEarnCard(card);
   const directProgrammeId = card ? getDirectEarnProgrammeId(card.cardGroupId) : undefined;
@@ -549,11 +554,12 @@ function EntryCard({
   const directEarnRates = getDirectEarnRates(card);
   const hasNoRules = !!card && rulesForSelected.length === 0;
   const rateUnconfirmed =
+    !nonConvertible && (
     card?.status === "rate_unconfirmed" ||
     card?.status === "rate_pending_verification" ||
     card?.status === "direct_airline" ||
     card?.status === "cashback_only" ||
-    hasNoRules;
+    hasNoRules);
 
   const [query, setQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -570,11 +576,11 @@ function EntryCard({
     ? "Enter whole numbers only (commas are fine)."
     : null;
 
-  // Never carry a stale bank balance into a direct-earning card.
+  // Never carry a stale bank balance into a direct-earning or non-convertible card.
   useEffect(() => {
-    if (directEarn && entry.rawInput) onChange({ ...entry, rawInput: "" });
+    if ((directEarn || nonConvertible) && entry.rawInput) onChange({ ...entry, rawInput: "" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [directEarn, entry.rawInput]);
+  }, [directEarn, nonConvertible, entry.rawInput]);
 
   const validReported = useRef(false);
   useEffect(() => {
@@ -591,7 +597,7 @@ function EntryCard({
   const pickCard = (c: Card) => {
     onChange({
       ...entry,
-      rawInput: isDirectEarnCard(c) ? "" : entry.rawInput,
+      rawInput: isDirectEarnCard(c) || isNonConvertibleCard(c) ? "" : entry.rawInput,
       cardId: c.id,
       cardGroupId: c.cardGroupId,
       notFound: false,
@@ -734,7 +740,7 @@ function EntryCard({
           )}
         </Field>
 
-        {!directEarn && (
+        {!directEarn && !nonConvertible && (
           <Field label={`${currencyLabel} balance`} htmlFor={`points-${entry.id}`}>
             <input
               id={`points-${entry.id}`}
@@ -802,6 +808,24 @@ function EntryCard({
               <Plus className="h-3.5 w-3.5" /> Add my {directProgrammeName} balance
             </button>
           )}
+        </div>
+      )}
+
+      {nonConvertible && card && (
+        <div role="note" data-testid="non-convertible-note" className="mt-4 rounded-sm border border-ink/30 bg-sand/40 p-4 text-[12px] leading-relaxed text-ink/80">
+          <p className="text-[10px] uppercase tracking-[0.18em] text-ink/60">Not convertible</p>
+          <p className="mt-2 text-[13px] font-medium text-ink">Card does not earn convertible points</p>
+          <p className="mt-1">
+            This card earns cashback or another reward that Samral does not currently convert into
+            airline or hotel points. You can still add existing airline or hotel balances in Step&nbsp;2.
+          </p>
+          <button
+            type="button"
+            onClick={() => onAddProgrammeBalance("")}
+            className="mt-4 inline-flex items-center gap-2 rounded-sm border border-ink px-4 py-2.5 text-[13px] text-ink transition-colors hover:bg-ink hover:text-background"
+          >
+            <Plus className="h-3.5 w-3.5" /> Add an existing airline or hotel balance
+          </button>
         </div>
       )}
 
