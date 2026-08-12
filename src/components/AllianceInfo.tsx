@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Info } from "lucide-react";
 import { getAllianceInfo } from "@/data/alliances";
 
-const DISCOVERY_CALL_URL = "https://cal.com/samral/discovery-call";
+const DISCOVERY_CALL_URL = "https://cal.com/samral/trip-planning-discovery-call-20-mins";
 
 interface Props {
   programmeId: string;
