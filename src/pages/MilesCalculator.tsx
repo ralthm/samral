@@ -2521,25 +2521,42 @@ function Explainer() {
   );
 }
 
-/* ---------- Strategy CTA ---------- */
+/* ---------- Post-calculation CTA (Points Trip Planning) ---------- */
 
-function StrategyCTA() {
+function PostCalcCTA() {
   return (
     <section className="border-b border-border bg-ink text-background">
       <div className="mx-auto max-w-[900px] px-5 py-16 text-center sm:px-6 md:py-24">
-        <h2 className="font-display text-3xl leading-tight md:text-5xl">
-          You know what your points can become. Now find out whether you are earning them efficiently.
+        <p className="text-xs font-medium uppercase tracking-[0.18em] text-background/55">
+          Points Trip Planning
+        </p>
+        <h2 className="mx-auto mt-5 max-w-2xl font-display text-3xl leading-tight md:text-[2.75rem]">
+          You know what your points can become. Now turn them into a trip.
         </h2>
         <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-background/75">
-          Get a personalised review of your cards, spending pattern and travel goals.
+          If you have the points but are unsure which redemption to pursue, how to make the booking work, or what to do next, book a free 20-minute Points Trip Planning discovery call.
         </p>
         <Link
-          to={STRATEGY_URL}
-          onClick={() => track("strategy_cta_clicked")}
+          to="/trip-planning"
+          onClick={() =>
+            track("trip_planning_cta_clicked", {
+              source: "miles_calculator_post_calc",
+            })
+          }
           className="mt-8 inline-block rounded-sm bg-background px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
         >
-          Get My Points Strategy
+          Book a Free 20-Minute Call
         </Link>
+        <p className="mt-5 text-[13px] text-background/55">
+          Want to earn points more efficiently instead?{" "}
+          <Link
+            to={STRATEGY_URL}
+            onClick={() => track("cards_strategy_secondary_clicked")}
+            className="underline decoration-background/40 underline-offset-4 transition-colors hover:text-background"
+          >
+            Explore Cards Strategy →
+          </Link>
+        </p>
       </div>
     </section>
   );
