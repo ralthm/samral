@@ -72,8 +72,14 @@ export interface RuleResult {
   effectiveFrom?: string;
   notes?: string;
   annualCapPartnerPoints?: number;
+  campaignCapPartnerPoints?: number;
   monthlyCapPartnerPoints?: number;
   monthlyCapApplied?: boolean;
+  /** Set when a published conversion cap limited the transferable amount. */
+  capApplied?: { type: "monthly" | "campaign" | "annual"; limit: number };
+  /** Always set when the bank publishes campaign/annual caps we cannot verify
+   * against the user's own conversion history. */
+  capWarning?: string;
   minimumTransferPartnerPoints?: number;
   transferIncrementPartnerPoints?: number;
   /** All promotions currently active for this route (applied + conditional). */
@@ -122,15 +128,39 @@ function buildResult(
   let fullBlocks = Math.floor(points / r.bankPointsPerBlock);
   let partnerPointsReceived = fullBlocks * r.partnerPointsPerBlock;
   let monthlyCapApplied = false;
-  if (
-    typeof r.monthlyCapPartnerPoints === "number" &&
-    partnerPointsReceived > r.monthlyCapPartnerPoints
-  ) {
-    const cappedBlocks = Math.floor(r.monthlyCapPartnerPoints / r.partnerPointsPerBlock);
+  let capApplied: RuleResult["capApplied"];
+
+  // A promotion being live is what activates the bank's campaign cap.
+  const promoLive = findApplicablePromotions(ctx.bankId, programme.id, r.eligibleCardGroupId).length > 0;
+
+  const candidateCaps: { type: "monthly" | "campaign" | "annual"; limit: number }[] = [];
+  if (typeof r.monthlyCapPartnerPoints === "number") {
+    candidateCaps.push({ type: "monthly", limit: r.monthlyCapPartnerPoints });
+  }
+  if (promoLive && typeof r.campaignCapPartnerPoints === "number") {
+    candidateCaps.push({ type: "campaign", limit: r.campaignCapPartnerPoints });
+  }
+  if (typeof r.annualCapPartnerPoints === "number") {
+    candidateCaps.push({ type: "annual", limit: r.annualCapPartnerPoints });
+  }
+  const binding = candidateCaps
+    .filter((c) => partnerPointsReceived > c.limit)
+    .sort((a, b) => a.limit - b.limit)[0];
+
+  if (binding) {
+    // Never silently present the whole balance as transferable: convert only
+    // up to the cap and leave the excess bank points unconverted.
+    const cappedBlocks = Math.floor(binding.limit / r.partnerPointsPerBlock);
     fullBlocks = cappedBlocks;
     partnerPointsReceived = cappedBlocks * r.partnerPointsPerBlock;
-    monthlyCapApplied = true;
+    capApplied = binding;
+    monthlyCapApplied = binding.type === "monthly";
   }
+
+  const capWarning =
+    typeof r.campaignCapPartnerPoints === "number" || typeof r.annualCapPartnerPoints === "number"
+      ? `${ctx.bankName} applies campaign and annual Air Miles conversion limits. Your actual transferable amount may be lower if you have made previous conversions during this campaign or calendar year.`
+      : undefined;
   const bankPointsUsed = fullBlocks * r.bankPointsPerBlock;
   const bankPointsRemaining = points - bankPointsUsed;
   const pointsShortOfNextBlock =
@@ -165,8 +195,11 @@ function buildResult(
     effectiveFrom: r.effectiveFrom,
     notes: r.notes,
     annualCapPartnerPoints: r.annualCapPartnerPoints,
+    campaignCapPartnerPoints: r.campaignCapPartnerPoints,
     monthlyCapPartnerPoints: r.monthlyCapPartnerPoints,
     monthlyCapApplied,
+    capApplied,
+    capWarning,
     minimumTransferPartnerPoints: r.minimumTransferPartnerPoints,
     transferIncrementPartnerPoints: r.transferIncrementPartnerPoints,
     ...promoData,
