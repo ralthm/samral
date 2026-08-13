@@ -299,7 +299,7 @@ function FAQ() {
     },
     {
       q: "What does the fee include?",
-      a: "It includes a review of your current cards and spending, clear written recommendations, a rewards direction, a personal written Card Strategy, and a follow-up call to walk through it together.",
+      a: "It includes a review of your current cards and spending, clear written recommendations, a rewards direction, a personal written Card Strategy, and a follow-up call to walk through it together. The fee for the Card Strategy is US$50.",
     },
     {
       q: "What information will I need to provide?",
