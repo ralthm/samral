@@ -198,7 +198,7 @@ function HowItWorks() {
     },
     {
       title: "Decide whether to proceed",
-      text: "If the service is suitable, I will send you the payment link and a questionnaire. The Card Strategy costs US$ 200.",
+      text: "If the service is suitable, I will send you the payment link and a questionnaire. The Card Strategy costs US$50.",
     },
     {
       title: "I do the research",
@@ -299,7 +299,7 @@ function FAQ() {
     },
     {
       q: "What does the fee include?",
-      a: "It includes a review of your current cards and spending, clear written recommendations, a rewards direction, a personal written Card Strategy, and a follow-up call to walk through it together.",
+      a: "It includes a review of your current cards and spending, clear written recommendations, a rewards direction, a personal written Card Strategy, and a follow-up call to walk through it together. The fee for the Card Strategy is US$50.",
     },
     {
       q: "What information will I need to provide?",
