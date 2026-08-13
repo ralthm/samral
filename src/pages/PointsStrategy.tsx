@@ -198,7 +198,7 @@ function HowItWorks() {
     },
     {
       title: "Decide whether to proceed",
-      text: "If the service is suitable, I will send you the payment link and a questionnaire. The Card Strategy costs US$ 200.",
+      text: "If the service is suitable, I will send you the payment link and a questionnaire. The Card Strategy costs US$50.",
     },
     {
       title: "I do the research",
