@@ -96,6 +96,12 @@ interface ExistingRow {
   rawInput: string;
 }
 
+/** Uncommitted Step 2 input (typed, not yet added). */
+interface ExistingDraft {
+  programmeId: string;
+  rawInput: string;
+}
+
 interface Snapshot {
   results: RuleResult[];
   portfolio: ProgrammeTotal[];
@@ -246,6 +252,7 @@ function Counter({ label, value }: { label: string; value: number }) {
 function CalculatorFlow() {
   const [entries, setEntries] = useState<Entry[]>([newEntry()]);
   const [existingRows, setExistingRows] = useState<ExistingRow[]>([]);
+  const [existingDraft, setExistingDraft] = useState<ExistingDraft>({ programmeId: "", rawInput: "" });
   const [state, setState] = useState<UiState>("idle");
   const [errors, setErrors] = useState<string[]>([]);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
