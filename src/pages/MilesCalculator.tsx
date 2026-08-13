@@ -290,9 +290,31 @@ function CalculatorFlow() {
     markStarted();
   }, [snapshot, markStarted]);
 
+  /**
+   * A Step 2 balance the customer has typed but not yet committed with
+   * "Add balance". It must never be silently dropped at calculation time.
+   */
+  const setDraft = useCallback((next: ExistingDraft) => {
+    setExistingDraft(next);
+    if (snapshot) setState("stale");
+    markStarted();
+  }, [snapshot, markStarted]);
+
+  /** Committed rows plus a valid uncommitted draft. */
+  const effectiveExistingRows = useMemo(() => {
+    const draftPoints = parseIntSafe(existingDraft.rawInput);
+    if (
+      !existingDraft.programmeId ||
+      !Number.isFinite(draftPoints) ||
+      draftPoints <= 0 ||
+      existingRows.some((r) => r.programmeId === existingDraft.programmeId)
+    ) return existingRows;
+    return [...existingRows, { id: "draft-existing", programmeId: existingDraft.programmeId, rawInput: existingDraft.rawInput }];
+  }, [existingRows, existingDraft]);
+
   const runCalculation = useCallback(
-    (regIds: string[]) => runCalculatorPipeline(entries, existingRows, regIds),
-    [entries, existingRows],
+    (regIds: string[]) => runCalculatorPipeline(entries, effectiveExistingRows, regIds),
+    [entries, effectiveExistingRows],
   );
 
   /**
@@ -300,8 +322,8 @@ function CalculatorFlow() {
    * Derived directly from state — no effects, no mirrored state.
    */
   const hasCalculableInput = useMemo(
-    () => pipelineHasCalculableInput(entries, existingRows),
-    [entries, existingRows],
+    () => pipelineHasCalculableInput(entries, effectiveExistingRows),
+    [entries, effectiveExistingRows],
   );
 
   const handleCalculate = () => {
