@@ -486,6 +486,8 @@ function CalculatorFlow() {
             onOpenChange={setExistingOpen}
             preselectProgrammeId={existingPreselect}
             rows={existingRows}
+            draft={existingDraft}
+            onDraftChange={setDraft}
             onAdd={(row) => {
               mutateExisting((prev) => [...prev, row]);
               track("existing_balance_added", { programme: row.programmeId });
@@ -1019,6 +1021,9 @@ function Field({ label, htmlFor, children }: { label: string; htmlFor: string; c
 
 const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
   rows: ExistingRow[];
+  /** Typed-but-not-added balance, owned by the parent so it is never dropped. */
+  draft: ExistingDraft;
+  onDraftChange: (draft: ExistingDraft) => void;
   onAdd: (row: ExistingRow) => void;
   onRemove: (id: string) => void;
   /** Controlled open state so a direct-earning card can expand Step 2. */
@@ -1027,7 +1032,7 @@ const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
   /** Programme preselected when Step 2 is opened from a direct-earning card. */
   preselectProgrammeId?: string;
 }>(function ExistingBalancesPanel({
-  rows, onAdd, onRemove, open: openProp, onOpenChange, preselectProgrammeId,
+  rows, draft, onDraftChange, onAdd, onRemove, open: openProp, onOpenChange, preselectProgrammeId,
 }, ref) {
   const [openState, setOpenState] = useState(false);
   const open = openProp ?? openState;
@@ -1035,11 +1040,14 @@ const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
     setOpenState(next);
     onOpenChange?.(next);
   };
-  const [programmeId, setProgrammeId] = useState("");
-  const [raw, setRaw] = useState("");
+  const programmeId = draft.programmeId;
+  const raw = draft.rawInput;
+  const setProgrammeId = (next: string) => onDraftChange({ programmeId: next, rawInput: raw });
+  const setRaw = (next: string) => onDraftChange({ programmeId, rawInput: next });
 
   useEffect(() => {
-    if (preselectProgrammeId) setProgrammeId(preselectProgrammeId);
+    if (preselectProgrammeId) onDraftChange({ programmeId: preselectProgrammeId, rawInput: raw });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preselectProgrammeId]);
 
 
@@ -1057,8 +1065,7 @@ const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
   const doAdd = () => {
     if (!canAdd) return;
     onAdd({ id: uid(), programmeId, rawInput: formatInt(parseIntSafe(raw)) });
-    setProgrammeId("");
-    setRaw("");
+    onDraftChange({ programmeId: "", rawInput: "" });
   };
 
   return (
