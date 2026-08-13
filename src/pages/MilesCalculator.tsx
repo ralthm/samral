@@ -96,6 +96,12 @@ interface ExistingRow {
   rawInput: string;
 }
 
+/** Uncommitted Step 2 input (typed, not yet added). */
+interface ExistingDraft {
+  programmeId: string;
+  rawInput: string;
+}
+
 interface Snapshot {
   results: RuleResult[];
   portfolio: ProgrammeTotal[];
@@ -246,6 +252,7 @@ function Counter({ label, value }: { label: string; value: number }) {
 function CalculatorFlow() {
   const [entries, setEntries] = useState<Entry[]>([newEntry()]);
   const [existingRows, setExistingRows] = useState<ExistingRow[]>([]);
+  const [existingDraft, setExistingDraft] = useState<ExistingDraft>({ programmeId: "", rawInput: "" });
   const [state, setState] = useState<UiState>("idle");
   const [errors, setErrors] = useState<string[]>([]);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
@@ -290,9 +297,31 @@ function CalculatorFlow() {
     markStarted();
   }, [snapshot, markStarted]);
 
+  /**
+   * A Step 2 balance the customer has typed but not yet committed with
+   * "Add balance". It must never be silently dropped at calculation time.
+   */
+  const setDraft = useCallback((next: ExistingDraft) => {
+    setExistingDraft(next);
+    if (snapshot) setState("stale");
+    markStarted();
+  }, [snapshot, markStarted]);
+
+  /** Committed rows plus a valid uncommitted draft. */
+  const effectiveExistingRows = useMemo(() => {
+    const draftPoints = parseIntSafe(existingDraft.rawInput);
+    if (
+      !existingDraft.programmeId ||
+      !Number.isFinite(draftPoints) ||
+      draftPoints <= 0 ||
+      existingRows.some((r) => r.programmeId === existingDraft.programmeId)
+    ) return existingRows;
+    return [...existingRows, { id: "draft-existing", programmeId: existingDraft.programmeId, rawInput: existingDraft.rawInput }];
+  }, [existingRows, existingDraft]);
+
   const runCalculation = useCallback(
-    (regIds: string[]) => runCalculatorPipeline(entries, existingRows, regIds),
-    [entries, existingRows],
+    (regIds: string[]) => runCalculatorPipeline(entries, effectiveExistingRows, regIds),
+    [entries, effectiveExistingRows],
   );
 
   /**
@@ -300,8 +329,8 @@ function CalculatorFlow() {
    * Derived directly from state — no effects, no mirrored state.
    */
   const hasCalculableInput = useMemo(
-    () => pipelineHasCalculableInput(entries, existingRows),
-    [entries, existingRows],
+    () => pipelineHasCalculableInput(entries, effectiveExistingRows),
+    [entries, effectiveExistingRows],
   );
 
   const handleCalculate = () => {
@@ -336,10 +365,14 @@ function CalculatorFlow() {
       if (!Number.isFinite(pts) || pts <= 0) errs.push("Enter a valid points balance greater than zero.");
     }
 
-    for (const r of existingRows) {
+    for (const r of effectiveExistingRows) {
       if (!r.programmeId) errs.push("Choose a programme for every existing balance.");
       const pts = parseIntSafe(r.rawInput);
       if (!Number.isFinite(pts) || pts <= 0) errs.push("Enter a valid existing balance greater than zero.");
+    }
+    // A half-filled Step 2 draft must be surfaced, never silently ignored.
+    if (parseIntSafe(existingDraft.rawInput) > 0 && !existingDraft.programmeId) {
+      errs.push("Choose a programme for the existing balance you entered in Step 2.");
     }
 
     const deduped = Array.from(new Set(errs));
@@ -352,7 +385,7 @@ function CalculatorFlow() {
 
     track(state === "stale" ? "recalculate_clicked" : "calculate_clicked", {
       entries: usableEntries.length,
-      existing: existingRows.length,
+      existing: effectiveExistingRows.length,
     });
 
     setIsCalculating(true);
@@ -457,6 +490,8 @@ function CalculatorFlow() {
             onOpenChange={setExistingOpen}
             preselectProgrammeId={existingPreselect}
             rows={existingRows}
+            draft={existingDraft}
+            onDraftChange={setDraft}
             onAdd={(row) => {
               mutateExisting((prev) => [...prev, row]);
               track("existing_balance_added", { programme: row.programmeId });
@@ -990,6 +1025,9 @@ function Field({ label, htmlFor, children }: { label: string; htmlFor: string; c
 
 const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
   rows: ExistingRow[];
+  /** Typed-but-not-added balance, owned by the parent so it is never dropped. */
+  draft: ExistingDraft;
+  onDraftChange: (draft: ExistingDraft) => void;
   onAdd: (row: ExistingRow) => void;
   onRemove: (id: string) => void;
   /** Controlled open state so a direct-earning card can expand Step 2. */
@@ -998,7 +1036,7 @@ const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
   /** Programme preselected when Step 2 is opened from a direct-earning card. */
   preselectProgrammeId?: string;
 }>(function ExistingBalancesPanel({
-  rows, onAdd, onRemove, open: openProp, onOpenChange, preselectProgrammeId,
+  rows, draft, onDraftChange, onAdd, onRemove, open: openProp, onOpenChange, preselectProgrammeId,
 }, ref) {
   const [openState, setOpenState] = useState(false);
   const open = openProp ?? openState;
@@ -1006,11 +1044,14 @@ const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
     setOpenState(next);
     onOpenChange?.(next);
   };
-  const [programmeId, setProgrammeId] = useState("");
-  const [raw, setRaw] = useState("");
+  const programmeId = draft.programmeId;
+  const raw = draft.rawInput;
+  const setProgrammeId = (next: string) => onDraftChange({ programmeId: next, rawInput: raw });
+  const setRaw = (next: string) => onDraftChange({ programmeId, rawInput: next });
 
   useEffect(() => {
-    if (preselectProgrammeId) setProgrammeId(preselectProgrammeId);
+    if (preselectProgrammeId) onDraftChange({ programmeId: preselectProgrammeId, rawInput: raw });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preselectProgrammeId]);
 
 
@@ -1028,8 +1069,7 @@ const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
   const doAdd = () => {
     if (!canAdd) return;
     onAdd({ id: uid(), programmeId, rawInput: formatInt(parseIntSafe(raw)) });
-    setProgrammeId("");
-    setRaw("");
+    onDraftChange({ programmeId: "", rawInput: "" });
   };
 
   return (
