@@ -309,6 +309,22 @@ function CalculatorFlow() {
     [entries, effectiveExistingRows],
   );
 
+  /**
+   * When the only selected card earns airline miles directly, the next action is
+   * a Step 2 balance — say so explicitly instead of the generic hint.
+   */
+  const directEarnOnlyProgrammeName = useMemo(() => {
+    const selected = entries.map((e) => getCardById(e.cardId)).filter(Boolean);
+    if (selected.length === 0 || !selected.every((c) => isDirectEarnCard(c))) return null;
+    const programmeId = getDirectEarnProgrammeId(selected[0]!.cardGroupId);
+    return programmeId ? (getProgrammeById(programmeId)?.name ?? null) : null;
+  }, [entries]);
+
+  const disabledCalculateHint = directEarnOnlyProgrammeName
+    ? `Enter your current ${directEarnOnlyProgrammeName} balance in Step 2 to calculate.`
+    : "Add another points-earning card or an existing loyalty balance to calculate.";
+
+
   const handleCalculate = () => {
     // Validate
     const errs: string[] = [];
@@ -319,7 +335,7 @@ function CalculatorFlow() {
       setErrors([
         usableEntries.length === 0
           ? "Add at least one bank balance to calculate."
-          : "Add another points-earning card or an existing loyalty balance to calculate.",
+          : disabledCalculateHint,
       ]);
       setState("error");
       return;
@@ -503,7 +519,7 @@ function CalculatorFlow() {
             </button>
             {!hasCalculableInput && (
               <p className="mt-3 text-[13px] text-ink/70">
-                Add another points-earning card or an existing loyalty balance to calculate.
+                {disabledCalculateHint}
               </p>
             )}
             <p className="mt-3 text-[12px] text-ink/55">
@@ -802,12 +818,25 @@ function EntryCard({
       {directEarn && card && (
         <div role="note" className="mt-4 rounded-sm border border-ink/30 bg-sand/40 p-4 text-[12px] leading-relaxed text-ink/80">
           <p className="text-[10px] uppercase tracking-[0.18em] text-ink/60">Direct airline-earning card</p>
-          <p className="mt-2 text-[13px] text-ink">
-            This card earns {directProgrammeName} Points directly into your {directProgrammeName} account.
-            There is no bank-points balance to transfer. Add your current {directProgrammeName} balance under Step&nbsp;2.
+          <p className="mt-2 text-[15px] font-medium text-ink">
+            Your {directProgrammeName} Points are already in {directProgrammeName}
           </p>
+          <p className="mt-2 text-[13px] text-ink/80">
+            This card earns {directProgrammeName} Points directly rather than bank reward points that need to
+            be transferred. Enter your current {directProgrammeName} balance below to see where your points can take you.
+          </p>
+          {directProgrammeId && (
+            <button
+              type="button"
+              onClick={() => onAddProgrammeBalance(directProgrammeId)}
+              data-testid="direct-earn-cta"
+              className="mt-4 inline-flex items-center gap-2 rounded-sm bg-ink px-5 py-3 text-[14px] font-medium text-background transition-transform hover:-translate-y-0.5"
+            >
+              <Plus className="h-4 w-4" /> Add My {directProgrammeName} Balance
+            </button>
+          )}
           {directEarnRates.length > 0 && (
-            <div className="mt-3">
+            <div className="mt-5">
               <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">Current earning rates</p>
               <ul className="mt-2 divide-y divide-border border-y border-border">
                 {directEarnRates.map((r) => (
@@ -822,17 +851,10 @@ function EntryCard({
               </p>
             </div>
           )}
-          {directProgrammeId && (
-            <button
-              type="button"
-              onClick={() => onAddProgrammeBalance(directProgrammeId)}
-              className="mt-4 inline-flex items-center gap-2 rounded-sm border border-ink px-4 py-2.5 text-[13px] text-ink transition-colors hover:bg-ink hover:text-background"
-            >
-              <Plus className="h-3.5 w-3.5" /> Add my {directProgrammeName} balance
-            </button>
-          )}
         </div>
       )}
+
+
 
       {nonConvertible && card && (
         <div role="note" data-testid="non-convertible-note" className="mt-4 rounded-sm border border-ink/30 bg-sand/40 p-4 text-[12px] leading-relaxed text-ink/80">
