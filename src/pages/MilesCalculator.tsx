@@ -335,7 +335,7 @@ function CalculatorFlow() {
       setErrors([
         usableEntries.length === 0
           ? "Add at least one bank balance to calculate."
-          : "Add another points-earning card or an existing loyalty balance to calculate.",
+          : disabledCalculateHint,
       ]);
       setState("error");
       return;
@@ -519,7 +519,7 @@ function CalculatorFlow() {
             </button>
             {!hasCalculableInput && (
               <p className="mt-3 text-[13px] text-ink/70">
-                Add another points-earning card or an existing loyalty balance to calculate.
+                {disabledCalculateHint}
               </p>
             )}
             <p className="mt-3 text-[12px] text-ink/55">
