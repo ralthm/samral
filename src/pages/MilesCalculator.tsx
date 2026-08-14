@@ -838,8 +838,7 @@ function EntryCard({
         </div>
       )}
 
-        </div>
-      )}
+
 
       {nonConvertible && card && (
         <div role="note" data-testid="non-convertible-note" className="mt-4 rounded-sm border border-ink/30 bg-sand/40 p-4 text-[12px] leading-relaxed text-ink/80">
