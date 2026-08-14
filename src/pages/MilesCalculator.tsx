@@ -309,6 +309,22 @@ function CalculatorFlow() {
     [entries, effectiveExistingRows],
   );
 
+  /**
+   * When the only selected card earns airline miles directly, the next action is
+   * a Step 2 balance — say so explicitly instead of the generic hint.
+   */
+  const directEarnOnlyProgrammeName = useMemo(() => {
+    const selected = entries.map((e) => getCardById(e.cardId)).filter(Boolean);
+    if (selected.length === 0 || !selected.every((c) => isDirectEarnCard(c))) return null;
+    const programmeId = getDirectEarnProgrammeId(selected[0]!.cardGroupId);
+    return programmeId ? (getProgrammeById(programmeId)?.name ?? null) : null;
+  }, [entries]);
+
+  const disabledCalculateHint = directEarnOnlyProgrammeName
+    ? `Enter your current ${directEarnOnlyProgrammeName} balance in Step 2 to calculate.`
+    : "Add another points-earning card or an existing loyalty balance to calculate.";
+
+
   const handleCalculate = () => {
     // Validate
     const errs: string[] = [];
