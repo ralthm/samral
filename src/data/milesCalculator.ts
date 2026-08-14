@@ -1009,12 +1009,25 @@ const MBB_CAMPAIGN_CAP = 250_000;
 const MBB_ANNUAL_NOTE =
   "Transfer fulfilment remains subject to Maybank's applicable individual, campaign and collective monthly conversion limits. Maybank states a maximum of 2,000,000 Air Miles per customer per calendar year and a separate 250,000 Air Mile limit during a particular bonus campaign.";
 
+/** Maybank source metadata — must be spread explicitly into Maybank rules. */
+const MBB = {
+  sourceUrl: MBB_SRC,
+  sourceTitle: MBB_TITLE,
+  sourcePublisher: "Malayan Banking Berhad",
+} as const;
+
+/**
+ * Source metadata is never inherited from a shared/default bank. Every rule
+ * must pass the source of the exact bank programme it describes.
+ */
+type RuleExtra = Partial<ConversionRule> & { sourceUrl: string; sourceTitle: string };
+
 function rule(
   id: string,
   cg: string,
   prog: string,
   block: [number, number],
-  extra: Partial<ConversionRule> = {},
+  extra: RuleExtra,
 ): ConversionRule {
   return {
     id,
@@ -1024,15 +1037,15 @@ function rule(
     partnerPointsPerBlock: block[1],
     verifiedOn: V,
     verifiedAt: V,
-    sourceUrl: MBB_SRC,
-    sourceTitle: MBB_TITLE,
-    sourceName: MBB_TITLE,
     sourceType: "official_bank",
     status: "verified",
     active: true,
     ...extra,
+    // Display label always follows this rule's own source title.
+    sourceName: extra.sourceName ?? extra.sourceTitle,
   };
 }
+
 
 export const conversionRules: ConversionRule[] = [
   // ---- Maybank — Preferential TreatsPoints (12,500 → 1,000) ----
