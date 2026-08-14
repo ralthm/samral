@@ -998,6 +998,7 @@ const ALLIANCE_TITLE =
   "Alliance Bank Three-year Bonus Points (TBP) Redemption";
 const UOB_SRC = "https://www.uob.com.my/personal/cards/rewards/uniringgit.page";
 const UOB_TITLE = "UOB Malaysia UNIRinggit Rewards";
+const UOB_PUBLISHER = "United Overseas Bank (Malaysia) Bhd";
 
 const V = "2026-03-01"; // verification date used by every seeded rule
 const MBB_EFF = "2025-02-22";
@@ -1009,12 +1010,25 @@ const MBB_CAMPAIGN_CAP = 250_000;
 const MBB_ANNUAL_NOTE =
   "Transfer fulfilment remains subject to Maybank's applicable individual, campaign and collective monthly conversion limits. Maybank states a maximum of 2,000,000 Air Miles per customer per calendar year and a separate 250,000 Air Mile limit during a particular bonus campaign.";
 
+/** Maybank source metadata — must be spread explicitly into Maybank rules. */
+const MBB = {
+  sourceUrl: MBB_SRC,
+  sourceTitle: MBB_TITLE,
+  sourcePublisher: "Malayan Banking Berhad",
+} as const;
+
+/**
+ * Source metadata is never inherited from a shared/default bank. Every rule
+ * must pass the source of the exact bank programme it describes.
+ */
+type RuleExtra = Partial<ConversionRule> & { sourceUrl: string; sourceTitle: string };
+
 function rule(
   id: string,
   cg: string,
   prog: string,
   block: [number, number],
-  extra: Partial<ConversionRule> = {},
+  extra: RuleExtra,
 ): ConversionRule {
   return {
     id,
@@ -1024,59 +1038,59 @@ function rule(
     partnerPointsPerBlock: block[1],
     verifiedOn: V,
     verifiedAt: V,
-    sourceUrl: MBB_SRC,
-    sourceTitle: MBB_TITLE,
-    sourceName: MBB_TITLE,
     sourceType: "official_bank",
     status: "verified",
     active: true,
     ...extra,
+    // Display label always follows this rule's own source title.
+    sourceName: extra.sourceName ?? extra.sourceTitle,
   };
 }
+
 
 export const conversionRules: ConversionRule[] = [
   // ---- Maybank — Preferential TreatsPoints (12,500 → 1,000) ----
   rule("mbb-prem-enrich", "cg-mbb-treats-premium", "enrich", [12500, 1000], {
-    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
+    ...MBB, effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-prem-krisflyer", "cg-mbb-treats-premium", "krisflyer", [12500, 1000], {
-    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
+    ...MBB, effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-prem-cathay", "cg-mbb-treats-premium", "asia-miles", [12500, 1000], {
-    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
+    ...MBB, effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
 
   // ---- Maybank — Selected Amex MR (12,500 → 1,000) ----
   rule("mbb-selamex-enrich", "cg-mbb-mr-selected-amex", "enrich", [12500, 1000], {
-    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
+    ...MBB, effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-selamex-krisflyer", "cg-mbb-mr-selected-amex", "krisflyer", [12500, 1000], {
-    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
+    ...MBB, effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-selamex-cathay", "cg-mbb-mr-selected-amex", "asia-miles", [12500, 1000], {
-    effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
+    ...MBB, effectiveFrom: MBB_EFF, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
 
   // ---- Maybank — Amex Platinum Charge MR (7,000 → 1,000) ----
   rule("mbb-platch-enrich", "cg-mbb-mr-plat-charge", "enrich", [7000, 1000], {
-    annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
+    ...MBB, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-platch-krisflyer", "cg-mbb-mr-plat-charge", "krisflyer", [7000, 1000], {
-    annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
+    ...MBB, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-platch-cathay", "cg-mbb-mr-plat-charge", "asia-miles", [7000, 1000], {
-    annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
+    ...MBB, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
 
   // ---- Maybank — Standard TreatsPoints (20,000 → 1,000) ----
   rule("mbb-std-enrich", "cg-mbb-treats-standard", "enrich", [20000, 1000], {
-    annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
+    ...MBB, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-std-krisflyer", "cg-mbb-treats-standard", "krisflyer", [20000, 1000], {
-    annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
+    ...MBB, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
   rule("mbb-std-cathay", "cg-mbb-treats-standard", "asia-miles", [20000, 1000], {
-    annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
+    ...MBB, annualCapPartnerPoints: MBB_ANNUAL_CAP, campaignCapPartnerPoints: MBB_CAMPAIGN_CAP, notes: MBB_ANNUAL_NOTE,
   }),
 
 
@@ -1116,7 +1130,7 @@ export const conversionRules: ConversionRule[] = [
 
   // ---- Alliance TBP (75,000 → 5,000 Enrich, cap 20,000 Enrich/month) ----
   rule("alliance-enrich", "cg-alliance-tbp", "enrich", [75000, 5000], {
-    sourceUrl: ALLIANCE_SRC, sourceTitle: ALLIANCE_TITLE,
+    sourceUrl: ALLIANCE_SRC, sourceTitle: ALLIANCE_TITLE, sourcePublisher: "Alliance Bank Malaysia Berhad",
     effectiveFrom: ALLIANCE_EFF,
     minimumTransferPartnerPoints: 5000,
     transferIncrementPartnerPoints: 5000,
@@ -1125,7 +1139,7 @@ export const conversionRules: ConversionRule[] = [
       "Effective 1 December 2025, Alliance changed transfers from 1,000-point ratios to compulsory 5,000 partner-point blocks. Maximum 20,000 Enrich per cardholder per month (equivalent to 300,000 TBP).",
   }),
   rule("alliance-airasia", "cg-alliance-tbp", "airasia", [30000, 5000], {
-    sourceUrl: ALLIANCE_SRC, sourceTitle: ALLIANCE_TITLE,
+    sourceUrl: ALLIANCE_SRC, sourceTitle: ALLIANCE_TITLE, sourcePublisher: "Alliance Bank Malaysia Berhad",
     effectiveFrom: ALLIANCE_EFF,
     minimumTransferPartnerPoints: 5000,
     transferIncrementPartnerPoints: 5000,
@@ -1135,30 +1149,30 @@ export const conversionRules: ConversionRule[] = [
   }),
 
   // ---- UOB — verified per-card tiers (Enrich, KrisFlyer, Asia Miles, AirAsia) ----
-  rule("uob-metal-enrich", "cg-uob-metal", "enrich", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-metal-krisflyer", "cg-uob-metal", "krisflyer", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-metal-cathay", "cg-uob-metal", "asia-miles", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-metal-airasia", "cg-uob-metal", "airasia", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-metal-enrich", "cg-uob-metal", "enrich", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-metal-krisflyer", "cg-uob-metal", "krisflyer", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-metal-cathay", "cg-uob-metal", "asia-miles", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-metal-airasia", "cg-uob-metal", "airasia", [5000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
 
-  rule("uob-zenith-enrich", "cg-uob-zenith", "enrich", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-zenith-krisflyer", "cg-uob-zenith", "krisflyer", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-zenith-cathay", "cg-uob-zenith", "asia-miles", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-zenith-airasia", "cg-uob-zenith", "airasia", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-zenith-enrich", "cg-uob-zenith", "enrich", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-zenith-krisflyer", "cg-uob-zenith", "krisflyer", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-zenith-cathay", "cg-uob-zenith", "asia-miles", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-zenith-airasia", "cg-uob-zenith", "airasia", [7400, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
 
-  rule("uob-privilege-enrich", "cg-uob-privilege", "enrich", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-privilege-krisflyer", "cg-uob-privilege", "krisflyer", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-privilege-cathay", "cg-uob-privilege", "asia-miles", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-privilege-airasia", "cg-uob-privilege", "airasia", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-privilege-enrich", "cg-uob-privilege", "enrich", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-privilege-krisflyer", "cg-uob-privilege", "krisflyer", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-privilege-cathay", "cg-uob-privilege", "asia-miles", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-privilege-airasia", "cg-uob-privilege", "airasia", [10000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
 
-  rule("uob-vi-enrich", "cg-uob-visa-infinite", "enrich", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-vi-krisflyer", "cg-uob-visa-infinite", "krisflyer", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-vi-cathay", "cg-uob-visa-infinite", "asia-miles", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-vi-airasia", "cg-uob-visa-infinite", "airasia", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-vi-enrich", "cg-uob-visa-infinite", "enrich", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-vi-krisflyer", "cg-uob-visa-infinite", "krisflyer", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-vi-cathay", "cg-uob-visa-infinite", "asia-miles", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-vi-airasia", "cg-uob-visa-infinite", "airasia", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
 
-  rule("uob-prvi-elite-enrich", "cg-uob-prvi-elite", "enrich", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-prvi-elite-krisflyer", "cg-uob-prvi-elite", "krisflyer", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-prvi-elite-cathay", "cg-uob-prvi-elite", "asia-miles", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
-  rule("uob-prvi-elite-airasia", "cg-uob-prvi-elite", "airasia", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE }),
+  rule("uob-prvi-elite-enrich", "cg-uob-prvi-elite", "enrich", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-prvi-elite-krisflyer", "cg-uob-prvi-elite", "krisflyer", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-prvi-elite-cathay", "cg-uob-prvi-elite", "asia-miles", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
+  rule("uob-prvi-elite-airasia", "cg-uob-prvi-elite", "airasia", [12000, 1000], { sourceUrl: UOB_SRC, sourceTitle: UOB_TITLE, sourcePublisher: UOB_PUBLISHER }),
 
 
 
@@ -1195,6 +1209,7 @@ export const conversionRules: ConversionRule[] = [
     verifiedOn: "2026-07-01",
     sourceUrl: "https://www.hsbc.com.my/credit-cards/offers/travelone/",
     sourceTitle: "HSBC Malaysia TravelOne — Reward Points partner conversion table",
+    sourceName: "HSBC Malaysia TravelOne — Reward Points partner conversion table",
     sourcePublisher: "HSBC Bank Malaysia Berhad",
     status: "verified",
     active: true,
@@ -1344,6 +1359,7 @@ export const conversionRules: ConversionRule[] = [
     verifiedOn: "2026-07-23",
     sourceUrl: "https://www.rhbgroup.com/personal/cards/credit-cards/rewards/index.html",
     sourceTitle: "RHB Credit Card Rewards — Enrich conversion (2026)",
+    sourceName: "RHB Credit Card Rewards — Enrich conversion (2026)",
     sourcePublisher: "RHB Bank Berhad",
     status: "verified",
     active: true,
