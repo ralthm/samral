@@ -126,23 +126,44 @@ function Shell({ children }: { children: React.ReactNode }) {
 }
 
 function SignIn() {
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
 
   return (
     <Shell>
-      <h1 className="font-display text-3xl text-ink">Admin sign in</h1>
-      <p className="mt-3 text-sm text-ink/70">Card image management is restricted to Samral admin accounts.</p>
+      <h1 className="font-display text-3xl text-ink">
+        {mode === "signin" ? "Admin sign in" : "Create admin account"}
+      </h1>
+      <p className="mt-3 text-sm text-ink/70">
+        Card image management is restricted to Samral admin accounts. Creating an account does not grant
+        access on its own — the admin role is issued only to the approved Samral address.
+      </p>
       <form
         className="mt-6 space-y-3"
         onSubmit={async (e) => {
           e.preventDefault();
           setBusy(true);
           setError("");
-          const { error } = await supabase.auth.signInWithPassword({ email, password });
-          if (error) setError(error.message);
+          setNotice("");
+          if (mode === "signin") {
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) setError(error.message);
+          } else {
+            const { data, error } = await supabase.auth.signUp({
+              email,
+              password,
+              options: { emailRedirectTo: `${window.location.origin}/admin/card-images` },
+            });
+            if (error) setError(error.message);
+            else if (!data.session) {
+              setNotice("Account created. Confirm the link in your inbox, then sign in here.");
+              setMode("signin");
+            }
+          }
           setBusy(false);
         }}
       >
@@ -160,22 +181,31 @@ function SignIn() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
-          autoComplete="current-password"
+          autoComplete={mode === "signin" ? "current-password" : "new-password"}
+          minLength={8}
           required
           className="w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm"
         />
         {error && <p className="text-[13px] text-destructive">{error}</p>}
+        {notice && <p className="text-[13px] text-ink/70">{notice}</p>}
         <button
           type="submit"
           disabled={busy}
           className="w-full rounded-sm bg-ink px-4 py-2.5 text-sm text-background disabled:opacity-60"
         >
-          {busy ? "Signing in…" : "Sign in"}
+          {busy ? "Working…" : mode === "signin" ? "Sign in" : "Create account"}
         </button>
       </form>
+      <button
+        onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setError(""); setNotice(""); }}
+        className="mt-4 text-[13px] text-ink/70 underline underline-offset-4 hover:text-ink"
+      >
+        {mode === "signin" ? "First time here? Create your account" : "Already have an account? Sign in"}
+      </button>
     </Shell>
   );
 }
+
 
 function Queue() {
   const [rows, setRows] = useState<CardImageRow[]>([]);
