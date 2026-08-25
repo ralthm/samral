@@ -2,6 +2,8 @@ import { forwardRef, lazy, Suspense, useCallback, useEffect, useMemo, useRef, us
 import { ChevronDown, Plus, Trash2, X } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import { CardArtwork } from "@/components/milesCalculator/CardArtwork";
+
 import {
   banks,
   Card,
