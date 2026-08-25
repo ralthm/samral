@@ -692,12 +692,16 @@ function EntryCard({
         <Field label="Credit card" htmlFor={`card-${entry.id}`}>
           {card && !searchOpen ? (
             <div className="mt-2 flex items-center justify-between gap-3 rounded-sm border border-border bg-sand/40 px-3 py-2.5 text-sm text-ink">
-              <span className="min-w-0 truncate">
-                <span className="truncate">{card.name}</span>
-                {card.subtitle && (
-                  <span className="ml-1 text-[12px] text-ink/55">· {card.subtitle}</span>
-                )}
+              <span className="flex min-w-0 items-center gap-2.5">
+                <CardArtwork cardId={card.id} cardName={card.name} className="h-9 w-[58px]" sizes="58px" />
+                <span className="min-w-0 truncate">
+                  <span className="truncate">{card.name}</span>
+                  {card.subtitle && (
+                    <span className="ml-1 text-[12px] text-ink/55">· {card.subtitle}</span>
+                  )}
+                </span>
               </span>
+
               <button
                 type="button"
                 onClick={clearCard}
