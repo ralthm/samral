@@ -737,12 +737,14 @@ function EntryCard({
                       onClick={() => pickCard(c)}
                       className="flex w-full items-start justify-between gap-3 border-b border-border/60 px-3 py-2 text-left text-[13px] text-ink hover:bg-sand/50"
                     >
+                      <CardArtwork cardId={c.id} cardName={c.name} className="mt-0.5 h-7 w-[46px]" sizes="46px" />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate">{c.name}</span>
                         {c.subtitle && (
                           <span className="block truncate text-[11px] text-ink/55">{c.subtitle}</span>
                         )}
                       </span>
+
                       {(c.status === "rate_unconfirmed" || c.status === "rate_pending_verification") && (
                         <span className="shrink-0 text-[10px] uppercase tracking-[0.14em] text-ink/50">Rate to confirm</span>
                       )}
