@@ -35,6 +35,8 @@ const App = () => (
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/miles-calculator" element={<MilesCalculator />} />
         <Route path="/admin/miles-calculator" element={<AdminMilesCalculator />} />
+        <Route path="/admin/card-images" element={<AdminCardImages />} />
+
         <Route path="/typography-preview" element={<TypographyPreview />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
