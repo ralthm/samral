@@ -14,16 +14,173 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      card_image_candidates: {
+        Row: {
+          card_id: string
+          created_at: string
+          discovery_method: string
+          id: string
+          image_url: string
+          notes: string | null
+          score: number
+          source_type: string
+          source_url: string
+          status: string
+        }
+        Insert: {
+          card_id: string
+          created_at?: string
+          discovery_method: string
+          id?: string
+          image_url: string
+          notes?: string | null
+          score?: number
+          source_type: string
+          source_url: string
+          status?: string
+        }
+        Update: {
+          card_id?: string
+          created_at?: string
+          discovery_method?: string
+          id?: string
+          image_url?: string
+          notes?: string | null
+          score?: number
+          source_type?: string
+          source_url?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_image_candidates_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "card_images"
+            referencedColumns: ["card_id"]
+          },
+        ]
+      }
+      card_images: {
+        Row: {
+          bank_id: string
+          card_id: string
+          card_image_origin_url: string | null
+          card_image_path: string | null
+          card_image_source_type: string | null
+          card_image_source_url: string | null
+          card_image_status: string
+          card_image_variants: Json
+          card_image_verified_at: string | null
+          card_name: string
+          created_at: string
+          image_height: number | null
+          image_sha256: string | null
+          image_width: number | null
+          last_checked_at: string | null
+          review_notes: string | null
+          source_content_hash: string | null
+          updated_at: string
+        }
+        Insert: {
+          bank_id: string
+          card_id: string
+          card_image_origin_url?: string | null
+          card_image_path?: string | null
+          card_image_source_type?: string | null
+          card_image_source_url?: string | null
+          card_image_status?: string
+          card_image_variants?: Json
+          card_image_verified_at?: string | null
+          card_name: string
+          created_at?: string
+          image_height?: number | null
+          image_sha256?: string | null
+          image_width?: number | null
+          last_checked_at?: string | null
+          review_notes?: string | null
+          source_content_hash?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bank_id?: string
+          card_id?: string
+          card_image_origin_url?: string | null
+          card_image_path?: string | null
+          card_image_source_type?: string | null
+          card_image_source_url?: string | null
+          card_image_status?: string
+          card_image_variants?: Json
+          card_image_verified_at?: string | null
+          card_name?: string
+          created_at?: string
+          image_height?: number | null
+          image_sha256?: string | null
+          image_width?: number | null
+          last_checked_at?: string | null
+          review_notes?: string | null
+          source_content_hash?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      job_locks: {
+        Row: {
+          expires_at: string
+          job_name: string
+          locked_at: string
+          state: Json
+        }
+        Insert: {
+          expires_at: string
+          job_name: string
+          locked_at?: string
+          state?: Json
+        }
+        Update: {
+          expires_at?: string
+          job_name?: string
+          locked_at?: string
+          state?: Json
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +307,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

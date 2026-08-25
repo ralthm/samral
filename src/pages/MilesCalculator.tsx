@@ -2,6 +2,8 @@ import { forwardRef, lazy, Suspense, useCallback, useEffect, useMemo, useRef, us
 import { ChevronDown, Plus, Trash2, X } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import { CardArtwork } from "@/components/milesCalculator/CardArtwork";
+
 import {
   banks,
   Card,
@@ -692,12 +694,16 @@ function EntryCard({
         <Field label="Credit card" htmlFor={`card-${entry.id}`}>
           {card && !searchOpen ? (
             <div className="mt-2 flex items-center justify-between gap-3 rounded-sm border border-border bg-sand/40 px-3 py-2.5 text-sm text-ink">
-              <span className="min-w-0 truncate">
-                <span className="truncate">{card.name}</span>
-                {card.subtitle && (
-                  <span className="ml-1 text-[12px] text-ink/55">· {card.subtitle}</span>
-                )}
+              <span className="flex min-w-0 items-center gap-2.5">
+                <CardArtwork cardId={card.id} cardName={card.name} className="h-9 w-[58px]" sizes="58px" />
+                <span className="min-w-0 truncate">
+                  <span className="truncate">{card.name}</span>
+                  {card.subtitle && (
+                    <span className="ml-1 text-[12px] text-ink/55">· {card.subtitle}</span>
+                  )}
+                </span>
               </span>
+
               <button
                 type="button"
                 onClick={clearCard}
@@ -731,12 +737,14 @@ function EntryCard({
                       onClick={() => pickCard(c)}
                       className="flex w-full items-start justify-between gap-3 border-b border-border/60 px-3 py-2 text-left text-[13px] text-ink hover:bg-sand/50"
                     >
+                      <CardArtwork cardId={c.id} cardName={c.name} className="mt-0.5 h-7 w-[46px]" sizes="46px" />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate">{c.name}</span>
                         {c.subtitle && (
                           <span className="block truncate text-[11px] text-ink/55">{c.subtitle}</span>
                         )}
                       </span>
+
                       {(c.status === "rate_unconfirmed" || c.status === "rate_pending_verification") && (
                         <span className="shrink-0 text-[10px] uppercase tracking-[0.14em] text-ink/50">Rate to confirm</span>
                       )}
