@@ -1245,7 +1245,7 @@ function TripPlanningCTA() {
           rel="noopener noreferrer"
           className="mt-8 inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
         >
-          Book a Free 20-Minute Call
+          Book a Free Discovery Call
         </a>
         <p className="mt-4 text-[13px] text-ink/55">
           Free discovery call · No obligation
