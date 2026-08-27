@@ -31,7 +31,6 @@ import {
   isTargetPublic,
   outboundPointsForParty,
   pointsPerPersonPerDirection,
-  isTargetVerified,
   type MarketCountry,
   originLabelForCountry,
   RedemptionTarget,
