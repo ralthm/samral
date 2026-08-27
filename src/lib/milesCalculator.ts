@@ -84,6 +84,11 @@ export interface RuleResult {
   capWarning?: string;
   minimumTransferPartnerPoints?: number;
   transferIncrementPartnerPoints?: number;
+  /** Bank-side minimum per transfer, where the issuer publishes one. */
+  minimumBankPointsPerTransfer?: number;
+  /** Administrative fee per conversion transaction, where the issuer charges one. */
+  transferFeeAmount?: number;
+  transferFeeCurrency?: "SGD" | "MYR";
   /** All promotions currently active for this route (applied + conditional). */
   promotions: PromotionApplication[];
   /** Sum of currently-applied bonuses (unconditional + registered). */
@@ -214,6 +219,9 @@ function buildResult(
     capWarning,
     minimumTransferPartnerPoints: r.minimumTransferPartnerPoints,
     transferIncrementPartnerPoints: r.transferIncrementPartnerPoints,
+    minimumBankPointsPerTransfer: r.minimumBankPointsPerTransfer,
+    transferFeeAmount: r.transferFeeAmount,
+    transferFeeCurrency: r.transferFeeCurrency,
     ...promoData,
   };
 }
