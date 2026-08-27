@@ -96,7 +96,32 @@ export const ALLIANCE_PROGRAMMES: Record<string, AllianceProgrammeInfo> = {
     officialSourceUrl: "https://www.turkishairlines.com/en-int/miles-and-smiles/",
     verifiedAt: "2026-07-23",
   },
+  qantas: {
+    programmeId: "qantas",
+    allianceCode: "OW",
+    allianceDisplayName: "oneworld",
+    primaryAirline: "Qantas",
+    partnerAwardsSupported: true,
+    officialSourceUrl: "https://www.qantas.com/au/en/frequent-flyer/discover-and-join/earn-and-use-points.html",
+    verifiedAt: "2026-08-27",
+  },
+  rop: {
+    programmeId: "rop",
+    allianceCode: "SA",
+    allianceDisplayName: "Star Alliance",
+    primaryAirline: "Thai Airways",
+    partnerAwardsSupported: true,
+    officialSourceUrl: "https://www.thaiairways.com/en/royal_orchid_plus/use_miles/",
+    verifiedAt: "2026-08-27",
+  },
 };
+
+/**
+ * Programmes that are deliberately NOT alliance members. Kept explicit so no
+ * future edit labels them oneworld or Star Alliance.
+ */
+export const NON_ALLIANCE_PROGRAMMES = ["etihad", "flying-blue", "emirates", "airasia", "batik"] as const;
+
 
 export function getAllianceInfo(programmeId: string): AllianceProgrammeInfo | null {
   return ALLIANCE_PROGRAMMES[programmeId] ?? null;

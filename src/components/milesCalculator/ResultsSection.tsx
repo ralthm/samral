@@ -11,9 +11,9 @@ import { ChevronDown, ExternalLink, Pencil } from "lucide-react";
 import TravellersInput from "@/components/TravellersInput";
 import { AllianceBadge, AllianceInfo } from "@/components/AllianceInfo";
 import {
-  banks,
   eligibleCardGroups,
   getBankById,
+  getBanksByCountry,
   getCardGroupById,
   getProgrammeById,
   getPublicRulesForCardGroup,
@@ -41,6 +41,9 @@ import {
   verifiedCabinsPresent,
 } from "@/data/redemptionTargets";
 import { classifyRedemption } from "@/lib/redemptionStatus";
+import { awardDisclaimersFor, UNIVERSAL_AWARD_DISCLAIMER } from "@/lib/awardDisclaimers";
+import { computeTransferFees, formatFee } from "@/lib/transferFees";
+import { ratesDirectoryCaption, ratesDirectoryHeading } from "@/lib/marketCopy";
 import { saveTripContext, TripContext } from "@/lib/tripContext";
 import { track } from "@/lib/track";
 import type { Snapshot } from "./types";
@@ -61,7 +64,7 @@ export default function ResultsSection(props: {
     <>
       <ResultsDashboard {...props} />
       <PostCalcCTA />
-      <QuickReference />
+      <QuickReference country={props.country} />
     </>
   );
 }
@@ -431,6 +434,18 @@ function ProgrammeBalanceCard({
     return { points, currency: rowResults[0].rewardCurrencyName };
   }, [rowResults, hasConditionalBonus]);
 
+  // Cash conversion fees for THIS destination programme only. One transfer per
+  // contributing bank; alternative programme scenarios are never summed.
+  const fees = useMemo(
+    () => computeTransferFees(rowResults.map((r) => ({
+      bankId: r.bankId,
+      bankName: r.bankName,
+      transferFeeAmount: r.transferFeeAmount,
+      transferFeeCurrency: r.transferFeeCurrency,
+    }))),
+    [rowResults],
+  );
+
   // Published bank conversion caps we cannot verify against the user's own
   // transfer history.
   const capWarnings = useMemo(
@@ -578,6 +593,32 @@ function ProgrammeBalanceCard({
         ctaContext={{ calculatedBalance: programme.maxPromotionalTotal || programme.potentialTotal }}
       />
 
+      {(fees.breakdown.length > 0 || fees.unknownBanks.length > 0) && (
+        <div className="mt-4 border-t border-border pt-4">
+          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">Estimated transfer fees</p>
+          {fees.breakdown.length > 0 && fees.currency && (
+            <>
+              <p className="mt-2 font-display text-xl text-ink">{formatFee(fees.total, fees.currency)}</p>
+              <ul className="mt-2 space-y-1 text-[12px]">
+                {fees.breakdown.map((b) => (
+                  <li key={b.bankId} className="flex items-baseline justify-between gap-3">
+                    <span className="text-ink/70">{b.bankName}</span>
+                    <span className="text-ink">{formatFee(b.amount, b.currency)}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-[11px] leading-relaxed text-ink/55">
+                Cash cost of performing one transfer from each contributing bank into {programme.programmeName}. Fees are charged in addition to the transfer &mdash; they are never deducted from your miles, and fees for other programme scenarios are not included here.
+              </p>
+            </>
+          )}
+          {fees.unknownBanks.length > 0 && (
+            <p className="mt-2 text-[11px] leading-relaxed text-ink/55">
+              No verified conversion fee on record for {fees.unknownBanks.join(", ")}. Confirm the current fee with the bank before transferring.
+            </p>
+          )}
+        </div>
+      )}
 
 
       {byCurrency.length > 0 && (
@@ -858,6 +899,15 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
   const capped = !programmeId && !showAll &&
     (unlocked.length < unlockedAll.length || almost.length < almostAll.length || future.length < futureAll.length);
 
+  // Programme-specific award disclaimers are keyed off the redemption cards
+  // actually rendered, so an Enrich or Asia Miles note never appears when only
+  // KrisFlyer opportunities are visible.
+  const visibleProgrammeIds = cabinMissingFromDataset
+    ? []
+    : Array.from(new Set([...unlocked, ...almost, ...future].map((e) => e.t.programmeId)));
+
+
+
   useEffect(() => {
     if (unlocked.length > 0) {
       track("unlocked_destination_viewed", { count: unlocked.length });
@@ -1063,9 +1113,12 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
         )}
       </div>
 
-      <p className="mt-10 rounded-sm border border-border bg-background p-4 text-[12px] leading-relaxed text-ink/65">
-        Award-seat availability has not been checked. Taxes, fees and airline surcharges apply on top of the points requirement. Enrich Saver applies to point-to-point itineraries on Malaysia Airlines-operated flights only and is bookable one-way or return, with a return booking requiring twice the one-way points; codeshares and connecting sectors are priced separately. KrisFlyer Saver uses the Singapore Airlines award chart effective 1 November 2025 for Singapore Airlines-operated itineraries. Asia Miles opportunities cover Cathay Pacific-operated flights only. Partner-airline awards on any programme require separate pricing and are not shown here.
-      </p>
+      <div className="mt-10 rounded-sm border border-border bg-background p-4 text-[12px] leading-relaxed text-ink/65">
+        <p>{UNIVERSAL_AWARD_DISCLAIMER}</p>
+        {awardDisclaimersFor(visibleProgrammeIds).map((d) => (
+          <p key={d} className="mt-2">{d}</p>
+        ))}
+      </div>
     </section>
   );
 }
@@ -1405,16 +1458,22 @@ function formatDate(iso: string): string {
 
 /* ---------- Quick reference (collapsed) ---------- */
 
-function QuickReference() {
+function QuickReference({ country }: { country: MarketCountry }) {
   const [open, setOpen] = useState(false);
   const [bankFilter, setBankFilter] = useState("");
   const [progFilter, setProgFilter] = useState("");
+
+  // Issuers, and therefore rows, are scoped to the selected market: a
+  // Malaysian route can never appear while Singapore is selected.
+  const marketBanks = useMemo(() => getBanksByCountry(country), [country]);
+  const marketBankIds = useMemo(() => new Set(marketBanks.map((b) => b.id)), [marketBanks]);
 
   const rows = useMemo(() => {
     return eligibleCardGroups.flatMap((cg) => {
       const product = getRewardProductById(cg.rewardProductId);
       const bank = product ? getBankById(product.bankId) : undefined;
       if (!bank || !product) return [];
+      if (!marketBankIds.has(bank.id)) return [];
       const rules = getPublicRulesForCardGroup(cg.id);
       return rules.map((r) => {
         const prog = getProgrammeById(r.loyaltyProgrammeId);
@@ -1434,7 +1493,7 @@ function QuickReference() {
         };
       });
     }).filter((r) => (!bankFilter || r.bankId === bankFilter) && (!progFilter || r.programmeId === progFilter));
-  }, [bankFilter, progFilter]);
+  }, [bankFilter, progFilter, marketBankIds]);
 
   return (
     <section className="border-b border-border bg-background">
@@ -1450,7 +1509,7 @@ function QuickReference() {
           className="flex w-full items-center justify-between gap-4 text-left"
         >
           <span>
-            <span className="font-display text-2xl text-ink md:text-3xl">Browse all Malaysian conversion rates</span>
+            <span className="font-display text-2xl text-ink md:text-3xl">{ratesDirectoryHeading(country)}</span>
             <span className="mt-1 block text-[12px] text-ink/60">
               Every verified transfer route currently in our database.
             </span>
@@ -1462,7 +1521,7 @@ function QuickReference() {
           <div className="flex flex-wrap gap-4">
             <select value={bankFilter} onChange={(e) => setBankFilter(e.target.value)} className="rounded-sm border border-border bg-background px-3 py-2 text-sm">
               <option value="">All banks</option>
-              {banks.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+              {marketBanks.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
             </select>
             <select value={progFilter} onChange={(e) => setProgFilter(e.target.value)} className="rounded-sm border border-border bg-background px-3 py-2 text-sm">
               <option value="">All programmes</option>
@@ -1472,7 +1531,7 @@ function QuickReference() {
 
           <div className="mt-6 hidden overflow-x-auto md:block">
             <table className="w-full border-collapse text-left text-[13px]">
-              <caption className="sr-only">Malaysian credit card points to airline/hotel programme conversion rates</caption>
+              <caption className="sr-only">{ratesDirectoryCaption(country)}</caption>
               <thead>
                 <tr className="border-b border-border text-[11px] uppercase tracking-[0.14em] text-ink/60">
                   <th scope="col" className="py-3 pr-4">Bank</th>

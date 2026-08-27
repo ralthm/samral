@@ -196,6 +196,12 @@ const UOB_FEE = { transferFeeAmount: 27, transferFeeCurrency: "SGD" as const };
 const UOB_FEE_NOTE =
   "A S$27 administrative fee applies per conversion. The fee is waived for UOB Reserve, UOB Privilege Reserve, UOB Solitaire Metal Card, UOB Privilege Banking and UOB Lady's Solitaire cardmembers.";
 
+/** Citi Singapore charges S$27.25 per Points Transfer on ordinary cards
+ * (for example the Citi Rewards Card). */
+const CITI_FEE_NOTE =
+  "A S$27.25 Points Transfer fee applies per conversion on ordinary Citi cards such as the Citi Rewards Card.";
+
+
 /** Citi partners sharing one published transfer schedule per currency. */
 const CITI_PARTNERS: [string, string][] = [
   ["krisflyer", "krisflyer"],
@@ -236,7 +242,11 @@ export const sgConversionRules: ConversionRule[] = [
 
   /* ---- Citi ThankYou Points (25,000 → 10,000) ---- */
   ...CITI_PARTNERS.map(([key, prog]) =>
-    sgRule(`sg-citi-typ-${key}`, "cg-citi-sg-typ", prog, [25000, 10000], { ...CITI_TYP_SRC }),
+    sgRule(`sg-citi-typ-${key}`, "cg-citi-sg-typ", prog, [25000, 10000], {
+      ...CITI_TYP_SRC,
+      ...FEE,
+      notes: CITI_FEE_NOTE,
+    }),
   ),
 
   /* ---- Citi Miles (10,000 → 10,000) ---- */
