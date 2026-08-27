@@ -5,7 +5,6 @@ import SiteFooter from "@/components/SiteFooter";
 import { CardArtwork } from "@/components/milesCalculator/CardArtwork";
 
 import {
-  banks,
   COUNTRIES,
   CountryCode,
   getBanksByCountry,
