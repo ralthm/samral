@@ -6,6 +6,9 @@ import { CardArtwork } from "@/components/milesCalculator/CardArtwork";
 
 import {
   banks,
+  COUNTRIES,
+  CountryCode,
+  getBanksByCountry,
   Card,
   getBankById,
   getCardById,
@@ -111,28 +114,44 @@ const newEntry = (): Entry => ({
 });
 
 export default function MilesCalculator() {
+  /**
+   * Country scope. Malaysia stays the default so existing behaviour and
+   * existing links are unchanged. Switching only swaps which dataset the
+   * selectors read — the calculation engine is shared.
+   */
+  const [country, setCountry] = useState<CountryCode>("MY");
+
   useEffect(() => {
-    document.title =
-      "Malaysia Credit Card Points to Airline Miles Calculator | Samral";
-    const desc =
-      "Convert Malaysian credit card points into Enrich Points, KrisFlyer miles, Asia Miles, Avios and other airline rewards. See exact conversion blocks, usable points and leftover balances.";
+    const isSg = country === "SG";
+    document.title = isSg
+      ? "Singapore Credit Card Points to Airline Miles Calculator | Samral"
+      : "Malaysia Credit Card Points to Airline Miles Calculator | Samral";
+    const desc = isSg
+      ? "Convert DBS Points, UNI$, Citi ThankYou Points, Citi Miles, HSBC Reward Points, OCBC$, VOYAGE Miles, Membership Rewards and 360° Rewards Points into KrisFlyer miles, Asia Miles, Avios and more — with exact transfer blocks and leftover points."
+      : "Convert Malaysian credit card points into Enrich Points, KrisFlyer miles, Asia Miles, Avios and other airline rewards. See exact conversion blocks, usable points and leftover balances.";
     upsertMeta("description", desc);
     upsertLink("canonical", "https://www.samral.com/miles-calculator");
-    upsertMetaProperty("og:title", "Malaysia Credit Card Points Calculator | Samral");
+    upsertMetaProperty(
+      "og:title",
+      isSg ? "Singapore Credit Card Points Calculator | Samral" : "Malaysia Credit Card Points Calculator | Samral",
+    );
     upsertMetaProperty("og:description", desc);
     upsertMetaProperty("og:url", "https://www.samral.com/miles-calculator");
     upsertMetaProperty("og:type", "website");
+  }, [country]);
+
+  useEffect(() => {
     track("miles_calculator_viewed");
   }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
-      <Hero />
-      <CalculatorFlow />
-      <Explainer />
+      <Hero country={country} />
+      <CalculatorFlow country={country} onCountryChange={setCountry} />
+      <Explainer country={country} />
       <TripPlanningCTA />
-      <Disclaimer />
+      <Disclaimer country={country} />
       <Footer />
     </div>
   );
@@ -176,14 +195,14 @@ function Nav() {
 
 /* ---------- Hero ---------- */
 
-function Hero() {
-  const counters = useMemo(() => summaryCounters(), []);
+function Hero({ country }: { country: CountryCode }) {
+  const counters = useMemo(() => summaryCounters(country), [country]);
   return (
     <section className="border-b border-border bg-sand/60">
       <div className="mx-auto max-w-[1200px] px-5 py-16 sm:px-6 md:px-12 md:py-24">
         <p className="eyebrow text-ink/60">Updated for 2026</p>
         <h1 className="mt-4 font-display text-4xl leading-[1.05] text-ink md:text-6xl md:leading-[1.02]">
-          Malaysia&rsquo;s Credit Card Points Calculator
+          {country === "SG" ? "Singapore\u2019s" : "Malaysia\u2019s"} Credit Card Points Calculator
         </h1>
         <p className="mt-6 max-w-[640px] text-[15px] leading-relaxed text-ink/75 md:text-lg">
           Enter your credit card point balances, add any existing airline or hotel balances, then see exactly what you can transfer — with full blocks, leftover points and verified sources.
@@ -1170,17 +1189,18 @@ const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
 
 /* ---------- Explainer ---------- */
 
-function Explainer() {
+function Explainer({ country }: { country: CountryCode }) {
+  const where = country === "SG" ? "Singapore" : "Malaysian";
   return (
     <section className="border-b border-border">
       <div className="mx-auto max-w-[860px] px-5 py-16 sm:px-6 md:py-24">
         <div className="grid gap-12 md:grid-cols-2">
           <div>
             <h2 className="font-display text-3xl text-ink md:text-4xl">
-              How Malaysian credit card point conversions work
+              How {country === "SG" ? "Singapore" : "Malaysian"} credit card point conversions work
             </h2>
             <p className="mt-5 text-[15px] leading-relaxed text-ink/75">
-              Malaysian banks commonly require transfers in fixed blocks. If a transfer requires 20,000 bank points for every 1,000 airline points, a balance of 645,000 bank points does not convert into 32,250 miles. Only 640,000 points form complete blocks, producing 32,000 miles, while 5,000 points remain in the bank account.
+              {where} banks commonly require transfers in fixed blocks. If a transfer requires 20,000 bank points for every 1,000 airline points, a balance of 645,000 bank points does not convert into 32,250 miles. Only 640,000 points form complete blocks, producing 32,000 miles, while 5,000 points remain in the bank account.
             </p>
           </div>
           <div>
@@ -1257,7 +1277,16 @@ function TripPlanningCTA() {
 
 /* ---------- Disclaimer ---------- */
 
-function Disclaimer() {
+function Disclaimer({ country }: { country: CountryCode }) {
+  if (country === "SG") {
+    return (
+      <section className="border-b border-border bg-sand/40">
+        <div className="mx-auto max-w-[900px] px-5 py-10 text-center text-[13px] leading-relaxed text-ink/70 sm:px-6">
+          Conversion rates, transfer fees and programme terms may change. Samral does not transfer your points. Always verify the latest details with your bank or loyalty programme before making a transfer.
+        </div>
+      </section>
+    );
+  }
   return (
     <section className="border-b border-border bg-sand/40">
       <div className="mx-auto max-w-[900px] px-5 py-10 text-center text-[13px] leading-relaxed text-ink/70 sm:px-6">
