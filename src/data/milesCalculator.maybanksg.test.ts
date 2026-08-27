@@ -32,7 +32,7 @@ describe("Maybank Singapore TREATS Points", () => {
   });
 
   it("contributes no mileage to any calculation", () => {
-    const rows = calculateEntry({ cardGroupId: GROUP, bankPoints: 250_000 });
+    const rows = calculateEntry({ entryId: "t1", cardGroupId: GROUP, bankPoints: 250_000 });
     expect(rows).toHaveLength(0);
   });
 
