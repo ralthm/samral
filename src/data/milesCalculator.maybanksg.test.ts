@@ -6,7 +6,7 @@ import {
   getPublicRulesForCardGroup,
   isRulePublic,
 } from "./milesCalculator";
-import { calculateConversions } from "@/lib/milesCalculator";
+import { calculateEntry } from "@/lib/milesCalculator";
 
 const GROUP = "cg-maybank-sg-treats";
 const MBB_SG_RULES = conversionRules.filter((r) => r.eligibleCardGroupId === GROUP);
@@ -32,10 +32,7 @@ describe("Maybank Singapore TREATS Points", () => {
   });
 
   it("contributes no mileage to any calculation", () => {
-    const result = calculateConversions({
-      entries: [{ cardGroupId: GROUP, bankPoints: 250_000 }],
-    } as never);
-    const rows = (result as { conversions?: unknown[] }).conversions ?? [];
+    const rows = calculateEntry({ cardGroupId: GROUP, bankPoints: 250_000 });
     expect(rows).toHaveLength(0);
   });
 
