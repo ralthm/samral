@@ -963,9 +963,37 @@ function EntryCard({
             {selectedGroup?.unverifiedNotice ??
               "Samral has not yet verified a current conversion route for this card, so we won’t estimate a transfer value."}
           </p>
-          <p className="mt-1">
-            Add another card with a verified route, or add an existing airline or hotel balance in Step&nbsp;2.
+          {knownDetails.length > 0 && (
+            <div className="mt-3" data-testid="unverified-known-details">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-ink/60">Known details</p>
+              <ul className="mt-1 space-y-1">
+                {knownDetails.map((d) => (
+                  <li key={d} className="flex gap-2">
+                    <span aria-hidden className="text-ink/40">—</span>
+                    <span>{d}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {selectedGroup?.processingNotes?.length ? (
+            <div className="mt-3" data-testid="unverified-processing-notes">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-ink/60">
+                Indicative processing time
+              </p>
+              <ul className="mt-1 space-y-1">
+                {selectedGroup.processingNotes.map((n) => (
+                  <li key={n}>{n}</li>
+                ))}
+              </ul>
+              <p className="mt-1 text-ink/60">These are indicative only, not guaranteed.</p>
+            </div>
+          ) : null}
+          <p className="mt-3">
+            Add another card with a verified transfer route, or add an existing airline or hotel
+            balance in Step&nbsp;2.
           </p>
+
           <button
             type="button"
             onClick={() => onAddProgrammeBalance("")}
