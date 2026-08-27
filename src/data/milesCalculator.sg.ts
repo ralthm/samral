@@ -236,7 +236,11 @@ export const sgConversionRules: ConversionRule[] = [
 
   /* ---- Citi ThankYou Points (25,000 → 10,000) ---- */
   ...CITI_PARTNERS.map(([key, prog]) =>
-    sgRule(`sg-citi-typ-${key}`, "cg-citi-sg-typ", prog, [25000, 10000], { ...CITI_TYP_SRC }),
+    sgRule(`sg-citi-typ-${key}`, "cg-citi-sg-typ", prog, [25000, 10000], {
+      ...CITI_TYP_SRC,
+      ...FEE,
+      notes: CITI_FEE_NOTE,
+    }),
   ),
 
   /* ---- Citi Miles (10,000 → 10,000) ---- */
