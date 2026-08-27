@@ -119,6 +119,8 @@ export default function MilesCalculator() {
    * selectors read — the calculation engine is shared.
    */
   const [country, setCountry] = useState<CountryCode>("MY");
+  /** Card groups chosen in Step 1, used to keep the explainer example real. */
+  const [selectedCardGroupIds, setSelectedCardGroupIds] = useState<string[]>([]);
 
   useEffect(() => {
     const isSg = country === "SG";
@@ -147,8 +149,8 @@ export default function MilesCalculator() {
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
       <Hero country={country} />
-      <CalculatorFlow country={country} onCountryChange={setCountry} />
-      <Explainer country={country} />
+      <CalculatorFlow country={country} onCountryChange={setCountry} onSelectionChange={setSelectedCardGroupIds} />
+      <Explainer country={country} selectedCardGroupIds={selectedCardGroupIds} />
       <TripPlanningCTA />
       <Disclaimer country={country} />
       <Footer />
@@ -224,7 +226,7 @@ function Hero({ country }: { country: CountryCode }) {
           <Counter label="Issuers covered" value={counters.issuers} />
           <Counter label="Rewards programmes" value={counters.cardProgrammes} />
           <Counter label="Transfer partners" value={counters.partners} />
-          <Counter label="Conversion routes" value={counters.routes} />
+          <Counter label="Verified conversion routes" value={counters.routes} />
         </dl>
       </div>
     </section>
@@ -245,9 +247,11 @@ function Counter({ label, value }: { label: string; value: number }) {
 function CalculatorFlow({
   country,
   onCountryChange,
+  onSelectionChange,
 }: {
   country: CountryCode;
   onCountryChange: (next: CountryCode) => void;
+  onSelectionChange?: (cardGroupIds: string[]) => void;
 }) {
   const [entries, setEntries] = useState<Entry[]>([newEntry()]);
   const [existingRows, setExistingRows] = useState<ExistingRow[]>([]);
