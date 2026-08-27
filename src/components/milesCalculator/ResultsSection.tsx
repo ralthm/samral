@@ -1063,9 +1063,12 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
         )}
       </div>
 
-      <p className="mt-10 rounded-sm border border-border bg-background p-4 text-[12px] leading-relaxed text-ink/65">
-        Award-seat availability has not been checked. Taxes, fees and airline surcharges apply on top of the points requirement. Enrich Saver applies to point-to-point itineraries on Malaysia Airlines-operated flights only and is bookable one-way or return, with a return booking requiring twice the one-way points; codeshares and connecting sectors are priced separately. KrisFlyer Saver uses the Singapore Airlines award chart effective 1 November 2025 for Singapore Airlines-operated itineraries. Asia Miles opportunities cover Cathay Pacific-operated flights only. Partner-airline awards on any programme require separate pricing and are not shown here.
-      </p>
+      <div className="mt-10 rounded-sm border border-border bg-background p-4 text-[12px] leading-relaxed text-ink/65">
+        <p>{UNIVERSAL_AWARD_DISCLAIMER}</p>
+        {awardDisclaimersFor(visibleProgrammeIds).map((d) => (
+          <p key={d} className="mt-2">{d}</p>
+        ))}
+      </div>
     </section>
   );
 }
