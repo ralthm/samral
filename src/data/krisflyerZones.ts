@@ -68,6 +68,12 @@ export const KRISFLYER_ZONES_FROM_ZONE1: Record<number, KrisFlyerZone> = {
 
 export type SqCabin = "Economy" | "Premium Economy" | "Business" | "First or Business Suite";
 
+/** Route verification provenance, kept SEPARATE from award-price provenance.
+ * One source may never imply both the mileage price and current operation. */
+export const SQ_ROUTE_SOURCE =
+  "Singapore Airlines official current route and schedule information (SQ-operated services only)";
+export const SQ_ROUTE_LAST_VERIFIED = "2026-08-27";
+
 export interface SqDestination {
   airport: string;
   city: string;
@@ -76,10 +82,14 @@ export interface SqDestination {
   singaporeAirlinesZone: number;
   operatingCarrier: "Singapore Airlines";
   originAirport: "SIN";
-  /** Only true when current SIN nonstop service has been verified. */
+  /** Only true when current SIN nonstop SQ-operated service has been verified. */
   currentServiceVerified: boolean;
   /** Cabins published for this route. Never inferred from the zone chart. */
   cabinsVerified: SqCabin[];
+  /** Route-operation provenance (distinct from the award chart source). */
+  routeSource: string;
+  routeLastVerified: string;
+  verificationStatus: "verified";
   notes?: string;
 }
 
@@ -102,12 +112,17 @@ const d = (
   originAirport: "SIN",
   currentServiceVerified: true,
   cabinsVerified: V1_CABINS,
+  routeSource: SQ_ROUTE_SOURCE,
+  routeLastVerified: SQ_ROUTE_LAST_VERIFIED,
+  verificationStatus: "verified",
   notes,
 });
 
-/** Current Singapore Airlines nonstop services from Singapore Changi (SIN),
- * mapped to their Saver award zone. A city is only listed when the nonstop
- * service and its zone mapping have both been checked. */
+/** Current Singapore Airlines (SQ metal) nonstop services from Singapore Changi
+ * (SIN), mapped to their Saver award zone. A city is only listed when the
+ * SQ-operated nonstop service and its zone mapping have both been checked.
+ * Scoot-only and partner-only destinations are deliberately excluded — see
+ * EXCLUDED_FROM_SQ_SAVER_DATASET below. */
 export const SQ_DESTINATIONS_FROM_SIN: SqDestination[] = [
   // Zone 2 — Malaysia, Indonesia & Brunei
   d("KUL", "Kuala Lumpur", "Malaysia", "Malaysia and Southeast Asia", 2),
@@ -122,13 +137,17 @@ export const SQ_DESTINATIONS_FROM_SIN: SqDestination[] = [
   d("SGN", "Ho Chi Minh City", "Vietnam", "Malaysia and Southeast Asia", 3),
   d("HAN", "Hanoi", "Vietnam", "Malaysia and Southeast Asia", 3),
   d("HKT", "Phuket", "Thailand", "Malaysia and Southeast Asia", 3),
+  d("PNH", "Phnom Penh", "Cambodia", "Malaysia and Southeast Asia", 3),
+  d("RGN", "Yangon", "Myanmar", "Malaysia and Southeast Asia", 3),
 
   // Zone 4 — South China, Hong Kong & Taiwan
   d("HKG", "Hong Kong", "Hong Kong SAR", "North Asia", 4),
   d("TPE", "Taipei", "Taiwan", "North Asia", 4),
   d("CAN", "Guangzhou", "China", "North Asia", 4),
+  d("SZX", "Shenzhen", "China", "North Asia", 4),
+  d("XMN", "Xiamen", "China", "North Asia", 4),
 
-  // Zone 5 — Beijing & Shanghai
+  // Zone 5 — Beijing & Shanghai (priced separately from South China)
   d("PEK", "Beijing (Capital)", "China", "North Asia", 5),
   d("PVG", "Shanghai (Pudong)", "China", "North Asia", 5),
 
@@ -137,6 +156,8 @@ export const SQ_DESTINATIONS_FROM_SIN: SqDestination[] = [
   d("BOM", "Mumbai", "India", "South Asia", 6),
   d("BLR", "Bengaluru", "India", "South Asia", 6),
   d("MAA", "Chennai", "India", "South Asia", 6),
+  d("HYD", "Hyderabad", "India", "South Asia", 6),
+  d("DAC", "Dhaka", "Bangladesh", "South Asia", 6),
   d("CMB", "Colombo", "Sri Lanka", "South Asia", 6),
   d("MLE", "Malé", "Maldives", "South Asia", 6),
 
@@ -144,6 +165,8 @@ export const SQ_DESTINATIONS_FROM_SIN: SqDestination[] = [
   d("NRT", "Tokyo (Narita)", "Japan", "North Asia", 7),
   d("HND", "Tokyo (Haneda)", "Japan", "North Asia", 7),
   d("KIX", "Osaka (Kansai)", "Japan", "North Asia", 7),
+  d("NGO", "Nagoya (Chubu)", "Japan", "North Asia", 7),
+  d("FUK", "Fukuoka", "Japan", "North Asia", 7),
   d("ICN", "Seoul (Incheon)", "South Korea", "North Asia", 7),
 
   // Zone 8 — Perth & Darwin
@@ -155,7 +178,9 @@ export const SQ_DESTINATIONS_FROM_SIN: SqDestination[] = [
   d("MEL", "Melbourne", "Australia", "Australia and New Zealand", 9),
   d("BNE", "Brisbane", "Australia", "Australia and New Zealand", 9),
   d("ADL", "Adelaide", "Australia", "Australia and New Zealand", 9),
+  d("CNS", "Cairns", "Australia", "Australia and New Zealand", 9),
   d("AKL", "Auckland", "New Zealand", "Australia and New Zealand", 9),
+  d("CHC", "Christchurch", "New Zealand", "Australia and New Zealand", 9),
 
   // Zone 10 — Africa, Middle East & Turkey
   d("DXB", "Dubai", "United Arab Emirates", "Middle East", 10),
@@ -164,12 +189,15 @@ export const SQ_DESTINATIONS_FROM_SIN: SqDestination[] = [
 
   // Zone 11 — Europe
   d("LHR", "London (Heathrow)", "United Kingdom", "Europe", 11),
+  d("MAN", "Manchester", "United Kingdom", "Europe", 11),
   d("CDG", "Paris (Charles de Gaulle)", "France", "Europe", 11),
   d("FRA", "Frankfurt", "Germany", "Europe", 11),
   d("MUC", "Munich", "Germany", "Europe", 11),
   d("MXP", "Milan (Malpensa)", "Italy", "Europe", 11),
+  d("FCO", "Rome (Fiumicino)", "Italy", "Europe", 11),
   d("BCN", "Barcelona", "Spain", "Europe", 11),
   d("AMS", "Amsterdam", "Netherlands", "Europe", 11),
+  d("BRU", "Brussels", "Belgium", "Europe", 11),
   d("CPH", "Copenhagen", "Denmark", "Europe", 11),
   d("ZRH", "Zurich", "Switzerland", "Europe", 11),
 
@@ -182,6 +210,30 @@ export const SQ_DESTINATIONS_FROM_SIN: SqDestination[] = [
   d("JFK", "New York (JFK)", "United States", "North America", 13),
   d("EWR", "Newark", "United States", "North America", 13),
 ];
+
+/** Destinations deliberately kept OUT of the verified SQ Saver dataset, with
+ * the reason. Accuracy over destination count: a destination appearing on the
+ * SIA Group "where we fly" search is not proof of SQ-operated service, and a
+ * through-service with routing caveats cannot be priced from the simple
+ * Zone 1 table. */
+export const EXCLUDED_FROM_SQ_SAVER_DATASET: { airport: string; city: string; reason: string }[] = [
+  { airport: "BWN", city: "Bandar Seri Begawan", reason: "No SQ-operated SIN service; partner/other-carrier only." },
+  { airport: "CEB", city: "Cebu", reason: "Served by Scoot, not SQ metal." },
+  { airport: "DAD", city: "Da Nang", reason: "Scoot-operated; SQ mainline service not verified." },
+  { airport: "REP", city: "Siem Reap", reason: "Scoot-operated; SQ mainline service not verified." },
+  { airport: "PUS", city: "Busan", reason: "Scoot-operated; SQ mainline service not verified." },
+  { airport: "CTU", city: "Chengdu", reason: "SQ zone assignment for western China not established from the published chart." },
+  { airport: "CKG", city: "Chongqing", reason: "SQ zone assignment for western China not established from the published chart." },
+  { airport: "COK", city: "Kochi", reason: "Scoot-operated; SQ mainline service not verified." },
+  { airport: "CCU", city: "Kolkata", reason: "Scoot-operated; SQ mainline service not verified." },
+  { airport: "AMD", city: "Ahmedabad", reason: "Scoot-operated; SQ mainline service not verified." },
+  { airport: "KTM", city: "Kathmandu", reason: "Scoot-operated; SQ mainline service not verified." },
+  { airport: "CPT", city: "Cape Town", reason: "Through service via Johannesburg; exact Saver treatment cannot be derived from the simple Zone 1 table." },
+  { airport: "ORD", city: "Chicago", reason: "Partner-connection only; not an SQ-operated SIN Saver destination." },
+  { airport: "BOS", city: "Boston", reason: "Partner-connection only; not an SQ-operated SIN Saver destination." },
+  { airport: "MIA", city: "Miami", reason: "Partner-connection only; not an SQ-operated SIN Saver destination." },
+];
+
 
 /** Published one-way Saver requirement for a destination and cabin, or null
  * when the cabin is not published for that route. */
