@@ -858,6 +858,15 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
   const capped = !programmeId && !showAll &&
     (unlocked.length < unlockedAll.length || almost.length < almostAll.length || future.length < futureAll.length);
 
+  // Programme-specific award disclaimers are keyed off the redemption cards
+  // actually rendered, so an Enrich or Asia Miles note never appears when only
+  // KrisFlyer opportunities are visible.
+  const visibleProgrammeIds = cabinMissingFromDataset
+    ? []
+    : Array.from(new Set([...unlocked, ...almost, ...future].map((e) => e.t.programmeId)));
+
+
+
   useEffect(() => {
     if (unlocked.length > 0) {
       track("unlocked_destination_viewed", { count: unlocked.length });
