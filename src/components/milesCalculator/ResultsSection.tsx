@@ -31,8 +31,11 @@ import {
   isTargetPublic,
   outboundPointsForParty,
   pointsPerPersonPerDirection,
+  isTargetVerified,
+  type MarketCountry,
+  originLabelForCountry,
   RedemptionTarget,
-  redemptionTargets,
+  targetsForCountry,
   Region,
   REGIONS,
   SUPPORTED_PROGRAMMES,
@@ -48,6 +51,7 @@ const PRIORITY_PROGRAMMES = ["enrich", "krisflyer", "asia-miles"];
 
 export default function ResultsSection(props: {
   snapshot: Snapshot;
+  country: MarketCountry;
   isStale: boolean;
   onEdit: () => void;
   registeredPromotionIds: string[];
@@ -79,9 +83,10 @@ const GROUP_LABEL: Record<GroupKey, string> = {
 };
 
 function ResultsDashboard({
-  snapshot, isStale, onEdit, registeredPromotionIds, onToggleRegistration,
+  snapshot, country, isStale, onEdit, registeredPromotionIds, onToggleRegistration,
 }: {
   snapshot: Snapshot;
+  country: MarketCountry;
   isStale: boolean;
   onEdit: () => void;
   registeredPromotionIds: string[];
@@ -201,7 +206,7 @@ function ResultsDashboard({
         </div>
 
         {/* Destination discovery */}
-        <DestinationDiscovery portfolio={portfolio} registeredSet={registeredSet} />
+        <DestinationDiscovery portfolio={portfolio} registeredSet={registeredSet} country={country} />
 
 
         {/* Points remaining */}
@@ -482,7 +487,7 @@ function ProgrammeBalanceCard({
       )}
 
       <dl className="mt-5 grid grid-cols-2 gap-y-2 border-t border-border pt-4 text-[12px]">
-        <dt className="text-ink/55">Regular {programme.programmeName}</dt>
+        <dt className="text-ink/55">Transferable from bank points</dt>
         <dd className="text-right text-ink">{formatInt(programme.transferredTotal)}</dd>
         {applicablePromos.map((p) => {
           const isRegistered = registeredSet.has(p.id);
@@ -698,7 +703,10 @@ function ProgrammeDetails({
 
 /* ---------- Destination discovery ---------- */
 
-function DestinationDiscovery({ portfolio, registeredSet }: { portfolio: ProgrammeTotal[]; registeredSet: Set<string> }) {
+function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio: ProgrammeTotal[]; registeredSet: Set<string>; country: MarketCountry }) {
+  // Every redemption record rendered below is scoped to the selected market.
+  // A KUL-origin record can never appear in Singapore mode, and vice versa.
+  const countryTargets = useMemo(() => targetsForCountry(country), [country]);
   const navigate = useNavigate();
   // Redemption gating uses the currently-applied promotional balance
   // (base + unconditional + confirmed-registered bonuses). It never assumes
@@ -720,7 +728,7 @@ function DestinationDiscovery({ portfolio, registeredSet }: { portfolio: Program
   }, [portfolio]);
 
 
-  const cabinsPresent = useMemo(() => verifiedCabinsPresent(), []);
+  const cabinsPresent = useMemo(() => verifiedCabinsPresent(country), [country]);
 
   // Programme filter = intersection of programmes reachable from the user's
   // portfolio *with a verified transferable balance* AND programmes with a
@@ -729,11 +737,14 @@ function DestinationDiscovery({ portfolio, registeredSet }: { portfolio: Program
   // explanation in place of the destination grid rather than a browse fallback.
   const programmeOptions = useMemo(() => {
     const supported = new Set<string>(SUPPORTED_PROGRAMMES);
+    // A programme only appears in the filter when this market actually has
+    // redemption records for it — otherwise the option leads to an empty grid.
+    const withRecords = new Set(countryTargets.filter(isTargetPublic).map((t) => t.programmeId));
     return portfolio
-      .filter((p) => supported.has(p.programmeId) && (balances.get(p.programmeId) ?? 0) > 0)
+      .filter((p) => supported.has(p.programmeId) && withRecords.has(p.programmeId) && (balances.get(p.programmeId) ?? 0) > 0)
       .map((p) => ({ id: p.programmeId, name: loyaltyProgrammes.find((lp) => lp.id === p.programmeId)?.name ?? p.programmeId }))
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [portfolio, balances]);
+  }, [portfolio, balances, countryTargets]);
 
   const hasVerifiedBalance = programmeOptions.length > 0;
 
@@ -753,7 +764,7 @@ function DestinationDiscovery({ portfolio, registeredSet }: { portfolio: Program
   const eligibleProgrammes = useMemo(() => new Set(programmeOptions.map((o) => o.id)), [programmeOptions]);
 
   const targets = useMemo(() => {
-    return redemptionTargets.filter((t) => {
+    return countryTargets.filter((t) => {
       if (!isTargetPublic(t)) return false;
       if (!eligibleProgrammes.has(t.programmeId)) return false;
       if (region && t.region !== region) return false;
@@ -761,7 +772,7 @@ function DestinationDiscovery({ portfolio, registeredSet }: { portfolio: Program
       if (programmeId && t.programmeId !== programmeId) return false;
       return true;
     });
-  }, [region, cabin, programmeId, eligibleProgrammes]);
+  }, [region, cabin, programmeId, eligibleProgrammes, countryTargets]);
 
   // True when the user has picked a cabin that has zero verified records
   // across the programmes they currently hold a balance in (independent of
@@ -772,10 +783,10 @@ function DestinationDiscovery({ portfolio, registeredSet }: { portfolio: Program
     if (!cabin) return false;
     const eligibleFilter = programmeId ? new Set([programmeId]) : eligibleProgrammes;
     if (eligibleFilter.size === 0) return false;
-    return !redemptionTargets.some(
+    return !countryTargets.some(
       (t) => isTargetPublic(t) && eligibleFilter.has(t.programmeId) && t.cabin === cabin,
     );
-  }, [cabin, programmeId, eligibleProgrammes]);
+  }, [cabin, programmeId, eligibleProgrammes, countryTargets]);
 
   interface Enriched {
     t: RedemptionTarget;
@@ -819,8 +830,12 @@ function DestinationDiscovery({ portfolio, registeredSet }: { portfolio: Program
   const rankAlmost = (a: Enriched, b: Enriched) => b.ratio - a.ratio || a.required - b.required;
   const rankFuture = (a: Enriched, b: Enriched) => a.required - b.required;
 
-  const unlockedAll = enriched.filter((e) => e.delta >= 0).sort(rankUnlocked);
-  const almostAll = enriched.filter((e) => e.delta < 0 && e.ratio >= 0.75).sort(rankAlmost);
+  // Only fully verified award prices may be presented as reachable now.
+  // Supported-but-unverified routes stay in the lower bands with their notice.
+  const unlockedAll = enriched.filter((e) => e.delta >= 0 && isTargetVerified(e.t)).sort(rankUnlocked);
+  const almostAll = enriched
+    .filter((e) => (e.delta < 0 || !isTargetVerified(e.t)) && e.ratio >= 0.75)
+    .sort(rankAlmost);
   const futureAll = enriched.filter((e) => e.ratio < 0.75).sort(rankFuture);
 
   // Per-programme cap of 3 when "All programmes" is selected and the user
@@ -855,7 +870,7 @@ function DestinationDiscovery({ portfolio, registeredSet }: { portfolio: Program
   const handlePlan = (e: Enriched) => {
     const prog = loyaltyProgrammes.find((p) => p.id === e.t.programmeId);
     const ctx: TripContext = {
-      origin: e.t.origin,
+      origin: e.t.originAirport,
       destination: e.t.destination,
       destinationName: e.t.destinationName,
       cabin: e.t.cabin,
@@ -914,7 +929,7 @@ function DestinationDiscovery({ portfolio, registeredSet }: { portfolio: Program
           Where can your points take you?
         </h2>
         <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-ink/70">
-          Verified redemption opportunities across the programmes your cards can reach. Programme balances shown are alternative transfer scenarios — the same bank points cannot become their full potential balance in more than one programme at the same time.
+          Verified redemption opportunities departing {originLabelForCountry(country)}, across the programmes your cards can reach. Programme balances shown are alternative transfer scenarios — the same bank points cannot become their full potential balance in more than one programme at the same time.
         </p>
       </div>
 
@@ -1112,8 +1127,8 @@ function DestinationGroup({
 }
 
 function itineraryLabel(t: RedemptionTarget): string {
-  if (t.connectionAirports.length === 0) return `${t.origin} → ${t.destination}`;
-  return `${t.origin} → ${t.connectionAirports.join(" → ")} → ${t.destination}`;
+  if (t.connectionAirports.length === 0) return `${t.originAirport} → ${t.destination}`;
+  return `${t.originAirport} → ${t.connectionAirports.join(" → ")} → ${t.destination}`;
 }
 
 function connectionLabel(t: RedemptionTarget): string | null {
@@ -1160,7 +1175,7 @@ function DestinationCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">
-            {itineraryLabel(t)} · {t.country}
+            {itineraryLabel(t)} · {t.destinationCountry}
           </p>
           <h4 className="mt-1 font-display text-2xl text-ink md:text-3xl">{t.destinationName}</h4>
           <p className="mt-1 text-[13px] text-ink/70">

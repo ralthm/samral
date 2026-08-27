@@ -34,7 +34,31 @@ export type RedemptionType =
   | "krisflyer_saver"
   | "asia_miles_standard";
 
-export type TargetStatus = "verified" | "needs_review" | "expired" | "unavailable";
+export type TargetStatus =
+  | "verified"
+  /** Route is supported by the programme but the current award price has not
+   * been verified against the official chart/calculator. Never treated as a
+   * firm target and never shown in "You can reach these now". */
+  | "supported_unverified"
+  | "needs_review"
+  | "expired"
+  | "unavailable"
+  | "suspended";
+
+/** Market a redemption dataset belongs to. Mirrors the card-side CountryCode. */
+export type MarketCountry = "MY" | "SG";
+
+/** Departure airports available per market. Structured as a list so a market
+ * can gain additional origins without touching calculation logic. */
+export const COUNTRY_ORIGINS: Record<MarketCountry, { airport: string; city: string; country: string }[]> = {
+  MY: [{ airport: "KUL", city: "Kuala Lumpur", country: "Malaysia" }],
+  SG: [{ airport: "SIN", city: "Singapore", country: "Singapore" }],
+};
+
+export function originLabelForCountry(country: MarketCountry): string {
+  const os = COUNTRY_ORIGINS[country] ?? [];
+  return os.map((o) => `${o.city} (${o.airport})`).join(", ");
+}
 
 /** Provenance of a stored figure. Never label a reconstructed third-party
  * table as an official published chart. */
@@ -65,10 +89,13 @@ export interface RedemptionTarget {
   programmeName: string;
   operatingAirline: string;
   marketingAirline: string;
-  origin: string;
+  /** Market this record belongs to (card-side country). */
+  country: MarketCountry;
+  originAirport: string;
+  originCountry: string;
   destination: string;
   destinationName: string;
-  country: string;
+  destinationCountry: string;
   region: Region;
   connectionAirports: string[];
   numberOfSegments: number;
@@ -237,7 +264,9 @@ function buildEnrichTargets(): RedemptionTarget[] {
     programmeName: "Enrich",
     operatingAirline: "Malaysia Airlines",
     marketingAirline: "Malaysia Airlines",
-    origin: "KUL",
+    country: "MY" as const,
+    originAirport: "KUL",
+    originCountry: "Malaysia",
     awardType: "Enrich Saver",
     redemptionType: "enrich_saver" as const,
     pricingBasis: "fixed_chart_per_direction" as const,
@@ -267,7 +296,7 @@ function buildEnrichTargets(): RedemptionTarget[] {
       id: `enrich-${s.code}-${suffix}`,
       destination: s.destination,
       destinationName: s.destinationName,
-      country: s.country,
+      destinationCountry: s.country,
       region: s.region,
       cabin,
       pointsPerPerson: points,
@@ -402,7 +431,9 @@ function buildKrisflyerTargets(): RedemptionTarget[] {
     programmeName: "KrisFlyer",
     operatingAirline: "Singapore Airlines",
     marketingAirline: "Singapore Airlines",
-    origin: "KUL",
+    country: "MY" as const,
+    originAirport: "KUL",
+    originCountry: "Malaysia",
     awardType: "KrisFlyer Saver",
     redemptionType: "krisflyer_saver" as const,
     pricingBasis: "fixed_chart_one_way" as const,
@@ -429,7 +460,7 @@ function buildKrisflyerTargets(): RedemptionTarget[] {
       id: `kf-${s.code}-${suffix}`,
       destination: s.destination,
       destinationName: s.destinationName,
-      country: s.country,
+      destinationCountry: s.country,
       region: s.region,
       connectionAirports: s.connection,
       numberOfSegments: s.connection.length === 0 ? 1 : s.connection.length + 1,
@@ -457,7 +488,7 @@ function buildKrisflyerTargets(): RedemptionTarget[] {
       awardType: "Scoot Saver",
       destination: s.destination,
       destinationName: s.destinationName,
-      country: s.country,
+      destinationCountry: s.country,
       region: s.region,
       connectionAirports: s.destination === "SIN" ? [] : ["SIN"],
       numberOfSegments: s.destination === "SIN" ? 1 : 2,
@@ -523,7 +554,9 @@ function buildAsiaMilesTargets(): RedemptionTarget[] {
     programmeName: "Cathay — Asia Miles",
     operatingAirline: "Cathay Pacific",
     marketingAirline: "Cathay Pacific",
-    origin: "KUL",
+    country: "MY" as const,
+    originAirport: "KUL",
+    originCountry: "Malaysia",
     awardType: "Asia Miles standard flight award",
     redemptionType: "asia_miles_standard" as const,
     pricingBasis: "zone_based" as const,
@@ -551,7 +584,7 @@ function buildAsiaMilesTargets(): RedemptionTarget[] {
       id: `am-${s.code}-${suffix}`,
       destination: s.destination,
       destinationName: s.destinationName,
-      country: s.country,
+      destinationCountry: s.country,
       region: s.region,
       connectionAirports: s.connection,
       numberOfSegments: s.connection.length === 0 ? 1 : s.connection.length + 1,
@@ -572,6 +605,100 @@ function buildAsiaMilesTargets(): RedemptionTarget[] {
 }
 
 /* ===================================================================== */
+/* SINGAPORE MARKET — every record departs Singapore (SIN).              */
+/* No KUL-origin record may ever appear here.                            */
+/* ===================================================================== */
+
+const SG_SHARED = {
+  country: "SG" as const,
+  originAirport: "SIN",
+  originCountry: "Singapore",
+  availabilityChecked: false,
+  taxesAndFeesNote: TAX_NOTE,
+};
+
+function buildSingaporeTargets(): RedemptionTarget[] {
+  const kfShared = {
+    ...SG_SHARED,
+    programmeId: "krisflyer",
+    loyaltyProgrammeId: "krisflyer",
+    programmeName: "KrisFlyer",
+    operatingAirline: "Singapore Airlines",
+    marketingAirline: "Singapore Airlines",
+    awardType: "KrisFlyer Saver",
+    redemptionType: "krisflyer_saver" as const,
+    pricingBasis: "fixed_chart_one_way" as const,
+    returnBookingRequired: false,
+    perDirection: false,
+    effectiveFrom: "2025-11-01",
+    verifiedOn: V_KRISFLYER,
+    sourceUrl: SRC_KRISFLYER,
+    sourceTitle: TITLE_KRISFLYER,
+    source: {
+      sourceName: "Singapore Airlines KrisFlyer Saver award chart (effective 1 November 2025)",
+      sourceUrl: SRC_KRISFLYER,
+      sourceType: "official_airline" as const,
+      verifiedAt: V_KRISFLYER,
+      effectiveFrom: "2025-11-01",
+      notes: "Saver awards on Singapore Airlines-operated flights. One-way pricing; a return booking is priced as two one-way awards.",
+    },
+    connectionAirports: [] as string[],
+    numberOfSegments: 1,
+    directOrConnecting: "direct" as const,
+    verificationLevel: "official-chart-transcription" as const,
+  };
+
+  // Singapore Airlines Saver, Zone 1 (Singapore) to Zone 2, nonstop from SIN.
+  const sqZone2: { code: string; destination: string; destinationName: string; country: string; region: Region }[] = [
+    { code: "sg-sq-kul", destination: "KUL", destinationName: "Kuala Lumpur", country: "Malaysia", region: "Malaysia and Southeast Asia" },
+  ];
+
+  const out: RedemptionTarget[] = [];
+  for (const s of sqZone2) {
+    for (const [cabin, points, suffix] of [
+      ["Economy", 8000, "y"],
+      ["Business", 22000, "j"],
+    ] as [Cabin, number, string][]) {
+      out.push({
+        ...kfShared,
+        id: `sg-kf-${s.code}-${suffix}`,
+        destination: s.destination,
+        destinationName: s.destinationName,
+        destinationCountry: s.country,
+        region: s.region,
+        cabin,
+        pointsPerPerson: points,
+        status: "verified",
+        notes: "Singapore Airlines-operated nonstop flight. Saver award space is limited and has not been checked.",
+      });
+    }
+  }
+
+  // Scoot Saver from Singapore. Route-level award pricing has not been
+  // verified against the Scoot award table, so it is never shown as a firm
+  // target and never appears in "You can reach these now".
+  out.push({
+    ...kfShared,
+    id: "sg-scoot-kul-y",
+    operatingAirline: "Scoot",
+    marketingAirline: "Scoot",
+    awardType: "Scoot Saver",
+    verificationLevel: undefined,
+    destination: "KUL",
+    destinationName: "Kuala Lumpur",
+    destinationCountry: "Malaysia",
+    region: "Malaysia and Southeast Asia",
+    cabin: "Economy",
+    pointsPerPerson: 1500,
+    status: "supported_unverified",
+    notes:
+      "Scoot Saver awards start from 1,500 KrisFlyer miles one way, but the route-level amount for this flight has not been verified. Treat it as indicative only. Baggage, meals and seat selection are not included.",
+  });
+
+  return out;
+}
+
+/* ===================================================================== */
 /* Registry                                                              */
 /* ===================================================================== */
 
@@ -579,7 +706,15 @@ export const redemptionTargets: RedemptionTarget[] = [
   ...buildEnrichTargets(),
   ...buildKrisflyerTargets(),
   ...buildAsiaMilesTargets(),
+  ...buildSingaporeTargets(),
 ];
+
+/** All redemption records for a market. Guarantees the origin never leaks
+ * across countries: the calculator must only ever render these. */
+export function targetsForCountry(country: MarketCountry): RedemptionTarget[] {
+  return redemptionTargets.filter((t) => t.country === country);
+}
+
 
 /* ===================================================================== */
 /* Helpers                                                               */
@@ -587,7 +722,7 @@ export const redemptionTargets: RedemptionTarget[] = [
 
 /** A target is public if verified/needs_review AND within its effective window. */
 export function isTargetPublic(t: RedemptionTarget): boolean {
-  if (t.status !== "verified" && t.status !== "needs_review") return false;
+  if (t.status !== "verified" && t.status !== "needs_review" && t.status !== "supported_unverified") return false;
   const d = TODAY_ISO();
   if (t.effectiveFrom && t.effectiveFrom > d) return false;
   if (t.effectiveUntil && t.effectiveUntil < d) return false;
@@ -613,9 +748,10 @@ export const REGIONS: Region[] = [
 export const CABINS: Cabin[] = ["Economy", "Premium Economy", "Business", "First or Business Suite"];
 
 /** Whether any verified record exists for the given cabin. */
-export function verifiedCabinsPresent(): Set<Cabin> {
+export function verifiedCabinsPresent(country?: MarketCountry): Set<Cabin> {
   const s = new Set<Cabin>();
-  for (const t of redemptionTargets) if (isTargetPublic(t)) s.add(t.cabin);
+  const pool = country ? targetsForCountry(country) : redemptionTargets;
+  for (const t of pool) if (isTargetPublic(t)) s.add(t.cabin);
   return s;
 }
 
