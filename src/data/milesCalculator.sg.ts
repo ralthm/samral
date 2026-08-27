@@ -13,7 +13,7 @@
  * Verification is ROUTE SPECIFIC. A rate is never inherited from another card,
  * another partner, another country, or a miles-per-dollar relationship. Routes
  * that are known to exist but whose current ratio is not confirmed are seeded
- * with status "needs_review" so `isRulePublic()` excludes them from every
+ * with status "supported_unverified" so `isRulePublic()` excludes them from every
  * calculation while the UI can still say "transfer supported — rate awaiting
  * verification".
  */
@@ -116,9 +116,17 @@ export const sgCardGroups: EligibleCardGroup[] = [
     id: "cg-maybank-sg-treats",
     rewardProductId: "maybank-sg-treats",
     name: "TREATS Points cards (Singapore)",
-    unverifiedHeadline: "Current transfer rate is awaiting verification",
+    unverifiedHeadline: "Current transfer block awaiting verification",
     unverifiedNotice:
-      "Maybank Singapore TREATS Points can be redeemed for airline miles, but the exact current transfer block for each programme is awaiting verification. Samral does not estimate a rate. Malaysian Maybank TreatsPoints rules do not apply to Singapore.",
+      "Maybank Singapore TREATS Points can be converted to selected airline programmes including KrisFlyer, Asia Miles, Enrich and airasia rewards. Maybank's current public materials confirm the underlying air-mile value, but do not clearly publish the live redemption block for each programme. Samral therefore does not estimate the conversion. Malaysian Maybank TreatsPoints rules do not apply to Singapore.",
+    unverifiedKnownDetails: [
+      "Air-mile redemption supported",
+      "Exact current transfer block awaiting verification",
+    ],
+    processingNotes: [
+      "KrisFlyer conversions: minimum around 15 working days, per Maybank's redemption form.",
+      "Other redemption requests: generally 7–14 business days, per the same form.",
+    ],
     eligibleCards: [],
     active: true,
     displayOrder: 1,
@@ -159,7 +167,7 @@ function sgRule(
 function sgUnverifiedRule(id: string, cg: string, prog: string, extra: SgExtra): ConversionRule {
   return sgRule(id, cg, prog, [0, 0], {
     ...extra,
-    status: "needs_review",
+    status: "supported_unverified",
     notes:
       extra.notes ??
       "Transfer supported — current conversion rate awaiting verification. Not included in any calculation.",
@@ -393,7 +401,16 @@ export const sgCards: Card[] = [
   // Maybank Singapore
   card("sg-mbb-horizon", "maybank-sg", "Maybank Horizon Visa Signature Card", "cg-maybank-sg-treats", { status: "rate_pending_verification" }),
   card("sg-mbb-world-mc", "maybank-sg", "Maybank World Mastercard", "cg-maybank-sg-treats", { status: "rate_pending_verification" }),
-  card("sg-mbb-visa-infinite", "maybank-sg", "Maybank Visa Infinite Card", "cg-maybank-sg-treats", { status: "rate_pending_verification" }),
+  card("sg-mbb-visa-infinite", "maybank-sg", "Maybank Visa Infinite Card", "cg-maybank-sg-treats", {
+    status: "rate_pending_verification",
+    /** Maybank Singapore publishes a S$25 air-mile conversion fee for this card,
+     * waived for eligible Diamanté Metal Visa Infinite and Diamanté Visa
+     * Infinite cardholders. The fee is known; the transfer block is not. */
+    unverifiedKnownDetails: [
+      "S$25 conversion fee for this card (waived for eligible Maybank Diamanté Metal Visa Infinite and Diamanté Visa Infinite cardholders)",
+    ],
+    officialSourceUrl: "https://www.maybank2u.com.sg/en/personal/cards/credit/maybank-visa-infinite.page",
+  }),
 
   // Bank of China
   card("sg-boc-elite-miles", "boc-sg", "BOC Elite Miles World Mastercard", "cg-boc-sg-elite"),
