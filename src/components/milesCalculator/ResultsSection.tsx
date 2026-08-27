@@ -795,6 +795,7 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
   const [travellers, setTravellers] = useState(1);
   const [programmeId, setProgrammeId] = useState<string>("");
   const [showAll, setShowAll] = useState(false);
+  const [sortBy, setSortBy] = useState<"points" | "destination" | "region">("points");
 
   const emitFilter = useCallback((key: string, value: unknown) => {
     track("destination_filter_changed", { key, value });
@@ -1053,6 +1054,18 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
             {programmeOptions.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
         </FilterField>
+
+        <FilterField label="Sort by">
+          <select
+            value={sortBy}
+            onChange={(e) => { setSortBy(e.target.value as "points" | "destination" | "region"); emitFilter("sort", e.target.value); }}
+            className="mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-ink"
+          >
+            <option value="points">Lowest points required</option>
+            <option value="destination">Destination</option>
+            <option value="region">Region</option>
+          </select>
+        </FilterField>
       </div>
 
       <div className="mt-10 space-y-12">
@@ -1120,7 +1133,7 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
                 >
                   View all results
                 </button>
-                <p className="mt-2 text-[11px] text-ink/55">Showing up to three results per programme. Filter by programme or click above to see the full list.</p>
+                <p className="mt-2 text-[11px] text-ink/55">Showing a spread of up to twelve results per programme, drawn from every region with a verified opportunity. Filter by programme or click above to see every verified result.</p>
               </div>
             )}
           </>
