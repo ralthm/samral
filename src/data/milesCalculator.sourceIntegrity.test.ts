@@ -30,6 +30,16 @@ const ALLOWED_HOSTS: Record<string, string[]> = {
   sc: ["www.sc.com", "www.malaysiaairlines.com"],
   ocbc: ["www.ocbc.com.my"],
   rhb: ["www.rhbgroup.com"],
+  // Singapore
+  "dbs-sg": ["www.dbs.com.sg"],
+  "uob-sg": ["www.uob.com.sg"],
+  "citi-sg": ["www.citibank.com.sg"],
+  "hsbc-sg": ["www.hsbc.com.sg"],
+  "ocbc-sg": ["www.ocbc.com"],
+  "amex-sg": ["www.americanexpress.com"],
+  "sc-sg": ["www.sc.com"],
+  "maybank-sg": ["www.maybank2u.com.sg"],
+  "boc-sg": ["www.bankofchina.com"],
 };
 
 /** Bank-identifying words that may only appear in that bank's source label. */
@@ -47,7 +57,23 @@ const BANK_KEYWORDS: Record<string, string[]> = {
   sc: ["standard chartered"],
   ocbc: ["ocbc"],
   rhb: ["rhb"],
+  // Singapore
+  "dbs-sg": ["dbs"],
+  "uob-sg": ["uob", "uni$"],
+  "citi-sg": ["citi"],
+  "hsbc-sg": ["hsbc"],
+  "ocbc-sg": ["ocbc"],
+  "amex-sg": ["american express", "membership rewards"],
+  "sc-sg": ["standard chartered"],
+  "maybank-sg": ["maybank", "treats"],
+  "boc-sg": ["bank of china"],
 };
+
+/**
+ * Two issuers in different countries can share a brand (Maybank Malaysia and
+ * Maybank Singapore). Brand-keyword checks only apply between different brands.
+ */
+const brandOf = (bankId: string) => bankId.replace(/-sg$/, "");
 
 function bankOfRule(cardGroupId: string) {
   const group = getCardGroupById(cardGroupId);
@@ -95,6 +121,7 @@ describe("conversion rule source metadata integrity", () => {
       const label = `${r.sourceTitle} ${r.sourceName ?? ""} ${r.sourcePublisher ?? ""}`.toLowerCase();
       for (const [otherBank, keywords] of Object.entries(BANK_KEYWORDS)) {
         if (otherBank === bankId) continue;
+        if (brandOf(otherBank) === brandOf(bankId)) continue;
         for (const kw of keywords) {
           expect(label.includes(kw), `${ruleId} (${bankId}) source label mentions ${otherBank}: "${r.sourceTitle}"`).toBe(false);
         }
