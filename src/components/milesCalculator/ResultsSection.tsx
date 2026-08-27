@@ -1419,16 +1419,22 @@ function formatDate(iso: string): string {
 
 /* ---------- Quick reference (collapsed) ---------- */
 
-function QuickReference() {
+function QuickReference({ country }: { country: MarketCountry }) {
   const [open, setOpen] = useState(false);
   const [bankFilter, setBankFilter] = useState("");
   const [progFilter, setProgFilter] = useState("");
+
+  // Issuers, and therefore rows, are scoped to the selected market: a
+  // Malaysian route can never appear while Singapore is selected.
+  const marketBanks = useMemo(() => getBanksByCountry(country), [country]);
+  const marketBankIds = useMemo(() => new Set(marketBanks.map((b) => b.id)), [marketBanks]);
 
   const rows = useMemo(() => {
     return eligibleCardGroups.flatMap((cg) => {
       const product = getRewardProductById(cg.rewardProductId);
       const bank = product ? getBankById(product.bankId) : undefined;
       if (!bank || !product) return [];
+      if (!marketBankIds.has(bank.id)) return [];
       const rules = getPublicRulesForCardGroup(cg.id);
       return rules.map((r) => {
         const prog = getProgrammeById(r.loyaltyProgrammeId);
