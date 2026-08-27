@@ -11,7 +11,6 @@ import { ChevronDown, ExternalLink, Pencil } from "lucide-react";
 import TravellersInput from "@/components/TravellersInput";
 import { AllianceBadge, AllianceInfo } from "@/components/AllianceInfo";
 import {
-  banks,
   eligibleCardGroups,
   getBankById,
   getBanksByCountry,
