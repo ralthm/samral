@@ -41,6 +41,7 @@ import {
   SUPPORTED_PROGRAMMES,
   verifiedCabinsPresent,
 } from "@/data/redemptionTargets";
+import { classifyRedemption } from "@/lib/redemptionStatus";
 import { saveTripContext, TripContext } from "@/lib/tripContext";
 import { track } from "@/lib/track";
 import type { Snapshot } from "./types";
