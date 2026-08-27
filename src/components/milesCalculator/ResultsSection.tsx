@@ -63,7 +63,7 @@ export default function ResultsSection(props: {
     <>
       <ResultsDashboard {...props} />
       <PostCalcCTA />
-      <QuickReference />
+      <QuickReference country={props.country} />
     </>
   );
 }
