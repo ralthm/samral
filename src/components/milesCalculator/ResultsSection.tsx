@@ -31,7 +31,6 @@ import {
   isTargetPublic,
   outboundPointsForParty,
   pointsPerPersonPerDirection,
-  isTargetVerified,
   type MarketCountry,
   originLabelForCountry,
   RedemptionTarget,
@@ -41,6 +40,7 @@ import {
   SUPPORTED_PROGRAMMES,
   verifiedCabinsPresent,
 } from "@/data/redemptionTargets";
+import { classifyRedemption } from "@/lib/redemptionStatus";
 import { saveTripContext, TripContext } from "@/lib/tripContext";
 import { track } from "@/lib/track";
 import type { Snapshot } from "./types";
@@ -830,13 +830,13 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
   const rankAlmost = (a: Enriched, b: Enriched) => b.ratio - a.ratio || a.required - b.required;
   const rankFuture = (a: Enriched, b: Enriched) => a.required - b.required;
 
-  // Only fully verified award prices may be presented as reachable now.
-  // Supported-but-unverified routes stay in the lower bands with their notice.
-  const unlockedAll = enriched.filter((e) => e.delta >= 0 && isTargetVerified(e.t)).sort(rankUnlocked);
-  const almostAll = enriched
-    .filter((e) => (e.delta < 0 || !isTargetVerified(e.t)) && e.ratio >= 0.75)
-    .sort(rankAlmost);
-  const futureAll = enriched.filter((e) => e.ratio < 0.75).sort(rankFuture);
+  // Affordability decides the band, and nothing else: a balance at or above the
+  // requirement is reachable, so a "close" card can never carry a zero or
+  // negative shortfall. Unverified award prices keep their own on-card notice.
+  const classified = enriched.map((e) => ({ e, c: classifyRedemption(e.balance, e.required) }));
+  const unlockedAll = classified.filter((x) => x.c.status === "reachable").map((x) => x.e).sort(rankUnlocked);
+  const almostAll = classified.filter((x) => x.c.status === "close").map((x) => x.e).sort(rankAlmost);
+  const futureAll = classified.filter((x) => x.c.status === "future").map((x) => x.e).sort(rankFuture);
 
   // Per-programme cap of 3 when "All programmes" is selected and the user
   // hasn't asked for the unfiltered view.
@@ -1139,7 +1139,7 @@ function connectionLabel(t: RedemptionTarget): string | null {
 }
 
 function DestinationCard({
-  e, state, tripType, travellers, onPrimary, onSecondary,
+  e, state: rawState, tripType, travellers, onPrimary, onSecondary,
 }: {
   e: EnrichedT;
   state: "unlocked" | "almost" | "future";
@@ -1150,8 +1150,12 @@ function DestinationCard({
 }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const t = e.t;
-  const shortfall = Math.max(0, -e.delta);
-  const remaining = Math.max(0, e.delta);
+  // Defensive: even if upstream banding were wrong, an affordable award can
+  // never render as "almost there" with a zero or negative shortfall.
+  const classification = classifyRedemption(e.balance, e.required);
+  const state = classification.status === "reachable" ? "unlocked" : rawState;
+  const shortfall = classification.shortfall ?? 0;
+  const remaining = classification.remaining ?? 0;
   const isEnrich = t.programmeId === "enrich";
   const isNeedsReview = t.status === "needs_review";
 
