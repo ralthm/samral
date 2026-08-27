@@ -581,6 +581,32 @@ function ProgrammeBalanceCard({
         ctaContext={{ calculatedBalance: programme.maxPromotionalTotal || programme.potentialTotal }}
       />
 
+      {(fees.breakdown.length > 0 || fees.unknownBanks.length > 0) && (
+        <div className="mt-4 border-t border-border pt-4">
+          <p className="text-[11px] uppercase tracking-[0.14em] text-ink/55">Estimated transfer fees</p>
+          {fees.breakdown.length > 0 && fees.currency && (
+            <>
+              <p className="mt-2 font-display text-xl text-ink">{formatFee(fees.total, fees.currency)}</p>
+              <ul className="mt-2 space-y-1 text-[12px]">
+                {fees.breakdown.map((b) => (
+                  <li key={b.bankId} className="flex items-baseline justify-between gap-3">
+                    <span className="text-ink/70">{b.bankName}</span>
+                    <span className="text-ink">{formatFee(b.amount, b.currency)}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-[11px] leading-relaxed text-ink/55">
+                Cash cost of performing one transfer from each contributing bank into {programme.programmeName}. Fees are charged in addition to the transfer &mdash; they are never deducted from your miles, and fees for other programme scenarios are not included here.
+              </p>
+            </>
+          )}
+          {fees.unknownBanks.length > 0 && (
+            <p className="mt-2 text-[11px] leading-relaxed text-ink/55">
+              No verified conversion fee on record for {fees.unknownBanks.join(", ")}. Confirm the current fee with the bank before transferring.
+            </p>
+          )}
+        </div>
+      )}
 
 
       {byCurrency.length > 0 && (
