@@ -26,6 +26,7 @@ import {
 } from "@/data/milesCalculator";
 import { formatInt, parseIntSafe } from "@/lib/milesCalculator";
 import { track } from "@/lib/track";
+import { blockExampleFor } from "@/lib/blockExample";
 import type { Snapshot } from "@/components/milesCalculator/types";
 
 import {
@@ -279,6 +280,12 @@ function CalculatorFlow({
     setRegisteredPromotionIds([]);
     track("calculator_country_changed", { country: next });
   }, [country, onCountryChange]);
+
+  // Surface the selected card groups so the explainer can demonstrate block
+  // flooring with a rate that actually belongs to the user's own card.
+  useEffect(() => {
+    onSelectionChange?.(entries.map((e) => e.cardGroupId).filter(Boolean));
+  }, [entries, onSelectionChange]);
 
   const calcRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
@@ -1282,8 +1289,12 @@ const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
 
 /* ---------- Explainer ---------- */
 
-function Explainer({ country }: { country: CountryCode }) {
+function Explainer({ country, selectedCardGroupIds = [] }: { country: CountryCode; selectedCardGroupIds?: string[] }) {
   const where = country === "SG" ? "Singapore" : "Malaysian";
+  const example = useMemo(
+    () => blockExampleFor(selectedCardGroupIds, country),
+    [selectedCardGroupIds, country],
+  );
   return (
     <section className="border-b border-border">
       <div className="mx-auto max-w-[860px] px-5 py-16 sm:px-6 md:py-24">
@@ -1292,9 +1303,28 @@ function Explainer({ country }: { country: CountryCode }) {
             <h2 className="font-display text-3xl text-ink md:text-4xl">
               How {country === "SG" ? "Singapore" : "Malaysian"} credit card point conversions work
             </h2>
-            <p className="mt-5 text-[15px] leading-relaxed text-ink/75">
-              {where} banks commonly require transfers in fixed blocks. If a transfer requires 20,000 bank points for every 1,000 airline points, a balance of 645,000 bank points does not convert into 32,250 miles. Only 640,000 points form complete blocks, producing 32,000 miles, while 5,000 points remain in the bank account.
-            </p>
+            {example ? (
+              <>
+                <p className="mt-5 text-[15px] leading-relaxed text-ink/75">
+                  {where} banks commonly require transfers in fixed blocks. {example.bankName} converts{" "}
+                  {formatInt(example.bankPointsPerBlock)} {example.currencyName} into{" "}
+                  {formatInt(example.partnerPointsPerBlock)} {example.programmeName} per block, so a balance of{" "}
+                  {formatInt(example.enteredPoints)} {example.currencyName} does not convert proportionally. Only{" "}
+                  {formatInt(example.usedPoints)} form complete blocks, producing{" "}
+                  {formatInt(example.receivedPoints)} {example.programmeName}, while{" "}
+                  {formatInt(example.leftoverPoints)} {example.currencyName} remain in the {example.bankName} account.
+                </p>
+                <p className="mt-3 text-[12px] leading-relaxed text-ink/55">
+                  {example.fromSelection
+                    ? "This example uses a verified conversion rate for the card you selected."
+                    : `This example uses a verified ${where} conversion rate currently in our database.`}
+                </p>
+              </>
+            ) : (
+              <p className="mt-5 text-[15px] leading-relaxed text-ink/75">
+                {where} banks commonly require transfers in fixed blocks. Incomplete blocks are not converted &mdash; the leftover points simply stay in your bank account. Select your card above to see this demonstrated with your own verified conversion rate.
+              </p>
+            )}
           </div>
           <div>
             <h2 className="font-display text-3xl text-ink md:text-4xl">
