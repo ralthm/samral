@@ -25,6 +25,10 @@ export type RuleStatus =
   | "partially_verified"
   | "announced_rate_unverified"
   | "needs_review"
+  /** Route the issuer publicly confirms, but whose current transfer block
+   * (source points -> destination miles) is not published clearly enough to
+   * verify. Never public, never calculated. */
+  | "supported_unverified"
   | "expired"
   | "temporarily_unavailable";
 
@@ -88,6 +92,10 @@ export interface EligibleCardGroup {
   unverifiedNotice?: string;
   /** Optional heading override for the not-calculable state. */
   unverifiedHeadline?: string;
+  /** Facts Samral does know about an unverified route, shown as a short list. */
+  unverifiedKnownDetails?: string[];
+  /** Indicative processing information. Never presented as guaranteed. */
+  processingNotes?: string[];
   /** Overrides the reward product's type when a group differs. */
   rewardType?: RewardType;
   /** For direct-earning groups: the loyalty programme credited directly. */
@@ -180,6 +188,8 @@ export interface Card {
   directEarnRates?: EarnRate[];
   officialSourceUrl?: string;
   lastVerifiedDate?: string;
+  /** Card-specific known facts appended to the group's unverified-state list. */
+  unverifiedKnownDetails?: string[];
 }
 
 /* -------------------- Banks -------------------- */
