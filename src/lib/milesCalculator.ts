@@ -128,6 +128,14 @@ function buildResult(
   const points = Math.max(0, Math.floor(input.bankPoints || 0));
 
   let fullBlocks = Math.floor(points / r.bankPointsPerBlock);
+  // Some issuers publish a minimum transfer that differs from the increment.
+  // The minimum is enforced first; the increment then applies above it.
+  if (
+    typeof r.minimumBankPointsPerTransfer === "number" &&
+    fullBlocks * r.bankPointsPerBlock < r.minimumBankPointsPerTransfer
+  ) {
+    fullBlocks = 0;
+  }
   let partnerPointsReceived = fullBlocks * r.partnerPointsPerBlock;
   let monthlyCapApplied = false;
   let capApplied: RuleResult["capApplied"];
