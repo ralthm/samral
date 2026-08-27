@@ -84,6 +84,11 @@ export interface RuleResult {
   capWarning?: string;
   minimumTransferPartnerPoints?: number;
   transferIncrementPartnerPoints?: number;
+  /** Bank-side minimum per transfer, where the issuer publishes one. */
+  minimumBankPointsPerTransfer?: number;
+  /** Administrative fee per conversion transaction, where the issuer charges one. */
+  transferFeeAmount?: number;
+  transferFeeCurrency?: "SGD" | "MYR";
   /** All promotions currently active for this route (applied + conditional). */
   promotions: PromotionApplication[];
   /** Sum of currently-applied bonuses (unconditional + registered). */
@@ -128,6 +133,14 @@ function buildResult(
   const points = Math.max(0, Math.floor(input.bankPoints || 0));
 
   let fullBlocks = Math.floor(points / r.bankPointsPerBlock);
+  // Some issuers publish a minimum transfer that differs from the increment.
+  // The minimum is enforced first; the increment then applies above it.
+  if (
+    typeof r.minimumBankPointsPerTransfer === "number" &&
+    fullBlocks * r.bankPointsPerBlock < r.minimumBankPointsPerTransfer
+  ) {
+    fullBlocks = 0;
+  }
   let partnerPointsReceived = fullBlocks * r.partnerPointsPerBlock;
   let monthlyCapApplied = false;
   let capApplied: RuleResult["capApplied"];
@@ -206,6 +219,9 @@ function buildResult(
     capWarning,
     minimumTransferPartnerPoints: r.minimumTransferPartnerPoints,
     transferIncrementPartnerPoints: r.transferIncrementPartnerPoints,
+    minimumBankPointsPerTransfer: r.minimumBankPointsPerTransfer,
+    transferFeeAmount: r.transferFeeAmount,
+    transferFeeCurrency: r.transferFeeCurrency,
     ...promoData,
   };
 }

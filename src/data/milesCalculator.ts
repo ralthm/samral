@@ -6,6 +6,14 @@
 // rewards entitlement, not merely the bank. Card groups are separated only
 // when the transfer rate, available partners, minimum block or cap differs.
 
+import {
+  sgBanks,
+  sgCardGroups,
+  sgCards,
+  sgConversionRules,
+  sgRewardProducts,
+} from "./milesCalculator.sg";
+
 export type ProgrammeType =
   | "airline_miles"
   | "airline_points"
@@ -111,6 +119,14 @@ export interface ConversionRule {
   minimumTransferPartnerPoints?: number;
   /** Increment above the minimum, in partner points. */
   transferIncrementPartnerPoints?: number;
+  /**
+   * Minimum bank-side points per transfer, when the issuer publishes a minimum
+   * that differs from the transfer increment (`bankPointsPerBlock`).
+   */
+  minimumBankPointsPerTransfer?: number;
+  /** Administrative fee charged per conversion transaction, if any. */
+  transferFeeAmount?: number;
+  transferFeeCurrency?: "SGD" | "MYR";
   /** Per-cardholder cap of partner points per calendar month (if any). */
   monthlyCapPartnerPoints?: number;
   effectiveFrom?: string; // ISO date
@@ -291,6 +307,7 @@ export const banks: Bank[] = [
     officialRewardsUrl:
       "https://www.rhbgroup.com/personal/cards/credit-cards/rewards/index.html",
   },
+  ...sgBanks,
 ];
 
 /* -------------------- Loyalty programmes -------------------- */
@@ -372,6 +389,7 @@ export const rewardProducts: RewardProduct[] = [
   // Points balance, so both are supported explicitly.
   { id: "rhb-loyaltyplus", bankId: "rhb", name: "RHB LoyaltyPlus Points", slug: "rhb-loyaltyplus", rewardCurrencyName: "LoyaltyPlus Points", active: true, displayOrder: 1 },
   { id: "rhb-loyalty-legacy", bankId: "rhb", name: "RHB Loyalty Points (Legacy)", slug: "rhb-loyalty-legacy", rewardCurrencyName: "Loyalty Points (Legacy)", active: true, displayOrder: 2 },
+  ...sgRewardProducts,
 ];
 
 /* -------------------- Card groups (entitlement tiers) -------------------- */
@@ -983,6 +1001,7 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     active: true,
     displayOrder: 6,
   },
+  ...sgCardGroups,
 ];
 
 /* -------------------- Conversion rules -------------------- */
@@ -1366,6 +1385,7 @@ export const conversionRules: ConversionRule[] = [
     reviewNotes:
       "Floor-block calculation only: full 1,000 Enrich blocks are issued from each qualifying batch of RHB points; the remainder stays in the RHB balance and is never rounded up.",
   }))),
+  ...sgConversionRules,
 ];
 
 /* -------------------- Cards (searchable) -------------------- */
@@ -1595,6 +1615,7 @@ export const cards: Card[] = [
     subtitle: "Loyalty Points (Legacy) — 24,100 : 1,000 Enrich",
     aliases: ["Other RHB Legacy"],
   }),
+  ...sgCards,
 ];
 
 /* -------------------- Helpers -------------------- */
@@ -1645,16 +1666,47 @@ export function getCardGroupsByBank(bankId: string) {
     .sort((a, b) => a.displayOrder - b.displayOrder);
 }
 
-/** Summary counters for the hero. */
-export function summaryCounters() {
-  const publicRules = conversionRules.filter(isRulePublic);
-  const activeBankIds = new Set(
-    publicRules
-      .map((r) => getCardGroupById(r.eligibleCardGroupId))
-      .map((g) => (g ? getRewardProductById(g.rewardProductId) : undefined))
-      .map((p) => p?.bankId)
-      .filter(Boolean) as string[],
-  );
+/* -------------------- Country -------------------- */
+
+/** Countries the calculator carries a dataset for. */
+export type CountryCode = "MY" | "SG";
+
+export const COUNTRIES: { code: CountryCode; name: string; flag: string }[] = [
+  { code: "MY", name: "Malaysia", flag: "🇲🇾" },
+  { code: "SG", name: "Singapore", flag: "🇸🇬" },
+];
+
+/** Active banks for one country only. Never mixes datasets. */
+export function getBanksByCountry(country: CountryCode): Bank[] {
+  return banks
+    .filter((b) => b.active && b.country === country)
+    .sort((a, b) => a.displayOrder - b.displayOrder);
+}
+
+/** The country a card belongs to, derived from its issuing bank. */
+export function getCountryForCard(card: Card | undefined): CountryCode | undefined {
+  if (!card) return undefined;
+  return getBankById(card.bankId)?.country as CountryCode | undefined;
+}
+
+/** Summary counters for the hero, scoped to one country when given. */
+export function summaryCounters(country?: CountryCode) {
+  const bankIdsInScope = country
+    ? new Set(getBanksByCountry(country).map((b) => b.id))
+    : undefined;
+  const bankIdOfRule = (r: ConversionRule) => {
+    const group = getCardGroupById(r.eligibleCardGroupId);
+    const product = group ? getRewardProductById(group.rewardProductId) : undefined;
+    return product?.bankId;
+  };
+  const publicRules = conversionRules
+    .filter(isRulePublic)
+    .filter((r) => {
+      if (!bankIdsInScope) return true;
+      const bankId = bankIdOfRule(r);
+      return !!bankId && bankIdsInScope.has(bankId);
+    });
+  const activeBankIds = new Set(publicRules.map(bankIdOfRule).filter(Boolean) as string[]);
   const activeProductIds = new Set(
     publicRules
       .map((r) => getCardGroupById(r.eligibleCardGroupId)?.rewardProductId)

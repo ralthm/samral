@@ -664,6 +664,15 @@ function ProgrammeDetails({
               <dd className="text-right text-ink">{formatInt(r.bankPointsUsed)}</dd>
               <dt className="text-ink/55">Points remaining</dt>
               <dd className="text-right text-ink">{formatInt(r.bankPointsRemaining)}</dd>
+              {typeof r.transferFeeAmount === "number" && (
+                <>
+                  <dt className="text-ink/55">Transfer fee</dt>
+                  <dd className="text-right text-ink">
+                    {r.transferFeeCurrency === "SGD" ? "S$" : "RM"}
+                    {r.transferFeeAmount.toFixed(2)}
+                  </dd>
+                </>
+              )}
             </dl>
             {showNote && (
               <p className="mt-3 text-[11px] leading-relaxed text-ink/60">{r.notes}</p>

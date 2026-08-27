@@ -5,7 +5,9 @@ import SiteFooter from "@/components/SiteFooter";
 import { CardArtwork } from "@/components/milesCalculator/CardArtwork";
 
 import {
-  banks,
+  COUNTRIES,
+  CountryCode,
+  getBanksByCountry,
   Card,
   getBankById,
   getCardById,
@@ -111,28 +113,44 @@ const newEntry = (): Entry => ({
 });
 
 export default function MilesCalculator() {
+  /**
+   * Country scope. Malaysia stays the default so existing behaviour and
+   * existing links are unchanged. Switching only swaps which dataset the
+   * selectors read — the calculation engine is shared.
+   */
+  const [country, setCountry] = useState<CountryCode>("MY");
+
   useEffect(() => {
-    document.title =
-      "Malaysia Credit Card Points to Airline Miles Calculator | Samral";
-    const desc =
-      "Convert Malaysian credit card points into Enrich Points, KrisFlyer miles, Asia Miles, Avios and other airline rewards. See exact conversion blocks, usable points and leftover balances.";
+    const isSg = country === "SG";
+    document.title = isSg
+      ? "Singapore Credit Card Points to Airline Miles Calculator | Samral"
+      : "Malaysia Credit Card Points to Airline Miles Calculator | Samral";
+    const desc = isSg
+      ? "Convert DBS Points, UNI$, Citi ThankYou Points, Citi Miles, HSBC Reward Points, OCBC$, VOYAGE Miles, Membership Rewards and 360° Rewards Points into KrisFlyer miles, Asia Miles, Avios and more — with exact transfer blocks and leftover points."
+      : "Convert Malaysian credit card points into Enrich Points, KrisFlyer miles, Asia Miles, Avios and other airline rewards. See exact conversion blocks, usable points and leftover balances.";
     upsertMeta("description", desc);
     upsertLink("canonical", "https://www.samral.com/miles-calculator");
-    upsertMetaProperty("og:title", "Malaysia Credit Card Points Calculator | Samral");
+    upsertMetaProperty(
+      "og:title",
+      isSg ? "Singapore Credit Card Points Calculator | Samral" : "Malaysia Credit Card Points Calculator | Samral",
+    );
     upsertMetaProperty("og:description", desc);
     upsertMetaProperty("og:url", "https://www.samral.com/miles-calculator");
     upsertMetaProperty("og:type", "website");
+  }, [country]);
+
+  useEffect(() => {
     track("miles_calculator_viewed");
   }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
-      <Hero />
-      <CalculatorFlow />
-      <Explainer />
+      <Hero country={country} />
+      <CalculatorFlow country={country} onCountryChange={setCountry} />
+      <Explainer country={country} />
       <TripPlanningCTA />
-      <Disclaimer />
+      <Disclaimer country={country} />
       <Footer />
     </div>
   );
@@ -176,14 +194,14 @@ function Nav() {
 
 /* ---------- Hero ---------- */
 
-function Hero() {
-  const counters = useMemo(() => summaryCounters(), []);
+function Hero({ country }: { country: CountryCode }) {
+  const counters = useMemo(() => summaryCounters(country), [country]);
   return (
     <section className="border-b border-border bg-sand/60">
       <div className="mx-auto max-w-[1200px] px-5 py-16 sm:px-6 md:px-12 md:py-24">
         <p className="eyebrow text-ink/60">Updated for 2026</p>
         <h1 className="mt-4 font-display text-4xl leading-[1.05] text-ink md:text-6xl md:leading-[1.02]">
-          Malaysia&rsquo;s Credit Card Points Calculator
+          {country === "SG" ? "Singapore\u2019s" : "Malaysia\u2019s"} Credit Card Points Calculator
         </h1>
         <p className="mt-6 max-w-[640px] text-[15px] leading-relaxed text-ink/75 md:text-lg">
           Enter your credit card point balances, add any existing airline or hotel balances, then see exactly what you can transfer — with full blocks, leftover points and verified sources.
@@ -224,7 +242,13 @@ function Counter({ label, value }: { label: string; value: number }) {
 
 /* ---------- Calculator flow (state machine) ---------- */
 
-function CalculatorFlow() {
+function CalculatorFlow({
+  country,
+  onCountryChange,
+}: {
+  country: CountryCode;
+  onCountryChange: (next: CountryCode) => void;
+}) {
   const [entries, setEntries] = useState<Entry[]>([newEntry()]);
   const [existingRows, setExistingRows] = useState<ExistingRow[]>([]);
   const [existingDraft, setExistingDraft] = useState<ExistingDraft>({ programmeId: "", rawInput: "" });
@@ -234,6 +258,23 @@ function CalculatorFlow() {
   const [isCalculating, setIsCalculating] = useState(false);
   const [startedTracked, setStartedTracked] = useState(false);
   const [registeredPromotionIds, setRegisteredPromotionIds] = useState<string[]>([]);
+
+  /**
+   * Switching country clears the working state: a Malaysian card can never
+   * appear in a Singapore calculation, or the reverse.
+   */
+  const switchCountry = useCallback((next: CountryCode) => {
+    if (next === country) return;
+    onCountryChange(next);
+    setEntries([newEntry()]);
+    setExistingRows([]);
+    setExistingDraft({ programmeId: "", rawInput: "" });
+    setSnapshot(null);
+    setErrors([]);
+    setState("idle");
+    setRegisteredPromotionIds([]);
+    track("calculator_country_changed", { country: next });
+  }, [country, onCountryChange]);
 
   const calcRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
@@ -438,6 +479,33 @@ function CalculatorFlow() {
       <section id="calculator" ref={calcRef} className="border-b border-border">
         <div className="mx-auto max-w-[880px] px-5 py-16 sm:px-6 md:py-24">
           <div className="max-w-[640px]">
+            <p className="eyebrow text-ink/60">Where are your cards issued?</p>
+            <div
+              role="radiogroup"
+              aria-label="Country"
+              className="mt-3 inline-flex w-full flex-wrap gap-2 rounded-sm border border-border bg-sand/40 p-1 sm:w-auto"
+            >
+              {COUNTRIES.map((c) => {
+                const selected = c.code === country;
+                return (
+                  <button
+                    key={c.code}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => switchCountry(c.code)}
+                    className={`inline-flex flex-1 items-center justify-center gap-2 rounded-sm px-5 py-2.5 text-[13px] transition-colors sm:flex-none ${
+                      selected ? "bg-ink text-background" : "text-ink/70 hover:text-ink"
+                    }`}
+                  >
+                    <span aria-hidden="true">{c.flag}</span> {c.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="mt-10 max-w-[640px]">
             <p className="eyebrow text-ink/60">Step 1</p>
             <h2 className="mt-3 font-display text-3xl text-ink md:text-4xl">
               Your credit card points
@@ -451,6 +519,7 @@ function CalculatorFlow() {
             {entries.map((entry, idx) => (
               <EntryCard
                 key={entry.id}
+                country={country}
                 index={idx}
                 entry={entry}
                 canRemove={entries.length > 1}
@@ -562,9 +631,10 @@ const UNKNOWN_CURRENCIES = [
 ];
 
 function EntryCard({
-  entry, index, canRemove, onChange, onRemove, onFirstValid, onAddProgrammeBalance,
+  entry, country, index, canRemove, onChange, onRemove, onFirstValid, onAddProgrammeBalance,
 }: {
   entry: Entry;
+  country: CountryCode;
   index: number;
   canRemove: boolean;
   onChange: (next: Entry) => void;
@@ -685,7 +755,7 @@ function EntryCard({
             className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
           >
             <option value="">Select bank</option>
-            {banks.filter((b) => b.active).map((b) => (
+            {getBanksByCountry(country).map((b) => (
               <option key={b.id} value={b.id}>{b.name}</option>
             ))}
           </select>
@@ -1170,17 +1240,18 @@ const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
 
 /* ---------- Explainer ---------- */
 
-function Explainer() {
+function Explainer({ country }: { country: CountryCode }) {
+  const where = country === "SG" ? "Singapore" : "Malaysian";
   return (
     <section className="border-b border-border">
       <div className="mx-auto max-w-[860px] px-5 py-16 sm:px-6 md:py-24">
         <div className="grid gap-12 md:grid-cols-2">
           <div>
             <h2 className="font-display text-3xl text-ink md:text-4xl">
-              How Malaysian credit card point conversions work
+              How {country === "SG" ? "Singapore" : "Malaysian"} credit card point conversions work
             </h2>
             <p className="mt-5 text-[15px] leading-relaxed text-ink/75">
-              Malaysian banks commonly require transfers in fixed blocks. If a transfer requires 20,000 bank points for every 1,000 airline points, a balance of 645,000 bank points does not convert into 32,250 miles. Only 640,000 points form complete blocks, producing 32,000 miles, while 5,000 points remain in the bank account.
+              {where} banks commonly require transfers in fixed blocks. If a transfer requires 20,000 bank points for every 1,000 airline points, a balance of 645,000 bank points does not convert into 32,250 miles. Only 640,000 points form complete blocks, producing 32,000 miles, while 5,000 points remain in the bank account.
             </p>
           </div>
           <div>
@@ -1257,7 +1328,16 @@ function TripPlanningCTA() {
 
 /* ---------- Disclaimer ---------- */
 
-function Disclaimer() {
+function Disclaimer({ country }: { country: CountryCode }) {
+  if (country === "SG") {
+    return (
+      <section className="border-b border-border bg-sand/40">
+        <div className="mx-auto max-w-[900px] px-5 py-10 text-center text-[13px] leading-relaxed text-ink/70 sm:px-6">
+          Conversion rates, transfer fees and programme terms may change. Samral does not transfer your points. Always verify the latest details with your bank or loyalty programme before making a transfer.
+        </div>
+      </section>
+    );
+  }
   return (
     <section className="border-b border-border bg-sand/40">
       <div className="mx-auto max-w-[900px] px-5 py-10 text-center text-[13px] leading-relaxed text-ink/70 sm:px-6">
