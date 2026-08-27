@@ -654,6 +654,15 @@ function EntryCard({
   // Distinct from non-convertible: the route may exist, but Samral has not
   // verified it, so the card is non-calculable rather than zero-earning.
   const unverified = isConversionUnverifiedCard(card);
+  // Group-level facts first, card-specific facts (e.g. a per-card conversion
+  // fee) next, and the "still unverified" caveat last.
+  const groupDetails = selectedGroup?.unverifiedKnownDetails ?? [];
+  const knownDetails = [
+    ...groupDetails.slice(0, Math.max(groupDetails.length - 1, 0)),
+    ...(card?.unverifiedKnownDetails ?? []),
+    ...groupDetails.slice(Math.max(groupDetails.length - 1, 0)),
+  ];
+
   const rulesForSelected = card && !nonConvertible ? getPublicRulesForCardGroup(card.cardGroupId) : [];
   // Direct airline-earning cards never take a bank-points balance.
   const directEarn = isDirectEarnCard(card);
