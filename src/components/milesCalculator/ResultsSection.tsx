@@ -14,6 +14,7 @@ import {
   banks,
   eligibleCardGroups,
   getBankById,
+  getBanksByCountry,
   getCardGroupById,
   getProgrammeById,
   getPublicRulesForCardGroup,
@@ -43,6 +44,7 @@ import {
 import { classifyRedemption } from "@/lib/redemptionStatus";
 import { awardDisclaimersFor, UNIVERSAL_AWARD_DISCLAIMER } from "@/lib/awardDisclaimers";
 import { computeTransferFees, formatFee } from "@/lib/transferFees";
+import { ratesDirectoryCaption, ratesDirectoryHeading } from "@/lib/marketCopy";
 import { saveTripContext, TripContext } from "@/lib/tripContext";
 import { track } from "@/lib/track";
 import type { Snapshot } from "./types";
@@ -1454,7 +1456,7 @@ function QuickReference({ country }: { country: MarketCountry }) {
         };
       });
     }).filter((r) => (!bankFilter || r.bankId === bankFilter) && (!progFilter || r.programmeId === progFilter));
-  }, [bankFilter, progFilter]);
+  }, [bankFilter, progFilter, marketBankIds]);
 
   return (
     <section className="border-b border-border bg-background">
@@ -1470,7 +1472,7 @@ function QuickReference({ country }: { country: MarketCountry }) {
           className="flex w-full items-center justify-between gap-4 text-left"
         >
           <span>
-            <span className="font-display text-2xl text-ink md:text-3xl">Browse all Malaysian conversion rates</span>
+            <span className="font-display text-2xl text-ink md:text-3xl">{ratesDirectoryHeading(country)}</span>
             <span className="mt-1 block text-[12px] text-ink/60">
               Every verified transfer route currently in our database.
             </span>
@@ -1482,7 +1484,7 @@ function QuickReference({ country }: { country: MarketCountry }) {
           <div className="flex flex-wrap gap-4">
             <select value={bankFilter} onChange={(e) => setBankFilter(e.target.value)} className="rounded-sm border border-border bg-background px-3 py-2 text-sm">
               <option value="">All banks</option>
-              {banks.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+              {marketBanks.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
             </select>
             <select value={progFilter} onChange={(e) => setProgFilter(e.target.value)} className="rounded-sm border border-border bg-background px-3 py-2 text-sm">
               <option value="">All programmes</option>
@@ -1492,7 +1494,7 @@ function QuickReference({ country }: { country: MarketCountry }) {
 
           <div className="mt-6 hidden overflow-x-auto md:block">
             <table className="w-full border-collapse text-left text-[13px]">
-              <caption className="sr-only">Malaysian credit card points to airline/hotel programme conversion rates</caption>
+              <caption className="sr-only">{ratesDirectoryCaption(country)}</caption>
               <thead>
                 <tr className="border-b border-border text-[11px] uppercase tracking-[0.14em] text-ink/60">
                   <th scope="col" className="py-3 pr-4">Bank</th>
