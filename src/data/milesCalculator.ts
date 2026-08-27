@@ -1713,7 +1713,13 @@ export function summaryCounters(country?: CountryCode) {
       .filter(Boolean) as string[],
   );
   const activeProgrammeIds = new Set(publicRules.map((r) => r.loyaltyProgrammeId));
+  // Issuers covered = active issuers in the selected market, whether or not
+  // every one of their routes is verified. Never a hardcoded number.
+  const issuers = country
+    ? getBanksByCountry(country).filter((b) => b.active).length
+    : activeBankIds.size;
   return {
+    issuers,
     banks: activeBankIds.size,
     cardProgrammes: activeProductIds.size,
     partners: activeProgrammeIds.size,

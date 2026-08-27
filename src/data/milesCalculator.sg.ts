@@ -181,6 +181,12 @@ const MBB_SG_SRC = { sourceUrl: "https://www.maybank2u.com.sg/en/personal/cards/
 const BOC_SRC = { sourceUrl: "https://www.bankofchina.com/sg/bocinfo/", sourceTitle: "Bank of China Singapore Bonus Points redemption", sourcePublisher: "Bank of China Limited, Singapore Branch" };
 
 const FEE = { transferFeeAmount: SGD_FEE, transferFeeCurrency: "SGD" as const };
+/** UOB Singapore charges S$27 per UNI$ mileage conversion. The fee is waived
+ * for UOB Reserve, UOB Privilege Reserve, UOB Solitaire Metal Card, UOB
+ * Privilege Banking and UOB Lady's Solitaire cardmembers. */
+const UOB_FEE = { transferFeeAmount: 27, transferFeeCurrency: "SGD" as const };
+const UOB_FEE_NOTE =
+  "A S$27 administrative fee applies per conversion. The fee is waived for UOB Reserve, UOB Privilege Reserve, UOB Solitaire Metal Card, UOB Privilege Banking and UOB Lady's Solitaire cardmembers.";
 
 /** Citi partners sharing one published transfer schedule per currency. */
 const CITI_PARTNERS: [string, string][] = [
@@ -217,8 +223,8 @@ export const sgConversionRules: ConversionRule[] = [
   }),
 
   /* ---- UOB UNI$ ---- */
-  sgRule("sg-uob-krisflyer", "cg-uob-sg-unis", "krisflyer", [5000, 10000], { ...UOB_SRC }),
-  sgRule("sg-uob-asia-miles", "cg-uob-sg-unis", "asia-miles", [5000, 10000], { ...UOB_SRC }),
+  sgRule("sg-uob-krisflyer", "cg-uob-sg-unis", "krisflyer", [5000, 10000], { ...UOB_SRC, ...UOB_FEE, notes: UOB_FEE_NOTE }),
+  sgRule("sg-uob-asia-miles", "cg-uob-sg-unis", "asia-miles", [5000, 10000], { ...UOB_SRC, ...UOB_FEE, notes: UOB_FEE_NOTE }),
 
   /* ---- Citi ThankYou Points (25,000 → 10,000) ---- */
   ...CITI_PARTNERS.map(([key, prog]) =>
