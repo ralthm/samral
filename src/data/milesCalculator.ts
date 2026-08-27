@@ -111,6 +111,14 @@ export interface ConversionRule {
   minimumTransferPartnerPoints?: number;
   /** Increment above the minimum, in partner points. */
   transferIncrementPartnerPoints?: number;
+  /**
+   * Minimum bank-side points per transfer, when the issuer publishes a minimum
+   * that differs from the transfer increment (`bankPointsPerBlock`).
+   */
+  minimumBankPointsPerTransfer?: number;
+  /** Administrative fee charged per conversion transaction, if any. */
+  transferFeeAmount?: number;
+  transferFeeCurrency?: "SGD" | "MYR";
   /** Per-cardholder cap of partner points per calendar month (if any). */
   monthlyCapPartnerPoints?: number;
   effectiveFrom?: string; // ISO date
