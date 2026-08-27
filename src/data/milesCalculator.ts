@@ -6,6 +6,14 @@
 // rewards entitlement, not merely the bank. Card groups are separated only
 // when the transfer rate, available partners, minimum block or cap differs.
 
+import {
+  sgBanks,
+  sgCardGroups,
+  sgCards,
+  sgConversionRules,
+  sgRewardProducts,
+} from "./milesCalculator.sg";
+
 export type ProgrammeType =
   | "airline_miles"
   | "airline_points"
@@ -299,6 +307,7 @@ export const banks: Bank[] = [
     officialRewardsUrl:
       "https://www.rhbgroup.com/personal/cards/credit-cards/rewards/index.html",
   },
+  ...sgBanks,
 ];
 
 /* -------------------- Loyalty programmes -------------------- */
@@ -380,6 +389,7 @@ export const rewardProducts: RewardProduct[] = [
   // Points balance, so both are supported explicitly.
   { id: "rhb-loyaltyplus", bankId: "rhb", name: "RHB LoyaltyPlus Points", slug: "rhb-loyaltyplus", rewardCurrencyName: "LoyaltyPlus Points", active: true, displayOrder: 1 },
   { id: "rhb-loyalty-legacy", bankId: "rhb", name: "RHB Loyalty Points (Legacy)", slug: "rhb-loyalty-legacy", rewardCurrencyName: "Loyalty Points (Legacy)", active: true, displayOrder: 2 },
+  ...sgRewardProducts,
 ];
 
 /* -------------------- Card groups (entitlement tiers) -------------------- */
@@ -991,6 +1001,7 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     active: true,
     displayOrder: 6,
   },
+  ...sgCardGroups,
 ];
 
 /* -------------------- Conversion rules -------------------- */
@@ -1374,6 +1385,7 @@ export const conversionRules: ConversionRule[] = [
     reviewNotes:
       "Floor-block calculation only: full 1,000 Enrich blocks are issued from each qualifying batch of RHB points; the remainder stays in the RHB balance and is never rounded up.",
   }))),
+  ...sgConversionRules,
 ];
 
 /* -------------------- Cards (searchable) -------------------- */
@@ -1603,6 +1615,7 @@ export const cards: Card[] = [
     subtitle: "Loyalty Points (Legacy) — 24,100 : 1,000 Enrich",
     aliases: ["Other RHB Legacy"],
   }),
+  ...sgCards,
 ];
 
 /* -------------------- Helpers -------------------- */
