@@ -50,8 +50,8 @@ describe("Singapore award data", () => {
   const sg = targetsForCountry("SG");
 
   it("prices SIN–KUL on the KrisFlyer Saver chart effective 1 Nov 2025", () => {
-    const economy = sg.find((t) => t.id === "sg-kf-sg-sq-kul-y")!;
-    const business = sg.find((t) => t.id === "sg-kf-sg-sq-kul-j")!;
+    const economy = sg.find((t) => t.id === "sg-kf-kul-y")!;
+    const business = sg.find((t) => t.id === "sg-kf-kul-j")!;
     expect(economy.pointsPerPerson).toBe(8000);
     expect(business.pointsPerPerson).toBe(22000);
     for (const t of [economy, business]) {
