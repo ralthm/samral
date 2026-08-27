@@ -243,7 +243,13 @@ function Counter({ label, value }: { label: string; value: number }) {
 
 /* ---------- Calculator flow (state machine) ---------- */
 
-function CalculatorFlow() {
+function CalculatorFlow({
+  country,
+  onCountryChange,
+}: {
+  country: CountryCode;
+  onCountryChange: (next: CountryCode) => void;
+}) {
   const [entries, setEntries] = useState<Entry[]>([newEntry()]);
   const [existingRows, setExistingRows] = useState<ExistingRow[]>([]);
   const [existingDraft, setExistingDraft] = useState<ExistingDraft>({ programmeId: "", rawInput: "" });
@@ -253,6 +259,23 @@ function CalculatorFlow() {
   const [isCalculating, setIsCalculating] = useState(false);
   const [startedTracked, setStartedTracked] = useState(false);
   const [registeredPromotionIds, setRegisteredPromotionIds] = useState<string[]>([]);
+
+  /**
+   * Switching country clears the working state: a Malaysian card can never
+   * appear in a Singapore calculation, or the reverse.
+   */
+  const switchCountry = useCallback((next: CountryCode) => {
+    if (next === country) return;
+    onCountryChange(next);
+    setEntries([newEntry()]);
+    setExistingRows([]);
+    setExistingDraft({ programmeId: "", rawInput: "" });
+    setSnapshot(null);
+    setErrors([]);
+    setState("idle");
+    setRegisteredPromotionIds([]);
+    track("calculator_country_changed", { country: next });
+  }, [country, onCountryChange]);
 
   const calcRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
@@ -457,6 +480,33 @@ function CalculatorFlow() {
       <section id="calculator" ref={calcRef} className="border-b border-border">
         <div className="mx-auto max-w-[880px] px-5 py-16 sm:px-6 md:py-24">
           <div className="max-w-[640px]">
+            <p className="eyebrow text-ink/60">Where are your cards issued?</p>
+            <div
+              role="radiogroup"
+              aria-label="Country"
+              className="mt-3 inline-flex w-full flex-wrap gap-2 rounded-sm border border-border bg-sand/40 p-1 sm:w-auto"
+            >
+              {COUNTRIES.map((c) => {
+                const selected = c.code === country;
+                return (
+                  <button
+                    key={c.code}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => switchCountry(c.code)}
+                    className={`inline-flex flex-1 items-center justify-center gap-2 rounded-sm px-5 py-2.5 text-[13px] transition-colors sm:flex-none ${
+                      selected ? "bg-ink text-background" : "text-ink/70 hover:text-ink"
+                    }`}
+                  >
+                    <span aria-hidden="true">{c.flag}</span> {c.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="mt-10 max-w-[640px]">
             <p className="eyebrow text-ink/60">Step 1</p>
             <h2 className="mt-3 font-display text-3xl text-ink md:text-4xl">
               Your credit card points
@@ -470,6 +520,7 @@ function CalculatorFlow() {
             {entries.map((entry, idx) => (
               <EntryCard
                 key={entry.id}
+                country={country}
                 index={idx}
                 entry={entry}
                 canRemove={entries.length > 1}
@@ -581,9 +632,10 @@ const UNKNOWN_CURRENCIES = [
 ];
 
 function EntryCard({
-  entry, index, canRemove, onChange, onRemove, onFirstValid, onAddProgrammeBalance,
+  entry, country, index, canRemove, onChange, onRemove, onFirstValid, onAddProgrammeBalance,
 }: {
   entry: Entry;
+  country: CountryCode;
   index: number;
   canRemove: boolean;
   onChange: (next: Entry) => void;
@@ -704,7 +756,7 @@ function EntryCard({
             className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
           >
             <option value="">Select bank</option>
-            {banks.filter((b) => b.active).map((b) => (
+            {getBanksByCountry(country).map((b) => (
               <option key={b.id} value={b.id}>{b.name}</option>
             ))}
           </select>
