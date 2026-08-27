@@ -201,7 +201,7 @@ function Hero({ country }: { country: CountryCode }) {
       <div className="mx-auto max-w-[1200px] px-5 py-16 sm:px-6 md:px-12 md:py-24">
         <p className="eyebrow text-ink/60">Updated for 2026</p>
         <h1 className="mt-4 font-display text-4xl leading-[1.05] text-ink md:text-6xl md:leading-[1.02]">
-          Samrala0Miles Calculator
+          Samral Miles Calculator
         </h1>
         <p className="mt-6 max-w-[640px] text-[15px] leading-relaxed text-ink/75 md:text-lg">
           Enter your credit card point balances, add any existing airline or hotel balances, then see exactly what you can transfer — with full blocks, leftover points and verified sources.
