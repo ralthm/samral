@@ -15,6 +15,12 @@
 // target. Records with status "needs_review" render a verification warning
 // instead of a definitive requirement.
 
+import {
+  KRISFLYER_ZONES_FROM_ZONE1,
+  SQ_DESTINATIONS_FROM_SIN,
+  saverMilesFor,
+} from "./krisflyerZones";
+
 export type Region =
   | "Malaysia and Southeast Asia"
   | "North Asia"
@@ -648,28 +654,36 @@ function buildSingaporeTargets(): RedemptionTarget[] {
     verificationLevel: "official-chart-transcription" as const,
   };
 
-  // Singapore Airlines Saver, Zone 1 (Singapore) to Zone 2, nonstop from SIN.
-  const sqZone2: { code: string; destination: string; destinationName: string; country: string; region: Region }[] = [
-    { code: "sg-sq-kul", destination: "KUL", destinationName: "Kuala Lumpur", country: "Malaysia", region: "Malaysia and Southeast Asia" },
-  ];
-
+  // Singapore Airlines Saver awards, generated from the zonal chart effective
+  // 1 November 2025. Pricing lives in one place (krisflyerZones.ts): each
+  // destination only declares its zone, so nothing is hard-coded route by route.
   const out: RedemptionTarget[] = [];
-  for (const s of sqZone2) {
-    for (const [cabin, points, suffix] of [
-      ["Economy", 8000, "y"],
-      ["Business", 22000, "j"],
-    ] as [Cabin, number, string][]) {
+  const CABIN_SUFFIX: Record<Cabin, string> = {
+    Economy: "y",
+    "Premium Economy": "w",
+    Business: "j",
+    "First or Business Suite": "f",
+  };
+
+  for (const dest of SQ_DESTINATIONS_FROM_SIN) {
+    if (!dest.currentServiceVerified) continue;
+    const zone = KRISFLYER_ZONES_FROM_ZONE1[dest.singaporeAirlinesZone];
+    if (!zone) continue;
+    for (const cabin of dest.cabinsVerified) {
+      const points = saverMilesFor(dest, cabin);
+      if (!points) continue;
       out.push({
         ...kfShared,
-        id: `sg-kf-${s.code}-${suffix}`,
-        destination: s.destination,
-        destinationName: s.destinationName,
-        destinationCountry: s.country,
-        region: s.region,
+        id: `sg-kf-${dest.airport.toLowerCase()}-${CABIN_SUFFIX[cabin]}`,
+        destination: dest.airport,
+        destinationName: dest.city,
+        destinationCountry: dest.country,
+        region: dest.region,
         cabin,
+        pricingBasis: "zone_based",
         pointsPerPerson: points,
         status: "verified",
-        notes: "Singapore Airlines-operated nonstop flight. Saver award space is limited and has not been checked.",
+        notes: `Singapore Airlines-operated nonstop flight from Singapore (Zone 1) to ${zone.name} (Zone ${zone.id}). Saver award space is limited and has not been checked.`,
       });
     }
   }

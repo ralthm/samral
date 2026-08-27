@@ -795,6 +795,7 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
   const [travellers, setTravellers] = useState(1);
   const [programmeId, setProgrammeId] = useState<string>("");
   const [showAll, setShowAll] = useState(false);
+  const [sortBy, setSortBy] = useState<"points" | "destination" | "region">("points");
 
   const emitFilter = useCallback((key: string, value: unknown) => {
     track("destination_filter_changed", { key, value });
@@ -858,40 +859,54 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
     });
   }, [targets, tripType, travellers, balances]);
 
-  // Ranking: threshold met > direct > larger remaining > smaller shortfall >
-  // more recent verifiedOn. Then cap per programme so no single programme
-  // dominates the "reach these now" band.
-  const rankUnlocked = (a: Enriched, b: Enriched) => {
-    if ((a.t.directOrConnecting === "direct") !== (b.t.directOrConnecting === "direct")) {
-      return a.t.directOrConnecting === "direct" ? -1 : 1;
-    }
-    if (b.delta !== a.delta) return b.delta - a.delta;
-    return b.t.verifiedOn.localeCompare(a.t.verifiedOn);
-  };
-  const rankAlmost = (a: Enriched, b: Enriched) => b.ratio - a.ratio || a.required - b.required;
-  const rankFuture = (a: Enriched, b: Enriched) => a.required - b.required;
+  // Affordability decides the band first; sorting only orders within a band.
+  // "Lowest points required" is the default, and the reachable band is never
+  // truncated to a handful of short-haul awards — breadth is the point of this
+  // section, so long-haul destinations must survive alongside regional ones.
+  const rankPoints = (a: Enriched, b: Enriched) =>
+    a.required - b.required
+    || a.t.destinationName.localeCompare(b.t.destinationName)
+    || a.t.cabin.localeCompare(b.t.cabin);
+  const rankDestination = (a: Enriched, b: Enriched) =>
+    a.t.destinationName.localeCompare(b.t.destinationName) || a.required - b.required;
+  const rankRegion = (a: Enriched, b: Enriched) =>
+    a.t.region.localeCompare(b.t.region) || rankPoints(a, b);
+  const ranker =
+    sortBy === "destination" ? rankDestination
+    : sortBy === "region" ? rankRegion
+    : rankPoints;
 
-  // Affordability decides the band, and nothing else: a balance at or above the
-  // requirement is reachable, so a "close" card can never carry a zero or
-  // negative shortfall. Unverified award prices keep their own on-card notice.
   const classified = enriched.map((e) => ({ e, c: classifyRedemption(e.balance, e.required) }));
-  const unlockedAll = classified.filter((x) => x.c.status === "reachable").map((x) => x.e).sort(rankUnlocked);
-  const almostAll = classified.filter((x) => x.c.status === "close").map((x) => x.e).sort(rankAlmost);
-  const futureAll = classified.filter((x) => x.c.status === "future").map((x) => x.e).sort(rankFuture);
+  const unlockedAll = classified.filter((x) => x.c.status === "reachable").map((x) => x.e).sort(ranker);
+  const almostAll = classified.filter((x) => x.c.status === "close").map((x) => x.e)
+    .sort(sortBy === "points" ? (a, b) => a.required - b.required : ranker);
+  const futureAll = classified.filter((x) => x.c.status === "future").map((x) => x.e).sort(ranker);
 
-  // Per-programme cap of 3 when "All programmes" is selected and the user
-  // hasn't asked for the unfiltered view.
+  // Preview cap when "All programmes" is selected and the user hasn't asked for
+  // the full list. Items are taken region by region so a cheap short-haul city
+  // can never crowd out London, Sydney or Los Angeles.
+  const PREVIEW_LIMIT = 12;
   const capPerProgramme = (list: Enriched[]) => {
-    if (programmeId || showAll) return list;
-    const counts = new Map<string, number>();
-    const out: Enriched[] = [];
+    if (programmeId || showAll || list.length <= PREVIEW_LIMIT) return list;
+    const byRegion = new Map<string, Enriched[]>();
     for (const e of list) {
-      const c = counts.get(e.t.programmeId) ?? 0;
-      if (c >= 3) continue;
-      counts.set(e.t.programmeId, c + 1);
-      out.push(e);
+      const key = `${e.t.programmeId}|${e.t.region}`;
+      const bucket = byRegion.get(key);
+      if (bucket) bucket.push(e); else byRegion.set(key, [e]);
     }
-    return out;
+    const buckets = Array.from(byRegion.values());
+    const picked: Enriched[] = [];
+    for (let round = 0; picked.length < PREVIEW_LIMIT; round++) {
+      let addedThisRound = false;
+      for (const bucket of buckets) {
+        if (round >= bucket.length) continue;
+        picked.push(bucket[round]);
+        addedThisRound = true;
+        if (picked.length >= PREVIEW_LIMIT) break;
+      }
+      if (!addedThisRound) break;
+    }
+    return picked.sort(ranker);
   };
   const unlocked = capPerProgramme(unlockedAll);
   const almost = capPerProgramme(almostAll);
@@ -1039,6 +1054,18 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
             {programmeOptions.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
         </FilterField>
+
+        <FilterField label="Sort by">
+          <select
+            value={sortBy}
+            onChange={(e) => { setSortBy(e.target.value as "points" | "destination" | "region"); emitFilter("sort", e.target.value); }}
+            className="mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-ink"
+          >
+            <option value="points">Lowest points required</option>
+            <option value="destination">Destination</option>
+            <option value="region">Region</option>
+          </select>
+        </FilterField>
       </div>
 
       <div className="mt-10 space-y-12">
@@ -1106,7 +1133,7 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
                 >
                   View all results
                 </button>
-                <p className="mt-2 text-[11px] text-ink/55">Showing up to three results per programme. Filter by programme or click above to see the full list.</p>
+                <p className="mt-2 text-[11px] text-ink/55">Showing a spread of up to twelve results per programme, drawn from every region with a verified opportunity. Filter by programme or click above to see every verified result.</p>
               </div>
             )}
           </>
