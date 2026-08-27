@@ -1,6 +1,6 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
 import { describe, expect, it } from "vitest";
+import resultsSectionSource from "@/components/milesCalculator/ResultsSection.tsx?raw";
+import milesCalculatorPageSource from "@/pages/MilesCalculator.tsx?raw";
 import { calculateEntry } from "@/lib/milesCalculator";
 import { computeTransferFees } from "@/lib/transferFees";
 import { ratesDirectoryCaption, ratesDirectoryHeading } from "@/lib/marketCopy";
@@ -9,8 +9,11 @@ import { blockExampleFor } from "@/lib/blockExample";
 import { getAllianceInfo } from "@/data/alliances";
 import { summaryCounters, conversionRules, isRulePublic } from "@/data/milesCalculator";
 
-const ROOT = path.resolve(__dirname, "../..");
-const read = (p: string) => readFileSync(path.join(ROOT, p), "utf8");
+const SOURCES: Record<string, string> = {
+  "src/components/milesCalculator/ResultsSection.tsx": resultsSectionSource,
+  "src/pages/MilesCalculator.tsx": milesCalculatorPageSource,
+};
+const read = (p: string) => SOURCES[p];
 
 /* 1. Country-specific link copy */
 
