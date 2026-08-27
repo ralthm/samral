@@ -434,6 +434,18 @@ function ProgrammeBalanceCard({
     return { points, currency: rowResults[0].rewardCurrencyName };
   }, [rowResults, hasConditionalBonus]);
 
+  // Cash conversion fees for THIS destination programme only. One transfer per
+  // contributing bank; alternative programme scenarios are never summed.
+  const fees = useMemo(
+    () => computeTransferFees(rowResults.map((r) => ({
+      bankId: r.bankId,
+      bankName: r.bankName,
+      transferFeeAmount: r.transferFeeAmount,
+      transferFeeCurrency: r.transferFeeCurrency,
+    }))),
+    [rowResults],
+  );
+
   // Published bank conversion caps we cannot verify against the user's own
   // transfer history.
   const capWarnings = useMemo(
