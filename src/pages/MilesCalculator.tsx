@@ -1,4 +1,4 @@
-import { forwardRef, lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, Plus, Trash2, X } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -27,6 +27,7 @@ import {
 import { formatInt, parseIntSafe } from "@/lib/milesCalculator";
 import { track } from "@/lib/track";
 import { blockExampleFor } from "@/lib/blockExample";
+import { lazyWithRetry } from "@/lib/lazyWithRetry";
 import type { Snapshot } from "@/components/milesCalculator/types";
 
 import {
@@ -40,7 +41,7 @@ import {
  * heavy redemption dataset, so they are fetched on demand.
  */
 const loadResultsSection = () => import("@/components/milesCalculator/ResultsSection");
-const ResultsSection = lazy(loadResultsSection);
+const ResultsSection = lazyWithRetry(loadResultsSection);
 
 /** Subtle placeholder while the results chunk arrives. Same rhythm as the real panel. */
 function ResultsSkeleton() {
