@@ -1,4 +1,5 @@
-import { Suspense, lazy } from "react";
+import { Suspense } from "react";
+import { lazyWithRetry as lazy } from "@/lib/lazyWithRetry";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 // Route-level code splitting: a visitor landing on any single route downloads
