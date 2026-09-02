@@ -564,3 +564,200 @@ function Footer() {
   return <SiteFooter />;
 }
 
+/* ---------- Founder ---------- */
+
+function Founder() {
+  return (
+    <section id="founder" className="border-b border-border bg-background">
+      <div className="mx-auto grid max-w-[1440px] items-center gap-10 px-6 py-16 md:grid-cols-12 md:gap-16 md:px-12 md:py-24">
+        <div className="md:col-span-4">
+          <div className="polaroid w-[70%] -rotate-1 p-2 md:w-[85%] md:p-3">
+            <img
+              src={founderImage.url}
+              alt="Samuel Thomas, founder of Samral"
+              className="aspect-[4/5] w-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        </div>
+        <div className="md:col-span-8">
+          <p className="eyebrow mb-5 text-clay">Who you&rsquo;re working with</p>
+          <h2 className="font-display text-3xl leading-[1.1] text-ink md:text-[44px]">
+            Samuel Thomas
+          </h2>
+          <p className="mt-2 text-[14px] text-muted-foreground">Founder, Samral</p>
+          <p className="mt-6 max-w-2xl text-[16px] leading-relaxed text-ink/85">
+            I started Samral after seeing how often valuable points were accumulated without a clear
+            strategy for actually using them. I personally review every engagement and help clients
+            work through the options &mdash; from the points they already have to the trip they
+            actually want to take.
+          </p>
+          <Link
+            to="/about"
+            className="mt-7 inline-flex items-center gap-2 text-sm font-medium text-ink underline underline-offset-4 transition-opacity hover:opacity-70"
+          >
+            More about Samuel &nbsp;&rarr;
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Client experiences ---------- */
+
+function ClientExperiences() {
+  const clients = [
+    {
+      name: "[Client name to be confirmed]",
+      title: "[Position to be confirmed]",
+      org: "TalentCorp Malaysia",
+      quote: "[Testimonial pending client approval]",
+    },
+    {
+      name: "[Client name to be confirmed]",
+      title: "[Position to be confirmed]",
+      org: "Charoen Pokphand Foods",
+      quote: "[Testimonial pending client approval]",
+    },
+    {
+      name: "[Client name to be confirmed]",
+      title: "[Position to be confirmed]",
+      org: "Synapse Physiotherapy",
+      quote: "[Testimonial pending client approval]",
+    },
+  ];
+
+  return (
+    <section id="client-experiences" className="bg-sand">
+      <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-12 md:py-28">
+        <div className="max-w-3xl">
+          <p className="eyebrow mb-5 text-clay">Client experiences</p>
+          <h2 className="font-display text-3xl leading-[1.1] text-ink md:text-5xl md:leading-[1.05]">
+            Real people. Better use of the points they already had.
+          </h2>
+        </div>
+
+        <div className="mt-12 grid gap-8 md:mt-16 md:grid-cols-3">
+          {clients.map((c) => (
+            <figure
+              key={c.org}
+              className="flex flex-col border border-border bg-background p-6 md:p-8"
+            >
+              <blockquote className="font-display text-[22px] leading-snug text-ink md:text-[24px]">
+                &ldquo;{c.quote}&rdquo;
+              </blockquote>
+              <figcaption className="mt-auto pt-8">
+                <div className="flex items-center gap-4">
+                  <div
+                    aria-hidden
+                    className="h-12 w-12 shrink-0 rounded-full border border-border bg-sand"
+                  />
+                  <div>
+                    <p className="text-[15px] text-ink">{c.name}</p>
+                    <p className="mt-1 text-[13px] leading-snug text-muted-foreground">
+                      {c.title}, {c.org}
+                    </p>
+                    <p className="mt-1 text-[11px] tracking-widest text-clay">
+                      PERSONAL SAMRAL CLIENT
+                    </p>
+                  </div>
+                </div>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+
+        <p className="mt-10 max-w-3xl text-[12px] leading-relaxed text-muted-foreground">
+          Professional affiliations are shown for identification only. Samral services were provided
+          to these clients in their personal capacity and do not imply endorsement by the
+          organisations listed.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Case study ---------- */
+
+function CaseStudy() {
+  const blocks = [
+    {
+      n: "01",
+      title: "The starting point",
+      items: [
+        "Points and rewards balances: [to be supplied]",
+        "Existing cards and programmes: [to be supplied]",
+        "Travel objective: [to be supplied]",
+      ],
+    },
+    {
+      n: "02",
+      title: "What Samral reviewed",
+      items: [
+        "Relevant airline programmes: [to be supplied]",
+        "Transfer options: [to be supplied]",
+        "Cash fares and points requirements: [to be supplied]",
+        "Taxes, fees and alternative routes: [to be supplied]",
+      ],
+    },
+    {
+      n: "03",
+      title: "The recommendation",
+      items: [
+        "Recommended strategy: [to be supplied]",
+        "Why it was chosen: [to be supplied]",
+      ],
+    },
+    {
+      n: "04",
+      title: "The outcome",
+      items: [
+        "What was booked or changed: [to be supplied]",
+        "Points used: [to be supplied]",
+        "Cash and taxes paid: [to be supplied]",
+        "Comparative value, where it can be substantiated: [to be supplied]",
+      ],
+    },
+  ];
+
+  return (
+    <section id="case-study" className="border-b border-border bg-background">
+      <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-12 md:py-28">
+        <div className="max-w-2xl">
+          <p className="eyebrow mb-5 text-clay">A Samral strategy</p>
+          <h2 className="font-display text-3xl leading-[1.1] text-ink md:text-5xl md:leading-[1.05]">
+            See what the process actually looks like.
+          </h2>
+        </div>
+
+        <div className="mt-10 grid gap-px bg-border md:mt-14 md:grid-cols-4">
+          {blocks.map((b) => (
+            <div key={b.n} className="bg-background p-6 md:p-8">
+              <p className="font-display text-sm text-clay">{b.n}</p>
+              <h3 className="mt-4 font-display text-[22px] leading-tight text-ink">{b.title}</h3>
+              <ul className="mt-4 space-y-2.5">
+                {b.items.map((i) => (
+                  <li key={i} className="flex gap-2 text-[14px] leading-snug text-ink/75">
+                    <span className="text-clay">&mdash;</span>
+                    <span>{i}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-10">
+          <a
+            href="/trip-planning"
+            className="inline-block rounded-sm border border-ink px-6 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-background"
+          >
+            Plan my trip &nbsp;&rarr;
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
