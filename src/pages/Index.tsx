@@ -96,6 +96,24 @@ function Hero() {
           I&rsquo;ll help you get 2-10x more value from your credit card points, so you can have
           more trips worth remembering.
         </p>
+        <details className="group mt-5 max-w-lg">
+          <summary
+            className="cursor-pointer list-none text-sm underline underline-offset-4 transition-opacity hover:opacity-70"
+            style={{ color: "rgba(253, 247, 235, 0.8)" }}
+          >
+            How can points be worth that much more?
+          </summary>
+          <p
+            className="mt-3 text-sm leading-relaxed"
+            style={{ color: "rgba(253, 247, 235, 0.75)" }}
+          >
+            The same points can be worth very different amounts depending on how they&rsquo;re used.
+            Cashback, gift cards and vouchers usually sit at the bottom of that range. Transferring
+            to an airline programme and booking a suitable flight award &mdash; particularly in a
+            premium cabin on a longer route &mdash; usually sits at the top. The work is finding
+            which end of that range your points can realistically reach.
+          </p>
+        </details>
         <div className="mt-10 flex flex-wrap items-center gap-6">
           <a
             href="/trip-planning"
