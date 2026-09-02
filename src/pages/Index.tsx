@@ -40,8 +40,8 @@ export default function Home() {
       <Hero />
 
       <Promise />
+      <ClientResults />
       <Founder />
-      <ClientExperiences />
       <Services />
       <CaseStudy />
       <AboutSamral />
