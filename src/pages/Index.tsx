@@ -541,7 +541,7 @@ function Contact() {
             style={{ color: "rgba(253, 247, 235, 0.8)" }}
           >
             Tell me where you'd like to go, roughly when you're hoping to travel, and which points or rewards you already have.{"\n\n\n"}
-            I'll personally review your submission and put together a complimentary Points Travel Plan.
+            I'll personally review your situation and let you know whether there's a worthwhile points strategy to explore. That initial assessment is complimentary; the detailed personalised strategy is the full Points Trip Planning engagement.
           </div>
           <div className="mt-12 flex flex-wrap items-center gap-6">
             <a
