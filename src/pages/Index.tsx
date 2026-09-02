@@ -663,14 +663,14 @@ const clientResults: ClientResult[] = [
     id: "cpf-taiwan",
     client: {
       name: "Dr Wasu Kasimani",
-      title: "General Manager",
-      org: "Charoen Pokphand Foods",
+      title: "Senior General Manager",
+      org: "Chau Yang Farm (Owned by Charoen Pokphand Foods)",
     },
     logo: cpfLogo,
     logoAlt: "Charoen Pokphand Foods",
     headline: "Two return flights to Taiwan — without using any points.",
     body:
-      "Samral reviewed Wasu's existing credit-card benefits and identified an unused travel benefit that could be put toward his upcoming trip.",
+      "Samral reviewed Dr. Wasu's existing credit-card benefits and identified an unused travel benefit that could be put toward his upcoming trip.",
     outcomeLabel: "The outcome",
     outcomeLines: ["2× RETURN FLIGHTS TO TAIWAN", "0 POINTS REQUIRED"],
   },
