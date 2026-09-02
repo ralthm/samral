@@ -548,7 +548,7 @@ function Contact() {
               href="/trip-planning"
               className="rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
             >
-              Plan my trip &nbsp;&rarr;
+              Get my complimentary assessment &nbsp;&rarr;
             </a>
             {/* email link removed as requested */}
           </div>
