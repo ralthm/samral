@@ -37,15 +37,19 @@ export default function Home() {
       <Hero />
 
       <Promise />
+      <Founder />
+      <ClientExperiences />
+      <Services />
+      <CaseStudy />
       <AboutSamral />
       <Inspiration />
-      <Services />
       <Destinations />
       <Contact />
       <Footer />
     </div>
   );
 }
+
 
 
 /* ---------- Nav ---------- */
