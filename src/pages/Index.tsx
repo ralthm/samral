@@ -16,6 +16,8 @@ import maldivesImage from "@/assets/maldives.jpg";
 import italyImage from "@/assets/italy.jpg";
 import founderImage from "@/assets/samral-founder-v2.png.asset.json";
 import alpsAsset from "@/assets/swiss-alps.jpg.asset.json";
+import synapseLogo from "@/assets/synapse-logo.png.asset.json";
+import cpfLogo from "@/assets/cpf-logo.png.asset.json";
 const alpsImage = alpsAsset.url;
 
 export default function Home() {
@@ -38,8 +40,8 @@ export default function Home() {
       <Hero />
 
       <Promise />
+      <ClientResults />
       <Founder />
-      <ClientExperiences />
       <Services />
       <CaseStudy />
       <AboutSamral />
@@ -623,75 +625,136 @@ function Founder() {
   );
 }
 
-/* ---------- Client experiences ---------- */
+/* ---------- Client results ---------- */
 
-function ClientExperiences() {
-  const clients = [
-    {
-      name: "[Client name to be confirmed]",
-      title: "[Position to be confirmed]",
-      org: "TalentCorp Malaysia",
-      quote: "[Testimonial pending client approval]",
-    },
-    {
-      name: "[Client name to be confirmed]",
-      title: "[Position to be confirmed]",
-      org: "Charoen Pokphand Foods",
-      quote: "[Testimonial pending client approval]",
-    },
-    {
-      name: "[Client name to be confirmed]",
-      title: "[Position to be confirmed]",
+interface ClientResult {
+  id: string;
+  client: {
+    name: string;
+    title: string;
+    org: string;
+  };
+  logo: { url: string };
+  logoAlt: string;
+  headline: string;
+  body: string;
+  outcomeLabel: string;
+  outcomeLines: string[];
+  metrics?: { label: string; value: string }[];
+}
+
+const clientResults: ClientResult[] = [
+  {
+    id: "synapse-seoul",
+    client: {
+      name: "Thomas Mathew",
+      title: "Executive Director",
       org: "Synapse Physiotherapy",
-      quote: "[Testimonial pending client approval]",
     },
-  ];
+    logo: synapseLogo,
+    logoAlt: "Synapse Physiotherapy",
+    headline: "From unused points to two Business Class return tickets to Seoul.",
+    body:
+      "Thomas had accumulated a substantial points balance without a clear strategy for using it. Samral reviewed his existing points and credit cards, identified the best way to put them to work, and built a redemption strategy around a trip he actually wanted to take.",
+    outcomeLabel: "The outcome",
+    outcomeLines: ["2× RETURN BUSINESS CLASS TICKETS", "Kuala Lumpur ↔ Seoul, South Korea"],
+  },
+  {
+    id: "cpf-taiwan",
+    client: {
+      name: "Dr Wasu Kasimani",
+      title: "General Manager",
+      org: "Charoen Pokphand Foods",
+    },
+    logo: cpfLogo,
+    logoAlt: "Charoen Pokphand Foods",
+    headline: "Two return flights to Taiwan — without using any points.",
+    body:
+      "Samral reviewed Wasu's existing credit-card benefits and identified an unused travel benefit that could be put toward his upcoming trip.",
+    outcomeLabel: "The outcome",
+    outcomeLines: ["2× RETURN FLIGHTS TO TAIWAN", "0 POINTS REQUIRED"],
+  },
+];
 
+function ClientResults() {
   return (
-    <section id="client-experiences" className="bg-sand">
+    <section id="client-results" className="border-b border-border bg-background">
       <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-12 md:py-28">
         <div className="max-w-3xl">
-          <p className="eyebrow mb-5 text-clay">Client experiences</p>
+          <p className="eyebrow mb-5 text-clay">Client results</p>
           <h2 className="font-display text-3xl leading-[1.1] text-ink md:text-5xl md:leading-[1.05]">
-            Real people. Better use of the points they already had.
+            Points are only valuable when you know what to do with them.
           </h2>
         </div>
 
-        <div className="mt-12 grid gap-8 md:mt-16 md:grid-cols-3">
-          {clients.map((c) => (
-            <figure
-              key={c.org}
-              className="flex flex-col border border-border bg-background p-6 md:p-8"
+        <div className="mt-12 grid gap-8 md:mt-16 md:grid-cols-2 md:gap-10">
+          {clientResults.map((result) => (
+            <article
+              key={result.id}
+              className="flex flex-col border border-border bg-sand p-8 md:p-10"
             >
-              <blockquote className="font-display text-[22px] leading-snug text-ink md:text-[24px]">
-                &ldquo;{c.quote}&rdquo;
-              </blockquote>
-              <figcaption className="mt-auto pt-8">
-                <div className="flex items-center gap-4">
-                  <div
-                    aria-hidden
-                    className="h-12 w-12 shrink-0 rounded-full border border-border bg-sand"
-                  />
-                  <div>
-                    <p className="text-[15px] text-ink">{c.name}</p>
-                    <p className="mt-1 text-[13px] leading-snug text-muted-foreground">
-                      {c.title}, {c.org}
-                    </p>
-                    <p className="mt-1 text-[11px] tracking-widest text-clay">
-                      PERSONAL SAMRAL CLIENT
-                    </p>
-                  </div>
+              {/* Top: credibility */}
+              <div className="flex items-start justify-between gap-6">
+                <div>
+                  <p className="text-[15px] text-ink">{result.client.name}</p>
+                  <p className="mt-1 text-[13px] leading-snug text-muted-foreground">
+                    {result.client.title}
+                  </p>
+                  <p className="mt-1 text-[13px] leading-snug text-muted-foreground">
+                    {result.client.org}
+                  </p>
                 </div>
-              </figcaption>
-            </figure>
+                <img
+                  src={result.logo.url}
+                  alt={result.logoAlt}
+                  className="h-10 w-auto max-w-[120px] object-contain opacity-80"
+                  loading="lazy"
+                />
+              </div>
+
+              {/* Problem → judgment → outcome narrative */}
+              <div className="mt-10">
+                <h3 className="font-display text-[26px] leading-[1.15] text-ink md:text-[32px]">
+                  {result.headline}
+                </h3>
+                <p className="mt-5 text-[16px] leading-relaxed text-ink/80">{result.body}</p>
+              </div>
+
+              {/* Quantified outcome */}
+              <div className="mt-auto pt-12">
+                <p className="text-[11px] font-medium tracking-[0.15em] text-clay">
+                  {result.outcomeLabel.toUpperCase()}
+                </p>
+                <div className="mt-4 space-y-1">
+                  {result.outcomeLines.map((line, i) => (
+                    <p
+                      key={line}
+                      className={`font-display leading-[1.05] text-ink ${
+                        i === 0
+                          ? "text-[32px] md:text-[40px]"
+                          : "text-[18px] md:text-[22px] text-ink/75"
+                      }`}
+                    >
+                      {line}
+                    </p>
+                  ))}
+                </div>
+              </div>
+
+              {/* Reserved for future metrics — do not render until supplied */}
+              {result.metrics && result.metrics.length > 0 && (
+                <dl className="mt-10 grid grid-cols-2 gap-4 border-t border-border pt-8 md:grid-cols-3">
+                  {result.metrics.map((m) => (
+                    <div key={m.label}>
+                      <dt className="text-[11px] tracking-widest text-clay">{m.label}</dt>
+                      <dd className="mt-1 font-display text-[18px] text-ink">{m.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+            </article>
           ))}
         </div>
-
-        <p className="mt-10 max-w-3xl text-[12px] leading-relaxed text-muted-foreground">
-          Professional affiliations are shown for identification only. Samral services were provided
-          to these clients in their personal capacity and do not imply endorsement by the
-          organisations listed.
-        </p>
       </div>
     </section>
   );
