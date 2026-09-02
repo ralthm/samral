@@ -14,6 +14,7 @@ import kyotoImage from "@/assets/kyoto.jpg";
 import cabinImage from "@/assets/cabin.jpg";
 import maldivesImage from "@/assets/maldives.jpg";
 import italyImage from "@/assets/italy.jpg";
+import founderImage from "@/assets/samral-founder-v2.png.asset.json";
 import alpsAsset from "@/assets/swiss-alps.jpg.asset.json";
 const alpsImage = alpsAsset.url;
 
