@@ -16,6 +16,8 @@ import maldivesImage from "@/assets/maldives.jpg";
 import italyImage from "@/assets/italy.jpg";
 import founderImage from "@/assets/samral-founder-v2.png.asset.json";
 import alpsAsset from "@/assets/swiss-alps.jpg.asset.json";
+import synapseLogo from "@/assets/synapse-logo.png.asset.json";
+import cpfLogo from "@/assets/cpf-logo.png.asset.json";
 const alpsImage = alpsAsset.url;
 
 export default function Home() {
