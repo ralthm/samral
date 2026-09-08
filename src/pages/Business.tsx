@@ -74,9 +74,9 @@ function Hero() {
             Get more value from the money your business already spends.
           </h1>
           <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-ink/70">
-            Samral examines how relevant business spending is paid &mdash; across cards, recurring
-            expenses, foreign-currency payments, travel and other eligible expenditure &mdash; to
-            identify opportunities to reduce leakage and capture more value.
+            Samral examines how relevant business spending is paid across cards, recurring expenses,
+            foreign-currency payments, travel and other eligible expenditure to identify
+            opportunities to reduce leakage and capture more value.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <CTAButton source="hero" />
@@ -94,7 +94,7 @@ function Hero() {
               money is actually paid.
             </p>
             <p className="mt-4 text-[14px] leading-relaxed text-ink/65">
-              That gap is usually where the value sits &mdash; in payment methods, card economics,
+              That gap is usually where the value sits. In our case, payment methods, card economics,
               fees, FX spreads, timing and unused rewards.
             </p>
           </div>
@@ -117,7 +117,7 @@ const EXAMPLES = [
   },
   {
     n: "03",
-    text: "A supplier accepts cards &mdash; but a bank-transfer discount could be worth more than the rewards earned.",
+    text: "A supplier accepts cards but a bank-transfer discount could be worth more than the rewards earned.",
   },
   {
     n: "04",
@@ -125,7 +125,7 @@ const EXAMPLES = [
   },
   {
     n: "05",
-    text: "A card can improve payment timing and working capital &mdash; but only if its total benefit exceeds fees, lost discounts and operational complexity.",
+    text: "A card can improve payment timing and working capital but only if its total benefit exceeds fees, lost discounts and operational complexity.",
   },
 ];
 
@@ -212,7 +212,7 @@ function Philosophy() {
           </p>
           <p>
             So the honest answer is sometimes a bank transfer, sometimes a different card, sometimes
-            a different payment method &mdash; and sometimes doing nothing at all.
+            a different payment method and sometimes doing nothing at all.
           </p>
           <p className="text-ink">
             The objective is not to maximise rewards. It is to improve the overall economic result.
