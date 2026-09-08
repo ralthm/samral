@@ -429,3 +429,27 @@ export function parseIntSafe(s: string): number {
 }
 
 export type { Promotion };
+
+/**
+ * Resolve the cash conversion fee for one route.
+ *
+ * A flat published fee is used as-is. Where the issuer publishes a per-block
+ * rate (e.g. BOCHK: HK$50 per 5,000 miles or part thereof, minimum HK$100,
+ * maximum HK$300), the exact charge is derived from the miles actually
+ * converted. No miles converted means no transfer, and therefore no fee.
+ */
+function deriveTransferFee(
+  r: ConversionRule,
+  partnerPointsReceived: number,
+): { transferFeeAmount?: number; transferFeeCurrency?: "SGD" | "MYR" | "HKD"; transferFeeDerived?: boolean } {
+  const s = r.transferFeeSchedule;
+  if (s && partnerPointsReceived > 0) {
+    const blocks = Math.ceil(partnerPointsReceived / s.blockPartnerPoints);
+    let amount = blocks * s.amountPerBlock;
+    if (typeof s.minimum === "number") amount = Math.max(amount, s.minimum);
+    if (typeof s.maximum === "number") amount = Math.min(amount, s.maximum);
+    return { transferFeeAmount: amount, transferFeeCurrency: s.currency, transferFeeDerived: true };
+  }
+  if (s) return { transferFeeAmount: 0, transferFeeCurrency: s.currency, transferFeeDerived: true };
+  return { transferFeeAmount: r.transferFeeAmount, transferFeeCurrency: r.transferFeeCurrency };
+}
