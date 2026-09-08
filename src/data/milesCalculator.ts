@@ -142,6 +142,18 @@ export interface ConversionRule {
   /** Administrative fee charged per conversion transaction, if any. */
   transferFeeAmount?: number;
   transferFeeCurrency?: "SGD" | "MYR" | "HKD";
+  /**
+   * Fee published as a rate per block of partner miles (e.g. BOCHK: HK$50 per
+   * 5,000 miles or part thereof, minimum HK$100, maximum HK$300). The exact
+   * charge is derived from the miles actually converted.
+   */
+  transferFeeSchedule?: {
+    currency: "SGD" | "MYR" | "HKD";
+    amountPerBlock: number;
+    blockPartnerPoints: number;
+    minimum?: number;
+    maximum?: number;
+  };
   /** Per-cardholder cap of partner points per calendar month (if any). */
   monthlyCapPartnerPoints?: number;
   effectiveFrom?: string; // ISO date
