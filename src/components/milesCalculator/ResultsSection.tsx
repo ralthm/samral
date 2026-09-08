@@ -187,25 +187,38 @@ function ResultsDashboard({
 
         {/* Programme balance cards */}
         <div className="mt-10 space-y-10">
-          {(Object.keys(grouped) as GroupKey[]).map((k) =>
-            grouped[k].length === 0 ? null : (
+          {(Object.keys(grouped) as GroupKey[]).map((k) => {
+            if (grouped[k].length === 0) return null;
+            const cards = (list: ProgrammeTotal[]) =>
+              list.map((p) => (
+                <ProgrammeBalanceCard
+                  key={p.programmeId}
+                  programme={p}
+                  rowResults={resultsByProgramme.get(p.programmeId) ?? []}
+                  entryContext={entryContext}
+                  registeredSet={registeredSet}
+                  onToggleRegistration={onToggleRegistration}
+                />
+              ));
+
+            if (k === "airline") {
+              return (
+                <FeaturedAirlineProgrammes
+                  key={k}
+                  country={country}
+                  programmes={grouped[k]}
+                  renderCards={cards}
+                />
+              );
+            }
+
+            return (
               <div key={k}>
                 <h3 className="text-[11px] uppercase tracking-[0.18em] text-ink/55">{GROUP_LABEL[k]}</h3>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  {grouped[k].map((p) => (
-                    <ProgrammeBalanceCard
-                      key={p.programmeId}
-                      programme={p}
-                      rowResults={resultsByProgramme.get(p.programmeId) ?? []}
-                      entryContext={entryContext}
-                      registeredSet={registeredSet}
-                      onToggleRegistration={onToggleRegistration}
-                    />
-                  ))}
-                </div>
+                <div className="mt-4 grid gap-4 md:grid-cols-2">{cards(grouped[k])}</div>
               </div>
-            ),
-          )}
+            );
+          })}
         </div>
 
         {/* Destination discovery */}
@@ -216,6 +229,84 @@ function ResultsDashboard({
         <PointsRemaining entryContext={entryContext} totalUsedByEntry={totalUsedByEntry} />
       </div>
     </section>
+  );
+}
+
+/* ---------- Featured airline programmes ---------- */
+
+/**
+ * Commonly useful airline programmes per card-issuance market. This is an
+ * editorial shortlist, not a ranking and not a claim of best value: no score
+ * is computed and mileage balances never affect the order. A featured
+ * programme is only shown when the user's own cards can actually reach it (or
+ * they entered a balance in it) — the portfolio already guarantees that.
+ */
+const FEATURED_AIRLINE_PROGRAMMES: Record<MarketCountry, string[]> = {
+  MY: ["enrich", "krisflyer", "asia-miles"],
+  SG: ["krisflyer", "asia-miles", "ba"],
+  HK: ["asia-miles", "krisflyer", "ba"],
+};
+
+const MARKET_NAME: Record<MarketCountry, string> = {
+  MY: "Malaysia",
+  SG: "Singapore",
+  HK: "Hong Kong",
+};
+
+const FEATURED_LIMIT = 3;
+
+function FeaturedAirlineProgrammes({
+  country, programmes, renderCards,
+}: {
+  country: MarketCountry;
+  programmes: ProgrammeTotal[];
+  renderCards: (list: ProgrammeTotal[]) => React.ReactNode;
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  const { featured, rest } = useMemo(() => {
+    const order = FEATURED_AIRLINE_PROGRAMMES[country] ?? [];
+    const picked: ProgrammeTotal[] = [];
+    for (const id of order) {
+      const match = programmes.find((p) => p.programmeId === id);
+      if (match) picked.push(match);
+    }
+    // Fill any empty slots with other reachable airline programmes, keeping
+    // the existing list order.
+    for (const p of programmes) {
+      if (picked.length >= FEATURED_LIMIT) break;
+      if (!picked.some((x) => x.programmeId === p.programmeId)) picked.push(p);
+    }
+    const top = picked.slice(0, FEATURED_LIMIT);
+    return {
+      featured: top,
+      rest: programmes.filter((p) => !top.some((x) => x.programmeId === p.programmeId)),
+    };
+  }, [country, programmes]);
+
+  return (
+    <div>
+      <h3 className="text-[11px] uppercase tracking-[0.18em] text-ink/55">Featured programmes</h3>
+      <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-ink/70">
+        Commonly useful airline programmes for cards issued in {MARKET_NAME[country]}. Your best option depends on where and how you want to travel.
+      </p>
+      <div className="mt-4 grid gap-4 md:grid-cols-2">{renderCards(featured)}</div>
+
+      {rest.length > 0 && (
+        <>
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+            className="mt-4 inline-flex items-center gap-2 text-[13px] text-ink underline underline-offset-4"
+          >
+            <ChevronDown className={`h-4 w-4 transition-transform ${expanded ? "rotate-180" : ""}`} />
+            {expanded ? "Hide other airline programmes" : `View all airline programmes (${rest.length} more)`}
+          </button>
+          {expanded && <div className="mt-4 grid gap-4 md:grid-cols-2">{renderCards(rest)}</div>}
+        </>
+      )}
+    </div>
   );
 }
 
@@ -1331,7 +1422,7 @@ function DestinationCard({
         {!isNeedsReview && (
           state === "unlocked" ? (
             <>
-              <dt className="text-ink/55">Remaining</dt>
+              <dt className="text-ink/55">Potential balance after redemption</dt>
               <dd className="text-right text-ink">{formatInt(remaining)}</dd>
             </>
           ) : (

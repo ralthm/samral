@@ -207,6 +207,8 @@ function buildAsiaMilesHK(): RedemptionTarget[] {
     nonstopOnly: true,
     effectiveFrom: "2026-05-01",
     verifiedOn: V_ASIA_HK,
+    routeVerifiedDate: V_ASIA_HK,
+    awardPriceVerifiedDate: V_ASIA_HK,
     sourceUrl: SRC_ASIA_HK,
     sourceTitle: TITLE_ASIA_HK,
     source: {
@@ -275,6 +277,8 @@ function buildKrisflyerHK(): RedemptionTarget[] {
     nonstopOnly: true,
     effectiveFrom: "2025-11-01",
     verifiedOn: V_KF_HK,
+    routeVerifiedDate: V_KF_HK,
+    awardPriceVerifiedDate: V_KF_HK,
     sourceUrl: SRC_KF_HK,
     sourceTitle: TITLE_KF_HK,
     source: {
@@ -329,6 +333,8 @@ function buildEvaHK(): RedemptionTarget[] {
     directOrConnecting: "direct" as const,
     nonstopOnly: true,
     verifiedOn: V_EVA_HK,
+    routeVerifiedDate: V_EVA_HK,
+    awardPriceVerifiedDate: V_EVA_HK,
     sourceUrl: SRC_EVA_HK,
     sourceTitle: TITLE_EVA_HK,
     source: {

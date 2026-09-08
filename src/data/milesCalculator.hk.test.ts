@@ -161,8 +161,15 @@ describe("Bank of China (Hong Kong)", () => {
     expect(calc("cg-boc-hk-gift", 12_000, "phoenixmiles").partnerPointsReceived).toBe(1_500);
   });
 
-  it("states no flat fee for the tiered handling charge, and zero for the waived cards", () => {
-    expect(calc("cg-boc-hk-gift", 30_000, "asia-miles").transferFeeAmount).toBeUndefined();
+  it("derives the tiered handling fee from the miles converted, and waives it for the exempt cards", () => {
+    // 30,000 Gift Points = 2,000 Asia Miles -> HK$50, lifted to the HK$100 minimum.
+    expect(calc("cg-boc-hk-gift", 30_000, "asia-miles").transferFeeAmount).toBe(100);
+    // 150,000 Gift Points = 10,000 Asia Miles -> 2 blocks x HK$50 = HK$100.
+    expect(calc("cg-boc-hk-gift", 150_000, "asia-miles").transferFeeAmount).toBe(100);
+    // 465,000 Gift Points = 31,000 Asia Miles -> 7 blocks x HK$50 = HK$350, capped at HK$300.
+    expect(calc("cg-boc-hk-gift", 465_000, "asia-miles").transferFeeAmount).toBe(300);
+    // No valid transfer means no fee at all.
+    expect(calc("cg-boc-hk-gift", 10_000, "asia-miles").transferFeeAmount).toBe(0);
     expect(calc("cg-boc-hk-gift-waived", 30_000, "asia-miles").transferFeeAmount).toBe(0);
   });
 

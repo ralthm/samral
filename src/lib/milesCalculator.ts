@@ -86,9 +86,13 @@ export interface RuleResult {
   transferIncrementPartnerPoints?: number;
   /** Bank-side minimum per transfer, where the issuer publishes one. */
   minimumBankPointsPerTransfer?: number;
-  /** Administrative fee per conversion transaction, where the issuer charges one. */
+  /** Administrative fee per conversion transaction, where the issuer charges one.
+   * When the issuer publishes a per-block rate, this is the exact fee derived
+   * from the miles actually converted. */
   transferFeeAmount?: number;
   transferFeeCurrency?: "SGD" | "MYR" | "HKD";
+  /** Set when the fee above was derived from a published per-block rate. */
+  transferFeeDerived?: boolean;
   /** Indicative issuer processing time for this route, where published. */
   processingTime?: string;
   /** All promotions currently active for this route (applied + conditional). */
@@ -222,8 +226,7 @@ function buildResult(
     minimumTransferPartnerPoints: r.minimumTransferPartnerPoints,
     transferIncrementPartnerPoints: r.transferIncrementPartnerPoints,
     minimumBankPointsPerTransfer: r.minimumBankPointsPerTransfer,
-    transferFeeAmount: r.transferFeeAmount,
-    transferFeeCurrency: r.transferFeeCurrency,
+    ...deriveTransferFee(r, partnerPointsReceived),
     processingTime: r.processingTime,
     ...promoData,
   };
@@ -426,3 +429,27 @@ export function parseIntSafe(s: string): number {
 }
 
 export type { Promotion };
+
+/**
+ * Resolve the cash conversion fee for one route.
+ *
+ * A flat published fee is used as-is. Where the issuer publishes a per-block
+ * rate (e.g. BOCHK: HK$50 per 5,000 miles or part thereof, minimum HK$100,
+ * maximum HK$300), the exact charge is derived from the miles actually
+ * converted. No miles converted means no transfer, and therefore no fee.
+ */
+function deriveTransferFee(
+  r: ConversionRule,
+  partnerPointsReceived: number,
+): { transferFeeAmount?: number; transferFeeCurrency?: "SGD" | "MYR" | "HKD"; transferFeeDerived?: boolean } {
+  const s = r.transferFeeSchedule;
+  if (s && partnerPointsReceived > 0) {
+    const blocks = Math.ceil(partnerPointsReceived / s.blockPartnerPoints);
+    let amount = blocks * s.amountPerBlock;
+    if (typeof s.minimum === "number") amount = Math.max(amount, s.minimum);
+    if (typeof s.maximum === "number") amount = Math.min(amount, s.maximum);
+    return { transferFeeAmount: amount, transferFeeCurrency: s.currency, transferFeeDerived: true };
+  }
+  if (s) return { transferFeeAmount: 0, transferFeeCurrency: s.currency, transferFeeDerived: true };
+  return { transferFeeAmount: r.transferFeeAmount, transferFeeCurrency: r.transferFeeCurrency };
+}

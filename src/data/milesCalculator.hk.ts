@@ -316,8 +316,17 @@ const DBS_BLACK_AMEX_NOTE = `${DBS_UNIT_NOTE} The fee is waived on the DBS Black
 const DBS_COMPASS_NOTE = `${DBS_UNIT_NOTE} A handling fee of HK$100 per 5,000 miles or part thereof applies, so the cash cost depends on how many miles are converted. ${CONFIRM}`;
 const DBS_PHOENIX_NOTE = `${DBS_UNIT_NOTE} The cited page does not publish a handling fee or processing time for this route. ${CONFIRM}`;
 const SC_NOTE = `25,000 360° Rewards Points convert to 1,000 Asia Miles, in whole 25,000-point blocks. The public redemption page does not clearly state a fee or a processing time. ${CONFIRM}`;
+/** BOCHK mileage handling fee: HK$50 per 5,000 miles or part thereof,
+ *  minimum HK$100, maximum HK$300 per transaction. */
+const BOC_FEE_SCHEDULE = {
+  currency: HKD,
+  amountPerBlock: 50,
+  blockPartnerPoints: 5000,
+  minimum: 100,
+  maximum: 300,
+} as const;
 const BOC_FEE_NOTE =
-  "Handling fee is HK$50 for every 5,000 miles or part thereof, with a minimum of HK$100 and a maximum of HK$300 per transaction, so the cash cost depends on how many miles are converted. Samral does not show a single flat fee for this group.";
+  "Handling fee is HK$50 for every 5,000 miles or part thereof, with a minimum of HK$100 and a maximum of HK$300 per transaction. The fee shown is calculated from the miles you would actually convert.";
 const BOC_AM_NOTE = `15 Gift Points convert to 1 Asia Mile. First transfer is 15,000 Gift Points (1,000 Asia Miles), then increments of 7,500 Gift Points (500 Asia Miles). ${BOC_FEE_NOTE}`;
 const BOC_AM_WAIVED_NOTE =
   "15 Gift Points convert to 1 Asia Mile. First transfer is 15,000 Gift Points (1,000 Asia Miles), then increments of 7,500 Gift Points (500 Asia Miles). No mileage-redemption handling fee applies to the BOC Private Card and BOC Cheers Card.";
@@ -447,12 +456,14 @@ export const hkConversionRules: ConversionRule[] = [
   hkRule("hk-boc-asia-miles", "cg-boc-hk-gift", "asia-miles", [7500, 500], {
     ...BOC_SRC,
     minimumBankPointsPerTransfer: 15000,
+    transferFeeSchedule: BOC_FEE_SCHEDULE,
     notes: BOC_AM_NOTE,
     processingTime: BOC_TIME,
   }),
   hkRule("hk-boc-phoenixmiles", "cg-boc-hk-gift", "phoenixmiles", [4000, 500], {
     ...BOC_SRC,
     minimumBankPointsPerTransfer: 8000,
+    transferFeeSchedule: BOC_FEE_SCHEDULE,
     notes: BOC_PM_NOTE,
     processingTime: BOC_TIME,
   }),
