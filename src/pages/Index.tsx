@@ -320,7 +320,7 @@ function BusinessPathway() {
           <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
             Most companies scrutinise what they buy, but rarely how the money is actually paid.
             Samral reviews cards, recurring spend, foreign-currency payments, supplier payments and
-            business travel to find value that is leaking or going unused &mdash; judged on the whole
+            business travel to find value that is leaking or going unused that's judged on the whole
             economic outcome, not points for the sake of points.
           </p>
           <div className="mt-8">
