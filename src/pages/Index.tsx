@@ -14,7 +14,7 @@ import kyotoImage from "@/assets/kyoto.jpg";
 import cabinImage from "@/assets/cabin.jpg";
 import maldivesImage from "@/assets/maldives.jpg";
 import italyImage from "@/assets/italy.jpg";
-import founderImage from "@/assets/samral-founder-v2.png.asset.json";
+
 import alpsAsset from "@/assets/swiss-alps.jpg.asset.json";
 import synapseLogo from "@/assets/synapse-logo.png.asset.json";
 import cpfLogo from "@/assets/cpf-logo.png.asset.json";
@@ -41,7 +41,7 @@ export default function Home() {
 
       <Promise />
       <ClientResults />
-      <Founder />
+      <FounderTrustSignal />
       <Services />
       <BusinessPathway />
       <CaseStudy />
@@ -625,41 +625,22 @@ function Footer() {
   return <SiteFooter />;
 }
 
-/* ---------- Founder ---------- */
+/* ---------- Founder trust signal ---------- */
 
-function Founder() {
+function FounderTrustSignal() {
   return (
-    <section id="founder" className="border-b border-border bg-background">
-      <div className="mx-auto grid max-w-[1440px] items-center gap-10 px-6 py-16 md:grid-cols-12 md:gap-16 md:px-12 md:py-24">
-        <div className="md:col-span-4">
-          <div className="polaroid w-[70%] -rotate-1 p-2 md:w-[85%] md:p-3">
-            <img
-              src={founderImage.url}
-              alt="Samuel Thomas, founder of Samral"
-              className="aspect-[4/5] w-full object-cover"
-              loading="lazy"
-            />
-          </div>
-        </div>
-        <div className="md:col-span-8">
-          <p className="eyebrow mb-5 text-clay">Who you&rsquo;re working with</p>
-          <h2 className="font-display text-3xl leading-[1.1] text-ink md:text-[44px]">
-            Samuel Thomas
-          </h2>
-          <p className="mt-2 text-[14px] text-muted-foreground">Founder, Samral</p>
-          <p className="mt-6 max-w-2xl text-[16px] leading-relaxed text-ink/85">
-            I started Samral after seeing how often valuable points were accumulated without a clear
-            strategy for actually using them. I personally review every engagement and help clients
-            work through the options &mdash; from the points they already have to the trip they
-            actually want to take.
-          </p>
+    <section className="border-b border-border bg-background">
+      <div className="mx-auto max-w-[1440px] px-6 py-10 md:px-12 md:py-14">
+        <p className="max-w-2xl text-[15px] leading-relaxed text-ink/80">
+          Every Samral engagement is personally reviewed by founder{" "}
           <Link
             to="/about"
-            className="mt-7 inline-flex items-center gap-2 text-sm font-medium text-ink underline underline-offset-4 transition-opacity hover:opacity-70"
+            className="font-medium text-ink underline underline-offset-4 transition-opacity hover:opacity-70"
           >
-            More about Samuel &nbsp;&rarr;
+            Samuel Thomas
           </Link>
-        </div>
+          .
+        </p>
       </div>
     </section>
   );
