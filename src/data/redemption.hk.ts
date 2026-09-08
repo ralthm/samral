@@ -97,6 +97,8 @@ interface CxSeed {
   band: CathayBand;
   /** Approximate great-circle distance from HKG, used only for band auditing. */
   distanceMiles: number;
+  /** Set false where current Cathay-operated nonstop service is not verified. */
+  routeVerified?: boolean;
   /** Cabins Cathay operates on the route. First is only seeded where offered. */
   cabins: Cabin[];
 }
@@ -111,8 +113,8 @@ const cathaySeeds: CxSeed[] = [
   { code: "TPE", city: "Taipei", country: "Taiwan", region: "North Asia", band: "ultra_short", distanceMiles: 501, cabins: [Y, W, J] },
   { code: "HAN", city: "Hanoi", country: "Vietnam", region: "Malaysia and Southeast Asia", band: "ultra_short", distanceMiles: 535, cabins: [Y, W, J] },
   { code: "MNL", city: "Manila", country: "Philippines", region: "Malaysia and Southeast Asia", band: "ultra_short", distanceMiles: 693, cabins: [Y, W, J] },
-  { code: "XMN", city: "Xiamen", country: "Mainland China", region: "North Asia", band: "ultra_short", distanceMiles: 314, cabins: [Y, J] },
-  { code: "CAN", city: "Guangzhou", country: "Mainland China", region: "North Asia", band: "ultra_short", distanceMiles: 80, cabins: [Y, J] },
+  { code: "XMN", city: "Xiamen", country: "Mainland China", region: "North Asia", band: "ultra_short", distanceMiles: 314, routeVerified: false, cabins: [Y, J] },
+  { code: "CAN", city: "Guangzhou", country: "Mainland China", region: "North Asia", band: "ultra_short", distanceMiles: 80, routeVerified: false, cabins: [Y, J] },
 
   // Short Type 1
   { code: "BKK", city: "Bangkok", country: "Thailand", region: "Malaysia and Southeast Asia", band: "short_type_1", distanceMiles: 1044, cabins: [Y, W, J] },
@@ -220,6 +222,8 @@ function buildAsiaMilesHK(): RedemptionTarget[] {
       notes:
         "Cathay Pacific-operated standard flight awards priced by distance band. The 751–2,750 mile band is split into Type 1 and Type 2 designated markets.",
     },
+    awardVerified: true,
+    routeVerified: true,
     availabilityChecked: false,
     taxesAndFeesNote: TAX_NOTE,
     verificationLevel: "official-chart-transcription" as const,
@@ -240,6 +244,7 @@ function buildAsiaMilesHK(): RedemptionTarget[] {
         region: s.region,
         cabin,
         pointsPerPerson: points,
+        routeVerified: s.routeVerified !== false,
         status: "verified" as TargetStatus,
         notes: `Cathay Pacific-operated nonstop flight from Hong Kong. ${CATHAY_BANDS[band].label}. Award-seat availability has not been checked.`,
       });
@@ -290,6 +295,8 @@ function buildKrisflyerHK(): RedemptionTarget[] {
       notes:
         "Hong Kong is KrisFlyer Zone 4. Standard Saver pricing on Singapore Airlines-operated nonstop flights. Temporary promotional pricing such as Spontaneous Escapes is never used as a calculator price.",
     },
+    awardVerified: true,
+    routeVerified: true,
     availabilityChecked: false,
     taxesAndFeesNote: TAX_NOTE,
     verificationLevel: "official-chart-transcription" as const,
@@ -344,6 +351,8 @@ function buildEvaHK(): RedemptionTarget[] {
       verifiedAt: V_EVA_HK,
       notes: "One way: 10,000 Economy / 25,000 Business. Round trip: 20,000 Economy / 50,000 Business.",
     },
+    awardVerified: true,
+    routeVerified: true,
     availabilityChecked: false,
     taxesAndFeesNote: TAX_NOTE,
     verificationLevel: "official-chart-transcription" as const,

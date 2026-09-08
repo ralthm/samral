@@ -131,6 +131,13 @@ export interface RedemptionTarget {
   routeVerifiedDate?: string;
   /** Date the award requirement itself was verified against the source. */
   awardPriceVerifiedDate?: string;
+  /** True only when the mileage requirement is supported by the programme's
+   * current published award rules. */
+  awardVerified?: boolean;
+  /** True only when the named operating airline is confirmed to currently
+   * operate this exact origin-destination route. Never inferred from
+   * distance or alliance membership. */
+  routeVerified?: boolean;
   sourceUrl: string;
   sourceTitle: string;
   /** Structured provenance. Prefer official sources; verified_secondary is
@@ -743,6 +750,9 @@ export function targetsForCountry(country: MarketCountry): RedemptionTarget[] {
 
 /** A target is public if verified/needs_review AND within its effective window. */
 export function isTargetPublic(t: RedemptionTarget): boolean {
+  // A flight redemption may only surface when both the award requirement and
+  // the airline's current operation of the route have been verified.
+  if (t.awardVerified === false || t.routeVerified === false) return false;
   if (t.status !== "verified" && t.status !== "needs_review" && t.status !== "supported_unverified") return false;
   const d = TODAY_ISO();
   if (t.effectiveFrom && t.effectiveFrom > d) return false;
