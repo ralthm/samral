@@ -10,7 +10,7 @@ export default function SiteFooter() {
               Samral
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-background/60">
-              More value from money you already spend &mdash; for individuals and businesses
+              More value from money you already spend, for individuals and businesses
             </p>
           </div>
           <div className="md:col-span-3">
