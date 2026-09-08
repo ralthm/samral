@@ -1120,7 +1120,7 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
             />
             <DestinationGroup
               title="You’re close"
-              empty="Nothing within 25% of a target right now."
+              empty="Nothing within 30% of a target right now."
               items={almost}
               state="almost"
               tripType={tripType}
