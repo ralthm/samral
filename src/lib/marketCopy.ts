@@ -2,11 +2,12 @@
  * Country-derived copy for shared Malaysia/Singapore components. Nothing in a
  * shared component may hard-code a single market's wording.
  */
-export type Market = "MY" | "SG";
+export type Market = "MY" | "SG" | "HK";
 
 export const MARKET_ADJECTIVE: Record<Market, string> = {
   MY: "Malaysian",
   SG: "Singapore",
+  HK: "Hong Kong",
 };
 
 export function marketAdjective(country: Market): string {

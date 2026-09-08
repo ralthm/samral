@@ -40,6 +40,13 @@ const ALLOWED_HOSTS: Record<string, string[]> = {
   "sc-sg": ["www.sc.com"],
   "maybank-sg": ["www.maybank2u.com.sg"],
   "boc-sg": ["www.bankofchina.com"],
+  // Hong Kong
+  "hsbc-hk": ["www.hsbc.com.hk"],
+  "amex-hk": ["www.americanexpress.com"],
+  "citi-hk": ["www.citibank.com.hk"],
+  "dbs-hk": ["www.dbs.com.hk"],
+  "sc-hk": ["www.sc.com"],
+  "bea-hk": ["www.hkbea.com"],
 };
 
 /** Bank-identifying words that may only appear in that bank's source label. */
@@ -67,13 +74,20 @@ const BANK_KEYWORDS: Record<string, string[]> = {
   "sc-sg": ["standard chartered"],
   "maybank-sg": ["maybank", "treats"],
   "boc-sg": ["bank of china"],
+  // Hong Kong
+  "hsbc-hk": ["hsbc"],
+  "amex-hk": ["american express", "membership rewards"],
+  "citi-hk": ["citi"],
+  "dbs-hk": ["dbs"],
+  "sc-hk": ["standard chartered"],
+  "bea-hk": ["bank of east asia"],
 };
 
 /**
  * Two issuers in different countries can share a brand (Maybank Malaysia and
  * Maybank Singapore). Brand-keyword checks only apply between different brands.
  */
-const brandOf = (bankId: string) => bankId.replace(/-sg$/, "");
+const brandOf = (bankId: string) => bankId.replace(/-(sg|hk)$/, "");
 
 function bankOfRule(cardGroupId: string) {
   const group = getCardGroupById(cardGroupId);

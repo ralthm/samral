@@ -125,19 +125,26 @@ export default function MilesCalculator() {
   const [selectedCardGroupIds, setSelectedCardGroupIds] = useState<string[]>([]);
 
   useEffect(() => {
-    const isSg = country === "SG";
-    document.title = isSg
-      ? "Singapore Credit Card Points to Airline Miles Calculator | Samral"
-      : "Malaysia Credit Card Points to Airline Miles Calculator | Samral";
-    const desc = isSg
-      ? "Convert DBS Points, UNI$, Citi ThankYou Points, Citi Miles, HSBC Reward Points, OCBC$, VOYAGE Miles, Membership Rewards and 360° Rewards Points into KrisFlyer miles, Asia Miles, Avios and more — with exact transfer blocks and leftover points."
-      : "Convert Malaysian credit card points into Enrich Points, KrisFlyer miles, Asia Miles, Avios and other airline rewards. See exact conversion blocks, usable points and leftover balances.";
+    const title: Record<CountryCode, string> = {
+      MY: "Malaysia Credit Card Points to Airline Miles Calculator | Samral",
+      SG: "Singapore Credit Card Points to Airline Miles Calculator | Samral",
+      HK: "Hong Kong Credit Card Points to Airline Miles Calculator | Samral",
+    };
+    const descriptions: Record<CountryCode, string> = {
+      MY: "Convert Malaysian credit card points into Enrich Points, KrisFlyer miles, Asia Miles, Avios and other airline rewards. See exact conversion blocks, usable points and leftover balances.",
+      SG: "Convert DBS Points, UNI$, Citi ThankYou Points, Citi Miles, HSBC Reward Points, OCBC$, VOYAGE Miles, Membership Rewards and 360° Rewards Points into KrisFlyer miles, Asia Miles, Avios and more — with exact transfer blocks and leftover points.",
+      HK: "Convert HSBC RewardCash, Membership Rewards, Citi Points, DBS$, 360° Rewards Points and BEA Bonus Points into Asia Miles, Avios, KrisFlyer miles and more — with exact transfer blocks, leftover points and verified sources.",
+    };
+    const ogTitle: Record<CountryCode, string> = {
+      MY: "Malaysia Credit Card Points Calculator | Samral",
+      SG: "Singapore Credit Card Points Calculator | Samral",
+      HK: "Hong Kong Credit Card Points Calculator | Samral",
+    };
+    document.title = title[country];
+    const desc = descriptions[country];
     upsertMeta("description", desc);
     upsertLink("canonical", "https://www.samral.com/miles-calculator");
-    upsertMetaProperty(
-      "og:title",
-      isSg ? "Singapore Credit Card Points Calculator | Samral" : "Malaysia Credit Card Points Calculator | Samral",
-    );
+    upsertMetaProperty("og:title", ogTitle[country]);
     upsertMetaProperty("og:description", desc);
     upsertMetaProperty("og:url", "https://www.samral.com/miles-calculator");
     upsertMetaProperty("og:type", "website");
@@ -1290,8 +1297,15 @@ const ExistingBalancesPanel = forwardRef<HTMLDivElement, {
 
 /* ---------- Explainer ---------- */
 
+/** Adjective used when describing the active market in body copy. */
+const MARKET_LABEL: Record<CountryCode, string> = {
+  MY: "Malaysian",
+  SG: "Singapore",
+  HK: "Hong Kong",
+};
+
 function Explainer({ country, selectedCardGroupIds = [] }: { country: CountryCode; selectedCardGroupIds?: string[] }) {
-  const where = country === "SG" ? "Singapore" : "Malaysian";
+  const where = MARKET_LABEL[country];
   const example = useMemo(
     () => blockExampleFor(selectedCardGroupIds, country),
     [selectedCardGroupIds, country],
@@ -1302,7 +1316,7 @@ function Explainer({ country, selectedCardGroupIds = [] }: { country: CountryCod
         <div className="grid gap-12 md:grid-cols-2">
           <div>
             <h2 className="font-display text-3xl text-ink md:text-4xl">
-              How {country === "SG" ? "Singapore" : "Malaysian"} credit card point conversions work
+              How {where} credit card point conversions work
             </h2>
             {example ? (
               <>
@@ -1402,7 +1416,7 @@ function TripPlanningCTA() {
 /* ---------- Disclaimer ---------- */
 
 function Disclaimer({ country }: { country: CountryCode }) {
-  if (country === "SG") {
+  if (country === "SG" || country === "HK") {
     return (
       <section className="border-b border-border bg-sand/40">
         <div className="mx-auto max-w-[900px] px-5 py-10 text-center text-[13px] leading-relaxed text-ink/70 sm:px-6">

@@ -35,7 +35,7 @@ function buildFromCardGroup(cardGroupId: string, fromSelection: boolean): BlockE
   if (!group) return null;
   const product = getRewardProductById(group.rewardProductId);
   if (!product) return null;
-  const bank = getBanksByCountry("MY").concat(getBanksByCountry("SG")).find((b) => b.id === product.bankId);
+  const bank = getBanksByCountry("MY").concat(getBanksByCountry("SG"), getBanksByCountry("HK")).find((b) => b.id === product.bankId);
   const rule = getPublicRulesForCardGroup(cardGroupId)[0];
   if (!rule || !bank) return null;
   const programme = getProgrammeById(rule.loyaltyProgrammeId);

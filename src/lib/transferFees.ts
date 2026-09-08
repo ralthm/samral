@@ -15,26 +15,32 @@ export interface FeeContributor {
   bankId: string;
   bankName: string;
   transferFeeAmount?: number;
-  transferFeeCurrency?: "SGD" | "MYR";
+  transferFeeCurrency?: "SGD" | "MYR" | "HKD";
 }
 
 export interface TransferFeeBreakdownItem {
   bankId: string;
   bankName: string;
   amount: number;
-  currency: "SGD" | "MYR";
+  currency: "SGD" | "MYR" | "HKD";
 }
 
 export interface TransferFeeEstimate {
   total: number;
-  currency: "SGD" | "MYR" | null;
+  currency: "SGD" | "MYR" | "HKD" | null;
   breakdown: TransferFeeBreakdownItem[];
   /** Banks contributing to this programme with no verified fee on record. */
   unknownBanks: string[];
 }
 
-export function formatFee(amount: number, currency: "SGD" | "MYR"): string {
-  return `${currency === "SGD" ? "S$" : "RM"}${amount.toFixed(2)}`;
+export const FEE_SYMBOL: Record<"SGD" | "MYR" | "HKD", string> = {
+  SGD: "S$",
+  MYR: "RM",
+  HKD: "HK$",
+};
+
+export function formatFee(amount: number, currency: "SGD" | "MYR" | "HKD"): string {
+  return `${FEE_SYMBOL[currency]}${amount.toFixed(2)}`;
 }
 
 export function computeTransferFees(contributors: FeeContributor[]): TransferFeeEstimate {

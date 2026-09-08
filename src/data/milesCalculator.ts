@@ -7,6 +7,13 @@
 // when the transfer rate, available partners, minimum block or cap differs.
 
 import {
+  hkBanks,
+  hkCardGroups,
+  hkCards,
+  hkConversionRules,
+  hkRewardProducts,
+} from "./milesCalculator.hk";
+import {
   sgBanks,
   sgCardGroups,
   sgCards,
@@ -134,7 +141,7 @@ export interface ConversionRule {
   minimumBankPointsPerTransfer?: number;
   /** Administrative fee charged per conversion transaction, if any. */
   transferFeeAmount?: number;
-  transferFeeCurrency?: "SGD" | "MYR";
+  transferFeeCurrency?: "SGD" | "MYR" | "HKD";
   /** Per-cardholder cap of partner points per calendar month (if any). */
   monthlyCapPartnerPoints?: number;
   effectiveFrom?: string; // ISO date
@@ -318,6 +325,7 @@ export const banks: Bank[] = [
       "https://www.rhbgroup.com/personal/cards/credit-cards/rewards/index.html",
   },
   ...sgBanks,
+  ...hkBanks,
 ];
 
 /* -------------------- Loyalty programmes -------------------- */
@@ -347,6 +355,11 @@ export const loyaltyProgrammes: LoyaltyProgramme[] = [
   { id: "vietnam", name: "Vietnam Airlines Lotusmiles", slug: "vietnam-lotusmiles", programmeType: "airline_miles", airlineName: "Vietnam Airlines", active: true, displayOrder: 22 },
   { id: "united", name: "United MileagePlus", slug: "united-mileageplus", programmeType: "airline_miles", airlineName: "United Airlines", active: true, displayOrder: 23 },
   { id: "wyndham", name: "Wyndham Rewards", slug: "wyndham-rewards", programmeType: "hotel_points", active: true, displayOrder: 24 },
+  { id: "finnair", name: "Finnair Plus", slug: "finnair-plus", programmeType: "airline_miles", airlineName: "Finnair", active: true, displayOrder: 25 },
+  { id: "china-southern", name: "China Southern Sky Pearl Club", slug: "china-southern-sky-pearl-club", programmeType: "airline_miles", airlineName: "China Southern Airlines", active: true, displayOrder: 26 },
+  { id: "virgin-atlantic", name: "Virgin Atlantic Flying Club", slug: "virgin-atlantic-flying-club", programmeType: "airline_miles", airlineName: "Virgin Atlantic", active: true, displayOrder: 27 },
+  { id: "phoenixmiles", name: "Air China PhoenixMiles", slug: "air-china-phoenixmiles", programmeType: "airline_miles", airlineName: "Air China", active: true, displayOrder: 28 },
+  { id: "hilton", name: "Hilton Honors", slug: "hilton-honors", programmeType: "hotel_points", active: true, displayOrder: 29 },
 ];
 
 /* -------------------- Reward products (bank-side currencies) -------------------- */
@@ -400,6 +413,7 @@ export const rewardProducts: RewardProduct[] = [
   { id: "rhb-loyaltyplus", bankId: "rhb", name: "RHB LoyaltyPlus Points", slug: "rhb-loyaltyplus", rewardCurrencyName: "LoyaltyPlus Points", active: true, displayOrder: 1 },
   { id: "rhb-loyalty-legacy", bankId: "rhb", name: "RHB Loyalty Points (Legacy)", slug: "rhb-loyalty-legacy", rewardCurrencyName: "Loyalty Points (Legacy)", active: true, displayOrder: 2 },
   ...sgRewardProducts,
+  ...hkRewardProducts,
 ];
 
 /* -------------------- Card groups (entitlement tiers) -------------------- */
@@ -1012,6 +1026,7 @@ export const eligibleCardGroups: EligibleCardGroup[] = [
     displayOrder: 6,
   },
   ...sgCardGroups,
+  ...hkCardGroups,
 ];
 
 /* -------------------- Conversion rules -------------------- */
@@ -1396,6 +1411,7 @@ export const conversionRules: ConversionRule[] = [
       "Floor-block calculation only: full 1,000 Enrich blocks are issued from each qualifying batch of RHB points; the remainder stays in the RHB balance and is never rounded up.",
   }))),
   ...sgConversionRules,
+  ...hkConversionRules,
 ];
 
 /* -------------------- Cards (searchable) -------------------- */
@@ -1626,6 +1642,7 @@ export const cards: Card[] = [
     aliases: ["Other RHB Legacy"],
   }),
   ...sgCards,
+  ...hkCards,
 ];
 
 /* -------------------- Helpers -------------------- */
@@ -1679,11 +1696,12 @@ export function getCardGroupsByBank(bankId: string) {
 /* -------------------- Country -------------------- */
 
 /** Countries the calculator carries a dataset for. */
-export type CountryCode = "MY" | "SG";
+export type CountryCode = "MY" | "SG" | "HK";
 
 export const COUNTRIES: { code: CountryCode; name: string; flag: string }[] = [
   { code: "MY", name: "Malaysia", flag: "🇲🇾" },
   { code: "SG", name: "Singapore", flag: "🇸🇬" },
+  { code: "HK", name: "Hong Kong", flag: "🇭🇰" },
 ];
 
 /** Active banks for one country only. Never mixes datasets. */
