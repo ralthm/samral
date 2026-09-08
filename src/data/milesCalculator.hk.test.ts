@@ -12,6 +12,7 @@ import {
   isRulePublic,
 } from "./milesCalculator";
 import { calculateEntry } from "@/lib/milesCalculator";
+import { computeTransferFees } from "@/lib/transferFees";
 import { COUNTRY_ORIGINS, targetsForCountry } from "./redemptionTargets";
 
 const hkRules = conversionRules.filter((r) => r.id.startsWith("hk-"));
@@ -137,5 +138,33 @@ describe("Hong Kong exclusions", () => {
   it("surfaces no invented Hong Kong redemption opportunities", () => {
     expect(targetsForCountry("HK").filter(isRulePublic as never)).toHaveLength(0);
     expect(targetsForCountry("HK")).toHaveLength(0);
+  });
+});
+
+describe("Hong Kong transfer fees", () => {
+  const feeRow = (points: number) => {
+    const r = calculateEntry({ entryId: "e", cardGroupId: "cg-bea-hk-mileage", bankPoints: points })
+      .find((x) => x.programmeId === "asia-miles")!;
+    return computeTransferFees([{
+      bankId: r.bankId,
+      bankName: r.bankName,
+      transferFeeAmount: r.transferFeeAmount,
+      transferFeeCurrency: r.transferFeeCurrency,
+      partnerPointsReceived: r.partnerPointsReceived,
+    }]);
+  };
+
+  it("charges nothing when BEA cannot meet its 50,000-point minimum", () => {
+    const r = calculateEntry({ entryId: "e", cardGroupId: "cg-bea-hk-mileage", bankPoints: 39_000 })
+      .find((x) => x.programmeId === "asia-miles")!;
+    expect(r.partnerPointsReceived).toBe(0);
+    expect(feeRow(39_000).total).toBe(0);
+    expect(feeRow(39_000).breakdown).toHaveLength(0);
+  });
+
+  it("charges the published HK$300 once a valid conversion happens", () => {
+    const fees = feeRow(65_000);
+    expect(fees.total).toBe(300);
+    expect(fees.currency).toBe("HKD");
   });
 });

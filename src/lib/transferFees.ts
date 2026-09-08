@@ -16,6 +16,12 @@ export interface FeeContributor {
   bankName: string;
   transferFeeAmount?: number;
   transferFeeCurrency?: "SGD" | "MYR" | "HKD";
+  /**
+   * Miles/points this bank actually contributes to the scenario. When present
+   * and zero (e.g. a minimum transfer threshold is not met), the bank performs
+   * no transfer at all, so it is charged nothing.
+   */
+  partnerPointsReceived?: number;
 }
 
 export interface TransferFeeBreakdownItem {
@@ -48,6 +54,8 @@ export function computeTransferFees(contributors: FeeContributor[]): TransferFee
   const unknown = new Map<string, string>();
 
   for (const c of contributors) {
+    // No valid conversion from this bank => no transfer => no fee.
+    if (typeof c.partnerPointsReceived === "number" && c.partnerPointsReceived <= 0) continue;
     if (typeof c.transferFeeAmount === "number" && c.transferFeeCurrency) {
       // One conversion per bank into this programme — take the highest known
       // published fee for the bank rather than charging it more than once.

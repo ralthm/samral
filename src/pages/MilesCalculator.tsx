@@ -904,6 +904,12 @@ function EntryCard({
               aria-describedby={pointsError ? `points-err-${entry.id}` : undefined}
               className="mt-2 w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
             />
+            {currency?.productId === "hsbc-hk-rc" && (
+              <p className="mt-2 text-[12px] text-ink/60">
+                Enter your actual RewardCash balance as shown in HSBC online banking (for example HK$1,500),
+                not your card spend and not a generic “points” figure.
+              </p>
+            )}
             {pointsError && (
               <p id={`points-err-${entry.id}`} className="mt-2 text-[12px] text-destructive">{pointsError}</p>
             )}

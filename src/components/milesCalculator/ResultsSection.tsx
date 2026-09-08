@@ -436,12 +436,18 @@ function ProgrammeBalanceCard({
 
   // Cash conversion fees for THIS destination programme only. One transfer per
   // contributing bank; alternative programme scenarios are never summed.
+  // A bank is only charged when it actually contributes a valid, non-zero
+  // conversion to THIS programme. Below a minimum transfer, or with no bank
+  // points used, that bank contributes no miles and therefore no fee.
   const fees = useMemo(
-    () => computeTransferFees(rowResults.map((r) => ({
+    () => computeTransferFees(rowResults
+      .filter((r) => r.partnerPointsReceived > 0 && r.bankPointsUsed > 0)
+      .map((r) => ({
       bankId: r.bankId,
       bankName: r.bankName,
       transferFeeAmount: r.transferFeeAmount,
       transferFeeCurrency: r.transferFeeCurrency,
+      partnerPointsReceived: r.partnerPointsReceived,
     }))),
     [rowResults],
   );
