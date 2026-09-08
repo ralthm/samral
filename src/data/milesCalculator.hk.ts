@@ -41,6 +41,7 @@ export const hkBanks: Bank[] = [
   { id: "dbs-hk", name: "DBS Hong Kong", slug: "dbs-hong-kong", country: "HK", active: true, displayOrder: 4, officialRewardsUrl: "https://www.dbs.com.hk/personal/credit-cards/rewards/dbs-mileage" },
   { id: "sc-hk", name: "Standard Chartered Hong Kong", slug: "standard-chartered-hong-kong", country: "HK", active: true, displayOrder: 5, officialRewardsUrl: "https://www.sc.com/hk/credit-cards/360rewards/" },
   { id: "bea-hk", name: "BEA", slug: "bea-hong-kong", country: "HK", active: true, displayOrder: 6, officialRewardsUrl: "https://www.hkbea.com/html/en/bea-rewards.html" },
+  { id: "boc-hk", name: "Bank of China (Hong Kong)", slug: "bank-of-china-hong-kong", country: "HK", active: true, displayOrder: 7, officialRewardsUrl: "https://www.bochk.com/en/creditcard/rewards/mileage.html" },
 ];
 
 /* -------------------- Reward products (bank-side currencies) -------------------- */
@@ -52,6 +53,7 @@ export const hkRewardProducts: RewardProduct[] = [
   { id: "dbs-hk-dollars", bankId: "dbs-hk", name: "DBS$", slug: "dbs-hk-dollars", rewardCurrencyName: "DBS$", active: true, displayOrder: 1 },
   { id: "sc-hk-360", bankId: "sc-hk", name: "360° Rewards Points", slug: "sc-hk-360-rewards", rewardCurrencyName: "360° Rewards Points", active: true, displayOrder: 1 },
   { id: "bea-hk-bonus", bankId: "bea-hk", name: "BEA Bonus Points", slug: "bea-hk-bonus-points", rewardCurrencyName: "BEA Bonus Points", active: true, displayOrder: 1 },
+  { id: "boc-hk-gift", bankId: "boc-hk", name: "BOCHK Gift Points", slug: "boc-hk-gift-points", rewardCurrencyName: "BOCHK Gift Points", active: true, displayOrder: 1 },
 ];
 
 /* -------------------- Processing notes -------------------- */
@@ -66,6 +68,7 @@ const CITI_TIME =
 const DBS_TIME =
   "Asia Miles is instant when the membership details are correct. Avios and KrisFlyer take about 3–8 working days.";
 const BEA_TIME = "Instant via BEA Mall when the loyalty account details are valid.";
+const BOC_TIME = "Up to 2 to 3 weeks.";
 
 /* -------------------- Card groups -------------------- */
 
@@ -162,6 +165,26 @@ export const hkCardGroups: EligibleCardGroup[] = [
     active: true,
     displayOrder: 1,
   },
+  {
+    id: "cg-boc-hk-gift",
+    rewardProductId: "boc-hk-gift",
+    name: "Eligible BOCHK credit card in the Gift Point Rewards Programme",
+    description:
+      "Gift Points earned on eligible Hong Kong-issued BOC credit cards. Certain card types are excluded under BOCHK's programme terms.",
+    processingNotes: [BOC_TIME],
+    eligibleCards: [],
+    active: true,
+    displayOrder: 1,
+  },
+  {
+    id: "cg-boc-hk-gift-waived",
+    rewardProductId: "boc-hk-gift",
+    name: "BOC Private Card / BOC Cheers Card (no mileage handling fee)",
+    processingNotes: [BOC_TIME],
+    eligibleCards: [],
+    active: true,
+    displayOrder: 2,
+  },
 ];
 
 /* -------------------- Rule helper -------------------- */
@@ -222,6 +245,12 @@ const BEA_SRC = {
   sourceUrl: "https://www.hkbea.com/html/en/bea-rewards.html",
   sourceTitle: "BEA Rewards Redemption Program — Mileage Reward",
   sourcePublisher: "The Bank of East Asia, Limited",
+};
+
+const BOC_SRC = {
+  sourceUrl: "https://www.bochk.com/en/creditcard/rewards/mileage.html",
+  sourceTitle: "Bank of China (Hong Kong) Mileage Awards — Gift Point conversion",
+  sourcePublisher: "Bank of China (Hong Kong) Limited",
 };
 
 const HKD = "HKD" as const;
@@ -287,6 +316,14 @@ const DBS_BLACK_AMEX_NOTE = `${DBS_UNIT_NOTE} The fee is waived on the DBS Black
 const DBS_COMPASS_NOTE = `${DBS_UNIT_NOTE} A handling fee of HK$100 per 5,000 miles or part thereof applies, so the cash cost depends on how many miles are converted. ${CONFIRM}`;
 const DBS_PHOENIX_NOTE = `${DBS_UNIT_NOTE} The cited page does not publish a handling fee or processing time for this route. ${CONFIRM}`;
 const SC_NOTE = `25,000 360° Rewards Points convert to 1,000 Asia Miles, in whole 25,000-point blocks. The public redemption page does not clearly state a fee or a processing time. ${CONFIRM}`;
+const BOC_FEE_NOTE =
+  "Handling fee is HK$50 for every 5,000 miles or part thereof, with a minimum of HK$100 and a maximum of HK$300 per transaction, so the cash cost depends on how many miles are converted. Samral does not show a single flat fee for this group.";
+const BOC_AM_NOTE = `15 Gift Points convert to 1 Asia Mile. First transfer is 15,000 Gift Points (1,000 Asia Miles), then increments of 7,500 Gift Points (500 Asia Miles). ${BOC_FEE_NOTE}`;
+const BOC_AM_WAIVED_NOTE =
+  "15 Gift Points convert to 1 Asia Mile. First transfer is 15,000 Gift Points (1,000 Asia Miles), then increments of 7,500 Gift Points (500 Asia Miles). No mileage-redemption handling fee applies to the BOC Private Card and BOC Cheers Card.";
+const BOC_PM_NOTE = `8 Gift Points convert to 1 PhoenixMiles km. First transfer is 8,000 Gift Points (1,000 km), then increments of 4,000 Gift Points (500 km). ${BOC_FEE_NOTE}`;
+const BOC_PM_WAIVED_NOTE =
+  "8 Gift Points convert to 1 PhoenixMiles km. First transfer is 8,000 Gift Points (1,000 km), then increments of 4,000 Gift Points (500 km). No mileage-redemption handling fee applies to the BOC Private Card and BOC Cheers Card.";
 const BEA_NOTE =
   "Minimum 50,000 Bonus Points (5,000 Asia Miles), then multiples of 10,000 Bonus Points. A fee of HK$300 applies per conversion.";
 
@@ -405,6 +442,36 @@ export const hkConversionRules: ConversionRule[] = [
     notes: BEA_NOTE,
     processingTime: BEA_TIME,
   }),
+
+  /* ---- BOCHK Gift Points. Eastern Miles is suspended and deliberately excluded. ---- */
+  hkRule("hk-boc-asia-miles", "cg-boc-hk-gift", "asia-miles", [7500, 500], {
+    ...BOC_SRC,
+    minimumBankPointsPerTransfer: 15000,
+    notes: BOC_AM_NOTE,
+    processingTime: BOC_TIME,
+  }),
+  hkRule("hk-boc-phoenixmiles", "cg-boc-hk-gift", "phoenixmiles", [4000, 500], {
+    ...BOC_SRC,
+    minimumBankPointsPerTransfer: 8000,
+    notes: BOC_PM_NOTE,
+    processingTime: BOC_TIME,
+  }),
+  hkRule("hk-boc-waived-asia-miles", "cg-boc-hk-gift-waived", "asia-miles", [7500, 500], {
+    ...BOC_SRC,
+    minimumBankPointsPerTransfer: 15000,
+    transferFeeAmount: 0,
+    transferFeeCurrency: HKD,
+    notes: BOC_AM_WAIVED_NOTE,
+    processingTime: BOC_TIME,
+  }),
+  hkRule("hk-boc-waived-phoenixmiles", "cg-boc-hk-gift-waived", "phoenixmiles", [4000, 500], {
+    ...BOC_SRC,
+    minimumBankPointsPerTransfer: 8000,
+    transferFeeAmount: 0,
+    transferFeeCurrency: HKD,
+    notes: BOC_PM_WAIVED_NOTE,
+    processingTime: BOC_TIME,
+  }),
 ];
 
 /* -------------------- Cards -------------------- */
@@ -468,5 +535,17 @@ export const hkCards: Card[] = [
   }),
   card("hk-bea-world", "bea-hk", "BEA World Mastercard", "cg-bea-hk-mileage", {
     subtitle: "Registered for Mileage Reward",
+  }),
+
+  // Bank of China (Hong Kong)
+  card("hk-boc-eligible", "boc-hk", "Eligible BOCHK credit card", "cg-boc-hk-gift", {
+    subtitle: "BOCHK Gift Points",
+    aliases: ["Bank of China", "BOCHK", "Gift Points"],
+  }),
+  card("hk-boc-private", "boc-hk", "BOC Private Card", "cg-boc-hk-gift-waived", {
+    subtitle: "No mileage handling fee",
+  }),
+  card("hk-boc-cheers", "boc-hk", "BOC Cheers Card", "cg-boc-hk-gift-waived", {
+    subtitle: "No mileage handling fee",
   }),
 ];
