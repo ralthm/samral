@@ -1331,7 +1331,7 @@ function DestinationCard({
         {!isNeedsReview && (
           state === "unlocked" ? (
             <>
-              <dt className="text-ink/55">Remaining</dt>
+              <dt className="text-ink/55">Potential balance after redemption</dt>
               <dd className="text-right text-ink">{formatInt(remaining)}</dd>
             </>
           ) : (
