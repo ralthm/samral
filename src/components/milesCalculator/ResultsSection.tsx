@@ -1185,9 +1185,10 @@ interface EnrichedT {
 }
 
 function DestinationGroup({
-  title, empty, items, state, tripType, travellers, onPrimary, onSecondary,
+  title, subtitle, empty, items, state, tripType, travellers, onPrimary, onSecondary,
 }: {
   title: string;
+  subtitle?: string;
   empty: string;
   items: EnrichedT[];
   state: "unlocked" | "almost" | "future";
@@ -1199,6 +1200,7 @@ function DestinationGroup({
   return (
     <div>
       <h3 className="font-display text-2xl text-ink md:text-3xl">{title}</h3>
+      {subtitle && <p className="mt-2 text-[13px] text-ink/60">{subtitle}</p>}
       {items.length === 0 ? (
         <p className="mt-3 text-[13px] text-ink/55">{empty}</p>
       ) : (
