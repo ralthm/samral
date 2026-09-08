@@ -187,25 +187,38 @@ function ResultsDashboard({
 
         {/* Programme balance cards */}
         <div className="mt-10 space-y-10">
-          {(Object.keys(grouped) as GroupKey[]).map((k) =>
-            grouped[k].length === 0 ? null : (
+          {(Object.keys(grouped) as GroupKey[]).map((k) => {
+            if (grouped[k].length === 0) return null;
+            const cards = (list: ProgrammeTotal[]) =>
+              list.map((p) => (
+                <ProgrammeBalanceCard
+                  key={p.programmeId}
+                  programme={p}
+                  rowResults={resultsByProgramme.get(p.programmeId) ?? []}
+                  entryContext={entryContext}
+                  registeredSet={registeredSet}
+                  onToggleRegistration={onToggleRegistration}
+                />
+              ));
+
+            if (k === "airline") {
+              return (
+                <FeaturedAirlineProgrammes
+                  key={k}
+                  country={country}
+                  programmes={grouped[k]}
+                  renderCards={cards}
+                />
+              );
+            }
+
+            return (
               <div key={k}>
                 <h3 className="text-[11px] uppercase tracking-[0.18em] text-ink/55">{GROUP_LABEL[k]}</h3>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  {grouped[k].map((p) => (
-                    <ProgrammeBalanceCard
-                      key={p.programmeId}
-                      programme={p}
-                      rowResults={resultsByProgramme.get(p.programmeId) ?? []}
-                      entryContext={entryContext}
-                      registeredSet={registeredSet}
-                      onToggleRegistration={onToggleRegistration}
-                    />
-                  ))}
-                </div>
+                <div className="mt-4 grid gap-4 md:grid-cols-2">{cards(grouped[k])}</div>
               </div>
-            ),
-          )}
+            );
+          })}
         </div>
 
         {/* Destination discovery */}
