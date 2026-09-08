@@ -18,6 +18,10 @@ import italyImage from "@/assets/italy.jpg";
 import alpsAsset from "@/assets/swiss-alps.jpg.asset.json";
 import synapseLogo from "@/assets/synapse-logo.png.asset.json";
 import cpfLogo from "@/assets/cpf-logo.png.asset.json";
+import destMaldivesAsset from "@/assets/dest-maldives.jpg.asset.json";
+import destItalyAsset from "@/assets/dest-italy.jpg.asset.json";
+import destKyotoAsset from "@/assets/dest-kyoto.jpg.asset.json";
+import destAlpsAsset from "@/assets/dest-swiss-alps.jpg.asset.json";
 const alpsImage = alpsAsset.url;
 
 export default function Home() {
@@ -507,22 +511,22 @@ function ServiceCard({
 function Destinations() {
   const dests = [
     {
-      img: maldivesImage,
+      img: destMaldivesAsset.url,
       name: "The Maldives",
       note: "A long-haul trip where the right combination of bank points, airline miles and cash can make a meaningful difference.",
     },
     {
-      img: italyImage,
+      img: destItalyAsset.url,
       name: "The Italian coast",
       note: "Long summer evenings on the Amalfi coast, booked with a mix of two flexible currencies.",
     },
     {
-      img: kyotoImage,
+      img: destKyotoAsset.url,
       name: "Kyoto in autumn",
       note: "Traditional ryokan stays and premium-cabin ANA seats — some of the best value in miles.",
     },
     {
-      img: alpsImage,
+      img: destAlpsAsset.url,
       name: "The Swiss Alps",
       note: "Slow train journeys through alpine valleys, paired with a mountainside stay booked on hotel points.",
     },
