@@ -13,7 +13,7 @@
 export type RedemptionStatus = "reachable" | "close" | "future";
 
 /** Ratio of the requirement a user must already hold to count as "close". */
-export const CLOSE_THRESHOLD = 0.75;
+export const CLOSE_THRESHOLD = 0.7;
 
 export interface RedemptionClassification {
   status: RedemptionStatus;
