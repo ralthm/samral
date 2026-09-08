@@ -87,7 +87,7 @@ export interface SourceMetadata {
 
 /** Programmes with a complete, current redemption engine. Others may appear in
  * transfer results but not in the destination filter. */
-export const SUPPORTED_PROGRAMMES: readonly string[] = ["enrich", "krisflyer", "asia-miles"];
+export const SUPPORTED_PROGRAMMES: readonly string[] = ["enrich", "krisflyer", "asia-miles", "eva"];
 
 export interface RedemptionTarget {
   id: string;
