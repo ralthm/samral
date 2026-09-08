@@ -62,14 +62,16 @@ describe("country scoping", () => {
   it("scopes hero counters per country", () => {
     const my = summaryCounters("MY");
     const sg = summaryCounters("SG");
+    const hk = summaryCounters("HK");
     const all = summaryCounters();
     expect(my.banks).toBeGreaterThan(0);
     expect(sg.banks).toBeGreaterThan(0);
-    expect(all.routes).toBe(my.routes + sg.routes);
+    expect(hk.banks).toBeGreaterThan(0);
+    expect(all.routes).toBe(my.routes + sg.routes + hk.routes);
   });
 
   it("gives every bank a country", () => {
-    for (const b of banks) expect(["MY", "SG"]).toContain(b.country);
+    for (const b of banks) expect(["MY", "SG", "HK"]).toContain(b.country);
   });
 });
 
