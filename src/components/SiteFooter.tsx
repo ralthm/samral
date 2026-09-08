@@ -10,7 +10,7 @@ export default function SiteFooter() {
               Samral
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-background/60">
-              Points &amp; miles advisory
+              More value from money you already spend &mdash; for individuals and businesses
             </p>
           </div>
           <div className="md:col-span-3">
@@ -34,6 +34,14 @@ export default function SiteFooter() {
             </ul>
           </div>
           <div className="md:col-span-2">
+            <p className="eyebrow mb-4 text-background/50">Business</p>
+            <ul className="mb-6 space-y-2 text-sm">
+              <li>
+                <Link to="/business" className="hover:text-background">
+                  Business Spend
+                </Link>
+              </li>
+            </ul>
             <p className="eyebrow mb-4 text-background/50">Software</p>
             <ul className="space-y-2 text-sm">
               <li>

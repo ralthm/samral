@@ -6,6 +6,7 @@ const NAV_LINKS = [
   { label: "Miles Calculator", to: "/miles-calculator" },
   { label: "Points Trip Planning", to: "/trip-planning" },
   { label: "Cards Strategy", to: "/points-strategy" },
+  { label: "For Business", to: "/business" },
 ];
 
 const MOBILE_LINKS = [{ label: "Home", to: "/" }, ...NAV_LINKS, { label: "About", to: "/about" }];
