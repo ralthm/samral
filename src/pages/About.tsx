@@ -40,37 +40,28 @@ export default function About() {
               </h1>
               <div className="mt-8 max-w-2xl space-y-5 text-[16px] leading-relaxed text-ink/85">
                 <p>
-                  I didn&apos;t grow up obsessed with airline miles. Even after working in finance, I never expected credit card points to become such a big interest of mine.
+                  I started Samral after noticing something surprisingly simple: the same money can produce very different value depending on how it&apos;s spent, paid and used.
                 </p>
                 <p>
-                  Like most people, I signed up for a credit card because it seemed like a good deal and barely thought about the points afterwards.
+                  My background is in finance, but my interest in this started personally. After checking the points I&apos;d accumulated on a credit card, I realised I already had enough to travel to places like Bangkok and Ho Chi Minh City.
                 </p>
                 <p>
-                  One day I checked my account and realised I&apos;d already earned enough points to travel to places like Bangkok and Ho Chi Minh City in just a few months. That surprised me.
+                  What looked simple quickly became a rabbit hole. Different transfer routes, airline programmes and redemption choices could produce completely different outcomes from the same points.
                 </p>
                 <p>
-                  I started reading about airline programmes, transfer partners and award redemptions, expecting it to be fairly straightforward.
+                  I started researching it obsessively and helping friends do the same. That eventually became Samral.
                 </p>
                 <p>
-                  It wasn&apos;t.
+                  Today, Samral helps individuals make better decisions around their cards, points and travel, and is expanding that same thinking into how business owners spend and pay.
                 </p>
                 <p>
-                  The more I learnt, the more I realised how confusing the whole system is. The same points could be worth very different amounts depending on how you used them. Some transfers made sense. Others didn&apos;t. Some flights looked expensive until you knew where to search.
+                  The principle is the same: don&apos;t optimize the most obvious number. Look at the whole economic outcome.
                 </p>
                 <p>
-                  Before long, it became a hobby. I&apos;d spend evenings reading airline programmes, comparing transfer options and helping friends figure out whether their points were actually worth using.
+                  Sometimes points create the most value. Sometimes cash does. For a business, fees, FX, payment terms or working capital can matter more than rewards.
                 </p>
                 <p>
-                  That&apos;s how Samral started.
-                </p>
-                <p>
-                  Today, I help people understand the rewards they already have and how to use them more effectively. Sometimes that means finding a better redemption. Sometimes it means paying cash instead. The goal isn&apos;t to use points at all costs, it&apos;s to make informed decisions.
-                </p>
-                <p>
-                  Airline programmes change, banks update their transfer partners and new opportunities appear all the time. That&apos;s part of what I enjoy.
-                </p>
-                <p>
-                  I can save you hours of research or help you get more from points you already earned.
+                  My job is to understand the options, quantify the trade-offs and help you make the decision that creates the most real-world value.
                 </p>
               </div>
             </div>
