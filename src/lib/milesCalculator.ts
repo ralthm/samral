@@ -86,9 +86,13 @@ export interface RuleResult {
   transferIncrementPartnerPoints?: number;
   /** Bank-side minimum per transfer, where the issuer publishes one. */
   minimumBankPointsPerTransfer?: number;
-  /** Administrative fee per conversion transaction, where the issuer charges one. */
+  /** Administrative fee per conversion transaction, where the issuer charges one.
+   * When the issuer publishes a per-block rate, this is the exact fee derived
+   * from the miles actually converted. */
   transferFeeAmount?: number;
   transferFeeCurrency?: "SGD" | "MYR" | "HKD";
+  /** Set when the fee above was derived from a published per-block rate. */
+  transferFeeDerived?: boolean;
   /** Indicative issuer processing time for this route, where published. */
   processingTime?: string;
   /** All promotions currently active for this route (applied + conditional). */
