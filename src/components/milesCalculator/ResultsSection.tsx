@@ -1108,7 +1108,8 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
         ) : (
           <>
             <DestinationGroup
-              title="You can reach these now"
+              title="Your points are enough for these"
+              subtitle="Based on published award requirements. Award-seat availability is not checked."
               empty="No unlocked destinations yet. Adjust filters or add more balances."
               items={unlocked}
               state="unlocked"
