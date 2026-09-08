@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 
-const BUSINESS_CALL_URL = "https://cal.com/samral/business-spend-discovery-call";
+const BUSINESS_CALL_URL = "https://cal.com/samral/business-discovery-call";
 
 const track = (event: string, payload: Record<string, unknown> = {}) => {
   try {
