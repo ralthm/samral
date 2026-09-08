@@ -136,9 +136,12 @@ describe("Hong Kong exclusions", () => {
     }
   });
 
-  it("surfaces no invented Hong Kong redemption opportunities", () => {
-    expect(targetsForCountry("HK").filter(isRulePublic as never)).toHaveLength(0);
-    expect(targetsForCountry("HK")).toHaveLength(0);
+  it("only surfaces Hong Kong redemptions for the three verified programmes", () => {
+    const hk = targetsForCountry("HK");
+    expect(hk.length).toBeGreaterThan(0);
+    expect(new Set(hk.map((t) => t.programmeId))).toEqual(
+      new Set(["asia-miles", "krisflyer", "eva"]),
+    );
   });
 });
 
