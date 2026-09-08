@@ -127,6 +127,10 @@ export interface RedemptionTarget {
   effectiveFrom?: string;
   effectiveUntil?: string;
   verifiedOn: string;
+  /** Date the airline's current operation of this exact route was verified. */
+  routeVerifiedDate?: string;
+  /** Date the award requirement itself was verified against the source. */
+  awardPriceVerifiedDate?: string;
   sourceUrl: string;
   sourceTitle: string;
   /** Structured provenance. Prefer official sources; verified_secondary is
