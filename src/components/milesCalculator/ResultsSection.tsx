@@ -1108,7 +1108,8 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
         ) : (
           <>
             <DestinationGroup
-              title="You can reach these now"
+              title="Your points are enough for these"
+              subtitle="Based on published award requirements. Award-seat availability is not checked."
               empty="No unlocked destinations yet. Adjust filters or add more balances."
               items={unlocked}
               state="unlocked"
@@ -1119,7 +1120,7 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
             />
             <DestinationGroup
               title="You’re close"
-              empty="Nothing within 25% of a target right now."
+              empty="Nothing within 30% of a target right now."
               items={almost}
               state="almost"
               tripType={tripType}
@@ -1184,9 +1185,10 @@ interface EnrichedT {
 }
 
 function DestinationGroup({
-  title, empty, items, state, tripType, travellers, onPrimary, onSecondary,
+  title, subtitle, empty, items, state, tripType, travellers, onPrimary, onSecondary,
 }: {
   title: string;
+  subtitle?: string;
   empty: string;
   items: EnrichedT[];
   state: "unlocked" | "almost" | "future";
@@ -1198,6 +1200,7 @@ function DestinationGroup({
   return (
     <div>
       <h3 className="font-display text-2xl text-ink md:text-3xl">{title}</h3>
+      {subtitle && <p className="mt-2 text-[13px] text-ink/60">{subtitle}</p>}
       {items.length === 0 ? (
         <p className="mt-3 text-[13px] text-ink/55">{empty}</p>
       ) : (

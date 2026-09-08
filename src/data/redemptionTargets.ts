@@ -15,6 +15,7 @@
 // target. Records with status "needs_review" render a verification warning
 // instead of a definitive requirement.
 
+import { buildHongKongTargets } from "./redemption.hk";
 import {
   KRISFLYER_ZONES_FROM_ZONE1,
   SQ_DESTINATIONS_FROM_SIN,
@@ -87,7 +88,7 @@ export interface SourceMetadata {
 
 /** Programmes with a complete, current redemption engine. Others may appear in
  * transfer results but not in the destination filter. */
-export const SUPPORTED_PROGRAMMES: readonly string[] = ["enrich", "krisflyer", "asia-miles"];
+export const SUPPORTED_PROGRAMMES: readonly string[] = ["enrich", "krisflyer", "asia-miles", "eva"];
 
 export interface RedemptionTarget {
   id: string;
@@ -722,6 +723,7 @@ export const redemptionTargets: RedemptionTarget[] = [
   ...buildKrisflyerTargets(),
   ...buildAsiaMilesTargets(),
   ...buildSingaporeTargets(),
+  ...buildHongKongTargets(),
 ];
 
 /** All redemption records for a market. Guarantees the origin never leaks
