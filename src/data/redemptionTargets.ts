@@ -15,6 +15,7 @@
 // target. Records with status "needs_review" render a verification warning
 // instead of a definitive requirement.
 
+import { buildHongKongTargets } from "./redemption.hk";
 import {
   KRISFLYER_ZONES_FROM_ZONE1,
   SQ_DESTINATIONS_FROM_SIN,
