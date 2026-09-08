@@ -12,10 +12,6 @@ import travel4 from "@/assets/travel-4.jpg.asset.json";
 import notebookImage from "@/assets/notebook.jpg";
 import kyotoImage from "@/assets/kyoto.jpg";
 import cabinImage from "@/assets/cabin.jpg";
-import maldivesImage from "@/assets/maldives.jpg";
-import italyImage from "@/assets/italy.jpg";
-
-import alpsAsset from "@/assets/swiss-alps.jpg.asset.json";
 import synapseLogo from "@/assets/synapse-logo.png.asset.json";
 import cpfLogo from "@/assets/cpf-logo.png.asset.json";
 import destMaldivesAsset from "@/assets/dest-maldives.jpg.asset.json";
