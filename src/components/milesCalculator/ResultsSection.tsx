@@ -299,6 +299,42 @@ function FeaturedAirlineProgrammes({
   );
 }
 
+/* ---------- Hotel programmes (collapsed by default) ---------- */
+
+function HotelProgrammes({
+  programmes, renderCards,
+}: {
+  programmes: ProgrammeTotal[];
+  renderCards: (list: ProgrammeTotal[]) => React.ReactNode;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const surfaced = programmes.filter((p) => p.existingBalance > 0);
+  const collapsed = programmes.filter((p) => !surfaced.includes(p));
+
+  return (
+    <div>
+      <h3 className="text-[11px] uppercase tracking-[0.18em] text-ink/55">{GROUP_LABEL.hotel}</h3>
+      {surfaced.length > 0 && (
+        <div className="mt-4 grid gap-4 md:grid-cols-2">{renderCards(surfaced)}</div>
+      )}
+      {collapsed.length > 0 && (
+        <>
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+            className="mt-4 inline-flex items-center gap-2 text-[13px] text-ink underline underline-offset-4"
+          >
+            <ChevronDown className={`h-4 w-4 transition-transform ${expanded ? "rotate-180" : ""}`} />
+            {expanded ? "Hide hotel programmes" : `View hotel programmes (${collapsed.length})`}
+          </button>
+          {expanded && <div className="mt-4 grid gap-4 md:grid-cols-2">{renderCards(collapsed)}</div>}
+        </>
+      )}
+    </div>
+  );
+}
+
 /** Human label for a source-provenance type. Distinguishes an official
  * published source from a verified current award reference. */
 function sourceTypeLabel(t?: string): string {
