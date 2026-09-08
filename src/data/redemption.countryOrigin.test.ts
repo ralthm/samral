@@ -12,7 +12,7 @@ import { summaryCounters } from "@/data/milesCalculator";
 describe("redemption records are market-scoped", () => {
   it("every record declares a market and an origin airport", () => {
     for (const t of redemptionTargets) {
-      expect(["MY", "SG"]).toContain(t.country);
+      expect(["MY", "SG", "HK"]).toContain(t.country);
       expect(t.originAirport).toMatch(/^[A-Z]{3}$/);
       expect(t.originCountry.length).toBeGreaterThan(0);
     }
