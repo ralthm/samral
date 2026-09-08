@@ -9,7 +9,6 @@ import travel1 from "@/assets/travel-1.jpg.asset.json";
 import travel2 from "@/assets/travel-2.jpg.asset.json";
 import travel3 from "@/assets/travel-3.jpg.asset.json";
 import travel4 from "@/assets/travel-4.jpg.asset.json";
-import notebookImage from "@/assets/notebook.jpg";
 import svcAircraftAsset from "@/assets/svc-aircraft.jpg.asset.json";
 import svcNotebookAsset from "@/assets/svc-notebook.jpg.asset.json";
 import kyotoImage from "@/assets/kyoto.jpg";
