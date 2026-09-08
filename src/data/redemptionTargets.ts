@@ -722,6 +722,7 @@ export const redemptionTargets: RedemptionTarget[] = [
   ...buildKrisflyerTargets(),
   ...buildAsiaMilesTargets(),
   ...buildSingaporeTargets(),
+  ...buildHongKongTargets(),
 ];
 
 /** All redemption records for a market. Guarantees the origin never leaks
