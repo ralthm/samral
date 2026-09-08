@@ -16,6 +16,12 @@ export interface FeeContributor {
   bankName: string;
   transferFeeAmount?: number;
   transferFeeCurrency?: "SGD" | "MYR" | "HKD";
+  /**
+   * Miles/points this bank actually contributes to the scenario. When present
+   * and zero (e.g. a minimum transfer threshold is not met), the bank performs
+   * no transfer at all, so it is charged nothing.
+   */
+  partnerPointsReceived?: number;
 }
 
 export interface TransferFeeBreakdownItem {
