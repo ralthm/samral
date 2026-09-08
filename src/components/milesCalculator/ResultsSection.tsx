@@ -200,6 +200,10 @@ function ResultsDashboard({
               );
             }
 
+            if (k === "hotel") {
+              return <HotelProgrammes key={k} programmes={grouped[k]} renderCards={cards} />;
+            }
+
             return (
               <div key={k}>
                 <h3 className="text-[11px] uppercase tracking-[0.18em] text-ink/55">{GROUP_LABEL[k]}</h3>
