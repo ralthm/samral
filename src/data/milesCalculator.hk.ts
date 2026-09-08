@@ -447,12 +447,14 @@ export const hkConversionRules: ConversionRule[] = [
   hkRule("hk-boc-asia-miles", "cg-boc-hk-gift", "asia-miles", [7500, 500], {
     ...BOC_SRC,
     minimumBankPointsPerTransfer: 15000,
+    transferFeeSchedule: BOC_FEE_SCHEDULE,
     notes: BOC_AM_NOTE,
     processingTime: BOC_TIME,
   }),
   hkRule("hk-boc-phoenixmiles", "cg-boc-hk-gift", "phoenixmiles", [4000, 500], {
     ...BOC_SRC,
     minimumBankPointsPerTransfer: 8000,
+    transferFeeSchedule: BOC_FEE_SCHEDULE,
     notes: BOC_PM_NOTE,
     processingTime: BOC_TIME,
   }),
