@@ -9,7 +9,8 @@ import travel1 from "@/assets/travel-1.jpg.asset.json";
 import travel2 from "@/assets/travel-2.jpg.asset.json";
 import travel3 from "@/assets/travel-3.jpg.asset.json";
 import travel4 from "@/assets/travel-4.jpg.asset.json";
-import notebookImage from "@/assets/notebook.jpg";
+import svcAircraftAsset from "@/assets/svc-aircraft.jpg.asset.json";
+import svcNotebookAsset from "@/assets/svc-notebook.jpg.asset.json";
 import kyotoImage from "@/assets/kyoto.jpg";
 import cabinImage from "@/assets/cabin.jpg";
 import synapseLogo from "@/assets/synapse-logo.png.asset.json";
@@ -367,8 +368,8 @@ function Services() {
             index="01"
             tag="Flagship"
             title="Points Trip Planning"
-            image={cabinImage}
-            imageAlt="Business class cabin at dusk"
+            image={svcAircraftAsset.url}
+            imageAlt="Wide-body aircraft at the gate at golden hour"
             copy="You have a trip in mind. I find the smartest way to get you there using the points you already have."
             bullets={[
               "The best programme to book through",
@@ -384,8 +385,8 @@ function Services() {
             index="02"
             tag="Longer term"
             title="Cards Strategy"
-            image={notebookImage}
-            imageAlt="Handwritten notes in a leather notebook"
+            image={svcNotebookAsset.url}
+            imageAlt="Handwritten planning notes in a notebook"
             copy="No trip in mind yet. Just a sense you could be doing this better. We build the plan together."
             bullets={[
               "A review of your current cards and balances",
