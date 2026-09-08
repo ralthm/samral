@@ -22,7 +22,6 @@ import destMaldivesAsset from "@/assets/dest-maldives.jpg.asset.json";
 import destItalyAsset from "@/assets/dest-italy.jpg.asset.json";
 import destKyotoAsset from "@/assets/dest-kyoto.jpg.asset.json";
 import destAlpsAsset from "@/assets/dest-swiss-alps.jpg.asset.json";
-const alpsImage = alpsAsset.url;
 
 export default function Home() {
   useEffect(() => {
