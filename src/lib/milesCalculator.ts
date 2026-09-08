@@ -226,8 +226,7 @@ function buildResult(
     minimumTransferPartnerPoints: r.minimumTransferPartnerPoints,
     transferIncrementPartnerPoints: r.transferIncrementPartnerPoints,
     minimumBankPointsPerTransfer: r.minimumBankPointsPerTransfer,
-    transferFeeAmount: r.transferFeeAmount,
-    transferFeeCurrency: r.transferFeeCurrency,
+    ...deriveTransferFee(r, partnerPointsReceived),
     processingTime: r.processingTime,
     ...promoData,
   };
