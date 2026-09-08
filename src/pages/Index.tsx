@@ -22,9 +22,9 @@ const alpsImage = alpsAsset.url;
 
 export default function Home() {
   useEffect(() => {
-    document.title = "Samral | Smarter Rewards, Better Travel";
+    document.title = "Samral | More Value From Money You Already Spend";
     const desc =
-      "Samral helps people make better use of credit card rewards through personalised trip planning and points strategy research.";
+      "Samral helps individuals get more from their cards, points and travel — and helps business owners find value in how their company spends and pays.";
     let tag = document.querySelector('meta[name="description"]');
     if (!tag) {
       tag = document.createElement("meta");
@@ -43,6 +43,7 @@ export default function Home() {
       <ClientResults />
       <Founder />
       <Services />
+      <BusinessPathway />
       <CaseStudy />
       <AboutSamral />
       <Inspiration />
@@ -300,6 +301,45 @@ function Inspiration() {
             <br />
           </p>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Business pathway ---------- */
+
+function BusinessPathway() {
+  return (
+    <section className="border-y border-border bg-sand/40">
+      <div className="mx-auto grid max-w-[1440px] gap-10 px-6 py-20 md:grid-cols-12 md:items-center md:px-12 md:py-28">
+        <div className="md:col-span-7">
+          <p className="eyebrow mb-6 text-clay">Also for business owners</p>
+          <h2 className="font-display text-3xl leading-tight text-ink md:text-5xl">
+            Get more value from the money your business already spends.
+          </h2>
+          <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
+            Most companies scrutinise what they buy, but rarely how the money is actually paid.
+            Samral reviews cards, recurring spend, foreign-currency payments, supplier payments and
+            business travel to find value that is leaking or going unused &mdash; judged on the whole
+            economic outcome, not points for the sake of points.
+          </p>
+          <div className="mt-8">
+            <Link
+              to="/business"
+              className="inline-flex items-center justify-center rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
+            >
+              Explore the business service
+            </Link>
+          </div>
+        </div>
+        <ul className="md:col-span-4 md:col-start-9">
+          {["Understand", "Identify", "Underwrite", "Implement", "Measure"].map((s, i) => (
+            <li key={s} className="flex items-baseline gap-4 border-b border-ink/12 py-3">
+              <span className="font-display text-lg text-ink/35">{String(i + 1).padStart(2, "0")}</span>
+              <span className="text-[15px] text-ink/80">{s}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

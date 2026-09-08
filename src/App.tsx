@@ -7,6 +7,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 const About = lazy(() => import("./pages/About.tsx"));
 const AdminCardImages = lazy(() => import("./pages/AdminCardImages.tsx"));
 const AdminMilesCalculator = lazy(() => import("./pages/AdminMilesCalculator.tsx"));
+const Business = lazy(() => import("./pages/Business.tsx"));
 
 const GuideArticle = lazy(() => import("./pages/GuideArticle.tsx"));
 const Index = lazy(() => import("./pages/Index.tsx"));
@@ -31,6 +32,7 @@ const App = () => (
         <Route path="/trip-planning" element={<PlanMyTrip />} />
         <Route path="/guides/:slug" element={<GuideArticle />} />
         <Route path="/points-strategy" element={<PointsStrategy />} />
+        <Route path="/business" element={<Business />} />
         <Route path="/products" element={<Products />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
