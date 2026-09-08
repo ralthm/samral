@@ -24,7 +24,7 @@ describe("Hong Kong market registration", () => {
     expect(hk?.flag).toBe("🇭🇰");
   });
 
-  it("covers the six launch issuers in dropdown order", () => {
+  it("covers the seven launch issuers in dropdown order", () => {
     expect(getBanksByCountry("HK").map((b) => b.id)).toEqual([
       "hsbc-hk",
       "amex-hk",
@@ -32,6 +32,7 @@ describe("Hong Kong market registration", () => {
       "dbs-hk",
       "sc-hk",
       "bea-hk",
+      "boc-hk",
     ]);
   });
 
@@ -138,6 +139,33 @@ describe("Hong Kong exclusions", () => {
   it("surfaces no invented Hong Kong redemption opportunities", () => {
     expect(targetsForCountry("HK").filter(isRulePublic as never)).toHaveLength(0);
     expect(targetsForCountry("HK")).toHaveLength(0);
+  });
+});
+
+describe("Bank of China (Hong Kong)", () => {
+  const calc = (cg: string, pts: number, prog: string) =>
+    calculateEntry({ entryId: "e", cardGroupId: cg, bankPoints: pts }).find((r) => r.programmeId === prog)!;
+
+  it("needs 15,000 Gift Points before any Asia Miles transfer", () => {
+    expect(calc("cg-boc-hk-gift", 14_999, "asia-miles").partnerPointsReceived).toBe(0);
+    const r = calc("cg-boc-hk-gift", 22_500, "asia-miles");
+    expect(r.partnerPointsReceived).toBe(1_500);
+    expect(r.bankPointsRemaining).toBe(0);
+  });
+
+  it("converts 8 Gift Points into 1 PhoenixMiles km above the 8,000 minimum", () => {
+    expect(calc("cg-boc-hk-gift", 7_999, "phoenixmiles").partnerPointsReceived).toBe(0);
+    expect(calc("cg-boc-hk-gift", 12_000, "phoenixmiles").partnerPointsReceived).toBe(1_500);
+  });
+
+  it("states no flat fee for the tiered handling charge, and zero for the waived cards", () => {
+    expect(calc("cg-boc-hk-gift", 30_000, "asia-miles").transferFeeAmount).toBeUndefined();
+    expect(calc("cg-boc-hk-gift-waived", 30_000, "asia-miles").transferFeeAmount).toBe(0);
+  });
+
+  it("does not offer Eastern Miles while BOCHK has suspended it", () => {
+    const progs = getPublicRulesForCardGroup("cg-boc-hk-gift").map((r) => r.loyaltyProgrammeId);
+    expect(progs).toEqual(["asia-miles", "phoenixmiles"]);
   });
 });
 

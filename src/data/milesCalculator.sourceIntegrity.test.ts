@@ -47,6 +47,7 @@ const ALLOWED_HOSTS: Record<string, string[]> = {
   "dbs-hk": ["www.dbs.com.hk"],
   "sc-hk": ["www.sc.com"],
   "bea-hk": ["www.hkbea.com"],
+  "boc-hk": ["www.bochk.com"],
 };
 
 /** Bank-identifying words that may only appear in that bank's source label. */
@@ -81,6 +82,7 @@ const BANK_KEYWORDS: Record<string, string[]> = {
   "dbs-hk": ["dbs"],
   "sc-hk": ["standard chartered"],
   "bea-hk": ["bank of east asia"],
+  "boc-hk": ["bank of china", "bochk"],
 };
 
 /**
