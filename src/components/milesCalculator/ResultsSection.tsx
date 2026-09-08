@@ -447,6 +447,7 @@ function ProgrammeBalanceCard({
       bankName: r.bankName,
       transferFeeAmount: r.transferFeeAmount,
       transferFeeCurrency: r.transferFeeCurrency,
+      partnerPointsReceived: r.partnerPointsReceived,
     }))),
     [rowResults],
   );
