@@ -88,7 +88,9 @@ export interface RuleResult {
   minimumBankPointsPerTransfer?: number;
   /** Administrative fee per conversion transaction, where the issuer charges one. */
   transferFeeAmount?: number;
-  transferFeeCurrency?: "SGD" | "MYR";
+  transferFeeCurrency?: "SGD" | "MYR" | "HKD";
+  /** Indicative issuer processing time for this route, where published. */
+  processingTime?: string;
   /** All promotions currently active for this route (applied + conditional). */
   promotions: PromotionApplication[];
   /** Sum of currently-applied bonuses (unconditional + registered). */
@@ -222,6 +224,7 @@ function buildResult(
     minimumBankPointsPerTransfer: r.minimumBankPointsPerTransfer,
     transferFeeAmount: r.transferFeeAmount,
     transferFeeCurrency: r.transferFeeCurrency,
+    processingTime: r.processingTime,
     ...promoData,
   };
 }

@@ -42,7 +42,7 @@ import {
 } from "@/data/redemptionTargets";
 import { classifyRedemption } from "@/lib/redemptionStatus";
 import { awardDisclaimersFor, UNIVERSAL_AWARD_DISCLAIMER } from "@/lib/awardDisclaimers";
-import { computeTransferFees, formatFee } from "@/lib/transferFees";
+import { computeTransferFees, FEE_SYMBOL, formatFee } from "@/lib/transferFees";
 import { ratesDirectoryCaption, ratesDirectoryHeading } from "@/lib/marketCopy";
 import { saveTripContext, TripContext } from "@/lib/tripContext";
 import { track } from "@/lib/track";
@@ -714,9 +714,16 @@ function ProgrammeDetails({
                 <>
                   <dt className="text-ink/55">Transfer fee</dt>
                   <dd className="text-right text-ink">
-                    {r.transferFeeCurrency === "SGD" ? "S$" : "RM"}
-                    {r.transferFeeAmount.toFixed(2)}
+                    {r.transferFeeAmount === 0
+                      ? "Waived"
+                      : `${FEE_SYMBOL[r.transferFeeCurrency ?? "MYR"]}${r.transferFeeAmount.toFixed(2)}`}
                   </dd>
+                </>
+              )}
+              {r.processingTime && (
+                <>
+                  <dt className="text-ink/55">Transfer time</dt>
+                  <dd className="text-right text-ink">{r.processingTime}</dd>
                 </>
               )}
             </dl>

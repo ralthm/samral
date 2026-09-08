@@ -52,13 +52,14 @@ export type TargetStatus =
   | "suspended";
 
 /** Market a redemption dataset belongs to. Mirrors the card-side CountryCode. */
-export type MarketCountry = "MY" | "SG";
+export type MarketCountry = "MY" | "SG" | "HK";
 
 /** Departure airports available per market. Structured as a list so a market
  * can gain additional origins without touching calculation logic. */
 export const COUNTRY_ORIGINS: Record<MarketCountry, { airport: string; city: string; country: string }[]> = {
   MY: [{ airport: "KUL", city: "Kuala Lumpur", country: "Malaysia" }],
   SG: [{ airport: "SIN", city: "Singapore", country: "Singapore" }],
+  HK: [{ airport: "HKG", city: "Hong Kong", country: "Hong Kong SAR" }],
 };
 
 export function originLabelForCountry(country: MarketCountry): string {
