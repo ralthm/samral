@@ -44,10 +44,8 @@ export default function Home() {
       <FounderTrustSignal />
       <Services />
       <BusinessPathway />
-      <CaseStudy />
       <AboutSamral />
       <Inspiration />
-      <Destinations />
       <Contact />
       <Footer />
     </div>
