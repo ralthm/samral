@@ -482,7 +482,7 @@ function Scope() {
         <details className="max-w-3xl border border-ink/15 px-6 py-5">
           <summary className="cursor-pointer list-none">
             <span className="eyebrow text-ink/50"></span>
-            <span className="mt-1 block text-[13px] text-ink/45">Read the scope note</span>
+            <span className="mt-1 block text-[13px] text-ink/45"></span>
           </summary>
           <p className="mt-4 text-[14px] leading-relaxed text-ink/60"></p>
         </details>
