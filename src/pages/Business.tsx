@@ -55,7 +55,6 @@ export default function Business() {
       <WhatWeLookAt />
       <WhoThisIsFor />
       <ConsumerBridge />
-      <Scope />
       <FinalCTA />
       <SiteFooter />
     </div>
