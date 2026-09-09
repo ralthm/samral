@@ -15,10 +15,6 @@ import kyotoImage from "@/assets/kyoto.jpg";
 import cabinImage from "@/assets/cabin.jpg";
 import synapseLogo from "@/assets/synapse-logo.png.asset.json";
 import cpfLogo from "@/assets/cpf-logo.png.asset.json";
-import destMaldivesAsset from "@/assets/dest-maldives.jpg.asset.json";
-import destItalyAsset from "@/assets/dest-italy.jpg.asset.json";
-import destKyotoAsset from "@/assets/dest-kyoto.jpg.asset.json";
-import destAlpsAsset from "@/assets/dest-swiss-alps.jpg.asset.json";
 
 export default function Home() {
   useEffect(() => {
@@ -44,10 +40,8 @@ export default function Home() {
       <FounderTrustSignal />
       <Services />
       <BusinessPathway />
-      <CaseStudy />
       <AboutSamral />
       <Inspiration />
-      <Destinations />
       <Contact />
       <Footer />
     </div>
@@ -502,67 +496,6 @@ function ServiceCard({
   );
 }
 
-/* ---------- Destinations ---------- */
-
-function Destinations() {
-  const dests = [
-    {
-      img: destMaldivesAsset.url,
-      name: "The Maldives",
-      note: "A long-haul trip where the right combination of bank points, airline miles and cash can make a meaningful difference.",
-    },
-    {
-      img: destItalyAsset.url,
-      name: "The Italian coast",
-      note: "Long summer evenings on the Amalfi coast, booked with a mix of two flexible currencies.",
-    },
-    {
-      img: destKyotoAsset.url,
-      name: "Kyoto in autumn",
-      note: "Traditional ryokan stays and premium-cabin ANA seats, some of the best value in miles.",
-    },
-    {
-      img: destAlpsAsset.url,
-      name: "The Swiss Alps",
-      note: "Slow train journeys through alpine valleys, paired with a mountainside stay booked on hotel points.",
-    },
-  ];
-
-  return (
-    <section id="destinations" className="bg-sand">
-      <div className="mx-auto max-w-[1440px] px-6 py-24 md:px-12 md:py-36">
-        <div className="mb-14 max-w-2xl md:mb-20">
-          <p className="eyebrow mb-6 text-clay">Where points can take you</p>
-          <h2 className="font-display text-4xl text-ink md:text-6xl">
-            Trips people didn&rsquo;t think were possible.
-          </h2>
-          <p className="mt-6 text-[16px] leading-relaxed text-muted-foreground">
-            A few examples of what a well-planned redemption can look like. Yours will be different,
-            and that&rsquo;s the point.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-x-10 gap-y-16 md:grid-cols-2">
-          {dests.map((d) => (
-            <article key={d.name} className="flex flex-col">
-              <img
-                src={d.img}
-                alt={d.name}
-                className="aspect-[4/3] w-full object-cover"
-                loading="lazy"
-              />
-              <h3 className="mt-5 font-display text-2xl text-ink">{d.name}</h3>
-              <p className="mt-2 max-w-xl text-[14px] leading-relaxed text-muted-foreground">
-                {d.note}
-              </p>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* ---------- Contact ---------- */
 
 
@@ -781,86 +714,4 @@ function ClientResults() {
   );
 }
 
-/* ---------- Case study ---------- */
-
-function CaseStudy() {
-  const blocks = [
-    {
-      n: "01",
-      title: "The starting point",
-      items: [
-        "Points and rewards balances:",
-        "Existing cards and programmes:",
-        "Travel objective:",
-      ],
-    },
-    {
-      n: "02",
-      title: "What Samral reviewed",
-      items: [
-        "Relevant airline programmes:",
-        "Transfer options:",
-        "Cash fares and points requirements:",
-        "Taxes, fees and alternative routes:",
-      ],
-    },
-    {
-      n: "03",
-      title: "The recommendation",
-      items: [
-        "Recommended strategy:",
-        "Why it was chosen:",
-      ],
-    },
-    {
-      n: "04",
-      title: "The outcome",
-      items: [
-        "What was booked or changed",
-        "Points used",
-        "Cash and taxes paid",
-        "Comparative value, where it can be substantiated",
-      ],
-    },
-  ];
-
-  return (
-    <section id="case-study" className="border-b border-border bg-background">
-      <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-12 md:py-28">
-        <div className="max-w-2xl">
-          <p className="eyebrow mb-5 text-clay">A Samral strategy</p>
-          <h2 className="font-display text-3xl leading-[1.1] text-ink md:text-5xl md:leading-[1.05]">
-            See what the process actually looks like.
-          </h2>
-        </div>
-
-        <div className="mt-10 grid gap-px bg-border md:mt-14 md:grid-cols-4">
-          {blocks.map((b) => (
-            <div key={b.n} className="bg-background p-6 md:p-8">
-              <p className="font-display text-sm text-clay">{b.n}</p>
-              <h3 className="mt-4 font-display text-[22px] leading-tight text-ink">{b.title}</h3>
-              <ul className="mt-4 space-y-2.5">
-                {b.items.map((i) => (
-                  <li key={i} className="flex gap-2 text-[14px] leading-snug text-ink/75">
-                    <span className="text-clay">&mdash;</span>
-                    <span>{i}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-10">
-          <a
-            href="/trip-planning"
-            className="inline-block rounded-sm border border-ink px-6 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-background"
-          >
-            Plan my trip &nbsp;&rarr;
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
 
