@@ -353,7 +353,7 @@ function Services() {
             </h2>
           </div>
           <p className="max-w-sm text-[15px] leading-relaxed text-muted-foreground">
-            Every engagement is one-to-one and tailored. No subscriptions, no dashboards, no software.
+            Every engagement is one-to-one and tailored
           </p>
         </div>
 
