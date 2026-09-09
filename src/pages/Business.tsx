@@ -55,7 +55,6 @@ export default function Business() {
       <WhatWeLookAt />
       <WhoThisIsFor />
       <ConsumerBridge />
-      <Scope />
       <FinalCTA />
       <SiteFooter />
     </div>
@@ -473,23 +472,7 @@ function ConsumerBridge() {
   );
 }
 
-/* ---------- Scope note (progressive disclosure) ---------- */
 
-function Scope() {
-  return (
-    <section className="border-b border-border bg-background">
-      <div className="mx-auto w-full max-w-[1440px] px-5 py-12 sm:px-6 md:px-12 md:py-16">
-        <details className="max-w-3xl border border-ink/15 px-6 py-5">
-          <summary className="cursor-pointer list-none">
-            <span className="eyebrow text-ink/50"></span>
-            <span className="mt-1 block text-[13px] text-ink/45"></span>
-          </summary>
-          <p className="mt-4 text-[14px] leading-relaxed text-ink/60"></p>
-        </details>
-      </div>
-    </section>
-  );
-}
 
 /* ---------- Final CTA ---------- */
 
