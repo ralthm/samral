@@ -60,7 +60,7 @@ export default function SiteFooter() {
         </div>
         <div className="mt-12 flex flex-col gap-3 border-t border-background/10 pt-6 text-xs text-background/50 md:flex-row md:items-center md:justify-between">
           <p>
-            &copy; {new Date().getFullYear()} Samral &mdash; Points &amp; miles advisory
+             © 2026 Samral 
           </p>
           <div className="flex gap-5">
             <Link to="/terms" className="hover:text-background">Terms of Service</Link>
