@@ -105,7 +105,7 @@ function Hero() {
             className="cursor-pointer list-none text-sm underline underline-offset-4 transition-opacity hover:opacity-70"
             style={{ color: "rgba(253, 247, 235, 0.8)" }}
           >
-            How can points be worth that much more?
+
           </summary>
           <p
             className="mt-3 text-sm leading-relaxed"
@@ -519,7 +519,7 @@ function Destinations() {
     {
       img: destKyotoAsset.url,
       name: "Kyoto in autumn",
-      note: "Traditional ryokan stays and premium-cabin ANA seats — some of the best value in miles.",
+      note: "Traditional ryokan stays and premium-cabin ANA seats, some of the best value in miles.",
     },
     {
       img: destAlpsAsset.url,
@@ -537,8 +537,8 @@ function Destinations() {
             Trips people didn&rsquo;t think were possible.
           </h2>
           <p className="mt-6 text-[16px] leading-relaxed text-muted-foreground">
-            A few examples of what a well-planned redemption can look like. Yours will be different
-            &mdash; and that&rsquo;s the point.
+            A few examples of what a well-planned redemption can look like. Yours will be different,
+            and that&rsquo;s the point.
           </p>
         </div>
 
@@ -632,12 +632,12 @@ function FounderTrustSignal() {
     <section className="border-b border-border bg-background">
       <div className="mx-auto max-w-[1440px] px-6 py-10 md:px-12 md:py-14">
         <p className="max-w-2xl text-[15px] leading-relaxed text-ink/80">
-          Every Samral engagement is personally reviewed by founder{" "}
+          Every Samral engagement is personally reviewed by{" "}
           <Link
             to="/about"
             className="font-medium text-ink underline underline-offset-4 transition-opacity hover:opacity-70"
           >
-            Samuel Thomas
+            Samuel
           </Link>
           .
         </p>
@@ -816,10 +816,10 @@ function CaseStudy() {
       n: "04",
       title: "The outcome",
       items: [
-        "What was booked or changed:",
-        "Points used:",
-        "Cash and taxes paid:",
-        "Comparative value, where it can be substantiated:",
+        "What was booked or changed",
+        "Points used",
+        "Cash and taxes paid",
+        "Comparative value, where it can be substantiated",
       ],
     },
   ];
