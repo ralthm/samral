@@ -2,6 +2,10 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import destMaldivesAsset from "@/assets/dest-maldives.jpg.asset.json";
+import destItalyAsset from "@/assets/dest-italy.jpg.asset.json";
+import destKyotoAsset from "@/assets/dest-kyoto.jpg.asset.json";
+import destAlpsAsset from "@/assets/dest-swiss-alps.jpg.asset.json";
 
 const DISCOVERY_CALL_URL = "https://cal.com/samral/trip-planning-discovery-call-20-mins";
 const MILES_CALCULATOR_PATH = "/miles-calculator";
@@ -46,7 +50,9 @@ export default function PlanMyTrip() {
       <StartWithCalculator />
       <WhenToBook />
       <WhatHappens />
+      <CaseStudy />
       <MoreWork />
+      <Destinations />
       <ImportantInfo />
       <FinalCTA />
       <SiteFooter />
