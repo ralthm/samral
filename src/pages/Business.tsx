@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -104,28 +104,43 @@ function Hero() {
   );
 }
 
-/* ---------- Problem ---------- */
+/* ---------- Problem: five visual cards ---------- */
 
 const EXAMPLES = [
   {
     n: "01",
-    text: "A company spends heavily every month on advertising but has never assessed whether its payment method is economically optimal.",
+    title: "Unexamined ad spend",
+    summary: "Heavy monthly advertising, with no view on whether the payment method itself is optimal.",
+    detail:
+      "A company spends heavily every month on advertising but has never assessed whether its payment method is economically optimal.",
   },
   {
     n: "02",
-    text: "A business paying foreign-currency SaaS bills focuses on the subscription price while overlooking FX and payment costs.",
+    title: "Foreign-currency bills",
+    summary: "The subscription price gets attention; the FX and payment costs do not.",
+    detail:
+      "A business paying foreign-currency SaaS bills focuses on the subscription price while overlooking FX and payment costs.",
   },
   {
     n: "03",
-    text: "A supplier accepts cards but a bank-transfer discount could be worth more than the rewards earned.",
+    title: "Rewards vs. discounts",
+    summary: "Paying by card for points when a bank-transfer discount would be worth more.",
+    detail:
+      "A supplier accepts cards but a bank-transfer discount could be worth more than the rewards earned.",
   },
   {
     n: "04",
-    text: "A company earns large quantities of points without any strategy for extracting useful value from them.",
+    title: "Points without a plan",
+    summary: "Large balances of points accumulate with no strategy for extracting useful value.",
+    detail:
+      "A company earns large quantities of points without any strategy for extracting useful value from them.",
   },
   {
     n: "05",
-    text: "A card can improve payment timing and working capital but only if its total benefit exceeds fees, lost discounts and operational complexity.",
+    title: "Timing, at a cost",
+    summary: "A card can improve payment timing and working capital, if the total benefit clears the costs.",
+    detail:
+      "A card can improve payment timing and working capital but only if its total benefit exceeds fees, lost discounts and operational complexity.",
   },
 ];
 
@@ -139,24 +154,35 @@ function Problem() {
             Five situations we see repeatedly.
           </h2>
         </div>
-        <ul className="mt-12 grid gap-px border border-ink/12 bg-ink/12 md:grid-cols-2">
-          {EXAMPLES.map((e) => (
-            <li key={e.n} className="bg-background p-7 md:p-9">
-              <p className="font-display text-2xl text-ink/35">{e.n}</p>
-              <p
-                className="mt-3 text-[15px] leading-relaxed text-ink/75"
-                dangerouslySetInnerHTML={{ __html: e.text }}
-              />
-            </li>
+        <div className="mt-12 grid gap-4 md:grid-cols-6">
+          {EXAMPLES.map((e, i) => (
+            <article
+              key={e.n}
+              className={`group flex flex-col border border-ink/12 p-6 transition-colors hover:border-ink/30 md:p-7 ${
+                i === 3 ? "md:col-span-3" : i === 4 ? "md:col-span-3" : "md:col-span-2"
+              }`}
+            >
+              <p className="font-display text-3xl text-ink/25 transition-colors group-hover:text-ink/45">
+                {e.n}
+              </p>
+              <h3 className="mt-4 font-display text-xl leading-snug text-ink">{e.title}</h3>
+              <p className="mt-2 text-[14px] leading-relaxed text-ink/65">{e.summary}</p>
+              <details className="mt-auto pt-4">
+                <summary className="cursor-pointer text-[12px] font-medium uppercase tracking-wide text-ink/45 transition-colors hover:text-ink/75">
+                  Example
+                </summary>
+                <p className="mt-2 text-[13px] leading-relaxed text-ink/60">{e.detail}</p>
+              </details>
+            </article>
           ))}
-          <li className="hidden bg-background md:block" />
-        </ul>
+          <div className="hidden border border-transparent md:col-span-1 md:block" />
+        </div>
       </div>
     </section>
   );
 }
 
-/* ---------- Method ---------- */
+/* ---------- Method: interactive five-stage process ---------- */
 
 const STEPS = [
   { k: "Understand", d: "Map the relevant spending and the current payment arrangements." },
@@ -173,69 +199,161 @@ const STEPS = [
 ];
 
 function Method() {
+  const [active, setActive] = useState(0);
   return (
     <section className="border-b border-border bg-ink text-background">
       <div className="mx-auto w-full max-w-[1440px] px-5 py-16 sm:px-6 md:px-12 md:py-24">
         <p className="eyebrow text-background/50">How the work runs</p>
-        <h2 className="mt-4 font-display text-3xl text-background md:text-5xl">
-          Understand &rarr; Identify &rarr; Underwrite &rarr; Implement &rarr; Measure
+        <h2 className="mt-4 max-w-3xl font-display text-3xl text-background md:text-5xl">
+          Five stages, in sequence.
         </h2>
-        <ol className="mt-12 grid gap-10 md:grid-cols-5 md:gap-6">
-          {STEPS.map((s, i) => (
-            <li key={s.k} className="border-t border-background/20 pt-5">
-              <p className="font-display text-xl text-background/40">{String(i + 1).padStart(2, "0")}</p>
-              <p className="mt-2 font-display text-2xl text-background">{s.k}</p>
-              <p className="mt-3 text-[14px] leading-relaxed text-background/65">{s.d}</p>
-            </li>
-          ))}
-        </ol>
+
+        <div className="mt-12 grid gap-10 md:grid-cols-12 md:gap-14">
+          {/* Stage selector */}
+          <ol className="flex flex-col gap-1 md:col-span-5">
+            {STEPS.map((s, i) => {
+              const isActive = i === active;
+              return (
+                <li key={s.k}>
+                  <button
+                    type="button"
+                    onClick={() => setActive(i)}
+                    aria-pressed={isActive}
+                    className={`flex w-full items-baseline gap-5 border-l-2 px-5 py-4 text-left transition-colors ${
+                      isActive
+                        ? "border-background bg-background/5"
+                        : "border-background/15 hover:border-background/40 hover:bg-background/[0.03]"
+                    }`}
+                  >
+                    <span
+                      className={`font-display text-lg ${isActive ? "text-background" : "text-background/35"}`}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="flex-1">
+                      <span
+                        className={`font-display text-2xl leading-snug ${isActive ? "text-background" : "text-background/55"}`}
+                      >
+                        {s.k}
+                      </span>
+                      {/* Inline detail on mobile, active only */}
+                      <span className="mt-1 block text-[13px] leading-relaxed text-background/60 md:hidden">
+                        {isActive ? s.d : null}
+                      </span>
+                    </span>
+                    <span
+                      aria-hidden
+                      className={`mt-1 text-sm transition-opacity ${isActive ? "text-background/70 opacity-100" : "opacity-0"}`}
+                    >
+                      &rarr;
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+
+          {/* Active stage detail (desktop) */}
+          <div className="hidden border border-background/15 p-8 md:col-span-7 md:block lg:p-10">
+            <p className="eyebrow text-background/45">
+              Stage {String(active + 1).padStart(2, "0")} of 05
+            </p>
+            <p className="mt-4 font-display text-3xl text-background">{STEPS[active].k}</p>
+            <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-background/70">
+              {STEPS[active].d}
+            </p>
+            <div className="mt-8 flex items-center gap-2" aria-hidden>
+              {STEPS.map((s, i) => (
+                <span
+                  key={s.k}
+                  className={`h-px flex-1 ${i <= active ? "bg-background/70" : "bg-background/15"}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-/* ---------- Philosophy ---------- */
+/* ---------- Philosophy: net-economic-value equation ---------- */
+
+const EQUATION_INPUTS = [
+  { sign: "+", label: "Rewards captured" },
+  { sign: "+", label: "Discounts retained" },
+  { sign: "−", label: "Card fees" },
+  { sign: "−", label: "FX & payment costs" },
+  { sign: "−", label: "Complexity" },
+];
 
 function Philosophy() {
   return (
     <section className="border-b border-border bg-background">
-      <div className="mx-auto grid w-full max-w-[1440px] gap-10 px-5 py-16 sm:px-6 md:grid-cols-12 md:px-12 md:py-24">
+      <div className="mx-auto grid w-full max-w-[1440px] gap-12 px-5 py-16 sm:px-6 md:grid-cols-12 md:px-12 md:py-24">
         <div className="md:col-span-6">
           <h2 className="font-display text-3xl leading-tight text-ink md:text-5xl">
             We don&rsquo;t just optimize points. <em>We optimize value.</em>
           </h2>
-        </div>
-        <div className="space-y-5 text-[15px] leading-relaxed text-ink/70 md:col-span-5 md:col-start-8">
-          <p>
+          <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-ink/70">
             Rewards are only one input. A card fee, an FX spread or a forgone supplier discount can
-            easily be worth more than the points earned.
+            easily be worth more than the points earned. So the honest answer is sometimes a bank
+            transfer, sometimes a different card, sometimes a different payment method and sometimes
+            doing nothing at all.
           </p>
-          <p>
-            So the honest answer is sometimes a bank transfer, sometimes a different card, sometimes
-            a different payment method and sometimes doing nothing at all.
-          </p>
-          <p className="text-ink">
-            The objective is not to maximise rewards. It is to improve the overall economic result.
-          </p>
+        </div>
+
+        <div className="md:col-span-5 md:col-start-8">
+          <figure className="border border-ink/15 p-7 md:p-8">
+            <figcaption className="eyebrow text-ink/50">The only test that matters</figcaption>
+            <div className="mt-6 space-y-2.5">
+              {EQUATION_INPUTS.map((row) => (
+                <div
+                  key={row.label}
+                  className="flex items-center justify-between border-b border-ink/10 pb-2.5"
+                >
+                  <span className="text-[14px] text-ink/70">{row.label}</span>
+                  <span className="font-display text-lg text-ink/45">{row.sign}</span>
+                </div>
+              ))}
+              <div className="flex items-center justify-between pt-2">
+                <span className="font-display text-xl text-ink">Net economic value</span>
+                <span className="font-display text-xl text-ink">=</span>
+              </div>
+            </div>
+            <p className="mt-5 text-[13px] leading-relaxed text-ink/60">
+              The objective is not to maximise rewards. It is to improve the overall economic result.
+            </p>
+          </figure>
         </div>
       </div>
     </section>
   );
 }
 
-/* ---------- What we look at ---------- */
+/* ---------- What we look at: four visual pillars ---------- */
 
-const AREAS = [
-  "Business cards and rewards",
-  "Recurring business spend",
-  "Payment methods",
-  "Eligible supplier payments",
-  "Foreign-currency payment economics",
-  "Business travel",
-  "Employee expenses, where relevant",
-  "Fees and payment costs",
-  "Payment timing and working-capital implications",
-  "Other directly related spend and payment opportunities",
+const PILLARS = [
+  {
+    title: "Cards & rewards",
+    items: ["Business cards and rewards", "Employee expenses, where relevant"],
+  },
+  {
+    title: "Spend & suppliers",
+    items: ["Recurring business spend", "Payment methods", "Eligible supplier payments"],
+  },
+  {
+    title: "Currency & costs",
+    items: ["Foreign-currency payment economics", "Fees and payment costs"],
+  },
+  {
+    title: "Timing & travel",
+    items: [
+      "Payment timing and working-capital implications",
+      "Business travel",
+      "Other directly related spend and payment opportunities",
+    ],
+  },
 ];
 
 function WhatWeLookAt() {
@@ -252,13 +370,25 @@ function WhatWeLookAt() {
             how the business actually spends.
           </p>
         </div>
-        <ul className="mt-12 grid gap-x-10 gap-y-0 md:grid-cols-2">
-          {AREAS.map((a) => (
-            <li key={a} className="border-b border-ink/12 py-4 text-[15px] text-ink/80">
-              {a}
-            </li>
+
+        <div className="mt-12 grid gap-px border border-ink/12 bg-ink/12 sm:grid-cols-2 lg:grid-cols-4">
+          {PILLARS.map((p, i) => (
+            <div key={p.title} className="bg-background p-7 md:p-8">
+              <p className="font-display text-lg text-ink/35">{String(i + 1).padStart(2, "0")}</p>
+              <h3 className="mt-3 font-display text-xl leading-snug text-ink">{p.title}</h3>
+              <ul className="mt-4 space-y-2.5">
+                {p.items.map((item) => (
+                  <li
+                    key={item}
+                    className="border-l border-ink/20 pl-3 text-[13px] leading-relaxed text-ink/70"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   );
@@ -284,16 +414,14 @@ function WhoThisIsFor() {
           <h2 className="mt-4 font-display text-3xl leading-tight text-ink md:text-5xl">
             Who this is for.
           </h2>
+          <p className="mt-6 max-w-md text-[15px] leading-relaxed text-ink/75">
+            Owner-led SMEs where the founder, owner or MD still has meaningful visibility over how
+            the company spends and pays.
+          </p>
         </div>
         <div className="md:col-span-6 md:col-start-7">
-          <p className="text-[15px] leading-relaxed text-ink/75">
-            Samral&rsquo;s business service is designed primarily for owner-led SMEs where the
-            founder, owner or MD still has meaningful visibility over how the company spends and
-            pays.
-          </p>
-          <p className="mt-4 text-[15px] leading-relaxed text-ink/70">
-            It tends to be most useful for companies with meaningful recurring or cross-border spend
-            &mdash; for example:
+          <p className="text-[14px] leading-relaxed text-ink/60">
+            Most useful for companies with meaningful recurring or cross-border spend:
           </p>
           <ul className="mt-5 flex flex-wrap gap-2">
             {kinds.map((k) => (
@@ -302,7 +430,7 @@ function WhoThisIsFor() {
               </li>
             ))}
           </ul>
-          <p className="mt-6 text-[14px] leading-relaxed text-ink/55">
+          <p className="mt-8 text-[14px] leading-relaxed text-ink/55">
             If a business has little optimizable spend, this service probably isn&rsquo;t worth your
             time &mdash; and Samral will say so early rather than late.
           </p>
@@ -345,19 +473,25 @@ function ConsumerBridge() {
   );
 }
 
-/* ---------- Scope note ---------- */
+/* ---------- Scope note (progressive disclosure) ---------- */
 
 function Scope() {
   return (
     <section className="border-b border-border bg-background">
       <div className="mx-auto w-full max-w-[1440px] px-5 py-12 sm:px-6 md:px-12 md:py-16">
-        <p className="eyebrow text-ink/50">What this is not</p>
-        <p className="mt-4 max-w-3xl text-[14px] leading-relaxed text-ink/60">
-          Samral is a specialist, founder-led advisory focused on business spending and payments. It
-          does not provide treasury management, investment advice, regulated financial planning, tax
-          advice, legal advice, enterprise risk consulting or corporate strategy consulting. Any
-          savings depend entirely on a company&rsquo;s own spending profile and are never guaranteed.
-        </p>
+        <details className="max-w-3xl border border-ink/15 px-6 py-5">
+          <summary className="cursor-pointer list-none">
+            <span className="eyebrow text-ink/50">What this is not</span>
+            <span className="mt-1 block text-[13px] text-ink/45">Read the scope note</span>
+          </summary>
+          <p className="mt-4 text-[14px] leading-relaxed text-ink/60">
+            Samral is a specialist, founder-led advisory focused on business spending and payments.
+            It does not provide treasury management, investment advice, regulated financial
+            planning, tax advice, legal advice, enterprise risk consulting or corporate strategy
+            consulting. Any savings depend entirely on a company&rsquo;s own spending profile and
+            are never guaranteed.
+          </p>
+        </details>
       </div>
     </section>
   );
