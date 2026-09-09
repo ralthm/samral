@@ -481,16 +481,10 @@ function Scope() {
       <div className="mx-auto w-full max-w-[1440px] px-5 py-12 sm:px-6 md:px-12 md:py-16">
         <details className="max-w-3xl border border-ink/15 px-6 py-5">
           <summary className="cursor-pointer list-none">
-            <span className="eyebrow text-ink/50">What this is not</span>
+            <span className="eyebrow text-ink/50"></span>
             <span className="mt-1 block text-[13px] text-ink/45">Read the scope note</span>
           </summary>
-          <p className="mt-4 text-[14px] leading-relaxed text-ink/60">
-            Samral is a specialist, founder-led advisory focused on business spending and payments.
-            It does not provide treasury management, investment advice, regulated financial
-            planning, tax advice, legal advice, enterprise risk consulting or corporate strategy
-            consulting. Any savings depend entirely on a company&rsquo;s own spending profile and
-            are never guaranteed.
-          </p>
+          <p className="mt-4 text-[14px] leading-relaxed text-ink/60"></p>
         </details>
       </div>
     </section>
