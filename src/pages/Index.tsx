@@ -238,7 +238,7 @@ function AboutSamral() {
 
           <div className="mt-10 space-y-5 text-[15px] leading-relaxed text-ink/85">
             <p>
-              Samral is built around one idea: the points you already have are probably worth more than you think. Most people collect rewards for years, then redeem them in the easiest way, usually sub-par tech gadgets, rather than the smartest, airline miles.
+              Samral is built around one idea: the points you already have are probably worth more than you think. Most people collect rewards for years, then redeem them in the easiest and fastest way rather than the smartest.
             </p>
             <p>
               The real problem is not lack of points, it is lack of a clear strategy. My job is to help you understand your options, compare them honestly, and book the trip you&apos;ll actually remember.
