@@ -312,10 +312,12 @@ function BusinessPathway() {
             Get more value from the money your business already spends.
           </h2>
           <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
-            Most companies scrutinise what they buy, but rarely how the money is actually paid.
-            Samral reviews cards, recurring spend, foreign-currency payments, supplier payments and
-            business travel to find value that is leaking or going unused that's judged on the whole
-            economic outcome, not points for the sake of points.
+             Most companies scrutinise what they buy, but not so much on how they pay for it.
+
+             Samral looks at cards, recurring expenses, supplier payments, foreign-currency spend and business travel to find better ways to pay, taking into account rewards, fees, FX, discounts and payment timing.
+
+
+             More value from money your business already spends.
           </p>
           <div className="mt-8">
             <Link
