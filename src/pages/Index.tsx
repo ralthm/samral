@@ -394,21 +394,6 @@ function Services() {
           />
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-l-2 border-clay/50 bg-sand/60 px-6 py-6 md:mt-14 md:flex-row md:items-center md:justify-between md:px-8">
-          <div className="max-w-xl">
-            <p className="font-display text-[22px] leading-tight text-ink">Run a business?</p>
-            <p className="mt-2 text-[15px] leading-relaxed text-ink/75">
-              If you also put business expenditure through cards, I can review whether your current
-              setup is making the most of that spend too.
-            </p>
-          </div>
-          <a
-            href="/points-strategy"
-            className="shrink-0 text-sm font-medium text-ink underline underline-offset-4 transition-opacity hover:opacity-70"
-          >
-            Ask about business cards &nbsp;&rarr;
-          </a>
-        </div>
 
 
 
