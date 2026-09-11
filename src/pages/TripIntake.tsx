@@ -127,8 +127,18 @@ export default function TripIntake() {
       .map((r) => ({ programme: r.programme.trim().slice(0, 80), balance: r.balance.trim().slice(0, 40) }))
       .filter((r) => r.programme || r.balance);
 
+    const d = parsed.data;
     const { error } = await supabase.from("trip_intake_submissions").insert({
-      ...parsed.data,
+      name: d.name,
+      email: d.email,
+      departure_airport: d.departure_airport,
+      destination: d.destination,
+      departure_date: d.departure_date,
+      return_date: d.return_date,
+      date_flexibility: d.date_flexibility,
+      travellers: d.travellers,
+      cabin_preference: d.cabin_preference,
+      acknowledged: true,
       adults,
       children,
       points_balances: cleanPoints,
