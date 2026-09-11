@@ -1082,7 +1082,7 @@ function DestinationDiscovery({ portfolio, registeredSet, country }: { portfolio
     };
     saveTripContext(ctx);
     track("plan_trip_clicked", { destination: e.t.destination, cabin: e.t.cabin, programme: e.t.programmeId });
-    navigate("/trip-planning");
+    window.location.href = TRIP_PLAN_FORM_URL;
   };
 
   const handleStrategy = (e: Enriched, event: "almost" | "future") => {
@@ -1673,8 +1673,8 @@ function PostCalcCTA() {
           recommendation for the smartest way to book it: programme, points, taxes and next steps.
           {SHOW_DELIVERY_TIME ? ` ${DELIVERY_COPY}` : ""}
         </p>
-        <Link
-          to="/trip-planning"
+        <a
+          href={TRIP_PLAN_FORM_URL}
           onClick={() =>
             track("trip_planning_cta_clicked", {
               source: "miles_calculator_post_calc",
@@ -1682,8 +1682,8 @@ function PostCalcCTA() {
           }
           className="mt-8 inline-block rounded-sm bg-background px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
         >
-          Explore the Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
-        </Link>
+          Get my Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
+        </a>
         <p className="mt-3 text-[12px] text-background/50">{CURRENCY_NOTE}</p>
         <p className="mt-5 text-[13px] text-background/55">
           Want to earn points more efficiently instead?{" "}

@@ -346,18 +346,18 @@ export default function ArticleLayout({ article }: { article: Article }) {
               <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-ink/70">
                 Explore the Points Trip Plan before deciding whether it is right for your trip.
               </p>
-              <Link
-                to="/trip-planning"
+              <a
+                href={TRIP_PLAN_FORM_URL}
                 onClick={() =>
                   track("article_cta_click", {
                     article: article.slug,
-                    destination: "trip_planning",
+                    destination: "tally_trip_plan_form",
                   })
                 }
                 className="mt-7 inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5 hover:bg-ink/90"
               >
-                Explore the Points Trip Plan &nbsp;&rarr;
-              </Link>
+                Get my Points Trip Plan &nbsp;&rarr;
+              </a>
             </section>
 
             {/* Sources */}
