@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { TRIP_PLAN_FORM_URL, track, PRICES } from "@/lib/commerce";
+import { track, PRICES } from "@/lib/commerce";
 
 const NAV_LINKS = [
   { label: "Miles Calculator", to: "/miles-calculator" },
