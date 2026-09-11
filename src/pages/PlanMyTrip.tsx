@@ -47,7 +47,7 @@ function BuyButton({
     setBusy(true);
     setError(null);
     const result = await startTripPlanCheckout(source);
-    if (!result.ok) {
+    if (result.ok === false) {
       setError(result.message);
       setBusy(false);
     }
