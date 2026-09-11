@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import destMaldivesAsset from "@/assets/dest-maldives.jpg.asset.json";
@@ -10,21 +10,17 @@ import {
   PRICES,
   formatUsd,
   CURRENCY_NOTE,
-  TRIP_PLAN_PAYMENT_URL,
   BOOKING_SUPPORT_CONTACT_URL,
   CONTACT_EMAIL,
   SHOW_DELIVERY_TIME,
   DELIVERY_COPY,
   DELIVERY_TIME,
+  startTripPlanCheckout,
   track,
 } from "@/lib/commerce";
 
 const MILES_CALCULATOR_PATH = "/miles-calculator";
 const PRICE = formatUsd(PRICES.tripPlan);
-
-const buyTripPlan = (source: string) => {
-  track("trip_plan_checkout_clicked", { source, price_usd: PRICES.tripPlan });
-};
 
 /* ---------- Shared CTA ---------- */
 
@@ -39,18 +35,80 @@ function BuyButton({
   variant?: "dark" | "light";
   className?: string;
 }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const styles =
     variant === "dark"
       ? "bg-ink text-background"
       : "bg-background text-ink";
+
+  const onClick = async () => {
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    const result = await startTripPlanCheckout(source);
+    if (result.ok === false) {
+      setError(result.message);
+      setBusy(false);
+    }
+    // On success the browser navigates to Stripe; keep the button disabled.
+  };
+
   return (
-    <a
-      href={TRIP_PLAN_PAYMENT_URL}
-      onClick={() => buyTripPlan(source)}
-      className={`inline-flex items-center justify-center rounded-sm px-8 py-4 text-sm font-medium transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 ${styles} ${className}`}
-    >
-      {label} &nbsp;&rarr;
-    </a>
+    <div className={`inline-flex flex-col ${className}`}>
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={busy}
+        aria-busy={busy}
+        className={`inline-flex items-center justify-center rounded-sm px-8 py-4 text-sm font-medium transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0 ${styles}`}
+      >
+        {busy ? "Opening secure checkout…" : <>{label} &nbsp;&rarr;</>}
+      </button>
+      {error && (
+        <p role="alert" className={`mt-3 max-w-xs text-[12px] leading-relaxed ${variant === "dark" ? "text-destructive" : "text-background/80"}`}>
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ---------- Returned from Stripe without paying ---------- */
+
+function CancelledNotice() {
+  const [params, setParams] = useSearchParams();
+  const cancelled = params.get("checkout") === "cancelled";
+
+  useEffect(() => {
+    if (cancelled) track("checkout_cancelled");
+  }, [cancelled]);
+
+  if (!cancelled) return null;
+  return (
+    <div className="border-b border-border bg-sand">
+      <div className="mx-auto flex w-full max-w-[1440px] items-start justify-between gap-6 px-5 py-4 sm:px-6 md:px-12">
+        <p className="text-[13px] leading-relaxed text-ink/75">
+          No payment was taken. Whenever you&rsquo;re ready, the button below takes you back to secure checkout
+          {" "}&mdash; or email{" "}
+          <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-4 hover:text-ink">
+            {CONTACT_EMAIL}
+          </a>{" "}
+          with any questions first.
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            params.delete("checkout");
+            setParams(params, { replace: true });
+          }}
+          className="shrink-0 text-[12px] text-ink/50 underline underline-offset-4 hover:text-ink"
+          aria-label="Dismiss"
+        >
+          Dismiss
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -71,6 +129,7 @@ export default function PlanMyTrip() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
+      <CancelledNotice />
       <Hero />
       <HowItWorks />
       <WhatYouReceive />
@@ -104,8 +163,13 @@ function Hero() {
 
           <div className="mt-8 flex flex-wrap items-end gap-x-8 gap-y-4">
             <div>
-              <p className="font-display text-5xl leading-none text-ink md:text-6xl">{PRICE}</p>
-              <p className="mt-2 text-[12px] text-ink/55">{CURRENCY_NOTE}</p>
+              <p className="font-display text-5xl leading-none text-ink md:text-6xl">
+                {PRICE}
+                <span className="ml-3 align-baseline font-sans text-[13px] font-medium tracking-wide text-ink/55">
+                  paid once
+                </span>
+              </p>
+              <p className="mt-2 text-[12px] text-ink/55">US{PRICE} one-time. {CURRENCY_NOTE}</p>
             </div>
             <BuyButton source="hero" label="Get my Trip Plan" />
           </div>

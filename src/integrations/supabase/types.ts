@@ -145,6 +145,36 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_webhook_events: {
+        Row: {
+          error: string | null
+          event_id: string
+          event_type: string
+          livemode: boolean
+          processed_at: string | null
+          received_at: string
+          status: string
+        }
+        Insert: {
+          error?: string | null
+          event_id: string
+          event_type: string
+          livemode?: boolean
+          processed_at?: string | null
+          received_at?: string
+          status?: string
+        }
+        Update: {
+          error?: string | null
+          event_id?: string
+          event_type?: string
+          livemode?: boolean
+          processed_at?: string | null
+          received_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
       trip_intake_submissions: {
         Row: {
           acknowledged: boolean
@@ -165,6 +195,7 @@ export type Database = {
           id: string
           name: string
           notes: string | null
+          order_id: string | null
           points_balances: Json
           priorities: string[]
           return_date: string
@@ -192,6 +223,7 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
+          order_id?: string | null
           points_balances?: Json
           priorities?: string[]
           return_date: string
@@ -219,6 +251,7 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
+          order_id?: string | null
           points_balances?: Json
           priorities?: string[]
           return_date?: string
@@ -226,6 +259,101 @@ export type Database = {
           special_requirements?: string | null
           stripe_session_id?: string | null
           travellers?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_intake_submissions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "trip_plan_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_plan_orders: {
+        Row: {
+          amount_total: number | null
+          amount_usd: number
+          created_at: string
+          currency: string | null
+          customer_email: string | null
+          customer_name: string | null
+          delivered_at: string | null
+          delivery_deadline: string | null
+          id: string
+          intake_status: string
+          intake_submitted_at: string | null
+          internal_notes: string | null
+          metadata: Json
+          order_number: string
+          payment_status: string
+          product_key: string
+          purchased_at: string | null
+          refund_amount: number | null
+          refund_status: string
+          refunded_at: string | null
+          status: string
+          stripe_checkout_session_id: string
+          stripe_customer_id: string | null
+          stripe_livemode: boolean
+          stripe_payment_intent_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount_total?: number | null
+          amount_usd?: number
+          created_at?: string
+          currency?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          delivered_at?: string | null
+          delivery_deadline?: string | null
+          id?: string
+          intake_status?: string
+          intake_submitted_at?: string | null
+          internal_notes?: string | null
+          metadata?: Json
+          order_number?: string
+          payment_status?: string
+          product_key?: string
+          purchased_at?: string | null
+          refund_amount?: number | null
+          refund_status?: string
+          refunded_at?: string | null
+          status?: string
+          stripe_checkout_session_id: string
+          stripe_customer_id?: string | null
+          stripe_livemode?: boolean
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount_total?: number | null
+          amount_usd?: number
+          created_at?: string
+          currency?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          delivered_at?: string | null
+          delivery_deadline?: string | null
+          id?: string
+          intake_status?: string
+          intake_submitted_at?: string | null
+          internal_notes?: string | null
+          metadata?: Json
+          order_number?: string
+          payment_status?: string
+          product_key?: string
+          purchased_at?: string | null
+          refund_amount?: number | null
+          refund_status?: string
+          refunded_at?: string | null
+          status?: string
+          stripe_checkout_session_id?: string
+          stripe_customer_id?: string | null
+          stripe_livemode?: boolean
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
