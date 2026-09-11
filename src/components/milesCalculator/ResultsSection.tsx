@@ -46,7 +46,7 @@ import { computeTransferFees, FEE_SYMBOL, formatFee } from "@/lib/transferFees";
 import { ratesDirectoryCaption, ratesDirectoryHeading } from "@/lib/marketCopy";
 import { saveTripContext, TripContext } from "@/lib/tripContext";
 import { track } from "@/lib/track";
-import { PRICES, formatUsd, CURRENCY_NOTE, SHOW_DELIVERY_TIME, DELIVERY_COPY } from "@/lib/commerce";
+import { PRICES, formatUsd, CURRENCY_NOTE, SHOW_DELIVERY_TIME, DELIVERY_COPY, TRIP_PLAN_FORM_URL } from "@/lib/commerce";
 import type { Snapshot } from "./types";
 
 const STRATEGY_URL = "/points-strategy";

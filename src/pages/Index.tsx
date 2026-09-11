@@ -15,7 +15,7 @@ import kyotoImage from "@/assets/kyoto.jpg";
 import cabinImage from "@/assets/cabin.jpg";
 import synapseLogo from "@/assets/synapse-logo.png.asset.json";
 import cpfLogo from "@/assets/cpf-logo.png.asset.json";
-import { PRICES, formatUsd, CURRENCY_NOTE, SHOW_DELIVERY_TIME, DELIVERY_COPY } from "@/lib/commerce";
+import { PRICES, formatUsd, CURRENCY_NOTE, SHOW_DELIVERY_TIME, DELIVERY_COPY, TRIP_PLAN_FORM_URL, track } from "@/lib/commerce";
 
 export default function Home() {
   useEffect(() => {
