@@ -1,0 +1,73 @@
+/**
+ * Central commerce configuration for Samral's paid consumer services.
+ *
+ * Everything that may need to change without touching page layouts lives here:
+ * prices, external checkout / booking URLs, and the delivery-time promise.
+ *
+ * Environment overrides (optional):
+ *   VITE_TRIP_PLAN_PAYMENT_URL   – Stripe Payment Link for Points Trip Planning
+ *   VITE_CARD_STRATEGY_BOOKING_URL – Cal.com event for Personal Card Strategy
+ */
+
+const env = import.meta.env as Record<string, string | undefined>;
+
+/* ---------- Prices (USD) ---------- */
+
+export const PRICES = {
+  tripPlan: 79,
+  cardStrategy: 99,
+  bookingSupportFrom: 49,
+} as const;
+
+export const formatUsd = (n: number) => `$${n}`;
+
+export const CURRENCY_NOTE = "Local currency may be shown at checkout.";
+
+/* ---------- External checkout / booking URLs ---------- */
+
+/**
+ * Stripe Payment Link for Points Trip Planning.
+ * Set the "after payment" redirect in Stripe to: https://www.samral.com/trip-intake
+ */
+export const TRIP_PLAN_PAYMENT_URL =
+  env.VITE_TRIP_PLAN_PAYMENT_URL || "https://buy.stripe.com/REPLACE_WITH_TRIP_PLAN_LINK";
+
+/**
+ * Cal.com event for Personal Card Strategy (Cal.com handles scheduling,
+ * booking questions and Stripe payment).
+ * Set the Cal.com "redirect on booking" to: https://www.samral.com/card-strategy-confirmed
+ */
+export const CARD_STRATEGY_BOOKING_URL =
+  env.VITE_CARD_STRATEGY_BOOKING_URL || "https://cal.com/samral/card-strategy";
+
+/** Free business conversation — business enquiries are never paid. */
+export const BUSINESS_CALL_URL = "https://cal.com/samral/business-discovery-call";
+
+/** Simple contact route for the optional Booking Support add-on. */
+export const BOOKING_SUPPORT_CONTACT_URL =
+  "mailto:samuel@samral.com?subject=" + encodeURIComponent("Booking Support (Trip Plan add-on)");
+
+export const CONTACT_EMAIL = "samuel@samral.com";
+
+/* ---------- Delivery promise ---------- */
+
+/** Flip to false if the delivery promise can't be met operationally. */
+export const SHOW_DELIVERY_TIME = true;
+
+/** Change here to update the delivery-time copy everywhere. */
+export const DELIVERY_TIME = "2 business days";
+
+export const DELIVERY_COPY = `Delivered within ${DELIVERY_TIME}.`;
+
+/* ---------- Analytics ---------- */
+
+export const track = (event: string, payload: Record<string, unknown> = {}) => {
+  try {
+    const w = window as unknown as { datafast?: (e: string, p?: Record<string, unknown>) => void };
+    if (typeof w.datafast === "function") w.datafast(event, payload);
+  } catch {
+    /* no-op */
+  }
+};
+
+export const isExternalUrl = (url: string) => /^https?:\/\//i.test(url);
