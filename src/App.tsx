@@ -18,7 +18,7 @@ const PointsStrategy = lazy(() => import("./pages/PointsStrategy.tsx"));
 const Privacy = lazy(() => import("./pages/Privacy.tsx"));
 const Products = lazy(() => import("./pages/Products.tsx"));
 const Terms = lazy(() => import("./pages/Terms.tsx"));
-const TypographyPreview = lazy(() => import("./pages/TypographyPreview.tsx"));
+
 
 const App = () => (
   <BrowserRouter>
@@ -43,7 +43,7 @@ const App = () => (
 
 
 
-        <Route path="/typography-preview" element={<TypographyPreview />} />
+        
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
