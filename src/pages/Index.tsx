@@ -15,7 +15,7 @@ import kyotoImage from "@/assets/kyoto.jpg";
 import cabinImage from "@/assets/cabin.jpg";
 import synapseLogo from "@/assets/synapse-logo.png.asset.json";
 import cpfLogo from "@/assets/cpf-logo.png.asset.json";
-import { PRICES, formatUsd, CURRENCY_NOTE, SHOW_DELIVERY_TIME, DELIVERY_COPY, TRIP_PLAN_FORM_URL, track } from "@/lib/commerce";
+import { PRICES, formatUsd, CURRENCY_NOTE, SHOW_DELIVERY_TIME, DELIVERY_COPY, track } from "@/lib/commerce";
 
 export default function Home() {
   useEffect(() => {
@@ -114,13 +114,13 @@ function Hero() {
           </p>
         </details>
         <div className="mt-10 flex flex-wrap items-center gap-6">
-          <a
-            href={TRIP_PLAN_FORM_URL}
+          <Link
+            to="/trip-planning"
             onClick={() => track("trip_plan_cta_clicked", { source: "home_hero", price_usd: PRICES.tripPlan })}
             className="inline-block rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
           >
             Plan my trip &nbsp;&rarr;
-          </a>
+          </Link>
           <a
             href="#how-it-works"
             className="text-sm transition-opacity hover:opacity-100"
@@ -377,7 +377,7 @@ function Services() {
               "A clear sequence for what to check and book",
             ]}
             best={SHOW_DELIVERY_TIME ? `One round-trip, up to 2 travellers. ${DELIVERY_COPY}` : "One round-trip, up to 2 travellers."}
-            ctaHref={TRIP_PLAN_FORM_URL}
+            ctaHref="/trip-planning"
             ctaLabel="Get my Points Trip Plan"
           />
           <ServiceCard
@@ -405,13 +405,13 @@ function Services() {
             Booking Support is available as an optional add-on from {formatUsd(PRICES.bookingSupportFrom)} if
             you&rsquo;d prefer help executing your Trip Plan. {CURRENCY_NOTE}
           </p>
-          <a
-            href={TRIP_PLAN_FORM_URL}
+          <Link
+            to="/trip-planning"
             onClick={() => track("trip_plan_cta_clicked", { source: "home_services_footer", price_usd: PRICES.tripPlan })}
             className="inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
           >
             Get my Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)} &nbsp;&rarr;
-          </a>
+          </Link>
         </div>
       </div>
     </section>
@@ -533,13 +533,13 @@ function Contact() {
             ready, get a written plan for one specific trip, or a strategy for your whole setup.
           </div>
           <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-4">
-            <a
-              href={TRIP_PLAN_FORM_URL}
+            <Link
+              to="/trip-planning"
               onClick={() => track("trip_plan_cta_clicked", { source: "home_final", price_usd: PRICES.tripPlan })}
               className="rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
             >
               Get my Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)} &nbsp;&rarr;
-            </a>
+            </Link>
             <a
               href="/points-strategy"
               className="rounded-sm border px-8 py-4 text-sm font-medium transition-colors hover:bg-[#fdf7eb] hover:text-ink"

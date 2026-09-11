@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { TRIP_PLAN_FORM_URL, track, PRICES } from "@/lib/commerce";
+import { track, PRICES } from "@/lib/commerce";
 
 const NAV_LINKS = [
   { label: "Miles Calculator", to: "/miles-calculator" },
@@ -54,13 +54,13 @@ export default function SiteHeader({ variant = "solid" }: { variant?: "solid" | 
             </Link>
           ))}
         </nav>
-        <a
-          href={TRIP_PLAN_FORM_URL}
+        <Link
+          to="/trip-planning"
           onClick={() => track("trip_plan_cta_clicked", { source: "header", price_usd: PRICES.tripPlan })}
           className={`hidden md:inline-block ${ctaClass}`}
         >
           Plan my trip
-        </a>
+        </Link>
         <button
           type="button"
           aria-label={open ? "Close menu" : "Open menu"}
@@ -102,8 +102,8 @@ export default function SiteHeader({ variant = "solid" }: { variant?: "solid" | 
                 {l.label}
               </Link>
             ))}
-            <a
-              href={TRIP_PLAN_FORM_URL}
+            <Link
+              to="/trip-planning"
               onClick={() => {
                 track("trip_plan_cta_clicked", { source: "mobile_menu", price_usd: PRICES.tripPlan });
                 setOpen(false);
@@ -111,7 +111,7 @@ export default function SiteHeader({ variant = "solid" }: { variant?: "solid" | 
               className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-sm bg-[#fdf7eb] px-6 py-3 text-sm font-medium text-ink"
             >
               Plan my trip &nbsp;&rarr;
-            </a>
+            </Link>
           </nav>
         </div>
       )}
