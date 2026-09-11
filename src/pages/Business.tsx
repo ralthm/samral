@@ -464,7 +464,7 @@ function ConsumerBridge() {
             to="/points-strategy"
             className="inline-flex items-center justify-center rounded-sm border border-ink/70 px-6 py-3 text-sm text-ink transition-colors hover:bg-ink hover:text-background"
           >
-            Cards Strategy
+            Personal Card Strategy
           </Link>
         </div>
       </div>

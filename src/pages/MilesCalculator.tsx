@@ -1,6 +1,8 @@
 import { forwardRef, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, Plus, Trash2, X } from "lucide-react";
+import { Link } from "react-router-dom";
 import SiteHeader from "@/components/SiteHeader";
+import { PRICES, formatUsd, CURRENCY_NOTE, SHOW_DELIVERY_TIME, DELIVERY_COPY } from "@/lib/commerce";
 import SiteFooter from "@/components/SiteFooter";
 import { CardArtwork } from "@/components/milesCalculator/CardArtwork";
 
@@ -62,7 +64,6 @@ function ResultsSkeleton() {
 
 
 const STRATEGY_URL = "/points-strategy";
-const TRIP_PLANNING_DISCOVERY_URL = "https://cal.com/samral/trip-planning-discovery-call-20-mins";
 const PRIORITY_PROGRAMMES = ["enrich", "krisflyer", "asia-miles"];
 
 type UiState = "idle" | "calculated" | "stale" | "error";
@@ -1374,7 +1375,7 @@ function TripPlanningCTA() {
   }, []);
 
   const handleClick = () => {
-    track("trip_planning_discovery_click", {
+    track("trip_planning_cta_clicked", {
       source: "miles_calculator_bottom_cta",
       calculated,
     });
@@ -1385,10 +1386,8 @@ function TripPlanningCTA() {
     : "Have the points. Not sure what to book?";
 
   const body = calculated
-    ? "If you're unsure which redemption to pursue or you're having trouble making the booking work, book a free 20-minute discovery call."
-    : "Book a free 20-minute discovery call and we'll look at what you're trying to do with your points, where you want to go, and what may be getting in the way of making the booking.";
-
-  const targetUrl = `${TRIP_PLANNING_DISCOVERY_URL}?source=miles_calculator_bottom_cta`;
+    ? "Get a written Samral Trip Plan for one specific trip: the programme I'd book through, points required, estimated taxes and exactly what to do next."
+    : "Tell me where you want to go and what points you have. I'll compare the realistic options and give you a written recommendation for the smartest way to book it.";
 
   return (
     <section className="border-b border-border">
@@ -1402,17 +1401,16 @@ function TripPlanningCTA() {
         <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-ink/75">
           {body}
         </p>
-        <a
-          href={targetUrl}
+        <Link
+          to="/trip-planning"
           onClick={handleClick}
-          target="_blank"
-          rel="noopener noreferrer"
           className="mt-8 inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
         >
-          Book a Free Discovery Call
-        </a>
+          Get my Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
+        </Link>
         <p className="mt-4 text-[13px] text-ink/55">
-          Free discovery call · No obligation
+          {SHOW_DELIVERY_TIME ? `${DELIVERY_COPY} · ` : ""}
+          {CURRENCY_NOTE}
         </p>
       </div>
     </section>

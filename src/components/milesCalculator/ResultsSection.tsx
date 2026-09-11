@@ -46,10 +46,10 @@ import { computeTransferFees, FEE_SYMBOL, formatFee } from "@/lib/transferFees";
 import { ratesDirectoryCaption, ratesDirectoryHeading } from "@/lib/marketCopy";
 import { saveTripContext, TripContext } from "@/lib/tripContext";
 import { track } from "@/lib/track";
+import { PRICES, formatUsd, CURRENCY_NOTE, SHOW_DELIVERY_TIME, DELIVERY_COPY } from "@/lib/commerce";
 import type { Snapshot } from "./types";
 
 const STRATEGY_URL = "/points-strategy";
-const TRIP_PLANNING_DISCOVERY_URL = "https://cal.com/samral/trip-planning-discovery-call-20-mins";
 const PRIORITY_PROGRAMMES = ["enrich", "krisflyer", "asia-miles"];
 
 export default function ResultsSection(props: {
@@ -1669,7 +1669,9 @@ function PostCalcCTA() {
           You know what your points can become. Now turn them into a trip.
         </h2>
         <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-background/75">
-          If you have the points but are unsure which redemption to pursue, how to make the booking work, or what to do next, book a free 20-minute Points Trip Planning discovery call.
+          Tell me where you want to go and I&rsquo;ll compare the realistic options and give you a written
+          recommendation for the smartest way to book it: programme, points, taxes and next steps.
+          {SHOW_DELIVERY_TIME ? ` ${DELIVERY_COPY}` : ""}
         </p>
         <Link
           to="/trip-planning"
@@ -1680,8 +1682,9 @@ function PostCalcCTA() {
           }
           className="mt-8 inline-block rounded-sm bg-background px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
         >
-          Book a Free 20-Minute Call
+          Get my Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
         </Link>
+        <p className="mt-3 text-[12px] text-background/50">{CURRENCY_NOTE}</p>
         <p className="mt-5 text-[13px] text-background/55">
           Want to earn points more efficiently instead?{" "}
           <Link
@@ -1689,7 +1692,7 @@ function PostCalcCTA() {
             onClick={() => track("cards_strategy_secondary_clicked")}
             className="underline decoration-background/40 underline-offset-4 transition-colors hover:text-background"
           >
-            Explore Cards Strategy →
+            Explore Personal Card Strategy →
           </Link>
         </p>
       </div>

@@ -145,6 +145,90 @@ export type Database = {
         }
         Relationships: []
       }
+      trip_intake_submissions: {
+        Row: {
+          acknowledged: boolean
+          adults: number | null
+          airline_status: string | null
+          airlines_to_avoid: string | null
+          cabin_preference: string
+          cash_fare_amount: string | null
+          cash_fare_currency: string | null
+          children: number | null
+          created_at: string
+          date_flexibility: string
+          departure_airport: string
+          departure_date: string
+          destination: string
+          email: string
+          found_cash_fare: boolean
+          id: string
+          name: string
+          notes: string | null
+          points_balances: Json
+          priorities: string[]
+          return_date: string
+          source: string | null
+          special_requirements: string | null
+          stripe_session_id: string | null
+          travellers: number
+        }
+        Insert: {
+          acknowledged?: boolean
+          adults?: number | null
+          airline_status?: string | null
+          airlines_to_avoid?: string | null
+          cabin_preference: string
+          cash_fare_amount?: string | null
+          cash_fare_currency?: string | null
+          children?: number | null
+          created_at?: string
+          date_flexibility: string
+          departure_airport: string
+          departure_date: string
+          destination: string
+          email: string
+          found_cash_fare?: boolean
+          id?: string
+          name: string
+          notes?: string | null
+          points_balances?: Json
+          priorities?: string[]
+          return_date: string
+          source?: string | null
+          special_requirements?: string | null
+          stripe_session_id?: string | null
+          travellers: number
+        }
+        Update: {
+          acknowledged?: boolean
+          adults?: number | null
+          airline_status?: string | null
+          airlines_to_avoid?: string | null
+          cabin_preference?: string
+          cash_fare_amount?: string | null
+          cash_fare_currency?: string | null
+          children?: number | null
+          created_at?: string
+          date_flexibility?: string
+          departure_airport?: string
+          departure_date?: string
+          destination?: string
+          email?: string
+          found_cash_fare?: boolean
+          id?: string
+          name?: string
+          notes?: string | null
+          points_balances?: Json
+          priorities?: string[]
+          return_date?: string
+          source?: string | null
+          special_requirements?: string | null
+          stripe_session_id?: string | null
+          travellers?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
