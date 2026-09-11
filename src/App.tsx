@@ -5,8 +5,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 // Route-level code splitting: a visitor landing on any single route downloads
 // only that route's code. Nothing else in the app is pulled in eagerly.
 const About = lazy(() => import("./pages/About.tsx"));
-const AdminCardImages = lazy(() => import("./pages/AdminCardImages.tsx"));
-const AdminMilesCalculator = lazy(() => import("./pages/AdminMilesCalculator.tsx"));
 const Business = lazy(() => import("./pages/Business.tsx"));
 const CardStrategyConfirmed = lazy(() => import("./pages/CardStrategyConfirmed.tsx"));
 const GuideArticle = lazy(() => import("./pages/GuideArticle.tsx"));
@@ -38,8 +36,6 @@ const App = () => (
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/miles-calculator" element={<MilesCalculator />} />
         <Route path="/card-strategy-confirmed" element={<CardStrategyConfirmed />} />
-        <Route path="/admin/miles-calculator" element={<AdminMilesCalculator />} />
-        <Route path="/admin/card-images" element={<AdminCardImages />} />
 
 
 
