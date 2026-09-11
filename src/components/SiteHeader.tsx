@@ -5,7 +5,7 @@ import { Menu, X } from "lucide-react";
 const NAV_LINKS = [
   { label: "Miles Calculator", to: "/miles-calculator" },
   { label: "Points Trip Planning", to: "/trip-planning" },
-  { label: "Cards Strategy", to: "/points-strategy" },
+  { label: "Card Strategy", to: "/points-strategy" },
   { label: "For Business", to: "/business" },
 ];
 
