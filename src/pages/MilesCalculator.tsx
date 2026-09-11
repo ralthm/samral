@@ -1406,7 +1406,7 @@ function TripPlanningCTA() {
           onClick={handleClick}
           className="mt-8 inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
         >
-          Get my Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
+          Explore the Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
         </Link>
         <p className="mt-4 text-[13px] text-ink/55">
           {SHOW_DELIVERY_TIME ? `${DELIVERY_COPY} · ` : ""}
