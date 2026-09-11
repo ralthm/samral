@@ -20,13 +20,13 @@ const DELIVERABLES = [
 const STEPS = [
   {
     number: "01",
-    title: "Get your Trip Plan",
-    copy: "Purchase the service securely online.",
+    title: "Tell me about your trip",
+    copy: "Complete a short form covering your destination, dates, points and travel preferences.",
   },
   {
     number: "02",
-    title: "Tell me about your trip",
-    copy: "After payment, you’ll complete a short questionnaire covering your destination, dates, points and travel preferences.",
+    title: "Confirm your Trip Plan",
+    copy: "Secure payment of US$79 is handled by Stripe inside the same form — one step, about five minutes.",
   },
   {
     number: "03",
