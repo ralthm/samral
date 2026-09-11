@@ -4,7 +4,7 @@ import SiteFooter from "@/components/SiteFooter";
 import {
   CONTACT_EMAIL,
   PRICES,
-  TRIP_PLAN_PAYMENT_URL,
+  TRIP_PLAN_FORM_URL,
   track,
 } from "@/lib/commerce";
 
@@ -38,13 +38,13 @@ const STEPS = [
 function PurchaseButton({ source, light = false }: { source: string; light?: boolean }) {
   return (
     <a
-      href={TRIP_PLAN_PAYMENT_URL}
+      href={TRIP_PLAN_FORM_URL}
       onClick={() => track("trip_plan_cta_clicked", { source, price_usd: PRICES.tripPlan })}
       className={`inline-flex min-h-12 items-center justify-center rounded-sm px-7 py-3.5 text-center text-sm font-medium transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 ${
         light ? "bg-background text-ink" : "bg-ink text-background"
       }`}
     >
-      Get my Points Trip Plan — $75
+      Get my Points Trip Plan — US$79
     </a>
   );
 }
