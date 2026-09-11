@@ -12,7 +12,8 @@ import kyotoImg from "@/assets/kyoto.jpg";
 import italyImg from "@/assets/italy.jpg";
 
 const DELIVERABLES = [
-  "The strongest redemption options for your trip",
+  "Your recommended redemption strategy",
+  "One strong backup option if the preferred redemption is unavailable",
   "Points required and estimated taxes/fees",
   "Which points to transfer — and where",
   "Cash vs points comparison",
@@ -28,13 +29,13 @@ const STEPS = [
   },
   {
     number: "02",
-    title: "Confirm your Trip Plan",
-    copy: "Secure payment of US$79 is handled by Stripe inside the same form — one step, about five minutes.",
+    title: "Complete your details & payment",
+    copy: "Secure payment of US$79 is handled by Stripe inside the same form. The whole form takes about five minutes.",
   },
   {
     number: "03",
     title: "Get your recommendation",
-    copy: "I’ll review the relevant redemption options and give you a clear strategy for how to use your points — delivered within 2 business days.",
+    copy: "I’ll review the relevant redemption options and deliver your personalised Trip Plan within 2 business days.",
   },
 ];
 
@@ -48,6 +49,29 @@ const OUTCOMES = [
     destination: "Taiwan",
     outcome: "Two return flights",
     copy: "A rewards strategy identified a way to cover two return flights to Taiwan using available points and redemption opportunities.",
+  },
+];
+
+const FAQ = [
+  {
+    question: "What if using cash is better than using points?",
+    answer: "I’ll tell you. The goal is the best overall economic outcome, not using points for the sake of using them.",
+  },
+  {
+    question: "What if my points are spread across several banks or programmes?",
+    answer: "Include them all in the form. I’ll assess which are relevant and how they can potentially be used for the trip.",
+  },
+  {
+    question: "Do you book the flights for me?",
+    answer: "No. Samral provides the analysis, recommendation and booking strategy. Samral does not issue tickets, transfer points on your behalf or make bookings for you.",
+  },
+  {
+    question: "What if award availability changes?",
+    answer: "Award availability and programme pricing can change. Your Trip Plan will reflect the options available at the time of research, and you should reconfirm availability before transferring points.",
+  },
+  {
+    question: "What if there isn’t a good redemption available?",
+    answer: "I’ll tell you that too. The recommendation may be to pay cash, save your points, or use them differently.",
   },
 ];
 
@@ -137,6 +161,9 @@ export default function PlanMyTrip() {
                   <PurchaseButton source="trip_plan_primary" />
                   <p className="mt-3 text-[12px] leading-relaxed text-ink/55">
                     One short form · secure Stripe payment included
+                  </p>
+                  <p className="mt-4 text-[12px] leading-relaxed text-ink/55">
+                    <span className="text-clay">Clear-plan guarantee.</span> If anything in your Trip Plan is unclear, I’ll revise the recommendation at no extra charge.
                   </p>
                 </div>
               </div>
@@ -232,18 +259,37 @@ export default function PlanMyTrip() {
           </div>
         </section>
 
+        <section className="border-b border-border bg-sand/40">
+          <div className="mx-auto max-w-[800px] px-5 py-16 sm:px-6 md:px-12 md:py-24">
+            <h2 className="font-display text-2xl text-ink md:text-3xl">Frequently asked questions</h2>
+            <div className="mt-8 space-y-6">
+              {FAQ.map((item) => (
+                <details key={item.question} className="group border-b border-border pb-6">
+                  <summary className="flex cursor-pointer list-none items-start justify-between gap-4 font-display text-lg text-ink">
+                    {item.question}
+                    <span aria-hidden className="text-clay transition-transform group-open:rotate-45">+</span>
+                  </summary>
+                  <p className="mt-3 text-[14px] leading-relaxed text-ink/70">{item.answer}</p>
+                </details>
+              ))}
+            </div>
+            <p className="mt-8 text-[13px] leading-relaxed text-ink/55">
+              Planning to book soon? Award availability and programme pricing can change, so earlier research usually gives you more options.
+            </p>
+          </div>
+        </section>
+
         <section className="bg-ink text-background">
           <div className="mx-auto max-w-[920px] px-5 py-16 text-center sm:px-6 md:py-24">
             <p className="eyebrow text-background/60">Points Trip Plan</p>
             <h2 className="mt-5 font-display text-3xl leading-[1.1] md:text-5xl">Ready for a clear way forward?</h2>
             <p className="mx-auto mt-5 max-w-lg text-[15px] leading-relaxed text-background/70">
-              Complete one five-minute form — secure Stripe payment is built in. Your plan is delivered
-              within 2 business days.
+              Complete one five-minute form and I’ll work out how to use your points for the trip.
             </p>
             <div className="mt-8 flex flex-col items-center gap-3">
               <PurchaseButton source="trip_plan_final" light />
               <p className="text-[12px] text-background/55">
-                One short form · secure Stripe payment included
+                One short form · secure Stripe payment included · delivered within 2 business days
               </p>
             </div>
           </div>
