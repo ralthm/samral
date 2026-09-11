@@ -4,7 +4,7 @@ import SiteFooter from "@/components/SiteFooter";
 import {
   CONTACT_EMAIL,
   PRICES,
-  TRIP_PLAN_PAYMENT_URL,
+  TRIP_PLAN_FORM_URL,
   track,
 } from "@/lib/commerce";
 
@@ -20,13 +20,13 @@ const DELIVERABLES = [
 const STEPS = [
   {
     number: "01",
-    title: "Get your Trip Plan",
-    copy: "Purchase the service securely online.",
+    title: "Tell me about your trip",
+    copy: "Complete a short form covering your destination, dates, points and travel preferences.",
   },
   {
     number: "02",
-    title: "Tell me about your trip",
-    copy: "After payment, you’ll complete a short questionnaire covering your destination, dates, points and travel preferences.",
+    title: "Confirm your Trip Plan",
+    copy: "Secure payment of US$79 is handled by Stripe inside the same form — one step, about five minutes.",
   },
   {
     number: "03",
@@ -38,13 +38,13 @@ const STEPS = [
 function PurchaseButton({ source, light = false }: { source: string; light?: boolean }) {
   return (
     <a
-      href={TRIP_PLAN_PAYMENT_URL}
+      href={TRIP_PLAN_FORM_URL}
       onClick={() => track("trip_plan_cta_clicked", { source, price_usd: PRICES.tripPlan })}
       className={`inline-flex min-h-12 items-center justify-center rounded-sm px-7 py-3.5 text-center text-sm font-medium transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 ${
         light ? "bg-background text-ink" : "bg-ink text-background"
       }`}
     >
-      Get my Points Trip Plan — $75
+      Get my Points Trip Plan — US$79
     </a>
   );
 }
@@ -53,7 +53,7 @@ export default function PlanMyTrip() {
   useEffect(() => {
     document.title = "Points Trip Plan | Samral";
     const description =
-      "A personalised Points Trip Plan with redemption options, points requirements, estimated fees and a clear booking strategy. US$75.";
+      "A personalised Points Trip Plan with redemption options, points requirements, estimated fees and a clear booking strategy. US$79.";
     let tag = document.querySelector('meta[name="description"]');
     if (!tag) {
       tag = document.createElement("meta");
@@ -92,12 +92,12 @@ export default function PlanMyTrip() {
               </ul>
 
               <div className="mt-9">
-                <p className="font-display text-5xl leading-none text-ink md:text-6xl">US$75</p>
+                <p className="font-display text-5xl leading-none text-ink md:text-6xl">US$79</p>
                 <p className="mt-2 text-[13px] text-ink/60">One-time payment.</p>
                 <div className="mt-6">
                   <PurchaseButton source="trip_plan_primary" />
                   <p className="mt-3 text-[12px] leading-relaxed text-ink/55">
-                    Secure payment · 5-minute trip questionnaire after checkout
+                    One short form · secure Stripe payment included
                   </p>
                 </div>
               </div>
@@ -149,12 +149,12 @@ export default function PlanMyTrip() {
             <p className="eyebrow text-background/60">Points Trip Plan</p>
             <h2 className="mt-5 font-display text-3xl leading-[1.1] md:text-5xl">Ready for a clear way forward?</h2>
             <p className="mx-auto mt-5 max-w-lg text-[15px] leading-relaxed text-background/70">
-              Pay securely with Stripe, then complete the five-minute trip questionnaire.
+              Complete one five-minute form — secure Stripe payment is built in.
             </p>
             <div className="mt-8 flex flex-col items-center gap-3">
               <PurchaseButton source="trip_plan_final" light />
               <p className="text-[12px] text-background/55">
-                Secure payment · 5-minute trip questionnaire after checkout
+                One short form · secure Stripe payment included
               </p>
             </div>
           </div>

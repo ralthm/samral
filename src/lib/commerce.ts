@@ -5,7 +5,7 @@
  * prices, external checkout / booking URLs, and the delivery-time promise.
  *
  * Environment overrides (optional):
- *   VITE_TRIP_PLAN_PAYMENT_URL – Stripe Payment Link for Points Trip Planning
+ *   VITE_TRIP_PLAN_FORM_URL – Tally Points Trip Plan form (handles intake + Stripe payment)
  *   VITE_CARD_STRATEGY_BOOKING_URL – Cal.com event for Personal Card Strategy
  */
 
@@ -14,7 +14,7 @@ const env = import.meta.env as Record<string, string | undefined>;
 /* ---------- Prices (USD) ---------- */
 
 export const PRICES = {
-  tripPlan: 75,
+  tripPlan: 79,
   cardStrategy: 99,
   bookingSupportFrom: 49,
 } as const;
@@ -26,10 +26,10 @@ export const CURRENCY_NOTE = "Local currency may be shown at checkout.";
 /** Price presentation for the one-time Trip Plan purchase. */
 export const TRIP_PLAN_PRICE_LABEL = `${formatUsd(PRICES.tripPlan)} · paid once`;
 
-/* ---------- Points Trip Planning checkout (Stripe-hosted) ---------- */
+/* ---------- Points Trip Planning (Tally form handles intake + Stripe payment) ---------- */
 
-export const TRIP_PLAN_PAYMENT_URL =
-  env.VITE_TRIP_PLAN_PAYMENT_URL || "https://buy.stripe.com/8x2aEX472aEf8D0fRc93y00";
+export const TRIP_PLAN_FORM_URL =
+  env.VITE_TRIP_PLAN_FORM_URL || "https://tally.so/r/KY9pAz";
 
 /**
  * Cal.com event for Personal Card Strategy (Cal.com handles scheduling,

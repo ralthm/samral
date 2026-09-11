@@ -1,8 +1,8 @@
 import { forwardRef, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, Plus, Trash2, X } from "lucide-react";
-import { Link } from "react-router-dom";
+
 import SiteHeader from "@/components/SiteHeader";
-import { PRICES, formatUsd, CURRENCY_NOTE, SHOW_DELIVERY_TIME, DELIVERY_COPY } from "@/lib/commerce";
+import { PRICES, formatUsd, CURRENCY_NOTE, SHOW_DELIVERY_TIME, DELIVERY_COPY, TRIP_PLAN_FORM_URL } from "@/lib/commerce";
 import SiteFooter from "@/components/SiteFooter";
 import { CardArtwork } from "@/components/milesCalculator/CardArtwork";
 
@@ -1401,13 +1401,13 @@ function TripPlanningCTA() {
         <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-ink/75">
           {body}
         </p>
-        <Link
-          to="/trip-planning"
+        <a
+          href={TRIP_PLAN_FORM_URL}
           onClick={handleClick}
           className="mt-8 inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
         >
-          Explore the Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
-        </Link>
+          Get my Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
+        </a>
         <p className="mt-4 text-[13px] text-ink/55">
           {SHOW_DELIVERY_TIME ? `${DELIVERY_COPY} · ` : ""}
           {CURRENCY_NOTE}
