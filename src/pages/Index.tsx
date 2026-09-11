@@ -115,7 +115,8 @@ function Hero() {
         </details>
         <div className="mt-10 flex flex-wrap items-center gap-6">
           <a
-            href="/trip-planning"
+            href={TRIP_PLAN_FORM_URL}
+            onClick={() => track("trip_plan_cta_clicked", { source: "home_hero", price_usd: PRICES.tripPlan })}
             className="inline-block rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
           >
             Plan my trip &nbsp;&rarr;
@@ -376,8 +377,8 @@ function Services() {
               "A clear sequence for what to check and book",
             ]}
             best={SHOW_DELIVERY_TIME ? `One round-trip, up to 2 travellers. ${DELIVERY_COPY}` : "One round-trip, up to 2 travellers."}
-            ctaHref="/trip-planning"
-            ctaLabel="Explore the Points Trip Plan"
+            ctaHref={TRIP_PLAN_FORM_URL}
+            ctaLabel="Get my Points Trip Plan"
           />
           <ServiceCard
             index="02"
@@ -405,10 +406,11 @@ function Services() {
             you&rsquo;d prefer help executing your Trip Plan. {CURRENCY_NOTE}
           </p>
           <a
-            href="/trip-planning"
+            href={TRIP_PLAN_FORM_URL}
+            onClick={() => track("trip_plan_cta_clicked", { source: "home_services_footer", price_usd: PRICES.tripPlan })}
             className="inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
           >
-            Explore the Points Trip Plan &nbsp;&rarr;
+            Get my Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)} &nbsp;&rarr;
           </a>
         </div>
       </div>
@@ -532,10 +534,11 @@ function Contact() {
           </div>
           <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-4">
             <a
-              href="/trip-planning"
+              href={TRIP_PLAN_FORM_URL}
+              onClick={() => track("trip_plan_cta_clicked", { source: "home_final", price_usd: PRICES.tripPlan })}
               className="rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
             >
-              Explore the Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)} &nbsp;&rarr;
+              Get my Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)} &nbsp;&rarr;
             </a>
             <a
               href="/points-strategy"
