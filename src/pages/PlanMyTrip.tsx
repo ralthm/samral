@@ -129,6 +129,7 @@ export default function PlanMyTrip() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
+      <CancelledNotice />
       <Hero />
       <HowItWorks />
       <WhatYouReceive />
@@ -162,8 +163,13 @@ function Hero() {
 
           <div className="mt-8 flex flex-wrap items-end gap-x-8 gap-y-4">
             <div>
-              <p className="font-display text-5xl leading-none text-ink md:text-6xl">{PRICE}</p>
-              <p className="mt-2 text-[12px] text-ink/55">{CURRENCY_NOTE}</p>
+              <p className="font-display text-5xl leading-none text-ink md:text-6xl">
+                {PRICE}
+                <span className="ml-3 align-baseline font-sans text-[13px] font-medium tracking-wide text-ink/55">
+                  paid once
+                </span>
+              </p>
+              <p className="mt-2 text-[12px] text-ink/55">US{PRICE} one-time. {CURRENCY_NOTE}</p>
             </div>
             <BuyButton source="hero" label="Get my Trip Plan" />
           </div>
