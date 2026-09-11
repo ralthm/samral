@@ -53,7 +53,7 @@ export default function PlanMyTrip() {
   useEffect(() => {
     document.title = "Points Trip Plan | Samral";
     const description =
-      "A personalised Points Trip Plan with redemption options, points requirements, estimated fees and a clear booking strategy. US$75.";
+      "A personalised Points Trip Plan with redemption options, points requirements, estimated fees and a clear booking strategy. US$79.";
     let tag = document.querySelector('meta[name="description"]');
     if (!tag) {
       tag = document.createElement("meta");
@@ -92,12 +92,12 @@ export default function PlanMyTrip() {
               </ul>
 
               <div className="mt-9">
-                <p className="font-display text-5xl leading-none text-ink md:text-6xl">US$75</p>
+                <p className="font-display text-5xl leading-none text-ink md:text-6xl">US$79</p>
                 <p className="mt-2 text-[13px] text-ink/60">One-time payment.</p>
                 <div className="mt-6">
                   <PurchaseButton source="trip_plan_primary" />
                   <p className="mt-3 text-[12px] leading-relaxed text-ink/55">
-                    Secure payment · 5-minute trip questionnaire after checkout
+                    One short form · secure Stripe payment included
                   </p>
                 </div>
               </div>
@@ -149,12 +149,12 @@ export default function PlanMyTrip() {
             <p className="eyebrow text-background/60">Points Trip Plan</p>
             <h2 className="mt-5 font-display text-3xl leading-[1.1] md:text-5xl">Ready for a clear way forward?</h2>
             <p className="mx-auto mt-5 max-w-lg text-[15px] leading-relaxed text-background/70">
-              Pay securely with Stripe, then complete the five-minute trip questionnaire.
+              Complete one five-minute form — secure Stripe payment is built in.
             </p>
             <div className="mt-8 flex flex-col items-center gap-3">
               <PurchaseButton source="trip_plan_final" light />
               <p className="text-[12px] text-background/55">
-                Secure payment · 5-minute trip questionnaire after checkout
+                One short form · secure Stripe payment included
               </p>
             </div>
           </div>
