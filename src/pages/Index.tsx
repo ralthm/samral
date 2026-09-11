@@ -15,6 +15,7 @@ import kyotoImage from "@/assets/kyoto.jpg";
 import cabinImage from "@/assets/cabin.jpg";
 import synapseLogo from "@/assets/synapse-logo.png.asset.json";
 import cpfLogo from "@/assets/cpf-logo.png.asset.json";
+import { PRICES, formatUsd, CURRENCY_NOTE, SHOW_DELIVERY_TIME, DELIVERY_COPY } from "@/lib/commerce";
 
 export default function Home() {
   useEffect(() => {
@@ -362,53 +363,52 @@ function Services() {
         <div className="grid gap-14 md:grid-cols-2 md:gap-10">
           <ServiceCard
             index="01"
-            tag="Flagship"
+            tag="For a specific trip"
             title="Points Trip Planning"
+            price={formatUsd(PRICES.tripPlan)}
             image={svcAircraftAsset.url}
             imageAlt="Wide-body aircraft at the gate at golden hour"
-            copy="You have a trip in mind. I find the smartest way to get you there using the points you already have."
+            copy="You have a trip in mind. I compare the realistic options and give you a written recommendation for the smartest way to get there with the points you already have."
             bullets={[
-              "The best programme to book through",
-              "Roughly what it&rsquo;ll cost in points and taxes",
-              "Whether transferring &mdash; or paying cash &mdash; is smarter",
-              "Exactly how to book it",
+              "The programme and routing I&rsquo;d book through",
+              "Points required, estimated taxes and what to transfer",
+              "Whether transferring or paying cash is smarter",
+              "A clear sequence for what to check and book",
             ]}
-            best="For a specific trip you want to get right."
+            best={SHOW_DELIVERY_TIME ? `One round-trip, up to 2 travellers. ${DELIVERY_COPY}` : "One round-trip, up to 2 travellers."}
             ctaHref="/trip-planning"
-            ctaLabel="Plan my trip"
+            ctaLabel="Get my Trip Plan"
           />
           <ServiceCard
             index="02"
-            tag="Longer term"
-            title="Cards Strategy"
+            tag="For your overall setup"
+            title="Personal Card Strategy"
+            price={formatUsd(PRICES.cardStrategy)}
             image={svcNotebookAsset.url}
             imageAlt="Handwritten planning notes in a notebook"
-            copy="No trip in mind yet. Just a sense you could be doing this better. We build the plan together."
+            copy="No trip in mind yet, just a sense you could be doing this better. A one-to-one call and a written strategy for your cards, spending and points."
             bullets={[
               "A review of your current cards and balances",
-              "Which currencies to earn &mdash; and which to ignore",
-              "A clear 12-month roadmap toward the trips you want",
-              "An honest look at what to keep and what to close",
+              "Which currencies to earn, and which to ignore",
+              "What to keep, change or reconsider, and why",
+              "A written Samral Card Strategy to refer back to",
             ]}
-            best="For anyone building toward something in the next year or two."
+            best="Personal cards only. Payment and scheduling in one step."
             ctaHref="/points-strategy"
-            ctaLabel="Explore Cards Strategy"
+            ctaLabel="Book my Card Strategy"
           />
         </div>
 
-
-
-
         <div className="mt-16 flex flex-col items-start gap-6 border-t border-border pt-10 md:flex-row md:items-center md:justify-between">
           <p className="max-w-lg text-[15px] italic text-muted-foreground">
-            Booking Support is available as an optional add-on if you&rsquo;d prefer I handle the
-            booking on your behalf.
+            Booking Support is available as an optional add-on from {formatUsd(PRICES.bookingSupportFrom)} if
+            you&rsquo;d prefer help executing your Trip Plan. {CURRENCY_NOTE}
           </p>
           <a
             href="/trip-planning"
             className="inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
           >
-            Plan my trip &nbsp;&rarr;
+            Get my Trip Plan &nbsp;&rarr;
           </a>
         </div>
       </div>
@@ -420,6 +420,7 @@ function ServiceCard({
   index,
   tag,
   title,
+  price,
   image,
   imageAlt,
   copy,
@@ -431,6 +432,7 @@ function ServiceCard({
   index: string;
   tag: string;
   title: string;
+  price: string;
   image: string;
   imageAlt: string;
   copy: string;
@@ -452,9 +454,12 @@ function ServiceCard({
           {tag.toUpperCase()}
         </span>
       </div>
-      <div className="flex items-baseline gap-4">
-        <span className="font-display text-2xl text-clay">{index}</span>
-        <h3 className="font-display text-3xl text-ink md:text-4xl">{title}</h3>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+        <div className="flex items-baseline gap-4">
+          <span className="font-display text-2xl text-clay">{index}</span>
+          <h3 className="font-display text-3xl text-ink md:text-4xl">{title}</h3>
+        </div>
+        <span className="font-display text-3xl text-ink md:text-4xl">{price}</span>
       </div>
       <p className="mt-5 text-[17px] leading-relaxed text-ink/85">{copy}</p>
       <ul className="mt-6 space-y-3">
@@ -474,10 +479,11 @@ function ServiceCard({
       <div className="mt-6">
         <a
           href={ctaHref}
-          className="inline-block rounded-sm border border-ink px-6 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-background focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2"
+          className="inline-block rounded-sm bg-ink px-6 py-3 text-sm font-medium text-background transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2"
         >
           {ctaLabel} &nbsp;&rarr;
         </a>
+        <p className="mt-2 text-[11px] text-muted-foreground">{CURRENCY_NOTE}</p>
       </div>
     </article>
   );
@@ -506,33 +512,45 @@ function Contact() {
       <div className="relative z-10 mx-auto max-w-[1440px] px-6 py-28 md:px-12 md:py-44">
         <div className="max-w-3xl">
           <p className="eyebrow mb-6" style={{ color: "rgba(253, 247, 235, 0.7)" }}>
-            Get in touch
+            Get started
           </p>
           <h2
             className="font-display text-5xl leading-[1.02] md:text-7xl lg:text-[96px]"
             style={{ color: "#fdf7eb" }}
           >
-            Tell me about the trip <br />
+            Ready to use your points <br />
             <em className="italic" style={{ color: "#f0d5b3" }}>
-              you&rsquo;d like to take.
+              properly?
             </em>
           </h2>
           <div
-            className="mt-8 max-w-xl text-lg leading-relaxed whitespace-pre-line"
+            className="mt-8 max-w-xl text-lg leading-relaxed"
             style={{ color: "rgba(253, 247, 235, 0.8)" }}
           >
-            Tell me where you'd like to go, roughly when you're hoping to travel, and which points or rewards you already have.{"\n\n\n"}
-            I'll personally review your situation and let you know whether there's a worthwhile points strategy to explore. That initial assessment is complimentary; the detailed personalised strategy is the full Points Trip Planning engagement.
+            Start with the free Miles Calculator to see what your points can reach. When you&rsquo;re
+            ready, get a written plan for one specific trip, or a strategy for your whole setup.
           </div>
-          <div className="mt-12 flex flex-wrap items-center gap-6">
+          <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-4">
             <a
               href="/trip-planning"
               className="rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
             >
-              Get my complimentary assessment &nbsp;&rarr;
+              Get my Trip Plan &mdash; {formatUsd(PRICES.tripPlan)} &nbsp;&rarr;
             </a>
-            {/* email link removed as requested */}
+            <a
+              href="/points-strategy"
+              className="rounded-sm border px-8 py-4 text-sm font-medium transition-colors hover:bg-[#fdf7eb] hover:text-ink"
+              style={{ borderColor: "rgba(253, 247, 235, 0.6)", color: "#fdf7eb" }}
+            >
+              Book my Card Strategy &mdash; {formatUsd(PRICES.cardStrategy)}
+            </a>
           </div>
+          <p className="mt-5 text-[12px]" style={{ color: "rgba(253, 247, 235, 0.55)" }}>
+            {CURRENCY_NOTE}{" "}
+            <Link to="/miles-calculator" className="underline underline-offset-4">
+              Not sure yet? Try the free Miles Calculator.
+            </Link>
+          </p>
         </div>
       </div>
     </section>
