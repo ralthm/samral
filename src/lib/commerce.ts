@@ -63,7 +63,7 @@ export async function startTripPlanCheckout(source: string): Promise<CheckoutRes
  * Set the Cal.com "redirect on booking" to: https://www.samral.com/card-strategy-confirmed
  */
 export const CARD_STRATEGY_BOOKING_URL =
-  env.VITE_CARD_STRATEGY_BOOKING_URL || "https://cal.com/samral/card-strategy";
+  env.VITE_CARD_STRATEGY_BOOKING_URL || "https://cal.com/samral/card-strategy-discovery";
 
 /** Free business conversation — business enquiries are never paid. */
 export const BUSINESS_CALL_URL = "https://cal.com/samral/business-discovery-call";
