@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { track } from "@/lib/analytics";
+import { TRIP_PLAN_FORM_URL } from "@/lib/commerce";
 import { applySeoHead } from "@/lib/seoHead";
 import { SITE_URL, type Article, type ArticleBlock } from "@/content/guides/types";
 
