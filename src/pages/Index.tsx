@@ -377,7 +377,7 @@ function Services() {
             ]}
             best={SHOW_DELIVERY_TIME ? `One round-trip, up to 2 travellers. ${DELIVERY_COPY}` : "One round-trip, up to 2 travellers."}
             ctaHref="/trip-planning"
-            ctaLabel="Get my Trip Plan"
+            ctaLabel="Explore the Points Trip Plan"
           />
           <ServiceCard
             index="02"
@@ -408,7 +408,7 @@ function Services() {
             href="/trip-planning"
             className="inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
           >
-            Get my Trip Plan &nbsp;&rarr;
+            Explore the Points Trip Plan &nbsp;&rarr;
           </a>
         </div>
       </div>
@@ -535,7 +535,7 @@ function Contact() {
               href="/trip-planning"
               className="rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
             >
-              Get my Trip Plan &mdash; {formatUsd(PRICES.tripPlan)} &nbsp;&rarr;
+              Explore the Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)} &nbsp;&rarr;
             </a>
             <a
               href="/points-strategy"

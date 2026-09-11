@@ -7,7 +7,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 const About = lazy(() => import("./pages/About.tsx"));
 const AdminCardImages = lazy(() => import("./pages/AdminCardImages.tsx"));
 const AdminMilesCalculator = lazy(() => import("./pages/AdminMilesCalculator.tsx"));
-const AdminTripPlans = lazy(() => import("./pages/AdminTripPlans.tsx"));
 const Business = lazy(() => import("./pages/Business.tsx"));
 const CardStrategyConfirmed = lazy(() => import("./pages/CardStrategyConfirmed.tsx"));
 const GuideArticle = lazy(() => import("./pages/GuideArticle.tsx"));
@@ -19,7 +18,6 @@ const PointsStrategy = lazy(() => import("./pages/PointsStrategy.tsx"));
 const Privacy = lazy(() => import("./pages/Privacy.tsx"));
 const Products = lazy(() => import("./pages/Products.tsx"));
 const Terms = lazy(() => import("./pages/Terms.tsx"));
-const TripIntake = lazy(() => import("./pages/TripIntake.tsx"));
 const TypographyPreview = lazy(() => import("./pages/TypographyPreview.tsx"));
 
 const App = () => (
@@ -39,11 +37,9 @@ const App = () => (
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/miles-calculator" element={<MilesCalculator />} />
-        <Route path="/trip-intake" element={<TripIntake />} />
         <Route path="/card-strategy-confirmed" element={<CardStrategyConfirmed />} />
         <Route path="/admin/miles-calculator" element={<AdminMilesCalculator />} />
         <Route path="/admin/card-images" element={<AdminCardImages />} />
-        <Route path="/admin/trip-plans" element={<AdminTripPlans />} />
 
 
 

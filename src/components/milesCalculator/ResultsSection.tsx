@@ -1682,7 +1682,7 @@ function PostCalcCTA() {
           }
           className="mt-8 inline-block rounded-sm bg-background px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
         >
-          Get my Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
+          Explore the Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
         </Link>
         <p className="mt-3 text-[12px] text-background/50">{CURRENCY_NOTE}</p>
         <p className="mt-5 text-[13px] text-background/55">
