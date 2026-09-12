@@ -2,7 +2,7 @@ import { forwardRef, Suspense, useCallback, useEffect, useMemo, useRef, useState
 import { ChevronDown, Plus, Trash2, X } from "lucide-react";
 
 import SiteHeader from "@/components/SiteHeader";
-import { PRICES, formatUsd, CURRENCY_NOTE, SHOW_DELIVERY_TIME, DELIVERY_COPY, TRIP_PLAN_FORM_URL } from "@/lib/commerce";
+import { TRIP_PLAN_FORM_URL } from "@/lib/commerce";
 import SiteFooter from "@/components/SiteFooter";
 import { CardArtwork } from "@/components/milesCalculator/CardArtwork";
 
@@ -1406,11 +1406,10 @@ function TripPlanningCTA() {
           onClick={handleClick}
           className="mt-8 inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
         >
-          Get my Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
+          Get my Points Trip Plan — US$79
         </a>
         <p className="mt-4 text-[13px] text-ink/55">
-          {SHOW_DELIVERY_TIME ? `${DELIVERY_COPY} · ` : ""}
-          {CURRENCY_NOTE}
+          One-time payment · Delivered within 2 business days
         </p>
       </div>
     </section>

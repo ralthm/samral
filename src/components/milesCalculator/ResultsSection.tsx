@@ -46,7 +46,7 @@ import { computeTransferFees, FEE_SYMBOL, formatFee } from "@/lib/transferFees";
 import { ratesDirectoryCaption, ratesDirectoryHeading } from "@/lib/marketCopy";
 import { saveTripContext, TripContext } from "@/lib/tripContext";
 import { track } from "@/lib/track";
-import { PRICES, formatUsd, CURRENCY_NOTE, SHOW_DELIVERY_TIME, DELIVERY_COPY, TRIP_PLAN_FORM_URL } from "@/lib/commerce";
+import { SHOW_DELIVERY_TIME, DELIVERY_COPY, TRIP_PLAN_FORM_URL } from "@/lib/commerce";
 import type { Snapshot } from "./types";
 
 const STRATEGY_URL = "/points-strategy";
@@ -1682,9 +1682,11 @@ function PostCalcCTA() {
           }
           className="mt-8 inline-block rounded-sm bg-background px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
         >
-          Get my Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
+          Get my Points Trip Plan — US$79
         </a>
-        <p className="mt-3 text-[12px] text-background/50">{CURRENCY_NOTE}</p>
+        <p className="mt-3 text-[12px] text-background/50">
+          One-time payment · Delivered within 2 business days
+        </p>
         <p className="mt-5 text-[13px] text-background/55">
           Want to earn points more efficiently instead?{" "}
           <Link

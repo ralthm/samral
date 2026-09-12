@@ -12,13 +12,13 @@ import kyotoImg from "@/assets/kyoto.jpg";
 import italyImg from "@/assets/italy.jpg";
 
 const DELIVERABLES = [
-  "Your recommended redemption strategy",
-  "One strong backup option if the preferred redemption is unavailable",
-  "Points required and estimated taxes/fees",
-  "Which points to transfer — and where",
+  "My recommended option — and why",
+  "A strong practical backup option",
+  "Points required + estimated taxes and fees",
+  "Which points to transfer and where",
   "Cash vs points comparison",
-  "My recommended booking strategy",
-  "Key transfer and booking steps",
+  "Recommended transfer and booking sequence",
+  "Key booking steps",
 ];
 
 const STEPS = [
@@ -151,6 +151,12 @@ export default function PlanMyTrip() {
                   </li>
                 ))}
               </ul>
+              <div className="mt-5 border-l-2 border-clay pl-4">
+                <p className="text-[13px] font-medium text-ink">Included: Transfer-Safely Checklist</p>
+                <p className="mt-1 text-[12px] leading-relaxed text-ink/60">
+                  A simple checklist of what to reconfirm before making an irreversible points transfer — including availability, transfer requirements, timing, taxes and the correct booking sequence.
+                </p>
+              </div>
 
               <div className="mt-9">
                 <p className="font-display text-5xl leading-none text-ink md:text-6xl">US$79</p>
@@ -162,8 +168,8 @@ export default function PlanMyTrip() {
                   <p className="mt-3 text-[12px] leading-relaxed text-ink/55">
                     One short form · secure Stripe payment included
                   </p>
-                  <p className="mt-4 text-[12px] leading-relaxed text-ink/55">
-                    <span className="text-clay">Clear-plan guarantee.</span> If anything in your Trip Plan is unclear, I’ll revise the recommendation at no extra charge.
+                  <p className="mt-4 text-[12px] leading-relaxed text-ink/60">
+                    <span className="font-medium text-clay">Clear-Plan Guarantee.</span> If, after receiving your Trip Plan, you’re unclear about which option I recommend or what the next steps are, send me your questions within 7 days. I’ll clarify the recommendation or revise it once at no additional charge.
                   </p>
                 </div>
               </div>

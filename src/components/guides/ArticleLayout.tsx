@@ -345,7 +345,7 @@ export default function ArticleLayout({ article }: { article: Article }) {
                 Have enough points but not sure how to make the trip work?
               </h2>
               <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-ink/70">
-                Explore the Points Trip Plan before deciding whether it is right for your trip.
+                Get a written recommendation for one specific trip, with the points, estimated fees and booking sequence clearly set out.
               </p>
               <a
                 href={TRIP_PLAN_FORM_URL}
@@ -357,8 +357,11 @@ export default function ArticleLayout({ article }: { article: Article }) {
                 }
                 className="mt-7 inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5 hover:bg-ink/90"
               >
-                Get my Points Trip Plan &nbsp;&rarr;
+                Get my Points Trip Plan — US$79
               </a>
+              <p className="mt-3 text-[12px] text-ink/55">
+                One-time payment · Delivered within 2 business days
+              </p>
             </section>
 
             {/* Sources */}

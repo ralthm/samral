@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { track, PRICES } from "@/lib/commerce";
+import { track, PRICES, TRIP_PLAN_FORM_URL } from "@/lib/commerce";
 
 const NAV_LINKS = [
   { label: "Miles Calculator", to: "/miles-calculator" },
@@ -54,13 +54,18 @@ export default function SiteHeader({ variant = "solid" }: { variant?: "solid" | 
             </Link>
           ))}
         </nav>
-        <Link
-          to="/trip-planning"
-          onClick={() => track("trip_plan_cta_clicked", { source: "header", price_usd: PRICES.tripPlan })}
-          className={`hidden md:inline-block ${ctaClass}`}
-        >
-          Plan my trip
-        </Link>
+        <div className="hidden flex-col items-end gap-1 md:flex">
+          <a
+            href={TRIP_PLAN_FORM_URL}
+            onClick={() => track("trip_plan_cta_clicked", { source: "header", price_usd: PRICES.tripPlan })}
+            className={ctaClass}
+          >
+            Get my Points Trip Plan — US$79
+          </a>
+          <p className={`text-[10px] ${transparent ? "text-background/65" : "text-ink/50"}`}>
+            One-time payment · Delivered within 2 business days
+          </p>
+        </div>
         <button
           type="button"
           aria-label={open ? "Close menu" : "Open menu"}
@@ -102,16 +107,19 @@ export default function SiteHeader({ variant = "solid" }: { variant?: "solid" | 
                 {l.label}
               </Link>
             ))}
-            <Link
-              to="/trip-planning"
+            <a
+              href={TRIP_PLAN_FORM_URL}
               onClick={() => {
                 track("trip_plan_cta_clicked", { source: "mobile_menu", price_usd: PRICES.tripPlan });
                 setOpen(false);
               }}
               className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-sm bg-[#fdf7eb] px-6 py-3 text-sm font-medium text-ink"
             >
-              Plan my trip &nbsp;&rarr;
-            </Link>
+              Get my Points Trip Plan — US$79
+            </a>
+            <p className="mt-2 text-center text-[12px] text-background/55">
+              One-time payment · Delivered within 2 business days
+            </p>
           </nav>
         </div>
       )}

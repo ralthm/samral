@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Info } from "lucide-react";
 import { getAllianceInfo } from "@/data/alliances";
-
-const DISCOVERY_CALL_URL = "https://cal.com/samral/trip-planning-discovery-call-20-mins";
+import { TRIP_PLAN_FORM_URL } from "@/lib/commerce";
 
 interface Props {
   programmeId: string;
   programmeName: string;
-  /** Optional context passed through to the discovery-call CTA as query params. */
+  /** Optional calculator context retained for callers that use this component. */
   ctaContext?: {
     calculatedBalance?: number;
     destination?: string;
@@ -30,7 +29,7 @@ export function AllianceBadge({ programmeId }: { programmeId: string }) {
   );
 }
 
-export function AllianceInfo({ programmeId, programmeName, ctaContext }: Props) {
+export function AllianceInfo({ programmeId, programmeName }: Props) {
   const info = getAllianceInfo(programmeId);
   const [open, setOpen] = useState(false);
   if (!info) return null;
@@ -39,19 +38,6 @@ export function AllianceInfo({ programmeId, programmeName, ctaContext }: Props) 
     info.allianceCode === "OW"
       ? "Also usable for eligible oneworld partner-airline awards through this loyalty programme."
       : "Also usable for eligible Star Alliance partner-airline awards through this loyalty programme.";
-
-  const ctaHref = (() => {
-    const params = new URLSearchParams();
-    params.set("source_programme", programmeName);
-    params.set("alliance", info.allianceDisplayName);
-    params.set("interested_in_partner_award", "true");
-    if (ctaContext?.calculatedBalance) params.set("calculated_balance", String(ctaContext.calculatedBalance));
-    if (ctaContext?.destination) params.set("destination", ctaContext.destination);
-    if (ctaContext?.cabin) params.set("cabin", ctaContext.cabin);
-    if (ctaContext?.travellers) params.set("travellers", String(ctaContext.travellers));
-    if (ctaContext?.selectedRedemption) params.set("selected_redemption", ctaContext.selectedRedemption);
-    return `${DISCOVERY_CALL_URL}?${params.toString()}`;
-  })();
 
   return (
     <div className="mt-3 border-t border-border pt-3 text-[12px] text-ink/70">
@@ -98,16 +84,15 @@ export function AllianceInfo({ programmeId, programmeName, ctaContext }: Props) 
 
           <div className="border-t border-border pt-3">
             <a
-              href={ctaHref}
+              href={TRIP_PLAN_FORM_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-sm border border-ink bg-ink px-4 py-2 text-[12px] font-medium text-background hover:bg-ink/90"
             >
-              Book a Free Discovery Call →
+              Get my Points Trip Plan — US$79
             </a>
             <p className="mt-2 text-[11px] text-ink/60">
-              Considering a partner airline? Talk through the programme, route and booking method before
-              transferring any points.
+              One-time payment · Delivered within 2 business days
             </p>
             <p className="mt-2 text-[10px] uppercase tracking-[0.14em] text-ink/40">
               Source: {info.allianceDisplayName} ·{" "}
