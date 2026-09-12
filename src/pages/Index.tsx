@@ -409,16 +409,18 @@ function Services() {
             Booking Support is available as an optional add-on from {formatUsd(PRICES.bookingSupportFrom)} if
             you&rsquo;d prefer help executing your Trip Plan. {CURRENCY_NOTE}
           </p>
-          <a
-            href={TRIP_PLAN_FORM_URL}
-            onClick={() => track("trip_plan_cta_clicked", { source: "home_services_footer", price_usd: PRICES.tripPlan })}
-            className="inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
-          >
-            Get my Points Trip Plan — US$79
-          </a>
-          <p className="text-[12px] text-muted-foreground">
-            One-time payment · Delivered within 2 business days
-          </p>
+          <div>
+            <a
+              href={TRIP_PLAN_FORM_URL}
+              onClick={() => track("trip_plan_cta_clicked", { source: "home_services_footer", price_usd: PRICES.tripPlan })}
+              className="inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
+            >
+              Get my Points Trip Plan — US$79
+            </a>
+            <p className="mt-2 text-[12px] text-muted-foreground">
+              One-time payment · Delivered within 2 business days
+            </p>
+          </div>
         </div>
       </div>
     </section>

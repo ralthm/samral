@@ -54,13 +54,18 @@ export default function SiteHeader({ variant = "solid" }: { variant?: "solid" | 
             </Link>
           ))}
         </nav>
-        <a
-          href={TRIP_PLAN_FORM_URL}
-          onClick={() => track("trip_plan_cta_clicked", { source: "header", price_usd: PRICES.tripPlan })}
-          className={`hidden md:inline-block ${ctaClass}`}
-        >
-          Get my Points Trip Plan — US$79
-        </a>
+        <div className="hidden flex-col items-end gap-1 md:flex">
+          <a
+            href={TRIP_PLAN_FORM_URL}
+            onClick={() => track("trip_plan_cta_clicked", { source: "header", price_usd: PRICES.tripPlan })}
+            className={ctaClass}
+          >
+            Get my Points Trip Plan — US$79
+          </a>
+          <p className={`text-[10px] ${transparent ? "text-background/65" : "text-ink/50"}`}>
+            One-time payment · Delivered within 2 business days
+          </p>
+        </div>
         <button
           type="button"
           aria-label={open ? "Close menu" : "Open menu"}
