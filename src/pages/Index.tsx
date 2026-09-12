@@ -119,7 +119,7 @@ function Hero() {
             onClick={() => track("trip_plan_cta_clicked", { source: "home_hero", price_usd: PRICES.tripPlan })}
             className="inline-block rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
           >
-            Get my Points Trip Plan — US$79
+            Get my Points Trip Plan
           </a>
           <a
             href="#how-it-works"
