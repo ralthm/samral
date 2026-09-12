@@ -415,7 +415,7 @@ function Services() {
               onClick={() => track("trip_plan_cta_clicked", { source: "home_services_footer", price_usd: PRICES.tripPlan })}
               className="inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
             >
-              Get my Points Trip Plan a0
+              Get my Points Trip Plan 
             </a>
             <p className="mt-2 text-[12px] text-muted-foreground">
               One-time payment · Delivered within 2 business days
