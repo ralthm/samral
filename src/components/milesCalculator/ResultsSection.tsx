@@ -1682,7 +1682,7 @@ function PostCalcCTA() {
           }
           className="mt-8 inline-block rounded-sm bg-background px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
         >
-          Get my Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
+          Get my Points Trip Plan — US$79
         </a>
         <p className="mt-3 text-[12px] text-background/50">
           One-time payment · Delivered within 2 business days

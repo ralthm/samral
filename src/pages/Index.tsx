@@ -492,7 +492,7 @@ function ServiceCard({
           href={ctaHref}
           className="inline-block rounded-sm bg-ink px-6 py-3 text-sm font-medium text-background transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2"
         >
-          {ctaLabel} &nbsp;&rarr;
+          {ctaLabel}{!ctaSupport && <>&nbsp;&rarr;</>}
         </a>
         <p className="mt-2 text-[11px] text-muted-foreground">
           {ctaSupport ?? CURRENCY_NOTE}
