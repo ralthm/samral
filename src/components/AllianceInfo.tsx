@@ -29,7 +29,7 @@ export function AllianceBadge({ programmeId }: { programmeId: string }) {
   );
 }
 
-export function AllianceInfo({ programmeId, programmeName, ctaContext }: Props) {
+export function AllianceInfo({ programmeId, programmeName }: Props) {
   const info = getAllianceInfo(programmeId);
   const [open, setOpen] = useState(false);
   if (!info) return null;
