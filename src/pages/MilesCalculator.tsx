@@ -1409,8 +1409,7 @@ function TripPlanningCTA() {
           Get my Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
         </a>
         <p className="mt-4 text-[13px] text-ink/55">
-          {SHOW_DELIVERY_TIME ? `${DELIVERY_COPY} · ` : ""}
-          {CURRENCY_NOTE}
+          One-time payment · Delivered within 2 business days
         </p>
       </div>
     </section>

@@ -1684,7 +1684,9 @@ function PostCalcCTA() {
         >
           Get my Points Trip Plan &mdash; {formatUsd(PRICES.tripPlan)}
         </a>
-        <p className="mt-3 text-[12px] text-background/50">{CURRENCY_NOTE}</p>
+        <p className="mt-3 text-[12px] text-background/50">
+          One-time payment · Delivered within 2 business days
+        </p>
         <p className="mt-5 text-[13px] text-background/55">
           Want to earn points more efficiently instead?{" "}
           <Link
