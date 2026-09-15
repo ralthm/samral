@@ -35,18 +35,10 @@ export default function SiteFooter() {
           </div>
           <div className="md:col-span-2">
             <p className="eyebrow mb-4 text-background/50">Business</p>
-            <ul className="mb-6 space-y-2 text-sm">
+            <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/business" className="hover:text-background">
                   Business Spend
-                </Link>
-              </li>
-            </ul>
-            <p className="eyebrow mb-4 text-background/50">Software</p>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/products" className="hover:text-background">
-                  Our products
                 </Link>
               </li>
             </ul>
