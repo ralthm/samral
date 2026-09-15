@@ -39,30 +39,14 @@ export default function About() {
                 About Samuel
               </h1>
               <div className="mt-8 max-w-2xl space-y-5 text-[16px] leading-relaxed text-ink/85">
+                <p>Hi, I&apos;m Samuel.</p>
                 <p>
-                  I started Samral after noticing something surprisingly simple: the same money can produce very different value depending on how it&apos;s spent, paid and used.
+                  I built Samral because I kept seeing the same problem: high earners who spend a lot accumulating valuable points for years without knowing what they&apos;re actually worth, or whether using them is even the smartest option.
                 </p>
                 <p>
-                  My background is in finance, but my interest in this started personally. After checking the points I&apos;d accumulated on a credit card, I realised I already had enough to travel to places like Bangkok and Ho Chi Minh City.
+                  My background is in real estate private equity, where I learned that owning a valuable asset and actually realising its value are two different things. I think about points the same way. A large balance means very little if you don&apos;t know what it&apos;s worth or how best to use it.
                 </p>
-                <p>
-                  What looked simple quickly became a rabbit hole. Different transfer routes, airline programmes and redemption choices could produce completely different outcomes from the same points.
-                </p>
-                <p>
-                  I started researching it obsessively and helping friends do the same. That eventually became Samral.
-                </p>
-                <p>
-                  Today, Samral helps individuals make better decisions around their cards, points and travel, and is expanding that same thinking into how business owners spend and pay.
-                </p>
-                <p>
-                  The principle is the same: don&apos;t optimize the most obvious number. Look at the whole economic outcome.
-                </p>
-                <p>
-                  Sometimes points create the most value. Sometimes cash does. For a business, fees, FX, payment terms or working capital can matter more than rewards.
-                </p>
-                <p>
-                  My job is to understand the options, quantify the trade-offs and help you make the decision that creates the most real-world value.
-                </p>
+                <p>Samral exists to help you turn that value into something real.</p>
               </div>
             </div>
           </div>
