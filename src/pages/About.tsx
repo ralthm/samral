@@ -41,7 +41,7 @@ export default function About() {
               <div className="mt-8 max-w-2xl space-y-5 text-[16px] leading-relaxed text-ink/85">
                 <p>{"\n"}</p>
                 <p>
-                  I built Samral because I kept seeing the same problem for close to a year now: high earners who spend a lot accumulating valuable points for years without knowing what they&apos;re actually worth, or whether using them is even the smartest option.
+                  I built Samral after spending close to a year helping people with their points and noticing the same problem again and again: high earners who spend a lot accumulating valuable points for years without knowing what they&apos;re actually worth, or whether using them is even the smartest option.
                 </p>
                 <p>
                   My background is in real estate private equity, where I learned that owning a valuable asset and actually realising its value are two different things. I think about points the same way. A large balance means very little if you don&apos;t know what it&apos;s worth or how best to use it.
