@@ -59,7 +59,7 @@ export default function SiteFooter() {
           <div className="space-y-1">
             <p>© 2026 Samral</p>
             <p className="text-background/40">
-              SAMRAL ADVISORY · Registration No. IP0632210-W
+               {"\n"}
             </p>
           </div>
           <div className="flex gap-5">
