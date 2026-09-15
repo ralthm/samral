@@ -33,7 +33,7 @@ export default function SiteFooter() {
               </li>
               <li>
                 <Link to="/business" className="hover:text-background">
-                  For business
+                  Business
                 </Link>
               </li>
             </ul>
