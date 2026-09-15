@@ -36,10 +36,10 @@ export default function About() {
             </div>
             <div className="md:col-span-7">
               <h1 className="font-display text-4xl leading-[1.05] text-ink md:text-6xl lg:text-7xl">
-                About Samuel
+                Hi, I&apos;m Samuel
               </h1>
               <div className="mt-8 max-w-2xl space-y-5 text-[16px] leading-relaxed text-ink/85">
-                <p>Hi, I&apos;m Samuel.</p>
+                <p>{"\n"}</p>
                 <p>
                   I built Samral because I kept seeing the same problem: high earners who spend a lot accumulating valuable points for years without knowing what they&apos;re actually worth, or whether using them is even the smartest option.
                 </p>
