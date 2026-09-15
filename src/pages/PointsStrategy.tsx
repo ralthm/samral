@@ -25,7 +25,7 @@ const isExternal = isExternalUrl(CARD_STRATEGY_BOOKING_URL);
 function BookCTA({
   variant = "light",
   source,
-  label = `Book my Card Strategy — ${PRICE}`,
+  label = `Book my Card and Rewards Strategy — ${PRICE}`,
   className = "",
 }: {
   variant?: "light" | "dark";
@@ -83,7 +83,7 @@ function Hero() {
   return (
     <section className="bg-background">
       <div className="mx-auto max-w-[1440px] px-6 pt-16 pb-12 md:px-12 md:pt-24 md:pb-16">
-        <p className="eyebrow mb-6 text-ink/60">Personal Card Strategy</p>
+        <p className="eyebrow mb-6 text-ink/60">PERSONAL CARD AND REWARDS STRATEGY</p>
         <h1 className="font-display max-w-3xl text-4xl leading-[1.05] text-ink md:text-6xl lg:text-[72px]">
           Are you using the right cards for the way you spend?
         </h1>
@@ -92,10 +92,10 @@ function Hero() {
             <p className="font-display text-5xl leading-none text-ink md:text-6xl">{PRICE}</p>
             <p className="mt-2 text-[12px] text-ink/55">{CURRENCY_NOTE}</p>
           </div>
-          <BookCTA variant="dark" source="hero" label="Book my Card Strategy" />
+          <BookCTA variant="dark" source="hero" label="Book my Card and Rewards Strategy" />
         </div>
         <p className="mt-6 max-w-xl text-[13px] leading-relaxed text-ink/65">
-          One-to-one call &bull; Written Samral Card Strategy &bull; Personal cards only
+          One-to-one call &bull; Written Samral Card and Rewards Strategy &bull; Personal cards only
         </p>
       </div>
     </section>
@@ -116,9 +116,10 @@ function ServiceOverview() {
               makes sense.
             </p>
             <p>
-              I will review the cards you use, where you spend and what you would actually like to get
-              from your rewards. We&rsquo;ll talk it through one-to-one, and I&rsquo;ll then put together
-              a clear, written strategy showing what I think you should keep, change or reconsider.
+              I'll review your existing cards, spending patterns, points balances and travel goals, then
+              build a personalized strategy showing what to keep, what to reconsider, what to use for
+              different types of spending, which rewards currencies to prioritize, and what you should
+              change next.
             </p>
           </div>
           <div className="mt-10">
@@ -183,7 +184,7 @@ function WhatYouReceive() {
           <div className="md:col-span-5">
             <h2 className="font-display text-3xl text-ink md:text-5xl">What you receive</h2>
             <div className="mt-6">
-              <p className="text-[15px] text-ink/70">Personal Card Strategy</p>
+               <p className="text-[15px] text-ink/70">Personal Card and Rewards Strategy</p>
               <p className="mt-1 font-display text-4xl text-ink">{PRICE}</p>
               <p className="mt-2 text-[12px] text-ink/55">{CURRENCY_NOTE}</p>
             </div>
