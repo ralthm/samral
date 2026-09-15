@@ -31,14 +31,19 @@ export default function SiteFooter() {
                   Personal Card Strategy
                 </Link>
               </li>
-            </ul>
-          </div>
-          <div className="md:col-span-2">
-            <p className="eyebrow mb-4 text-background/50">Business</p>
-            <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/business" className="hover:text-background">
-                  Business Spend
+                  For business
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div className="md:col-span-3">
+            <p className="eyebrow mb-4 text-background/50">About</p>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/about" className="hover:text-background">
+                  About Samral
                 </Link>
               </li>
             </ul>
