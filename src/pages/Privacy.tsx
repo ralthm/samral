@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 
-const LAST_UPDATED = "18 July 2026";
+const LAST_UPDATED = "15 September 2026";
 
 export default function Privacy() {
   useEffect(() => {
@@ -32,6 +32,9 @@ export default function Privacy() {
 
             <div className="mt-12 space-y-10 text-[16px] leading-relaxed text-ink/85">
               <Section title="1. Who this notice applies to">
+                <p>
+                  Samral is operated by SAMRAL ADVISORY (Business Registration No. IP0632210-W), a sole proprietorship registered in Malaysia. In this notice, "Samral" refers to that business.
+                </p>
                 <p>
                   This notice applies to people who visit the Samral website, submit a form, book a call, communicate with Samral or purchase a service.
                 </p>
