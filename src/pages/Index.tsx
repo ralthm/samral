@@ -622,7 +622,7 @@ const clientResults: ClientResult[] = [
   {
     id: "synapse-seoul",
     client: {
-      name: "Thomas Mathew",
+      name: "\n",
       title: "Executive Director",
       org: "Synapse Physiotherapy",
     },
@@ -630,7 +630,7 @@ const clientResults: ClientResult[] = [
     logoAlt: "Synapse Physiotherapy",
     headline: "From unused points to two Business Class return tickets to Seoul.",
     body:
-      "Thomas had accumulated a substantial points balance without a clear strategy for using it. Samral reviewed his existing points and credit cards, identified the best way to put them to work, and built a redemption strategy around a trip he actually wanted to take.",
+      "Client had accumulated a substantial points balance without a clear strategy for using it. Samral reviewed his existing points and credit cards, identified the best way to put them to work, and built a redemption strategy around a trip he actually wanted to take.",
     outcomeLabel: "The outcome",
     outcomeLines: ["2× RETURN BUSINESS CLASS TICKETS", "Kuala Lumpur ↔ Seoul, South Korea"],
   },
