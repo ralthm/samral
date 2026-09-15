@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 
-const LAST_UPDATED = "18 July 2026";
+const LAST_UPDATED = "15 September 2026";
 
 export default function Terms() {
   useEffect(() => {
@@ -32,6 +32,9 @@ export default function Terms() {
 
             <div className="mt-12 space-y-10 text-[16px] leading-relaxed text-ink/85">
               <Section title="1. About these terms">
+                <p>
+                  Samral is operated by SAMRAL ADVISORY (Business Registration No. IP0632210-W), a sole proprietorship registered in Malaysia. In these terms, "Samral" refers to that business.
+                </p>
                 <p>
                   These terms apply when you use the Samral website, book a call with Samral or purchase a Samral service. By using the website or engaging Samral, you agree to these terms.
                 </p>
