@@ -6,7 +6,7 @@ import { track, PRICES, TRIP_PLAN_FORM_URL } from "@/lib/commerce";
 const NAV_LINKS = [
   { label: "Miles Calculator", to: "/miles-calculator" },
   { label: "Points Trip Planning", to: "/trip-planning" },
-  { label: "Card Strategy", to: "/points-strategy" },
+  { label: "Card and Rewards Strategy", to: "/points-strategy" },
   { label: "For Business", to: "/business" },
 ];
 
@@ -60,7 +60,7 @@ export default function SiteHeader({ variant = "solid" }: { variant?: "solid" | 
             onClick={() => track("trip_plan_cta_clicked", { source: "header", price_usd: PRICES.tripPlan })}
             className={ctaClass}
           >
-            Get my Points Trip Plan — US$79
+            Get my Points Trip Plan
           </a>
           <p className={`text-[10px] ${transparent ? "text-background/65" : "text-ink/50"}`}>
             One-time payment · Delivered within 2 business days
@@ -115,7 +115,7 @@ export default function SiteHeader({ variant = "solid" }: { variant?: "solid" | 
               }}
               className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-sm bg-[#fdf7eb] px-6 py-3 text-sm font-medium text-ink"
             >
-              Get my Points Trip Plan — US$79
+              Get my Points Trip Plan
             </a>
             <p className="mt-2 text-center text-[12px] text-background/55">
               One-time payment · Delivered within 2 business days
