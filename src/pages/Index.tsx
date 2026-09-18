@@ -404,25 +404,6 @@ function Services() {
           />
         </div>
 
-        <div className="mt-16 flex flex-col items-start gap-6 border-t border-border pt-10 md:flex-row md:items-center md:justify-between">
-          <p className="max-w-lg text-[15px] italic text-muted-foreground">
-             Your standard Trip Plan includes the research, recommendation and booking instructions.
-             Booking Support remains an optional add-on from {formatUsd(PRICES.bookingSupportFrom)} if
-             you&rsquo;d like additional help executing the plan. {CURRENCY_NOTE}
-          </p>
-          <div>
-            <a
-              href={TRIP_PLAN_FORM_URL}
-              onClick={() => track("trip_plan_cta_clicked", { source: "home_services_footer", price_usd: PRICES.tripPlan })}
-              className="inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
-            >
-               Get my Points Trip Plan — US$99
-            </a>
-            <p className="mt-2 text-[12px] text-muted-foreground">
-              One-time payment · Delivered within 2 business days
-            </p>
-          </div>
-        </div>
       </div>
     </section>
   );
