@@ -296,12 +296,7 @@ export default function PlanMyTrip() {
                 Samral does not book or issue airline tickets, transfer points on your behalf, or guarantee
                 award-seat availability or savings. Programme pricing and availability can change.
               </p>
-              <p>
-                Questions before purchasing?{" "}
-                <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-4 hover:text-ink">
-                  Email Samral
-                </a>.
-              </p>
+              <p>{"\n"}</p>
             </div>
           </div>
         </section>
