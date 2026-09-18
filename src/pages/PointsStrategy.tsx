@@ -43,7 +43,7 @@ function BookCTA({
       {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       className={`${base} ${styles} ${className}`}
     >
-      {label} &nbsp;&rarr;
+      {label}
     </a>
   );
 }

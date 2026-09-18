@@ -173,6 +173,7 @@ export default function PlanMyTrip() {
                 <p className="mt-2 text-[13px] text-ink/60">
                   One-time payment · Delivered within 2 business days
                 </p>
+                <p className="mt-2 text-[12px] text-ink/55">Standard scope: one round-trip for up to 2 travellers.</p>
                 <div className="mt-6">
                   <PurchaseButton source="trip_plan_primary" />
                   <p className="mt-3 text-[12px] leading-relaxed text-ink/55">

@@ -400,6 +400,7 @@ function Services() {
             best="Personal cards only. Payment and scheduling in one step."
             ctaHref="/points-strategy"
              ctaLabel="Book my Card Strategy — US$149"
+             ctaSupport="Personal cards only · Payment and scheduling in one step"
           />
         </div>
 
