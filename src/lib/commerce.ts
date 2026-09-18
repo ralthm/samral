@@ -19,7 +19,7 @@ export const PRICES = {
   bookingSupportFrom: 49,
 } as const;
 
-export const formatUsd = (n: number) => `$${n}`;
+export const formatUsd = (n: number) => `US$${n}`;
 
 export const CURRENCY_NOTE = "Local currency may be shown at checkout.";
 
