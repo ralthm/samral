@@ -12,13 +12,23 @@ import kyotoImg from "@/assets/kyoto.jpg";
 import italyImg from "@/assets/italy.jpg";
 
 const DELIVERABLES = [
-  "My recommended option — and why",
-  "A strong practical backup option",
-  "Points required + estimated taxes and fees",
-  "Which points to transfer and where",
+  "Best overall recommendation — the programme, airline and routing I’d choose",
+  "Up to 2 realistic alternatives where useful",
   "Cash vs points comparison",
-  "Recommended transfer and booking sequence",
-  "Key booking steps",
+  "Points required, estimated taxes and transfer requirements",
+  "What I’d transfer and what I’d leave untouched",
+  "Clear sequence of what to verify, transfer and book",
+  "Short personalized video walkthrough explaining the recommendation and trade-offs",
+];
+
+const QUALIFIERS = [
+  "you have a meaningful points or miles balance",
+  "you are travelling long-haul",
+  "you are booking for two or more travellers",
+  "you are considering Business or First Class",
+  "you have points across multiple programmes",
+  "you are unsure whether transferring points or paying cash is smarter",
+  "you would rather delegate the research",
 ];
 
 const STEPS = [
@@ -30,7 +40,7 @@ const STEPS = [
   {
     number: "02",
     title: "Complete your details & payment",
-    copy: "Secure payment of US$79 is handled by Stripe inside the same form. The whole form takes about five minutes.",
+    copy: "Secure payment of US$99 is handled by Stripe inside the same form. The whole form takes about five minutes.",
   },
   {
     number: "03",
@@ -105,7 +115,7 @@ function PurchaseButton({ source, light = false }: { source: string; light?: boo
         light ? "bg-background text-ink" : "bg-ink text-background"
       }`}
     >
-      Get my Points Trip Plan — US$79
+      Get my Points Trip Plan — US$99
     </a>
   );
 }
@@ -114,7 +124,7 @@ export default function PlanMyTrip() {
   useEffect(() => {
     document.title = "Points Trip Plan | Samral";
     const description =
-      "A personalised Points Trip Plan with redemption options, points requirements, estimated fees and a clear booking strategy. US$79.";
+      "A personalized Points Trip Plan with a clear recommendation, realistic alternatives and booking sequence. US$99.";
     let tag = document.querySelector('meta[name="description"]');
     if (!tag) {
       tag = document.createElement("meta");
@@ -136,8 +146,8 @@ export default function PlanMyTrip() {
                 You know where you want to go. I&rsquo;ll work out how to use your points.
               </h1>
               <p className="mt-7 max-w-[650px] text-[16px] leading-relaxed text-ink/75 md:text-lg">
-                Tell me where you want to travel and what points you have. I&rsquo;ll compare the relevant
-                programmes and redemption options and give you a clear plan for how to book.
+                You have a trip in mind. I&rsquo;ll research the realistic ways to use your points, compare
+                the trade-offs and give you a clear recommendation for what I&rsquo;d do.
               </p>
             </div>
 
@@ -159,10 +169,11 @@ export default function PlanMyTrip() {
               </div>
 
               <div className="mt-9">
-                <p className="font-display text-5xl leading-none text-ink md:text-6xl">US$79</p>
+                <p className="font-display text-5xl leading-none text-ink md:text-6xl">US$99</p>
                 <p className="mt-2 text-[13px] text-ink/60">
                   One-time payment · Delivered within 2 business days
                 </p>
+                <p className="mt-2 text-[12px] text-ink/55">Standard scope: one round-trip for up to 2 travellers.</p>
                 <div className="mt-6">
                   <PurchaseButton source="trip_plan_primary" />
                   <p className="mt-3 text-[12px] leading-relaxed text-ink/55">
@@ -199,6 +210,36 @@ export default function PlanMyTrip() {
                   </figcaption>
                 </figure>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="border-b border-border bg-background">
+          <div className="mx-auto grid max-w-[1200px] gap-8 px-5 py-14 sm:px-6 md:grid-cols-12 md:px-12 md:py-20">
+            <div className="md:col-span-4">
+              <p className="eyebrow text-clay">Who this is for</p>
+              <h2 className="mt-4 font-display text-3xl leading-[1.1] text-ink md:text-4xl">A Trip Plan is particularly useful if:</h2>
+            </div>
+            <div className="md:col-span-7 md:col-start-6">
+              <ul className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
+                {QUALIFIERS.map((item) => (
+                  <li key={item} className="flex gap-3 text-[14px] leading-relaxed text-ink/75">
+                    <span aria-hidden className="text-clay">&mdash;</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-7 border-t border-border pt-6 text-[14px] leading-relaxed text-ink/65">
+                Points Trip Planning is best suited to travelers with a meaningful points or miles balance,
+                particularly for long-haul travel, couples or families, premium-cabin trips, multiple points
+                programmes, or situations where you would rather delegate the research.
+              </p>
+              <p className="mt-4 text-[14px] leading-relaxed text-ink/65">
+                You probably don&rsquo;t need a paid Trip Plan if your trip is inexpensive and straightforward,
+                you have only a small points balance, or you already know exactly how you want to book. The{" "}
+                <a href="/miles-calculator" className="underline underline-offset-4 hover:text-ink">free Miles Calculator</a>{" "}
+                may be enough.
+              </p>
             </div>
           </div>
         </section>

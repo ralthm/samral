@@ -92,8 +92,8 @@ function Hero() {
           className="mt-8 max-w-lg text-base leading-relaxed md:text-lg"
           style={{ color: "rgba(253, 247, 235, 0.85)" }}
         >
-          I&rsquo;ll help you get 2-10x more value from your credit card points, so you can have
-          more trips worth remembering.
+          I&rsquo;ll help you work out the smartest way to use your credit card points for the trips
+          you actually want to take.
         </p>
         <details className="group mt-5 max-w-lg">
           <summary
@@ -106,11 +106,10 @@ function Hero() {
             className="mt-3 text-sm leading-relaxed"
             style={{ color: "rgba(253, 247, 235, 0.75)" }}
           >
-            The same points can be worth very different amounts depending on how they&rsquo;re used.
-            Cashback, gift cards and vouchers usually sit at the bottom of that range. Transferring
-            to an airline programme and booking a suitable flight award &mdash; particularly in a
-            premium cabin on a longer route &mdash; usually sits at the top. The work is finding
-            which end of that range your points can realistically reach.
+            The same points can unlock very different travel outcomes depending on how they&rsquo;re used.
+            The right choice depends on your destination, dates, preferred cabin, available programmes
+            and the cash alternative. The work is finding the practical option that best fits the trip
+            you actually want to take.
           </p>
         </details>
         <div className="mt-10 flex flex-wrap items-center gap-6">
@@ -119,7 +118,7 @@ function Hero() {
             onClick={() => track("trip_plan_cta_clicked", { source: "home_hero", price_usd: PRICES.tripPlan })}
             className="inline-block rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
           >
-            Get my Points Trip Plan
+            Get my Points Trip Plan — US$99
           </a>
           <a
             href="#how-it-works"
@@ -372,16 +371,16 @@ function Services() {
             price={formatUsd(PRICES.tripPlan)}
             image={svcAircraftAsset.url}
             imageAlt="Wide-body aircraft at the gate at golden hour"
-            copy="You have a trip in mind. I compare the realistic options and give you a written recommendation for the smartest way to get there with the points you already have."
+             copy="You have a trip in mind. I’ll research the realistic ways to use your points, compare the trade-offs and give you a clear recommendation for what I’d do."
             bullets={[
-              "The programme and routing I&rsquo;d book through",
-              "Points required, estimated taxes and what to transfer",
-              "Whether transferring or paying cash is smarter",
-              "A clear sequence for what to check and book",
+               "Best overall recommendation — programme, airline and routing",
+               "Up to 2 realistic alternatives where useful",
+               "Cash vs points, transfer requirements and what to leave untouched",
+               "A clear sequence, plus a personalized video walkthrough",
             ]}
             best={SHOW_DELIVERY_TIME ? `One round-trip, up to 2 travellers. ${DELIVERY_COPY}` : "One round-trip, up to 2 travellers."}
             ctaHref={TRIP_PLAN_FORM_URL}
-            ctaLabel="Get my Points Trip Plan — US$79"
+             ctaLabel="Get my Points Trip Plan — US$99"
             ctaSupport="One-time payment · Delivered within 2 business days"
           />
           <ServiceCard
@@ -391,23 +390,25 @@ function Services() {
             price={formatUsd(PRICES.cardStrategy)}
             image={svcNotebookAsset.url}
             imageAlt="Handwritten planning notes in a notebook"
-            copy="No trip in mind yet, just a sense you could be doing this better. A one-to-one call and a written strategy for your cards, spending and points."
+             copy="A personalized system for what cards to use, where to put your spending and what points to build toward."
             bullets={[
-              "A review of your current cards and balances",
-              "Which currencies to earn, and which to ignore",
-              "What to keep, change or reconsider, and why",
-              "A written Samral Card Strategy to refer back to",
+               "Review of current cards, points balances, fees and benefits",
+               "A spending-by-category card strategy",
+               "Points currencies to prioritize based on your goals",
+               "A one-page card guide and sequenced written action plan",
             ]}
             best="Personal cards only. Payment and scheduling in one step."
             ctaHref="/points-strategy"
-            ctaLabel="Book my Card Strategy"
+             ctaLabel="Book my Card Strategy — US$149"
+             ctaSupport="Personal cards only · Payment and scheduling in one step"
           />
         </div>
 
         <div className="mt-16 flex flex-col items-start gap-6 border-t border-border pt-10 md:flex-row md:items-center md:justify-between">
           <p className="max-w-lg text-[15px] italic text-muted-foreground">
-            Booking Support is available as an optional add-on from {formatUsd(PRICES.bookingSupportFrom)} if
-            you&rsquo;d prefer help executing your Trip Plan. {CURRENCY_NOTE}
+             Your standard Trip Plan includes the research, recommendation and booking instructions.
+             Booking Support remains an optional add-on from {formatUsd(PRICES.bookingSupportFrom)} if
+             you&rsquo;d like additional help executing the plan. {CURRENCY_NOTE}
           </p>
           <div>
             <a
@@ -415,7 +416,7 @@ function Services() {
               onClick={() => track("trip_plan_cta_clicked", { source: "home_services_footer", price_usd: PRICES.tripPlan })}
               className="inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5"
             >
-              Get my Points Trip Plan 
+               Get my Points Trip Plan — US$99
             </a>
             <p className="mt-2 text-[12px] text-muted-foreground">
               One-time payment · Delivered within 2 business days
@@ -533,17 +534,13 @@ function Contact() {
             className="font-display text-5xl leading-[1.02] md:text-7xl lg:text-[96px]"
             style={{ color: "#fdf7eb" }}
           >
-            Ready to use your points <br />
-            <em className="italic" style={{ color: "#f0d5b3" }}>
-              properly?
-            </em>
+             Have the points? Let&rsquo;s work out what they&rsquo;re actually worth for your trip.
           </h2>
           <div
             className="mt-8 max-w-xl text-lg leading-relaxed"
             style={{ color: "rgba(253, 247, 235, 0.8)" }}
           >
-            Start with the free Miles Calculator to see what your points can reach. When you&rsquo;re
-            ready, get a written plan for one specific trip, or a strategy for your whole setup.
+             Choose a clear recommendation for one trip, or build a better system for your cards and rewards.
           </div>
           <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-4">
             <a
@@ -551,20 +548,19 @@ function Contact() {
               onClick={() => track("trip_plan_cta_clicked", { source: "home_final", price_usd: PRICES.tripPlan })}
               className="rounded-sm bg-[#fdf7eb] px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
             >
-              Get my Points Trip Plan — US$79
+               Get my Points Trip Plan — US$99
             </a>
             <a
               href="/points-strategy"
               className="rounded-sm border px-8 py-4 text-sm font-medium transition-colors hover:bg-[#fdf7eb] hover:text-ink"
               style={{ borderColor: "rgba(253, 247, 235, 0.6)", color: "#fdf7eb" }}
             >
-              Book my Card Strategy &mdash; {formatUsd(PRICES.cardStrategy)}
+               Book my Card Strategy — US$149
             </a>
           </div>
           <p className="mt-5 text-[12px]" style={{ color: "rgba(253, 247, 235, 0.55)" }}>
-            One-time payment · Delivered within 2 business days. {CURRENCY_NOTE}{" "}
             <Link to="/miles-calculator" className="underline underline-offset-4">
-              Not sure yet? Try the free Miles Calculator.
+               Not sure you need either? Start with the free Miles Calculator.
             </Link>
           </p>
         </div>

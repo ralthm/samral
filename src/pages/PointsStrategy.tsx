@@ -25,7 +25,7 @@ const isExternal = isExternalUrl(CARD_STRATEGY_BOOKING_URL);
 function BookCTA({
   variant = "light",
   source,
-  label = `Book my Card and Rewards Strategy — ${PRICE}`,
+  label = `Book my Card Strategy — US$${PRICES.cardStrategy}`,
   className = "",
 }: {
   variant?: "light" | "dark";
@@ -43,7 +43,7 @@ function BookCTA({
       {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       className={`${base} ${styles} ${className}`}
     >
-      {label} &nbsp;&rarr;
+      {label}
     </a>
   );
 }
@@ -52,7 +52,7 @@ export default function PointsStrategy() {
   useEffect(() => {
     document.title = "Personal Card Strategy | Samral";
     const desc =
-      "A personalised review of your cards, spending and points, with a written Samral Card Strategy and a one-to-one call. USD $99.";
+      "A personalized card and rewards system with a written action plan and private walkthrough. US$149.";
     let tag = document.querySelector('meta[name="description"]');
     if (!tag) {
       tag = document.createElement("meta");
@@ -92,10 +92,10 @@ function Hero() {
             <p className="font-display text-5xl leading-none text-ink md:text-6xl">{PRICE}</p>
             <p className="mt-2 text-[12px] text-ink/55">{CURRENCY_NOTE}</p>
           </div>
-          <BookCTA variant="dark" source="hero" label="Book my Card and Rewards Strategy" />
+          <BookCTA variant="dark" source="hero" />
         </div>
         <p className="mt-6 max-w-xl text-[13px] leading-relaxed text-ink/65">
-          One-to-one call &bull; Written Samral Card and Rewards Strategy &bull; Personal cards only
+          Personal cards only &middot; Payment and scheduling in one step
         </p>
       </div>
     </section>
@@ -116,17 +116,15 @@ function ServiceOverview() {
               makes sense.
             </p>
             <p>
-              I'll review your existing cards, spending patterns, points balances and travel goals, then
-              build a personalized strategy showing what to keep, what to reconsider, what to use for
-              different types of spending, which rewards currencies to prioritize, and what you should
-              change next.
+               A personalized system for what cards to use, where to put your spending and what points to
+               build toward.
             </p>
           </div>
           <div className="mt-10">
             <BookCTA variant="dark" source="overview" />
           </div>
           <p className="mt-4 text-[13px] italic text-muted-foreground">
-            Payment and scheduling happen together at booking. {CURRENCY_NOTE}
+             Personal cards only · Payment and scheduling in one step
           </p>
         </div>
         <div className="md:col-span-5">
@@ -149,32 +147,15 @@ function ServiceOverview() {
 
 function WhatYouReceive() {
   const items = [
-    {
-      title: "A review of your current cards",
-      text: "I will look at what each card earns, its annual fee, its useful benefits and whether it still has a place in your setup.",
-    },
-    {
-      title: "A review of your spending",
-      text: "I will consider your main spending categories and whether you are using suitable cards for them.",
-    },
-    {
-      title: "A one-to-one strategy call",
-      text: "We go through your setup together so I understand what you actually want your rewards to do.",
-    },
-    {
-      title: "Clear recommendations",
-      text: "Which cards to keep, reconsider or potentially add, together with the reasons behind each recommendation.",
-    },
-    {
-      title: "A rewards direction",
-      text: "Whether travel points, cashback or a mixture of both makes the most sense for you, and which currencies to focus on.",
-    },
-    {
-      title: "A written Samral Card Strategy",
-      text: `Everything brought together in a personal written plan you can refer back to${
-        SHOW_DELIVERY_TIME ? `, delivered within ${DELIVERY_TIME} of our call` : ""
-      }.`,
-    },
+    "Review of current cards and points balances",
+    "Keep, change or reconsider recommendations",
+    "Spending-by-category card strategy",
+    "Points currencies to prioritize based on goals",
+    "Annual fee and relevant benefit review",
+    "Simple one-page ‘Which card do I use?’ guide",
+    "Written, sequenced action plan",
+    "45-minute private walkthrough",
+    "14 days of reasonable follow-up questions relating to the strategy",
   ];
 
   return (
@@ -191,10 +172,10 @@ function WhatYouReceive() {
           </div>
           <div className="md:col-span-7">
             <ul className="space-y-8">
-              {items.map((item) => (
-                <li key={item.title}>
-                  <h3 className="font-display text-xl text-ink md:text-2xl">{item.title}</h3>
-                  <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-ink/80">{item.text}</p>
+               {items.map((item) => (
+                 <li key={item} className="flex gap-3 text-[15px] leading-relaxed text-ink/80">
+                   <span aria-hidden className="text-clay">&mdash;</span>
+                   <span>{item}</span>
                 </li>
               ))}
             </ul>
@@ -343,7 +324,7 @@ function FAQ() {
     },
     {
       q: "Can't AI do this for me?",
-      a: "AI can be a very useful starting point. It can help compare cards, explain rewards programmes and generate ideas much faster than doing everything manually. I use it as part of the research process too.\n\nBut I would not rely on AI alone for decisions involving large points balances. Card terms, transfer rates, programme rules and availability can change, and AI can still present outdated or incorrect information with confidence.\n\nThere is also a difference between receiving a list of possible options and knowing which one genuinely makes sense for your spending, travel plans and tolerance for complexity. Some points transfers cannot be reversed, so checking the details before moving a large balance matters.\n\nSamral is for people who would rather have a human research the options, explain the trade-offs and guide them through the decision.\n\nIf you enjoy doing the research yourself with AI and feel confident checking every detail independently, you may not need this service—and that is completely fine.",
+      a: "Yes. AI can be very useful for comparing cards, rewards programmes and travel options, and I use it as part of my research too.\n\nIf you enjoy doing the research yourself, checking the details and deciding between the options, you may not need Samral.\n\nSamral is for busy high spenders and business owners who would rather delegate that work. I research your specific situation, compare the realistic options, verify the important details and give you a clear recommendation for what I’d do and why.\n\nAI is one of the tools that helps me do that faster. You still get a human responsible for the research, judgment and recommendation.",
     },
   ];
 
@@ -393,7 +374,7 @@ function FinalCTA() {
           <div className="mt-10">
             <BookCTA variant="light" source="final_cta" />
           </div>
-          <p className="mt-4 text-[12px] text-background/55">{CURRENCY_NOTE}</p>
+          <p className="mt-4 text-[12px] text-background/55">Personal cards only · Payment and scheduling in one step</p>
         </div>
       </div>
     </section>

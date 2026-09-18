@@ -28,7 +28,7 @@ export default function SiteFooter() {
               </li>
               <li>
                 <Link to="/points-strategy" className="hover:text-background">
-                  Personal Card Strategy
+                  Personal Card and Rewards Strategy
                 </Link>
               </li>
               <li>

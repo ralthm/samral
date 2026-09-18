@@ -14,12 +14,12 @@ const env = import.meta.env as Record<string, string | undefined>;
 /* ---------- Prices (USD) ---------- */
 
 export const PRICES = {
-  tripPlan: 79,
-  cardStrategy: 99,
+  tripPlan: 99,
+  cardStrategy: 149,
   bookingSupportFrom: 49,
 } as const;
 
-export const formatUsd = (n: number) => `$${n}`;
+export const formatUsd = (n: number) => `US$${n}`;
 
 export const CURRENCY_NOTE = "Local currency may be shown at checkout.";
 

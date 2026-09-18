@@ -357,7 +357,7 @@ export default function ArticleLayout({ article }: { article: Article }) {
                 }
                 className="mt-7 inline-block rounded-sm bg-ink px-8 py-4 text-sm font-medium text-background transition-transform hover:-translate-y-0.5 hover:bg-ink/90"
               >
-                Get my Points Trip Plan — US$79
+                Get my Points Trip Plan — US$99
               </a>
               <p className="mt-3 text-[12px] text-ink/55">
                 One-time payment · Delivered within 2 business days
