@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero.jpg";
 import cabinImage from "@/assets/cabin.jpg";
-import samuelImage from "@/assets/samral-founder-v2.png.asset.json";
 import synapseLogo from "@/assets/synapse-logo.png.asset.json";
 import cpfLogo from "@/assets/cpf-logo.png.asset.json";
 import SiteHeader from "@/components/SiteHeader";
@@ -425,10 +424,7 @@ function AboutSamuel() {
   return (
     <section className="bg-sand">
       <div className="mx-auto grid max-w-[1440px] items-center gap-10 px-6 py-20 md:grid-cols-12 md:px-12 md:py-28">
-        <div className="md:col-span-4 md:col-start-2">
-          <img src={samuelImage.url} alt="Samuel, founder of Samral" className="aspect-[4/5] w-full max-w-sm object-cover" loading="lazy" />
-        </div>
-        <div className="md:col-span-5 md:col-start-7">
+        <div className="md:col-span-7 md:col-start-2">
           <p className="eyebrow text-clay">Who&rsquo;s behind Samral</p>
           <h2 className="mt-5 font-display text-4xl text-ink md:text-6xl">Hi, I&rsquo;m Samuel.</h2>
           <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-ink/80">
