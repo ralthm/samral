@@ -14,8 +14,8 @@ const env = import.meta.env as Record<string, string | undefined>;
 /* ---------- Prices (USD) ---------- */
 
 export const PRICES = {
-  tripPlan: 79,
-  cardStrategy: 99,
+  tripPlan: 99,
+  cardStrategy: 149,
   bookingSupportFrom: 49,
 } as const;
 

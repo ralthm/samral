@@ -19,7 +19,7 @@ function bookCall(source: string) {
   window.open(BUSINESS_CALL_URL, "_blank", "noopener,noreferrer");
 }
 
-function CTAButton({ source, label = "Discuss Your Business Spend" }: { source: string; label?: string }) {
+function CTAButton({ source, label = "Request a Business Spend Review" }: { source: string; label?: string }) {
   return (
     <button
       type="button"
@@ -79,8 +79,9 @@ function Hero() {
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <CTAButton source="hero" />
-            <span className="text-[12px] text-ink/55">
-              Starts with a conversation. No fixed package, no price list.
+            <span className="max-w-md text-[12px] leading-relaxed text-ink/55">
+              Start with a short conversation about how your business spends and pays. If I don&rsquo;t think
+              there&rsquo;s enough opportunity to justify a review, I&rsquo;ll tell you upfront.
             </span>
           </div>
         </div>
@@ -484,8 +485,8 @@ function FinalCTA() {
           Start with a conversation, not a proposal.
         </h2>
         <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-background/70">
-          Scope and usefulness depend on how your company spends. The first step is a short
-          conversation to see whether there is anything worth reviewing at all.
+          Start with a short conversation about how your business spends and pays. If I don&rsquo;t think
+          there&rsquo;s enough opportunity to justify a review, I&rsquo;ll tell you upfront.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
           <button
@@ -493,7 +494,7 @@ function FinalCTA() {
             onClick={() => bookCall("footer")}
             className="inline-flex items-center justify-center rounded-sm bg-background px-8 py-4 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
           >
-            Discuss Your Business Spend
+            Request a Business Spend Review
           </button>
           <a
             href="mailto:samuel@samral.com?subject=Business%20spend%20review"

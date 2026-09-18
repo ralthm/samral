@@ -89,7 +89,7 @@ export function AllianceInfo({ programmeId, programmeName }: Props) {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-sm border border-ink bg-ink px-4 py-2 text-[12px] font-medium text-background hover:bg-ink/90"
             >
-              Get my Points Trip Plan — US$79
+              Get my Points Trip Plan — US$99
             </a>
             <p className="mt-2 text-[11px] text-ink/60">
               One-time payment · Delivered within 2 business days
