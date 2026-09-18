@@ -12,7 +12,7 @@ import kyotoImg from "@/assets/kyoto.jpg";
 import italyImg from "@/assets/italy.jpg";
 
 const DELIVERABLES = [
-  "Best overall recommendation — the programme, airline and routing I’d choose",
+  "Best overall recommendation (the programme, airline and routing I’d choose)",
   "Up to 2 realistic alternatives where useful",
   "Cash vs points comparison",
   "Points required, estimated taxes and transfer requirements",
@@ -162,9 +162,11 @@ export default function PlanMyTrip() {
                 ))}
               </ul>
               <div className="mt-5 border-l-2 border-clay pl-4">
-                <p className="text-[13px] font-medium text-ink">Included: Transfer-Safely Checklist</p>
+                <p className="text-[13px] font-medium text-ink">
+                  {"\n"}
+                </p>
                 <p className="mt-1 text-[12px] leading-relaxed text-ink/60">
-                  A simple checklist of what to reconfirm before making an irreversible points transfer — including availability, transfer requirements, timing, taxes and the correct booking sequence.
+                  {"\n"}
                 </p>
               </div>
 
