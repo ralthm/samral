@@ -73,7 +73,7 @@ const FAQ = [
   },
   {
     question: "Do you book the flights for me?",
-    answer: "No. Samral provides the analysis, recommendation and booking strategy. Samral does not issue tickets, transfer points on your behalf or make bookings for you.",
+    answer: "No. Samral provides the analysis, recommendation and booking strategy through a video walkthrough. Samral does not issue tickets, transfer points on your behalf or make bookings for you.",
   },
   {
     question: "What if award availability changes?",
