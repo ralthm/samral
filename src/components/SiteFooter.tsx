@@ -50,7 +50,7 @@ export default function SiteFooter() {
           </div>
           <div className="md:col-span-2">
             <p className="eyebrow mb-4 text-background/50">Contact</p>
-            <a href="mailto:samuel@samral.com" className="text-sm hover:text-background">
+            <a href="mailto:samuel@samral.com" className="break-all text-sm hover:text-background">
               samuel@samral.com
             </a>
           </div>
