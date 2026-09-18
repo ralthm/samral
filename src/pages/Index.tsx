@@ -373,7 +373,7 @@ function Services() {
             imageAlt="Wide-body aircraft at the gate at golden hour"
              copy="You have a trip in mind. I’ll research the realistic ways to use your points, compare the trade-offs and give you a clear recommendation for what I’d do."
             bullets={[
-               "Best overall recommendation — programme, airline and routing",
+               "Best overall recommendation (programme, airline and routing)",
                "Up to 2 realistic alternatives where useful",
                "Cash vs points, transfer requirements and what to leave untouched",
                "A clear sequence, plus a personalized video walkthrough",
