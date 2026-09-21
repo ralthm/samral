@@ -455,7 +455,7 @@ function FinalCta() {
             onClick={() => track("trip_plan_cta_clicked", { source: "home_final", price_usd: PRICES.tripPlan })}
             className="inline-flex min-h-12 items-center rounded-sm bg-background px-7 py-3 text-sm font-medium text-ink"
           >
-            Get my Points Trip Plan — US$99
+            Get my Points Trip Plan 
           </a>
           <Link to="/points-strategy" className="inline-flex min-h-12 items-center rounded-sm border border-background/60 px-7 py-3 text-sm font-medium text-background transition-colors hover:bg-background hover:text-ink">
             Book my Card Strategy — US$149
