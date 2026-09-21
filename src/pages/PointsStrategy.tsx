@@ -87,12 +87,9 @@ function Hero() {
         <h1 className="font-display max-w-3xl text-4xl leading-[1.05] text-ink md:text-6xl lg:text-[72px]">
           Are you using the right cards for the way you spend?
         </h1>
-        <div className="mt-10 flex flex-wrap items-end gap-x-8 gap-y-4">
-          <div>
-            <p className="font-display text-5xl leading-none text-ink md:text-6xl">{PRICE}</p>
-            <p className="mt-2 text-[12px] text-ink/55">{CURRENCY_NOTE}</p>
-          </div>
-          <BookCTA variant="dark" source="hero" />
+        <div className="mt-10">
+          <p className="font-display text-5xl leading-none text-ink md:text-6xl">{PRICE}</p>
+          <p className="mt-2 text-[12px] text-ink/55">{CURRENCY_NOTE}</p>
         </div>
         <p className="mt-6 max-w-xl text-[13px] leading-relaxed text-ink/65">
           Personal cards only &middot; Payment and scheduling in one step
