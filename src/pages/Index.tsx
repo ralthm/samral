@@ -81,7 +81,7 @@ function Hero() {
             onClick={() => track("trip_plan_cta_clicked", { source: "home_hero", price_usd: PRICES.tripPlan })}
             className="inline-flex min-h-12 items-center rounded-sm bg-background px-7 py-3 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
           >
-            Get my Points Trip Plan — US$99
+            Get my Points Trip Plan 
           </a>
           <a href="#how-it-works" className="py-3 text-sm text-background/85 underline underline-offset-4 transition-opacity hover:opacity-70">
             See how it works
@@ -213,7 +213,7 @@ const services = [
     ],
     scope: SHOW_DELIVERY_TIME ? `One round-trip, up to 2 travellers. ${DELIVERY_COPY}` : "One round-trip, up to 2 travellers.",
     href: TRIP_PLAN_FORM_URL,
-    label: "Get my Points Trip Plan — US$99",
+    label: "Get my Points Trip Plan ",
     support: "One-time payment · Delivered within 2 business days",
     source: "home_services",
   },
@@ -230,7 +230,7 @@ const services = [
     ],
     scope: "Personal cards only. Payment and scheduling in one step.",
     href: "/points-strategy",
-    label: "Book my Card Strategy — US$149",
+    label: "Book my Card Strategy ",
     support: "Personal cards only · Payment and scheduling in one step",
   },
 ];
