@@ -25,7 +25,7 @@ const isExternal = isExternalUrl(CARD_STRATEGY_BOOKING_URL);
 function BookCTA({
   variant = "light",
   source,
-  label = `Book my Card Strategy — US$${PRICES.cardStrategy}`,
+  label = "Book my Card Strategy",
   className = "",
 }: {
   variant?: "light" | "dark";
