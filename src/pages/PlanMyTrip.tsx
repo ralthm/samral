@@ -115,7 +115,7 @@ function PurchaseButton({ source, light = false }: { source: string; light?: boo
         light ? "bg-background text-ink" : "bg-ink text-background"
       }`}
     >
-      Get my Points Trip Plan — US$99
+      Get my Points Trip Plan
     </a>
   );
 }
