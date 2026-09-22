@@ -6,7 +6,7 @@ import cabinImage from "@/assets/cabin.jpg";
 import notebookImage from "@/assets/notebook.jpg";
 import italyImage from "@/assets/italy.jpg";
 import kyotoImage from "@/assets/kyoto.jpg";
-import swissAlpsImage from "@/assets/swiss-alps.jpg";
+import maldivesImage from "@/assets/maldives.jpg";
 import synapseLogo from "@/assets/synapse-logo.png.asset.json";
 import cpfLogo from "@/assets/cpf-logo.png.asset.json";
 import SiteHeader from "@/components/SiteHeader";
@@ -107,7 +107,7 @@ const mosaicItems = [
   { title: "Card strategy", sub: "Know which cards deserve your spending.", image: notebookImage, to: "/points-strategy", position: "center" },
   { title: "Points trip planning", sub: "Make the trip you want from the points you have.", image: cabinImage, to: "/trip-planning", position: "center" },
   { title: "Payments & FX", sub: "Look beyond the headline rate.", image: italyImage, to: "/business", position: "center" },
-  { title: "Business spend", sub: "Find value in what your business already pays.", image: swissAlpsImage, to: "/business", position: "center" },
+  { title: "Business spend", sub: "Find value in what your business already pays.", image: maldivesImage, to: "/business", position: "center" },
   { title: "Miles calculator", sub: "See what your bank points can become.", image: kyotoImage, to: "/miles-calculator", position: "center" },
 ];
 
