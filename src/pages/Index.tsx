@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { ArrowUpRight } from "lucide-react";
 import heroImage from "@/assets/hero.jpg";
 import cabinImage from "@/assets/cabin.jpg";
+import notebookImage from "@/assets/notebook.jpg";
+import italyImage from "@/assets/italy.jpg";
+import kyotoImage from "@/assets/kyoto.jpg";
+import swissAlpsImage from "@/assets/swiss-alps.jpg";
 import synapseLogo from "@/assets/synapse-logo.png.asset.json";
 import cpfLogo from "@/assets/cpf-logo.png.asset.json";
 import SiteHeader from "@/components/SiteHeader";
@@ -43,6 +48,8 @@ export default function Home() {
       <SiteHeader variant="transparent" />
       <main>
         <Hero />
+        <EditorialIntro />
+        <ServiceMosaic />
         <HowItWorks />
         <ClientResults />
         <Services />
@@ -58,36 +65,71 @@ export default function Home() {
 
 function Hero() {
   return (
-    <section className="relative flex min-h-[680px] h-[92vh] w-full items-end overflow-hidden">
+    <section className="samral-editorial-hero">
       <img
         src={heroImage}
         alt="View from an airplane window at golden hour"
-        className="absolute inset-0 h-full w-full object-cover"
+        className="samral-editorial-hero__image"
         loading="eager"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-ink/60 via-ink/15 to-ink/80" />
-      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 pb-16 md:px-12 md:pb-24">
-        <p className="eyebrow mb-5 text-background/85">SMARTER REWARDS. BETTER TRAVEL.</p>
-        <h1 className="font-display max-w-[15ch] text-5xl leading-[1.02] text-background md:text-7xl lg:text-[96px]">
-          You have the points.<br />
-          <em className="italic text-secondary">Let&rsquo;s put them to good use.</em>
-        </h1>
-        <p className="mt-7 max-w-lg text-base leading-relaxed text-background/85 md:text-lg">
-          I&rsquo;ll help you work out the smartest way to use your credit card points for the trips you actually want to take.
-        </p>
-        <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
-          <a
-            href={TRIP_PLAN_FORM_URL}
-            onClick={() => track("trip_plan_cta_clicked", { source: "home_hero", price_usd: PRICES.tripPlan })}
-            className="inline-flex min-h-12 items-center rounded-sm bg-background px-7 py-3 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
-          >
-            Get my Points Trip Plan 
-          </a>
-          <a href="#how-it-works" className="py-3 text-sm text-background/85 underline underline-offset-4 transition-opacity hover:opacity-70">
-            See how it works
-          </a>
+      <div className="samral-editorial-hero__shade" />
+      <div className="samral-editorial-hero__content">
+        <p className="samral-editorial-hero__eyebrow">SAMRAL · SPEND WELL. GO FURTHER.</p>
+        <h1>More value from<br />the way you spend,<br />pay and travel.</h1>
+        <p>Personal advice for turning everyday spending and unused rewards into better decisions and better journeys.</p>
+        <a href="#samral-services" className="samral-editorial-hero__link">Explore what we do <ArrowUpRight size={19} aria-hidden="true" /></a>
+      </div>
+    </section>
+  );
+}
+
+function EditorialIntro() {
+  return (
+    <section className="samral-editorial-intro">
+      <div className="samral-editorial-intro__inner">
+        <div>
+          <p className="samral-label">A DIFFERENT WAY TO LOOK AT SPENDING</p>
+          <h2>Your money is already moving.<br />Make more of it.</h2>
         </div>
-        <p className="mt-3 text-xs text-background/70">One-time payment · Delivered within 2 business days</p>
+        <div className="samral-editorial-intro__right">
+          <p>Samral studies the choices behind cards, payments, rewards and travel. We help you see what your current setup can do, where value is going unused and what to do next.</p>
+          <div className="samral-editorial-intro__actions">
+            <Link to="/trip-planning" className="samral-pill-button">For individuals <ArrowUpRight size={17} /></Link>
+            <Link to="/business" className="samral-text-link">For business owners <ArrowUpRight size={17} /></Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const mosaicItems = [
+  { title: "Card strategy", sub: "Know which cards deserve your spending.", image: notebookImage, to: "/points-strategy", position: "center" },
+  { title: "Points trip planning", sub: "Make the trip you want from the points you have.", image: cabinImage, to: "/trip-planning", position: "center" },
+  { title: "Payments & FX", sub: "Look beyond the headline rate.", image: italyImage, to: "/business", position: "center" },
+  { title: "Business spend", sub: "Find value in what your business already pays.", image: swissAlpsImage, to: "/business", position: "center" },
+  { title: "Miles calculator", sub: "See what your bank points can become.", image: kyotoImage, to: "/miles-calculator", position: "center" },
+];
+
+function ServiceMosaic() {
+  return (
+    <section id="samral-services" className="samral-mosaic-section">
+      <div className="samral-mosaic-section__heading">
+        <div>
+          <p className="samral-label">WHAT WE DO</p>
+          <h2>Five ways to see<br />more possibility.</h2>
+        </div>
+        <Link to="/trip-planning" className="samral-pill-button">Explore services <ArrowUpRight size={17} /></Link>
+      </div>
+      <div className="samral-mosaic">
+        {mosaicItems.map((item, index) => (
+          <Link key={item.title} to={item.to} className={`samral-mosaic__card samral-mosaic__card--${index + 1}`} aria-label={`${item.title}: ${item.sub}`}>
+            <img src={item.image} alt="" loading="lazy" style={{ objectPosition: item.position }} />
+            <span className="samral-mosaic__gradient" aria-hidden="true" />
+            <span className="samral-mosaic__text"><strong>{item.title}</strong><small>{item.sub}</small></span>
+            <span className="samral-mosaic__arrow" aria-hidden="true"><ArrowUpRight size={24} strokeWidth={1.5} /></span>
+          </Link>
+        ))}
       </div>
     </section>
   );
