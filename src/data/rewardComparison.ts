@@ -84,7 +84,7 @@ export function transferForCard(cardId: string, programmeId: string) {
 export function earningUnit(cardId: string) {
   const card = cards.find(c => c.id === cardId);
   if (!card || isDirectEarnCard(card)) return "airline miles";
-  return getRewardCurrencyForCard(card);
+  return getRewardCurrencyForCard(card)?.currencyName ?? "bank points";
 }
 
 export function comparisonTargets(country: ComparisonCountry, city: string, cabin: "Economy" | "Business", programmeId: string): RedemptionTarget[] {
