@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { cashbackName, CASHBACK_CATEGORIES, type CashbackProduct } from "@/data/cashbackCards";
@@ -6,7 +7,7 @@ import { getCardById } from "@/data/milesCalculator";
 import { usableMilesTerms, transferForCard, earningUnit } from "@/data/rewardComparison";
 import { getCountryForCard } from "@/data/milesCalculator";
 
-export default function ComparisonCardDetails({ cashback, cardId, programme }: { cashback?: CashbackProduct; cardId?: string; programme?: string }) {
+export default function ComparisonCardDetails({ cashback, cardId, programme, children }: { cashback?: CashbackProduct; cardId?: string; programme?: string; children?: ReactNode }) {
   const card = cardId ? getCardById(cardId) : undefined;
   const country = card ? getCountryForCard(card) : undefined;
   const terms = cardId && (country === "SG" || country === "MY") ? usableMilesTerms(cardId, country) : undefined;
@@ -29,6 +30,7 @@ export default function ComparisonCardDetails({ cashback, cardId, programme }: {
           {terms && [terms.sourceUrl, ...(terms.sourceUrls ?? [])].map((url, i) => <a key={url} href={url} target="_blank" rel="noreferrer" className="block break-words underline">Official miles issuer source {i + 1}</a>)}
           {transfer && <><p>Published conversion: {transfer.bankPointsPerBlock} bank points → {transfer.partnerPointsPerBlock} partner miles. Checked {transfer.verifiedOn}. {transfer.notes}</p><a href={transfer.sourceUrl} target="_blank" rel="noreferrer" className="block underline">Transfer source</a></>}
         </>}
+        {children}
       </div>
     </DialogContent>
   </Dialog>;
