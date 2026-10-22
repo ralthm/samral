@@ -33,6 +33,12 @@ describe("cashback vs miles brief scenarios", () => {
 });
 
 describe("comparison boundaries", () => {
+  it("uses issuer-evaluated gross cashback and deducts its fee only once", () => {
+    const r = compareRewards(scenario({ cashbackGrossAnnualOverride: 444, cashbackAnnualFee: 196.2 }));
+    expect(r.grossCashback).toBe(444);
+    expect(r.netCashback).toBe(247.8);
+    expect(r.breakEvenCents).toBeCloseTo(247.8 / 50400 * 100, 8);
+  });
   it("includes annual fees and a single transfer fee in break-even", () => {
     const r = compareRewards(scenario({ cashbackAnnualFee: 100, milesAnnualFee: 200, annualTransferFee: 25 }));
     expect(r.netCashback).toBe(512);

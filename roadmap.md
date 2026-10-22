@@ -1,8 +1,9 @@
 # Cashback vs Miles Calculator
-- [ ] Audit reusable records and official issuer cashback/earning terms.
-- [ ] Add searchable bank-grouped cards and spending-profile comparison modes.
-- [ ] Apply verified conditional rules and rank supported alternatives transparently.
-- [ ] Test caps, thresholds, exclusions and categories; verify existing calculator safeguards.
+- [x] Audit reusable records and official issuer cashback/earning terms.
+- [x] Add searchable bank-grouped cards and spending-profile comparison modes.
+- [x] Apply verified conditional rules and rank supported alternatives transparently.
+- [x] Test caps, thresholds, exclusions and categories; verify existing calculator safeguards.
+- [ ] Complete category-bonus coverage across DBS, HSBC, OCBC 365 and Maybank, Malaysia issuer coverage, and actual miles-card rankings — blocked on complete accessible issuer evidence and dated qualification models; never rank partial records.
 - [x] Simplify primary inputs and retain all advanced controls.
 - [x] Add labelled destination examples and automatic sourced award requirements.
 - [x] Run mathematical regressions and verify immediate results and quote overrides.
@@ -12,6 +13,9 @@
 - [x] Document assumptions and first-version limitations.
 
 ## Verification and limitations
+- Actual-card extension: bank-grouped search covers seven Singapore issuers. Complete principal-card ongoing cashback terms enabled for UOB Absolute (including 0.3% reduced categories), SC Simply Cash, Citi Cash Back+ and OCBC INFINITY. Other products explicitly await review, not calculation. Monthly-total transaction-rounding approximations, standard ongoing fees and payout restrictions are disclosed. Malaysia retains manual mode using the same evaluator; no verified Malaysian spending records claimed.
+- Discovery ranks supported cashback alternatives against the current card with confirmed eligible spending; reduced transactions are not silently treated as eligible by other issuers. Actual miles alternatives are withheld: earning/transfer-fee evidence is incomplete. Existing IDs, transfer rules, destination examples and payment workflows are unchanged.
+- Browser checked actual SC/Citi/UOB values, stronger alternative, reduced rates, exclusions, actual-quote cashback winner, unknown-card safeguard, country reset and original calculator route. No runtime errors or horizontal overflow at 1280/638/390 widths. Targeted existing/new regression tests pass.
 - Refinement: 53 targeted tests pass. All twelve country/destination defaults show immediate estimates; actual low-price quotes, cashback caps and unknown-card safeguards checked in the browser. Desktop, current-width and phone layouts have no horizontal overflow or runtime errors. Calculation engine unchanged.
 - All destination fare/tax presets are explicitly hypothetical, not historical prices. Published exact award mileage is reused; card-spending terms remain unverified so primary choices are illustrative, with the existing card registry available in advanced controls.
 - New comparison: 25 tests pass. Targeted new/existing coverage: 145 tests pass. Desktop and phone flows checked with actual user-entered Singapore and Malaysia scenarios; existing Enrich balance calculation and Tally/Cal.com links verified.
