@@ -1,4 +1,6 @@
 # Cashback vs Miles Calculator
+- [ ] Add optional paid/waived/unknown annual-fee scenarios and transparent reward breakdowns without changing default inputs.
+- [ ] Add published-only theoretical annual economy flight coverage and regression/browser checks.
 - [x] Verify usable miles-card rules from official issuer sources and separate unsupported cards into manual entry.
 - [x] Make the miles picker compact and scrollable; verify named-card comparisons, sources and existing calculator regressions.
 - [x] Simplify the initial screen to four inputs, immediate estimates and compact disclosures.
