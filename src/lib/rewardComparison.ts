@@ -102,9 +102,8 @@ export function compareRewards(input: RewardComparisonInput) {
     cashbackMonthly = percentReward(eligible, input.cashbackFallbackPercent ?? 0);
   } else if (input.cashbackMonthlyCap !== undefined) {
     const cap = nonnegative(input.cashbackMonthlyCap);
-    // Cap applies to the bonus uplift; base cashback remains on all spending.
-    const base = percentReward(eligible, input.cashbackFallbackPercent ?? 0);
-    cashbackMonthly = Decimal.min(Decimal.max(0, cashbackMonthly.minus(base)), cap).plus(base);
+    // The main field is a total monthly cashback cap, not a bonus-only cap.
+    cashbackMonthly = Decimal.min(cashbackMonthly, cap);
   }
   cashbackMonthly = cashbackMonthly.toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
   let cashbackQuarterly = cashbackMonthly.mul(3);
@@ -124,7 +123,8 @@ export function compareRewards(input: RewardComparisonInput) {
   }
   const milesFees = nonnegative(input.milesAnnualFee).plus(transferFee);
   const valid = input.cashFare !== undefined && input.awardTaxes !== undefined && (input.awardMiles ?? 0) > 0
-    && input.cashFare >= 0 && input.awardTaxes >= 0 && !invalidCategories;
+    && input.cashFare >= 0 && input.awardTaxes >= 0 && !invalidCategories
+    && nonnegative(input.excludedMonthlySpend).lte(nonnegative(input.monthlySpend));
   const valuePerMile = valid ? Decimal.max(0, d(input.cashFare).minus(d(input.awardTaxes))).div(d(input.awardMiles)) : null;
   const grossMilesValue = valuePerMile ? annualMiles.mul(valuePerMile) : null;
   const netMilesValue = grossMilesValue?.minus(milesFees) ?? null;

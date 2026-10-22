@@ -44,6 +44,12 @@ describe("comparison boundaries", () => {
     expect(compareRewards(scenario({ excludedMonthlySpend: 1000 })).grossCashback).toBe(408);
   });
   it("applies quarterly caps per quarter", () => expect(compareRewards(scenario({ cashbackQuarterlyCap: 100 })).grossCashback).toBe(400));
+  it("never exceeds the total monthly cap even with a fallback rate", () => {
+    expect(compareRewards(scenario({ cashbackPercent: 5, cashbackMonthlyCap: 100, cashbackFallbackPercent: 1 })).grossCashback).toBe(1200);
+  });
+  it("does not compare when exclusions exceed spending", () => {
+    expect(compareRewards(scenario({ excludedMonthlySpend: 4000 })).winner).toBe("incomplete");
+  });
   it("caps category bonuses and preserves base cashback beyond the cap", () => {
     const r = compareRewards(scenario({ monthlySpend: 1000, cashbackPercent: 1,
       categories: [{ monthlySpend: 1000, cashbackPercent: 5, cashbackMonthlyCap: 20, cashbackFallbackPercent: 1 }] }));

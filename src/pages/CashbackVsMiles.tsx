@@ -86,7 +86,7 @@ export default function CashbackVsMiles() {
   const cash = (n: number | null) => n === null ? "—" : `${symbol}${n.toLocaleString("en-SG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   const count = (n: number) => n.toLocaleString("en-SG", { maximumFractionDigits: 2 });
   const availableCards = useMemo(() => comparisonCards(country), [country]);
-  const programmes = cardId ? cardProgrammes(cardId).filter(id => getProgrammeById(id)?.programmeType === "airline") : ["krisflyer", "enrich", "asia-miles"];
+  const programmes = cardId ? cardProgrammes(cardId).filter(id => getProgrammeById(id)?.programmeType === "airline_miles") : ["krisflyer", "enrich", "asia-miles"];
   const targets = useMemo(() => comparisonTargets(country, city, cabin, programme), [country, city, cabin, programme]);
   const target = targets.find(t => t.id === targetId) ?? targets[0];
   const required = awardOverride ?? (target ? returnMiles(target, passengers) : undefined);
@@ -114,14 +114,14 @@ export default function CashbackVsMiles() {
 
   const resetFlight = () => { setAwardOverride(undefined); setTargetId(""); };
   const selectCountry = (value: string) => {
-    setCountry(value as ComparisonCountry); setCardId(""); setCashbackId(""); setProgramme("krisflyer");
+    setCountry(value as ComparisonCountry); setCardId(""); setCashbackId(""); setProgramme("krisflyer"); setExisting(0);
     setEarningRate(1.4); setFeeOverride(undefined); setFeeConfirmed(false); resetFlight();
     setMode("custom"); setCashFare(undefined); setTaxes(undefined);
     setCashFee(0); setMilesFee(0); setCashbackCap(undefined); setQuarterCap(undefined);
     setUseCategories(false); setCategoryInputs({});
   };
   const selectCard = (value: string) => {
-    setCardId(value); const available = value ? cardProgrammes(value).filter(id => getProgrammeById(id)?.programmeType === "airline") : ["krisflyer"];
+    setCardId(value); setExisting(0); const available = value ? cardProgrammes(value).filter(id => getProgrammeById(id)?.programmeType === "airline_miles") : ["krisflyer"];
     setProgramme(available.includes(programme) ? programme : available[0] ?? "krisflyer");
     const verified = milesEarningTerms.find(t => t.cardId === value && t.status === "verified");
     setEarningRate(value ? verified?.ratePerDollar : 1.4); setFeeConfirmed(false); setFeeOverride(undefined); resetFlight();
@@ -177,7 +177,7 @@ export default function CashbackVsMiles() {
               {card && <div className="mt-3 flex items-center gap-3"><CardArtwork cardId={card.id} cardName={card.name} /><p className="text-xs leading-relaxed text-muted-foreground">{direct ? "Miles earned directly. No bank-points transfer." : `Earnings entered as ${earningUnit(cardId)}, then converted using the selected programme’s published rules.`}</p></div>}
               <div className="mt-4 grid grid-cols-2 gap-4">
                 <NumberField label={cardId && !direct ? `${earningUnit(cardId)} per ${symbol}1` : `Miles per ${symbol}1`} value={earningRate} onChange={setEarningRate} />
-                <SelectField label="Airline programme" value={programme} onChange={v => { setProgramme(v); setFeeOverride(undefined); setFeeConfirmed(false); resetFlight(); }}>
+                <SelectField label="Airline programme" value={programme} onChange={v => { setProgramme(v); setExisting(0); setFeeOverride(undefined); setFeeConfirmed(false); resetFlight(); }}>
                   {programmes.map(p => <option key={p} value={p}>{getProgrammeById(p)?.name ?? p}</option>)}
                 </SelectField>
               </div>
