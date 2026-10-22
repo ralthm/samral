@@ -22,6 +22,11 @@ export default function SiteFooter() {
                 </Link>
               </li>
               <li>
+                <Link to="/cashback-vs-miles" className="hover:text-background">
+                  Cashback vs Miles Calculator
+                </Link>
+              </li>
+              <li>
                 <Link to="/trip-planning" className="hover:text-background">
                   Points Trip Planning
                 </Link>

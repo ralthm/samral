@@ -5,6 +5,7 @@ import SiteHeader from "@/components/SiteHeader";
 import { TRIP_PLAN_FORM_URL } from "@/lib/commerce";
 import SiteFooter from "@/components/SiteFooter";
 import { CardArtwork } from "@/components/milesCalculator/CardArtwork";
+import { Link } from "react-router-dom";
 
 import {
   COUNTRIES,
@@ -218,6 +219,9 @@ function Hero({ country }: { country: CountryCode }) {
         <p className="mt-6 max-w-[640px] text-[15px] leading-relaxed text-ink/75 md:text-lg">
           Enter your credit card point balances, add any existing airline or hotel balances, then see exactly what you can transfer — with full blocks, leftover points and verified sources.
         </p>
+        <Link to="/cashback-vs-miles" className="mt-4 inline-block text-sm text-muted-foreground underline underline-offset-4">
+          Choosing between cashback and miles? Compare them here.
+        </Link>
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <button
             type="button"
