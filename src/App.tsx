@@ -10,6 +10,7 @@ const CardStrategyConfirmed = lazy(() => import("./pages/CardStrategyConfirmed.t
 const GuideArticle = lazy(() => import("./pages/GuideArticle.tsx"));
 const Index = lazy(() => import("./pages/Index.tsx"));
 const MilesCalculator = lazy(() => import("./pages/MilesCalculator.tsx"));
+const CashbackVsMiles = lazy(() => import("./pages/CashbackVsMiles.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const PlanMyTrip = lazy(() => import("./pages/PlanMyTrip.tsx"));
 const PointsStrategy = lazy(() => import("./pages/PointsStrategy.tsx"));
@@ -35,6 +36,7 @@ const App = () => (
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/miles-calculator" element={<MilesCalculator />} />
+        <Route path="/cashback-vs-miles" element={<CashbackVsMiles />} />
         <Route path="/card-strategy-confirmed" element={<CardStrategyConfirmed />} />
 
 
