@@ -141,7 +141,10 @@ export default function CashbackVsMiles() {
   const unresolvedFees = primaryScenario.cashback.basis === "unresolved" || primaryScenario.miles.basis === "unresolved";
   const conditionalFees = unresolvedFees || feeScenarios.length > 1;
   const feeBasis = (basis: string, amount: number) => basis === "unresolved" ? "annual fee unknown; no deduction modelled" : basis === "waived" ? "annual fee waived" : amount === 0 ? "zero annual fee entered or sourced" : "annual fee paid";
-  const coverage = annualFlightCoverage(result.annualMiles, cabin === "Economy" && target && awardOverride === undefined ? returnMiles(target, 1) : undefined);
+  const publishedEconomyTarget = cabin === "Economy" && target && awardOverride === undefined
+    && ["official_airline", "official_loyalty_programme"].includes(target.source.sourceType)
+    && target.verificationLevel !== "observed-redemption-data" ? target : undefined;
+  const coverage = annualFlightCoverage(result.annualMiles, publishedEconomyTarget ? returnMiles(publishedEconomyTarget, 1) : undefined);
 
   const resetFlight = () => { setAwardOverride(undefined); setTargetId(""); };
   const selectCountry = (value: string) => {
@@ -174,7 +177,7 @@ export default function CashbackVsMiles() {
   if (result.winner === "miles") heading = `Miles could give you ${cash(result.difference)} more estimated value per year.`;
   if (result.winner === "cashback") heading = `Cashback could give you ${cash(Math.abs(result.difference ?? 0))} more value per year.`;
   if (result.winner === "close") heading = "It’s close. Cashback and miles offer similar estimated value.";
-  if (result.winner !== "incomplete" && conditionalFees) heading = `${unresolvedFees ? "Before unknown annual fees: " : "With known annual fees paid: "}${heading.charAt(0).toLowerCase()}${heading.slice(1)}`;
+  if (result.winner !== "incomplete" && conditionalFees) heading = `${unresolvedFees ? "Before unknown annual fees: " : "With the annual fees shown: "}${heading.charAt(0).toLowerCase()}${heading.slice(1)}`;
 
   return <><SiteHeader />
     <main>
