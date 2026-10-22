@@ -1,4 +1,6 @@
 # Cashback vs Miles Calculator
+- [ ] Verify usable miles-card rules from official issuer sources and separate unsupported cards into manual entry.
+- [ ] Make the miles picker compact and scrollable; verify named-card comparisons, sources and existing calculator regressions.
 - [x] Simplify the initial screen to four inputs, immediate estimates and compact disclosures.
 - [x] Consolidate optional controls and methodology; add searchable miles selection and card-detail dialogs.
 - [x] Verify provisional category assumptions, unchanged calculations and desktop/mobile flows.
