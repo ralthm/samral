@@ -9,10 +9,10 @@ import MilesCardPicker from "@/components/MilesCardPicker";
 import ComparisonCardDetails from "@/components/ComparisonCardDetails";
 import { CardArtwork } from "@/components/milesCalculator/CardArtwork";
 import { getProgrammeById, isDirectEarnCard, getCardById } from "@/data/milesCalculator";
-import { DESTINATIONS, cardProgrammes, comparisonTargets, earningUnit, usableMilesTerms, returnMiles, publishedEconomyReturnMiles, transferForCard, type ComparisonCountry } from "@/data/rewardComparison";
+import { destinationsFor, cardProgrammes, comparisonTargets, earningUnit, usableMilesTerms, returnMiles, publishedEconomyReturnMiles, transferForCard, type ComparisonCountry } from "@/data/rewardComparison";
 import { rewardScenario } from "@/data/rewardScenarios";
-import { type RewardCategory, type RewardComparisonInput } from "@/lib/rewardComparison";
-import { compareFeeScenarios, annualFlightCoverage, type AnnualFeeStatus } from "@/lib/rewardOutcomes";
+import { compareRewards, type RewardCategory, type RewardComparisonInput } from "@/lib/rewardComparison";
+import { annualFlightCoverage } from "@/lib/rewardOutcomes";
 import { applySeoHead } from "@/lib/seoHead";
 import { track } from "@/lib/track";
 import { cashbackProducts, CASHBACK_CATEGORIES, type CashbackCategory } from "@/data/cashbackCards";
@@ -66,10 +66,6 @@ export default function CashbackVsMiles() {
   const [targetId, setTargetId] = useState("");
   const [existing, setExisting] = useState(0);
   const [excluded, setExcluded] = useState(0);
-  const [cashFee, setCashFee] = useState<number | undefined>();
-  const [milesFee, setMilesFee] = useState<number | undefined>();
-  const [cashFeeStatus, setCashFeeStatus] = useState<AnnualFeeStatus>("unknown");
-  const [milesFeeStatus, setMilesFeeStatus] = useState<AnnualFeeStatus>("unknown");
   const [feeOverride, setFeeOverride] = useState<number | undefined>();
   const [feeConfirmed, setFeeConfirmed] = useState(false);
   const [cashMinimum, setCashMinimum] = useState(0);
@@ -122,34 +118,29 @@ export default function CashbackVsMiles() {
   const issuerCashback = selectedCashback ? comparisonCashbackEstimate(selectedCashback, estimateProfile) : undefined;
   const allocation = spendingAllocation(spend ?? 0, excluded, Object.values(spendingProfile.categories));
   const cashbackComplete = !selectedCashback || issuerCashback?.grossAnnual != null;
-  const effectiveCashFee = selectedCashback?.annualFee ?? cashFee;
   const plannedMonths = departure ? Math.max(0, (Date.parse(departure) - Date.now()) / (365.25 / 12 * 86400000)) : undefined;
   const comparisonInput: RewardComparisonInput = {
     monthlySpend: spend ?? 0, excludedMonthlySpend: excluded,
     cashbackPercent: cashbackPercent ?? 0, cashbackMonthlyCap: cashbackCap, cashbackQuarterlyCap: quarterCap,
-    cashbackMinimumMonthlySpend: cashMinimum, cashbackFallbackPercent: cashFallback, cashbackAnnualFee: effectiveCashFee,
+    cashbackMinimumMonthlySpend: cashMinimum, cashbackFallbackPercent: cashFallback,
     cashbackGrossAnnualOverride: issuerCashback?.grossAnnual ?? undefined,
-    earningRate: earningRate ?? 0, earningBonusSpendCap: earnCap, earningFallbackRate: earnFallback, milesAnnualFee: milesFee,
+    earningRate: earningRate ?? 0, earningBonusSpendCap: earnCap, earningFallbackRate: earnFallback,
     annualTransferFee: transferFee,
     transfer: transfer ? { ...transfer, feeSchedule: feeOverride === undefined ? transfer.transferFeeSchedule : undefined } : undefined,
     categories: categories.map(c => ({ ...(useCategories ? categoryInputs[c] : {}), monthlySpend: spendingProfile.categories[c] ?? 0 })),
     cashFare: scenarioFare, awardMiles: required, awardTaxes: scenarioTaxes, existingMiles: existing, plannedMonths,
     assumptionsConfirmed: inputComplete && cashbackComplete && earningConfirmed && (!card || direct || !!transfer) && !feeUnknown && !allocation.invalid,
   };
-  const feeScenarios = compareFeeScenarios(comparisonInput, { status: cashFeeStatus, amount: effectiveCashFee }, { status: milesFeeStatus, amount: milesFee });
-  const primaryScenario = feeScenarios[0];
-  const result = primaryScenario.result;
-  const unresolvedFees = primaryScenario.cashback.basis === "unresolved" || primaryScenario.miles.basis === "unresolved";
-  const conditionalFees = unresolvedFees || feeScenarios.length > 1;
-  const feeBasis = (basis: string, amount: number) => basis === "unresolved" ? "annual fee unknown; no deduction modelled" : basis === "waived" ? "annual fee waived" : amount === 0 ? "zero annual fee entered or sourced" : "annual fee paid";
+  // Annual card fees are deliberately excluded from this rewards-only comparison.
+  const result = compareRewards(comparisonInput);
   const coverage = annualFlightCoverage(result.annualMiles, publishedEconomyReturnMiles(target, awardOverride !== undefined));
 
   const resetFlight = () => { setAwardOverride(undefined); setTargetId(""); };
   const selectCountry = (value: string) => {
-    setCountry(value as ComparisonCountry); setCardId(""); setCashbackId(""); setProgramme(value === "MY" ? "enrich" : "krisflyer"); setExisting(0);
+    setCountry(value as ComparisonCountry); if (!destinationsFor(value as ComparisonCountry).some(d => d.name === city)) setCity("Tokyo"); setCardId(""); setCashbackId(""); setProgramme(value === "MY" ? "enrich" : "krisflyer"); setExisting(0);
     setCashbackPercent(1.7); setCashMinimum(0); setCashFallback(0); setEarnCap(undefined); setEarnFallback(0); setEarningRate(1.4); setFeeOverride(undefined); setFeeConfirmed(false); resetFlight();
     setMode("illustrative"); setCashFare(undefined); setTaxes(undefined);
-    setCashFee(undefined); setMilesFee(undefined); setCashFeeStatus("unknown"); setMilesFeeStatus("unknown"); setCashbackCap(undefined); setQuarterCap(undefined);
+    setCashbackCap(undefined); setQuarterCap(undefined);
     setUseCategories(false); setCategoryInputs({});
     setSpendingProfile({ monthlySpend: spend ?? 0, excludedMonthlySpend: 0, categories: {}, categoriesConfirmed: false, requirementsConfirmed: false }); setExcluded(0);
   };
@@ -157,7 +148,7 @@ export default function CashbackVsMiles() {
     const verified = usableMilesTerms(value, country);
     setCardId(value); setExisting(0); const available = verified?.supportedProgrammes ?? (getCardById(value) ? cardProgrammes(value).filter(id => getProgrammeById(id)?.programmeType === "airline_miles") : [country === "MY" ? "enrich" : "krisflyer"]);
     setProgramme(available.includes(programme) ? programme : available[0] ?? "krisflyer");
-    setEarningRate(value ? verified?.ratePerDollar : 1.4); setMilesFee(verified?.annualFee); setMilesFeeStatus("unknown"); setFeeConfirmed(false); setFeeOverride(undefined); resetFlight();
+    setEarningRate(value ? verified?.ratePerDollar : 1.4); setFeeConfirmed(false); setFeeOverride(undefined); resetFlight();
     setEarnCap(undefined); setEarnFallback(0); setUseCategories(false); setCategoryInputs({});
     if (value && !verified) setAccuracyOpen(true);
   };
@@ -173,7 +164,7 @@ export default function CashbackVsMiles() {
   const selectCashback = (id: string) => {
     setCashbackId(id); setSpendingProfile(p => ({ ...p, requirementsConfirmed: false }));
     const product = cashbackProducts.find(c => c.id === id);
-    setCashbackPercent(product?.baseRatePercent ?? 1.7); setCashFee(product?.annualFee); setCashFeeStatus("unknown");
+    setCashbackPercent(product?.baseRatePercent ?? 1.7);
     setCashbackCap(undefined); setQuarterCap(undefined); setCashMinimum(0); setCashFallback(0);
   };
 
@@ -181,17 +172,16 @@ export default function CashbackVsMiles() {
   if (result.winner === "miles") heading = `Miles could give you ${cash(result.difference)} more estimated value per year.`;
   if (result.winner === "cashback") heading = `Cashback could give you ${cash(Math.abs(result.difference ?? 0))} more value per year.`;
   if (result.winner === "close") heading = "It’s close. Cashback and miles offer similar estimated value.";
-  if (result.winner !== "incomplete" && conditionalFees) heading = `${unresolvedFees ? "Before unknown annual fees: " : "With the annual fees shown: "}${heading.charAt(0).toLowerCase()}${heading.slice(1)}`;
 
   const calculationDetails = (<div className="mt-6 border-y border-border py-4"><h3 className="text-sm font-medium">How we calculated this</h3>
               <div className="mt-4 space-y-3 text-xs leading-relaxed text-muted-foreground">
-                <p>Annual eligible spending: {cash(result.annualEligibleSpend)}. Monthly and category cashback caps are applied before annualising. Quarterly caps apply four times. Annual card fees are deducted once.</p>
-                <p>Net value per mile = (cash fare − award taxes and fees) ÷ award miles. Negative flight value is treated as zero, not savings. Annual miles value = newly transferable miles × this value, less the miles card annual fee and one transfer fee.</p>
-                <p>Break-even value = (net annual cashback + miles card fee + transfer fee) ÷ newly transferable miles. Break-even fare adds award taxes to this value × the selected award requirement.</p>
+                <p>Annual eligible spending: {cash(result.annualEligibleSpend)}. Monthly and category cashback caps are applied before annualising. Quarterly caps apply four times. Card annual fees are excluded.</p>
+                <p>Net value per mile = (cash fare − award taxes and fees) ÷ award miles. Negative flight value is treated as zero, not savings. Annual miles value = newly transferable miles × this value, less one transfer fee where known or entered. Card annual fees are excluded.</p>
+                <p>Break-even value = (annual cashback + transfer fee) ÷ newly transferable miles. Break-even fare adds award taxes to this value × the selected award requirement.</p>
                 <p>Close means an annual value difference of no more than 0.1 percentage points of eligible spending. This is a comparison tolerance, not a card term.</p>
-                <p>{selectedCashback ? "The selected issuer’s sourced cashback rules control eligible category rates and standard fees. You supply the eligible monthly amounts and exclusions. Per-transaction rounding is approximated when only monthly totals are available; actual statement credits may differ." : "Without category inputs, rates apply to eligible spending as a manual estimate. Category bonuses, excluded transactions, payment rounding and expiry are not automatically verified. Check your actual terms."} No temporary transfer bonus is included.</p>
+                <p>{selectedCashback ? "The selected issuer’s sourced cashback rules control eligible category rates. You supply the eligible monthly amounts and exclusions. Per-transaction rounding is approximated when only monthly totals are available; actual statement credits may differ." : "Without category inputs, rates apply to eligible spending as a manual estimate. Category bonuses, excluded transactions, payment rounding and expiry are not automatically verified. Check your actual terms."} No temporary transfer bonus is included.</p>
                 {transfer && <><p>Transfer ratio: {count(transfer.bankPointsPerBlock)} {earningUnit(cardId)} → {count(transfer.partnerPointsPerBlock)} {getProgrammeById(programme)?.name} miles. {count(result.untransferredRewards)} bank reward units remain outside this annual transfer. Transfer data checked {transfer.verifiedOn}.</p><p><a href={transfer.sourceUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2">Published transfer source</a>. {transfer.processingTime ?? "Transfer timing is not confirmed here."} {transfer.notes}</p></>}
-                <p>Transfer fee in this annual scenario: {cash(result.transferFee)}. Annual fees deducted: cashback {cash(primaryScenario.cashback.fee)} ({feeBasis(primaryScenario.cashback.basis, primaryScenario.cashback.fee)}), miles {cash(primaryScenario.miles.fee)} ({feeBasis(primaryScenario.miles.basis, primaryScenario.miles.fee)}). Unknown fee amounts are not verified zeroes. Points expiry is not verified for this comparison.</p>
+                <p>Transfer fee in this annual scenario: {cash(result.transferFee)}. Card annual fees and other card costs are not included. Points expiry is not verified for this comparison.</p>
                 <p>{mode === "illustrative" ? "Illustrative fares and taxes are hypothetical, with no fare source or verification date claimed. Award miles use a matching published itinerary where available; otherwise the example requirement is also hypothetical." : "Custom fares, taxes and overridden award requirements are supplied by you, not independently verified by Samral."} No live prices or award availability are checked.</p>
               </div>
             </div>);
@@ -214,22 +204,20 @@ export default function CashbackVsMiles() {
               <NumberField label="Monthly credit card spending" value={spend} onChange={setSpend} suffix={symbol} />
               <div className="grid min-w-0 gap-2 text-sm"><div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">Cashback card</span>{selectedCashback && <ComparisonCardDetails cashback={selectedCashback}>{calculationDetails}</ComparisonCardDetails>}</div><CashbackCardPicker cards={cashbackProducts.filter(c => c.country === country)} value={cashbackId} onChange={selectCashback} /></div>
               <div className="grid min-w-0 gap-2 text-sm"><div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">Miles card</span><ComparisonCardDetails cardId={cardId} programme={programme}>{calculationDetails}</ComparisonCardDetails></div><MilesCardPicker country={country} value={cardId} onChange={selectCard} rate={earningRate} /></div>
-              <SelectField label="Travel destination" value={city} onChange={v => { setCity(v); resetFlight(); setMode("illustrative"); }}>{DESTINATIONS.map(d => <option key={d.name}>{d.name}</option>)}</SelectField>
+              <SelectField label="Travel destination" value={city} onChange={v => { setCity(v); resetFlight(); setMode("illustrative"); }}>{destinationsFor(country).map(d => <option key={d.name}>{d.name}</option>)}</SelectField>
             </div>
           </section>
           <section aria-label="Your comparison" className="min-w-0">
             <p className="eyebrow text-muted-foreground">{provisionalCategories ? "Provisional spending estimate" : mode === "illustrative" ? "Illustrative estimate" : "Estimate using your inputs"}</p>
             <h2 aria-live="polite" className="mt-3 font-display text-2xl leading-tight md:text-3xl">{heading}</h2>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <article className="rounded-md border border-border bg-card p-5"><h3 className="text-sm text-muted-foreground">Estimated annual cashback</h3><p className="mt-2 text-3xl font-medium tabular-nums">{inputComplete && cashbackComplete && !result.invalidCategories ? cash(result.netCashback) : "—"}</p>{inputComplete && cashbackComplete && !result.invalidCategories && <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{cash(result.grossCashback)} cashback − {cash(primaryScenario.cashback.fee)} annual fee.<br />{feeBasis(primaryScenario.cashback.basis, primaryScenario.cashback.fee)}.</p>}</article>
-              <article className="rounded-md border border-border bg-secondary/40 p-5"><h3 className="text-sm text-muted-foreground">Estimated annual miles value</h3><p className="mt-2 text-3xl font-medium tabular-nums">{result.winner === "incomplete" ? "—" : cash(result.netMilesValue)}</p>{result.winner !== "incomplete" && <><p className="mt-2 text-xs leading-relaxed text-muted-foreground">{cash(result.grossMilesValue)} estimated gross miles value − {cash(primaryScenario.miles.fee)} annual fee − {cash(result.transferFee)} transfer fee.<br />{feeBasis(primaryScenario.miles.basis, primaryScenario.miles.fee)}.</p><p className="mt-2 text-xs text-muted-foreground">{count(result.annualMiles)} newly transferable miles per year</p>{coverage ? <p className="mt-3 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">Theoretically covers {count(coverage.completeReturns)} complete {city} return economy {coverage.completeReturns === 1 ? "redemption" : "redemptions"} for one traveller, with {count(coverage.remainingMiles)} miles remaining. Published requirement: {count(coverage.requiredMiles)} miles per return · {target?.programmeName}, {target?.operatingAirline}. Existing miles excluded; award availability not checked. This flight count is separate from the estimated value of all new miles.</p> : <p className="mt-3 text-xs leading-relaxed text-muted-foreground">Annual economy flight coverage unavailable: {cabin !== "Economy" ? "economy is not selected" : awardOverride !== undefined ? "a manual award requirement is selected" : "no matching published return economy requirement"}. No flight count inferred from hypothetical mileage.</p>}</>}</article>
+              <article className="rounded-md border border-border bg-card p-5"><h3 className="text-sm text-muted-foreground">Estimated annual cashback</h3><p className="mt-2 text-3xl font-medium tabular-nums">{inputComplete && cashbackComplete && !result.invalidCategories ? cash(result.netCashback) : "—"}</p>{inputComplete && cashbackComplete && !result.invalidCategories && <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Cashback earned before card annual fees.</p>}</article>
+              <article className="rounded-md border border-border bg-secondary/40 p-5"><h3 className="text-sm text-muted-foreground">Estimated annual miles value</h3><p className="mt-2 text-3xl font-medium tabular-nums">{result.winner === "incomplete" ? "—" : cash(result.netMilesValue)}</p>{result.winner !== "incomplete" && <><p className="mt-2 text-xs leading-relaxed text-muted-foreground">{result.transferFee > 0 ? <>{cash(result.grossMilesValue)} estimated miles value − {cash(result.transferFee)} {feeOverride !== undefined ? "entered" : "published"} transfer charge.</> : "Before card annual fees."}</p><p className="mt-2 text-xs text-muted-foreground">{count(result.annualMiles)} newly transferable miles per year</p>{coverage ? <p className="mt-3 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">Theoretically covers {count(coverage.completeReturns)} complete {city} return economy {coverage.completeReturns === 1 ? "redemption" : "redemptions"} for one traveller, with {count(coverage.remainingMiles)} miles remaining. Published requirement: {count(coverage.requiredMiles)} miles per return · {target?.programmeName}, {target?.operatingAirline}. Existing miles excluded; award availability not checked. This flight count is separate from the estimated value of all new miles.</p> : <p className="mt-3 text-xs leading-relaxed text-muted-foreground">Annual economy flight coverage unavailable: {cabin !== "Economy" ? "economy is not selected" : awardOverride !== undefined ? "a manual award requirement is selected" : "no matching published return economy requirement"}. No flight count inferred from hypothetical mileage.</p>}</>}</article>
             </div>
             {result.winner !== "incomplete" && <p className="mt-4 text-sm font-medium">Difference: {cash(Math.abs(result.difference ?? 0))} per year</p>}
-            {conditionalFees && <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{unresolvedFees ? "One or both annual fee amounts are unknown. The displayed estimate deducts known fees only; an illustrative card’s missing fee is not a verified zero or waiver. Enter its annual fee or confirm a waiver in the accuracy section for a fairer comparison." : "Your fee payment status is unknown. The main estimate assumes known annual fees are paid; waiver scenarios below may change the outcome."}</p>}
-            {feeScenarios.length > 1 && result.winner !== "incomplete" && <div aria-label="Annual fee scenarios" className="mt-3 border-y border-border py-3"><h3 className="text-sm font-medium">If annual fees are waived</h3><ul className="mt-2 space-y-2 text-xs leading-relaxed text-muted-foreground">{feeScenarios.slice(1).map((s, i) => <li key={i}>Cashback: {feeBasis(s.cashback.basis, s.cashback.fee)}; miles: {feeBasis(s.miles.basis, s.miles.fee)}. Cashback {cash(s.result.netCashback)} · miles value {cash(s.result.netMilesValue)} · {s.result.winner === "close" ? "similar value" : `${s.result.winner === "cashback" ? "cashback" : "miles"} ahead by ${cash(Math.abs(s.result.difference ?? 0))}`}{unresolvedFees ? " before unknown fees" : ""}.</li>)}</ul></div>}
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{result.winner === "incomplete" ? "Open the accuracy section to enter missing earning or fee terms. Unverified issuer terms are never replaced by a made-up card rate." : result.winner === "cashback" ? "For this flight’s estimated redemption value, cashback comes out ahead after the included fees." : result.winner === "close" ? "The values are close. Flexibility and whether you’ll use the miles matter more here." : `Your new miles are valued against a ${city} return flight. Their estimated travel value is higher, but only if you redeem at a similar value.`}</p>
-            <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{mode === "illustrative" ? "Hypothetical flight fare and award charges. " : "Your entered flight fare and charges. "}{!terms || !selectedCashback ? "Manual card assumptions included. " : ""}Annual fee treatment shown above; miles value is not cash savings. No award availability checked.</p>
-            {terms && <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Provisional miles assumption: all eligible spending is in local currency at the base rate; no category, foreign-currency or promotional bonuses included. Monthly totals approximate transaction rounding. Annual-fee bonus miles excluded in both paid and waived spending-only scenarios. {useCategories ? "Your manual category overrides are included, not verified issuer bonuses. " : ""}</p>}
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{result.winner === "incomplete" ? "Open the accuracy section to enter missing earning or transfer terms. Unverified issuer terms are never replaced by a made-up card rate." : result.winner === "cashback" ? "For this flight’s estimated redemption value, cashback comes out ahead." : result.winner === "close" ? "The values are close. Flexibility and whether you’ll use the miles matter more here." : `Your new miles are valued against a ${city} return flight. Their estimated travel value is higher, but only if you redeem at a similar value.`}</p>
+            <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{mode === "illustrative" ? "Hypothetical flight fare and award charges. " : "Your entered flight fare and charges. "}{!terms || !selectedCashback ? "Manual card assumptions included. " : ""}Excludes card annual fees and other card costs. Miles value depends on the flight you redeem. No award availability checked.</p>
+            {terms && <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Provisional miles assumption: all eligible spending is in local currency at the base rate; no category, foreign-currency or promotional bonuses included. Monthly totals approximate transaction rounding. Annual-fee bonus miles excluded. {useCategories ? "Your manual category overrides are included, not verified issuer bonuses. " : ""}</p>}
             {selectedCashback && cashbackComplete && <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{provisionalCategories ? "Provisional assumption: all spending is other eligible purchases; reduced-rate spending is assumed zero. Adjust spending in the optional accuracy section." : "Issuer cashback rules applied to your entered eligible spending; actual credits may differ with exclusions and transaction rounding."}</p>}
             {selectedCashback && !completeCashbackTerms(selectedCashback) && <div className="mt-3 flex flex-wrap gap-2"><Button variant="outline" size="sm" onClick={() => { selectCashback(""); setAccuracyOpen(true); }}>Use a manual cashback estimate</Button>{cashbackProducts.filter(c => c.country === country && completeCashbackTerms(c)).slice(0, 1).map(c => <Button key={c.id} variant="outline" size="sm" onClick={() => selectCashback(c.id)}>Use verified {c.name}</Button>)}</div>}
             {(!cashbackComplete || result.invalidCategories || feeUnknown || (cardId && !earningConfirmed) || (spend ?? 0) < excluded) && <p role="status" className="mt-3 text-sm text-destructive">{!cashbackComplete ? issuerCashback?.reason ?? "This cashback card’s complete terms are unavailable; use manual assumptions or another verified card." : result.invalidCategories || (spend ?? 0) < excluded ? "Spending amounts exceed your monthly total." : feeUnknown ? "Enter a checked transfer fee in the accuracy section." : "Enter and confirm this miles card’s earning terms in the accuracy section."}</p>}
@@ -245,7 +233,7 @@ export default function CashbackVsMiles() {
                 <NumberField label="Monthly cashback cap" value={cashbackCap} onChange={setCashbackCap} suffix={symbol} optional />
               </div>
               <label className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><input type="checkbox" checked={cashbackCap === undefined} onChange={e => setCashbackCap(e.target.checked ? undefined : 100)} className="h-4 w-4 accent-primary" /> Uncapped cashback</label></>}
-              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{selectedCashback ? "Issuer terms control this card’s cashback and standard fee amount. Your paid/waived setting changes only the fee deducted, not verified earning rules. To change rates or caps, select Manual / unsupported card above." : "Manual estimate. Enter a rate that applies to your eligible spending, not an advertised category maximum."}</p>
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{selectedCashback ? "Issuer terms control this card’s cashback. To change rates or caps, select Manual / unsupported card above." : "Manual estimate. Enter a rate that applies to your eligible spending, not an advertised category maximum."}</p>
             </div>
 
             <div className="mt-7 border-t border-border pt-6">
@@ -257,7 +245,7 @@ export default function CashbackVsMiles() {
                   {programmes.map(p => <option key={p} value={p}>{getProgrammeById(p)?.name ?? p}</option>)}
                 </SelectField>
               </div>
-              {cardId && !terms ? <label className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-muted-foreground"><input type="checkbox" checked={feeConfirmed} onChange={e => setFeeConfirmed(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-primary" />I’ve checked the earning rate, annual fee and exclusions for my spending. Samral’s transfer data does not verify these earning terms.</label> : <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{terms ? `Earning terms checked ${terms.verifiedOn}.` : "1.4 miles per dollar is an illustrative starting point, not a verified card rate."}</p>}
+              {cardId && !terms ? <label className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-muted-foreground"><input type="checkbox" checked={feeConfirmed} onChange={e => setFeeConfirmed(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-primary" />I’ve checked the earning rate and exclusions for my spending. Samral’s transfer data does not verify these earning terms.</label> : <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{terms ? `Earning terms checked ${terms.verifiedOn}.` : "1.4 miles per dollar is an illustrative starting point, not a verified card rate."}</p>}
             </div>
 
             <div className="mt-7 border-t border-border pt-6">
@@ -283,21 +271,15 @@ export default function CashbackVsMiles() {
                   <label className="grid gap-2 text-sm text-muted-foreground">Return date<input type="date" min={departure} className={inputClass} value={returnDate} onChange={e => setReturnDate(e.target.value)} /></label>
                 </div>
                 <p className="text-xs leading-relaxed text-muted-foreground">Dates only estimate your earning timeline. They do not check flights or availability. Existing miles must belong to the selected programme; they are not counted as newly earned rewards.</p>
-                <fieldset className="border-t border-border pt-4"><legend className="pr-3 text-sm font-medium">Do you actually pay the annual fees?</legend><div className="mt-3 grid grid-cols-2 gap-4">
-                  <SelectField label="Cashback annual fee status" value={cashFeeStatus} onChange={v => setCashFeeStatus(v as AnnualFeeStatus)}><option value="unknown">Unknown</option><option value="paid">Paid</option><option value="waived">Waived</option></SelectField>
-                  <SelectField label="Miles annual fee status" value={milesFeeStatus} onChange={v => setMilesFeeStatus(v as AnnualFeeStatus)}><option value="unknown">Unknown</option><option value="paid">Paid</option><option value="waived">Waived</option></SelectField>
-                  {!selectedCashback ? <NumberField label="Cashback card annual fee" value={cashFee} onChange={setCashFee} suffix={symbol} optional /> : <p className="text-xs leading-relaxed text-muted-foreground">Sourced cashback standard annual fee: {effectiveCashFee === undefined ? "unknown" : cash(effectiveCashFee)}. Fee payment status is your input.</p>}
-                  <NumberField label="Miles card annual fee" value={milesFee} onChange={setMilesFee} suffix={symbol} optional />
-                </div><p className="mt-3 text-xs leading-relaxed text-muted-foreground">Unknown payment status shows paid and waived scenarios when a positive annual fee amount is available. An unknown amount stays unresolved; no fee is invented. Waived removes only the annual card fee, not transfer charges. Annual-fee bonus miles remain excluded.</p></fieldset>
                 <div className="grid grid-cols-2 gap-4">
                   {!selectedCashback && <><NumberField label="Cashback minimum spend / month" value={cashMinimum} onChange={v => setCashMinimum(v ?? 0)} suffix={symbol} />
                   <NumberField label="Quarterly cashback cap" value={quarterCap} onChange={setQuarterCap} suffix={symbol} optional />
                   <NumberField label="Base cashback outside bonuses" value={cashFallback} onChange={v => setCashFallback(v ?? 0)} suffix="%" max={100} /></>}
-                  <NumberField label="One annual transfer fee" value={feeOverride ?? knownFee ?? (direct || !cardId ? 0 : undefined)} onChange={setFeeOverride} suffix={symbol} optional />
+                  <NumberField label="One annual airline transfer charge" value={feeOverride ?? knownFee ?? (direct || !cardId ? 0 : undefined)} onChange={setFeeOverride} suffix={symbol} optional />
                   <NumberField label="Bonus earning spend cap / month" value={earnCap} onChange={setEarnCap} suffix={symbol} optional />
                   <NumberField label="Earning rate beyond bonus cap" value={earnFallback} onChange={v => setEarnFallback(v ?? 0)} />
                 </div>
-                <p className="text-xs leading-relaxed text-muted-foreground">Fee amounts should include any tax. One bank-points transfer per year is assumed; additional transfers can cost more. A monthly transfer limit applies to that single transfer, not twelve transfers.</p>
+                <p className="text-xs leading-relaxed text-muted-foreground">Transfer charges should include any tax. Leave blank if unknown; the comparison waits rather than assuming zero. Card annual fees are excluded. One bank-points transfer per year is assumed; additional transfers can cost more. A monthly transfer limit applies to that single transfer, not twelve transfers.</p>
                 <fieldset className="border-t border-border pt-4"><legend className="pr-3 text-sm font-medium">Optional spending breakdown</legend>
                   <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Without a breakdown, all spending is assumed to be other eligible purchases; no category bonuses are assumed. Enter each amount once for both cards.</p>
                   <p role="status" className={`mt-3 text-sm ${allocation.invalid ? "text-destructive" : "text-muted-foreground"}`}>Unallocated eligible spending: {cash(allocation.unallocated)} · allocated {cash(allocation.allocated)} of {cash(allocation.eligible)}.{allocation.invalid ? " Reduce category amounts or exclusions to restore the comparison." : " Unallocated spending uses the base rate."}</p>
@@ -323,7 +305,7 @@ export default function CashbackVsMiles() {
               <h3 className="text-lg font-medium">When could miles be worth it?</h3>
               <p className="mt-4 text-sm leading-relaxed">{result.winner === "incomplete" || result.breakEvenFare === null ? "Complete your assumptions to find the ticket price where miles could be better value." : `If your ${city} return ticket costs more than ${cash(result.breakEvenFare)}, miles could give you better value under these assumptions. Below that price, cashback could be better.`}</p>
               <div className="mt-4">
-              <dl className="mt-4 grid grid-cols-2 gap-4"><Stat label="Break-even value per mile" value={result.winner === "incomplete" || result.breakEvenCents === null ? "—" : `${result.breakEvenCents.toFixed(3)}¢`} detail={`${currency} cents, including entered card and transfer fees`} /><Stat label="Break-even comparable cash fare" value={result.winner === "incomplete" ? "—" : cash(result.breakEvenFare)} detail="Full return trip, all travellers" /></dl>
+              <dl className="mt-4 grid grid-cols-2 gap-4"><Stat label="Break-even value per mile" value={result.winner === "incomplete" || result.breakEvenCents === null ? "—" : `${result.breakEvenCents.toFixed(3)}¢`} detail={`${currency} cents, including known transfer charges; card annual fees excluded`} /><Stat label="Break-even comparable cash fare" value={result.winner === "incomplete" ? "—" : cash(result.breakEvenFare)} detail="Full return trip, all travellers" /></dl>
               <p className="mt-4 text-xs leading-relaxed text-muted-foreground">Below these values, cashback offers more estimated value; above them, miles do. The comparison depends on what you would actually pay for a similar flight, not the highest advertised ticket price.</p></div>
             </div>
 

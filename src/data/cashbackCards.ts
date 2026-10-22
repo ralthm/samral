@@ -22,7 +22,12 @@ export interface CashbackProduct {
   status: "verified" | "needs_review";
   baseRatePercent?: number;
   minimumMonthlySpend?: number;
+  /** Rate on all eligible spending when the monthly minimum is not met. */
+  belowMinimumPercent?: number;
+  belowMinimumMonthlyCap?: number;
+  availability?: "open" | "existing_cardholders";
   monthlyCap?: number;
+  /** Reference data only; this rewards comparison excludes card annual fees. */
   annualFee?: number;
   rules: CashbackRule[];
   exclusions: string[];

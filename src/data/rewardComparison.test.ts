@@ -85,12 +85,12 @@ describe("usable miles-card catalogue", () => {
     vi.setSystemTime(new Date("2027-05-01T00:00:00Z"));
     expect(usableMilesTerms("sg-citi-premiermiles", "SG")).toBeUndefined();
   });
-  it("missing annual fees cannot become zero-fee verified recommendations", () => {
+  it("annual fees are reference data only and do not gate card eligibility", () => {
     const terms = milesEarningTerms.find(t => t.cardId === "sg-citi-premiermiles");
     expect(terms).toBeDefined();
     if (!terms) return;
     const saved = terms.annualFee;
-    try { terms.annualFee = undefined; expect(usableMilesTerms(terms.cardId, "SG")).toBeUndefined(); }
+    try { terms.annualFee = undefined; expect(usableMilesTerms(terms.cardId, "SG")).toBeDefined(); }
     finally { terms.annualFee = saved; }
   });
 });
