@@ -30,6 +30,8 @@ export interface RewardComparisonInput {
   cashbackMinimumMonthlySpend?: number;
   cashbackFallbackPercent?: number;
   cashbackAnnualFee?: number;
+  /** Complete issuer-rule evaluator supplies gross rewards; fees still deducted once. */
+  cashbackGrossAnnualOverride?: number;
   earningRate: number;
   earningBonusSpendCap?: number;
   earningFallbackRate?: number;
@@ -108,7 +110,7 @@ export function compareRewards(input: RewardComparisonInput) {
   cashbackMonthly = cashbackMonthly.toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
   let cashbackQuarterly = cashbackMonthly.mul(3);
   if (input.cashbackQuarterlyCap !== undefined) cashbackQuarterly = Decimal.min(cashbackQuarterly, nonnegative(input.cashbackQuarterlyCap));
-  const grossCashback = cashbackQuarterly.mul(4);
+  const grossCashback = input.cashbackGrossAnnualOverride === undefined ? cashbackQuarterly.mul(4) : nonnegative(input.cashbackGrossAnnualOverride);
   const netCashback = grossCashback.minus(nonnegative(input.cashbackAnnualFee));
   const rawAnnual = rawMonthly.mul(12);
   const annualMiles = usableMiles(rawAnnual, input.transfer);

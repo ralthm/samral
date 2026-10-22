@@ -1,4 +1,8 @@
 # Cashback vs Miles Calculator
+- [ ] Audit reusable records and official issuer cashback/earning terms.
+- [ ] Add searchable bank-grouped cards and spending-profile comparison modes.
+- [ ] Apply verified conditional rules and rank supported alternatives transparently.
+- [ ] Test caps, thresholds, exclusions and categories; verify existing calculator safeguards.
 - [x] Simplify primary inputs and retain all advanced controls.
 - [x] Add labelled destination examples and automatic sourced award requirements.
 - [x] Run mathematical regressions and verify immediate results and quote overrides.
