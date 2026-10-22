@@ -95,6 +95,31 @@ export const cashbackProducts: CashbackProduct[] = [
     id: "sg-maybank-barcelona", name: "Maybank FC Barcelona Visa Signature", bankId: "maybank-sg", country: "SG", status: "needs_review", baseRatePercent: 1.6, annualFee: 130.8, rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
     sourceUrls: ["https://www.maybank2u.com.sg/en/personal/cards/credit/maybank-fc-barcelona-visa-signature-card.page"], reviewNotes: "Full exclusions and rounding were not accessible for verification. The Malaysia product’s terms are not reused.",
   },
+  {
+    id: "my-ambank-cash-rebate", name: "AmBank Cash Rebate Visa Platinum", bankId: "ambank", country: "MY", status: "verified", availability: "open",
+    baseRatePercent: 0.2, minimumMonthlySpend: 1500, belowMinimumPercent: 0.2,
+    rules: [
+      { categories: ["online"], ratePercent: 10, monthlyCap: 10, fallbackPercent: 0.2 },
+      { categories: ["dining"], ratePercent: 10, monthlyCap: 10, fallbackPercent: 0.2 },
+      { categories: ["groceries"], ratePercent: 10, monthlyCap: 10, fallbackPercent: 0.2 },
+      { categories: ["transport"], ratePercent: 10, monthlyCap: 10, fallbackPercent: 0.2 },
+    ],
+    exclusions: ["Petrol (MCC 5541/5542) and e-wallet (MCC 6540) transactions, which also do not count toward the RM1,500 threshold", "government payments, charity, instalment plans, cash and quasi-cash, balance transfers, AmFlexi-Plus/QuickCash", "fees, interest and tax; internet-banking bill payments, JomPAY, FPX and DuitNow QR", "payments without a merchant code or with MCC 0000; reversed, fraudulent or disputed transactions", "recurring payments do not earn the online rate"],
+    requirements: [],
+    sourceUrls: ["https://www.ambank.com.my/cards/credit-cards/ambank-cash-rebate-visa-platinum-card", "https://www.ambank.com.my/docs/ambankretaillibraries/terms-and-conditions/ambank-cash-rebate-platinum-card-tnc.pdf?sfvrsn=475f8553_1"],
+    verifiedOn: "2026-10-22", rounding: "category_cent_nearest",
+    payoutNotes: "Terms effective 1 November 2025. With RM1,500+ eligible statement-cycle spending: 10% on online, dining (MCC 5811–5814), shopping & grocery and public transport (not online), each capped at RM10 cashback, then 0.2%. Other eligible spending 0.2%, unlimited. Below RM1,500 everything earns 0.2%. Statement cycles are approximated as calendar months.",
+  },
+  { id: "my-maybank-2-amex", name: "Maybank 2 Gold/Platinum American Express", bankId: "maybank", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
+    sourceUrls: ["https://www.maybank2u.com.my/maybank2u/malaysia/en/personal/cards/credit/maybank_2_platinum_card.page"], reviewNotes: "Weekend 5% cashback is capped at RM50 a month, but the weekday cashback rate and minimum-spend rule are not confirmed." },
+  { id: "my-cimb-cash-rebate", name: "CIMB Cash Rebate Platinum", bankId: "cimb", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
+    sourceUrls: ["https://www.cimb.com.my/en/personal/day-to-day-banking/cards/credit-card/cimb-cash-rebate-platinum-credit-card.html"], reviewNotes: "Category caps, the lower-tier category rate and exclusions are not confirmed in official terms." },
+  { id: "my-affin-duo-cashback", name: "AFFIN DUO Visa Cash Back", bankId: "affin", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
+    sourceUrls: ["https://www.affinalways.com/en/affin-duo"], reviewNotes: "The cashback rate on non-category spending and any minimum spend are not confirmed." },
+  { id: "my-pb-quantum-visa", name: "Public Bank Quantum Visa", bankId: "publicbank", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
+    sourceUrls: ["https://www.pbebank.com/en/cards/our-cards/pb-quantum-credit-cards-2/"], reviewNotes: "Cashback depends on contactless transactions of RM100 or more; exclusions and other-spend treatment are not confirmed." },
+  { id: "my-rhb-shell-visa", name: "RHB Shell Visa / Visa-i", bankId: "rhb", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
+    sourceUrls: ["https://www.rhbgroup.com/personal/cards/credit-cards/rhb-shell-visa-credit-card/index.html"], reviewNotes: "Treatment below RM1,000, below category minimums and after caps, plus full exclusions, are not confirmed." },
 ];
 
 export function cashbackName(product: CashbackProduct) {
