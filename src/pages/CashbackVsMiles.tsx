@@ -181,7 +181,7 @@ export default function CashbackVsMiles() {
             <div className="grid gap-5 sm:grid-cols-2">
               <NumberField label="Monthly credit card spending" value={spend} onChange={setSpend} suffix={symbol} />
               <div className="grid min-w-0 gap-2 text-sm"><div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">Cashback card</span>{selectedCashback && <ComparisonCardDetails cashback={selectedCashback} />}</div><CashbackCardPicker cards={cashbackProducts.filter(c => c.country === country)} value={cashbackId} onChange={selectCashback} /></div>
-              <div className="grid min-w-0 gap-2 text-sm"><div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">Miles card</span><ComparisonCardDetails cardId={cardId} programme={programme} /></div><MilesCardPicker country={country} value={cardId} onChange={selectCard} /></div>
+              <div className="grid min-w-0 gap-2 text-sm"><div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">Miles card</span><ComparisonCardDetails cardId={cardId} programme={programme} /></div><MilesCardPicker country={country} value={cardId} onChange={selectCard} rate={earningRate} /></div>
               <SelectField label="Travel destination" value={city} onChange={v => { setCity(v); resetFlight(); setMode("illustrative"); }}>{DESTINATIONS.map(d => <option key={d.name}>{d.name}</option>)}</SelectField>
             </div>
           </section>
