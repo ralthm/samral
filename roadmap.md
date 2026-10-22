@@ -1,4 +1,6 @@
 # Cashback vs Miles Calculator
+- [x] Add optional paid/waived/unknown annual-fee scenarios and transparent reward breakdowns without changing default inputs.
+- [x] Add published-only theoretical annual economy flight coverage and regression/browser checks.
 - [x] Verify usable miles-card rules from official issuer sources and separate unsupported cards into manual entry.
 - [x] Make the miles picker compact and scrollable; verify named-card comparisons, sources and existing calculator regressions.
 - [x] Simplify the initial screen to four inputs, immediate estimates and compact disclosures.
@@ -18,6 +20,7 @@
 - [x] Document assumptions and first-version limitations.
 
 ## Verification and limitations
+- Fee/outcome refinement: 203 targeted tests pass. Browser verified both paid/waived/unknown fee choices, all four known-fee combinations, explicit missing-fee warning, gross-to-net breakdowns, and published-only flight counts independent of travellers and existing balances. Manual, business-cabin, secondary/observed and unmatched award requirements cannot imply published economy coverage. Country resets, 638/390-width overflow checks and the original Miles Calculator pass with no runtime errors; preview build OK. Default inputs, comparison engine and payment flows unchanged. Earlier issuer-coverage expansion remains outside this refinement and blocked on evidence.
 - Miles selection fix: scoped eligible-local-spending profiles for Citi PremierMiles and DBS Altitude Visa/AMEX checked against official issuer sources on 22 October 2026. Main named choices all calculate; unsupported and Malaysian cards use separate manual entry. No bonus-category or FX earning is silently applied. Transaction rounding is approximate; standard annual fees are included but conditional annual-fee bonus miles are explicitly excluded from this spending-only comparison. Citi transfer increments retain the existing published-block assumption and require confirmation in the issuer app.
 - Latest verification: 137 targeted tests pass. Browser selected SC Simply Cash, all three supported miles cards, S$3,000 monthly spending and Tokyo; each returned 40,000 transferable miles and S$560.86 estimated net miles value. Named and unlisted manual fallback, official details links, 638/390 screen-bounded internally scrolling menus and original Miles Calculator route pass without runtime errors. Latest preview build OK. Existing engines and payment links unchanged.
 - Actual-card extension: bank-grouped search covers seven Singapore issuers. Complete principal-card ongoing cashback terms enabled for UOB Absolute (including 0.3% reduced categories), SC Simply Cash, Citi Cash Back+ and OCBC INFINITY. Other products explicitly await review, not calculation. Monthly-total transaction-rounding approximations, standard ongoing fees and payout restrictions are disclosed. Malaysia retains manual mode using the same evaluator; no verified Malaysian spending records claimed.

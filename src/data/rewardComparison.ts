@@ -157,6 +157,15 @@ export function returnMiles(target: RedemptionTarget, passengers: number) {
   return computeRequiredPoints(target, "return", passengers);
 }
 
+/** Coverage is narrower than valuation: only an official published economy
+ * requirement for the selected itinerary, never a manual or observed quote. */
+export function publishedEconomyReturnMiles(target?: RedemptionTarget, hasManualOverride = false) {
+  if (!target || hasManualOverride || target.cabin !== "Economy" || !isTargetVerified(target)
+    || !["official_airline", "official_loyalty_programme"].includes(target.source.sourceType)
+    || target.verificationLevel === "observed-redemption-data") return undefined;
+  return returnMiles(target, 1);
+}
+
 export const CATEGORY_LABELS: Record<SpendingCategory, string> = {
   general: "Other eligible spending", dining: "Dining", groceries: "Groceries", online: "Online shopping", travel: "Travel",
 };
