@@ -217,7 +217,8 @@ export const cashbackProducts: CashbackProduct[] = [
 ];
 
 export function cashbackName(product: CashbackProduct) {
-  return (product.existingCardId ? getCardById(product.existingCardId)?.name : undefined) ?? product.name;
+  // Variant names (e.g. Classic vs Platinum) must stay distinct even when they share a registry card.
+  return product.name;
 }
 export function cashbackBank(product: CashbackProduct) {
   return getBankById(product.bankId)?.name ?? product.bankId;
