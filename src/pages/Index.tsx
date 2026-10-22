@@ -3,10 +3,30 @@ import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import heroImage from "@/assets/hero.jpg";
 import cabinImage from "@/assets/cabin.jpg";
-import notebookImage from "@/assets/notebook.jpg";
-import italyImage from "@/assets/italy.jpg";
-import kyotoImage from "@/assets/kyoto.jpg";
-import maldivesImage from "@/assets/maldives.jpg";
+import cardDesktopAvif from "@/assets/services/card-desktop.avif";
+import cardDesktopWebp from "@/assets/services/card-desktop.webp";
+import cardDesktopJpg from "@/assets/services/card-desktop.jpg";
+import cardMobileAvif from "@/assets/services/card-mobile.avif";
+import cardMobileWebp from "@/assets/services/card-mobile.webp";
+import cardMobileJpg from "@/assets/services/card-mobile.jpg";
+import fxDesktopAvif from "@/assets/services/fx-desktop.avif";
+import fxDesktopWebp from "@/assets/services/fx-desktop.webp";
+import fxDesktopJpg from "@/assets/services/fx-desktop.jpg";
+import fxMobileAvif from "@/assets/services/fx-mobile.avif";
+import fxMobileWebp from "@/assets/services/fx-mobile.webp";
+import fxMobileJpg from "@/assets/services/fx-mobile.jpg";
+import bizDesktopAvif from "@/assets/services/biz-desktop.avif";
+import bizDesktopWebp from "@/assets/services/biz-desktop.webp";
+import bizDesktopJpg from "@/assets/services/biz-desktop.jpg";
+import bizMobileAvif from "@/assets/services/biz-mobile.avif";
+import bizMobileWebp from "@/assets/services/biz-mobile.webp";
+import bizMobileJpg from "@/assets/services/biz-mobile.jpg";
+import milesDesktopAvif from "@/assets/services/miles-desktop.avif";
+import milesDesktopWebp from "@/assets/services/miles-desktop.webp";
+import milesDesktopJpg from "@/assets/services/miles-desktop.jpg";
+import milesMobileAvif from "@/assets/services/miles-mobile.avif";
+import milesMobileWebp from "@/assets/services/miles-mobile.webp";
+import milesMobileJpg from "@/assets/services/miles-mobile.jpg";
 import synapseLogo from "@/assets/synapse-logo.png.asset.json";
 import cpfLogo from "@/assets/cpf-logo.png.asset.json";
 import SiteHeader from "@/components/SiteHeader";
@@ -104,11 +124,11 @@ function EditorialIntro() {
 }
 
 const mosaicItems = [
-  { title: "Card strategy", sub: "Know which cards deserve your spending.", image: notebookImage, to: "/points-strategy", position: "center" },
+  { title: "Card strategy", sub: "Know which cards deserve your spending.", photo: { desktop: { avif: cardDesktopAvif, webp: cardDesktopWebp, jpg: cardDesktopJpg }, mobile: { avif: cardMobileAvif, webp: cardMobileWebp, jpg: cardMobileJpg } }, image: cardDesktopJpg, to: "/points-strategy", position: "center" },
   { title: "Points trip planning", sub: "Make the trip you want from the points you have.", image: cabinImage, to: "/trip-planning", position: "center" },
-  { title: "Payments & FX", sub: "Look beyond the headline rate.", image: italyImage, to: "/business", position: "center" },
-  { title: "Business spend", sub: "Find value in what your business already pays.", image: maldivesImage, to: "/business", position: "center" },
-  { title: "Miles calculator", sub: "See what your bank points can become.", image: kyotoImage, to: "/miles-calculator", position: "center" },
+  { title: "Payments & FX", sub: "Look beyond the headline rate.", photo: { desktop: { avif: fxDesktopAvif, webp: fxDesktopWebp, jpg: fxDesktopJpg }, mobile: { avif: fxMobileAvif, webp: fxMobileWebp, jpg: fxMobileJpg } }, image: fxDesktopJpg, to: "/business", position: "center" },
+  { title: "Business spend", sub: "Find value in what your business already pays.", photo: { desktop: { avif: bizDesktopAvif, webp: bizDesktopWebp, jpg: bizDesktopJpg }, mobile: { avif: bizMobileAvif, webp: bizMobileWebp, jpg: bizMobileJpg } }, image: bizDesktopJpg, to: "/business", position: "center" },
+  { title: "Miles calculator", sub: "See what your bank points can become.", photo: { desktop: { avif: milesDesktopAvif, webp: milesDesktopWebp, jpg: milesDesktopJpg }, mobile: { avif: milesMobileAvif, webp: milesMobileWebp, jpg: milesMobileJpg } }, image: milesDesktopJpg, to: "/miles-calculator", position: "center" },
 ];
 
 function ServiceMosaic() {
@@ -124,7 +144,18 @@ function ServiceMosaic() {
       <div className="samral-mosaic">
         {mosaicItems.map((item, index) => (
           <Link key={item.title} to={item.to} className={`samral-mosaic__card samral-mosaic__card--${index + 1}`} aria-label={`${item.title}: ${item.sub}`}>
-            <img src={item.image} alt="" loading="lazy" style={{ objectPosition: item.position }} />
+            {"photo" in item && item.photo ? (
+              <picture style={{ display: "contents" }}>
+                <source media="(max-width: 700px)" type="image/avif" srcSet={item.photo.mobile.avif} />
+                <source media="(max-width: 700px)" type="image/webp" srcSet={item.photo.mobile.webp} />
+                <source media="(max-width: 700px)" srcSet={item.photo.mobile.jpg} />
+                <source type="image/avif" srcSet={item.photo.desktop.avif} />
+                <source type="image/webp" srcSet={item.photo.desktop.webp} />
+                <img src={item.photo.desktop.jpg} alt="" loading="lazy" decoding="async" style={{ objectPosition: item.position }} />
+              </picture>
+            ) : (
+              <img src={item.image} alt="" loading="lazy" style={{ objectPosition: item.position }} />
+            )}
             <span className="samral-mosaic__gradient" aria-hidden="true" />
             <span className="samral-mosaic__text"><strong>{item.title}</strong><small>{item.sub}</small></span>
             <span className="samral-mosaic__arrow" aria-hidden="true"><ArrowUpRight size={24} strokeWidth={1.5} /></span>
