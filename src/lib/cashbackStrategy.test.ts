@@ -6,6 +6,13 @@ const card: CashbackProduct = { id: "test", name: "Test rules", bankId: "test", 
 const profile = { monthlySpend: 3000, excludedMonthlySpend: 0, categories: {}, categoriesConfirmed: true, requirementsConfirmed: true };
 const today = "2026-10-22";
 describe("issuer cashback rules", () => {
+  it("applies no category bonus to an explicit all-other provisional spending assumption", () => {
+    const conditional = { ...card, rules: [{ categories: ["dining" as const], ratePercent: 5, fallbackPercent: 1.7 }] };
+    const unknownBreakdown = { ...profile, categories: {}, categoriesConfirmed: false };
+    expect(rankCashback([conditional], unknownBreakdown, today)).toEqual([]);
+    expect(evaluateCashback(conditional, { ...unknownBreakdown, categoriesConfirmed: true }, today).grossAnnual).toBe(612);
+    expect(evaluateCashback(conditional, { ...profile, categories: { dining: 1000 } }, today).grossAnnual).toBe(1008);
+  });
   it("deducts the standard annual fee once", () => expect(evaluateCashback(card, profile, today).netAnnual).toBe(512));
   it("excludes transactions before earning", () => expect(evaluateCashback(card, { ...profile, excludedMonthlySpend: 1000 }, today).grossAnnual).toBe(408));
   it("applies a total monthly cap twelve times", () => expect(evaluateCashback({ ...card, monthlyCap: 20 }, profile, today).grossAnnual).toBe(240));

@@ -11,10 +11,10 @@ export default function CashbackCardPicker({ cards, value, onChange }: { cards: 
   const selected = cards.find(c => c.id === value);
   const banks = [...new Set(cards.map(cashbackBank))];
   const choose = (id: string) => { onChange(id); setOpen(false); };
-  return <div className="grid min-w-0 gap-2 text-sm"><span className="text-muted-foreground">Current cashback card</span>
+  return <div className="grid min-w-0 gap-2 text-sm">
     <Popover open={open} onOpenChange={setOpen}><PopoverTrigger asChild>
-      <Button variant="outline" role="combobox" aria-label="Current cashback card" aria-expanded={open} className="h-auto min-h-11 w-full justify-between whitespace-normal text-left">
-        <span>{selected ? cashbackName(selected) : "Manual / unsupported card"}</span><ChevronsUpDown className="shrink-0" />
+      <Button variant="outline" role="combobox" aria-label="Cashback card" aria-expanded={open} className="h-auto min-h-11 w-full justify-between whitespace-normal text-left">
+        <span>{selected ? cashbackName(selected) : "Illustrative cashback · manual rate"}</span><ChevronsUpDown className="shrink-0" />
       </Button>
     </PopoverTrigger><PopoverContent align="start" className="w-[min(380px,calc(100vw-40px))] p-0">
       <Command><CommandInput placeholder="Search card or bank…" aria-label="Search cashback cards" /><CommandList>

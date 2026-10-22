@@ -1,4 +1,7 @@
 # Cashback vs Miles Calculator
+- [x] Simplify the initial screen to four inputs, immediate estimates and compact disclosures.
+- [x] Consolidate optional controls and methodology; add searchable miles selection and card-detail dialogs.
+- [x] Verify provisional category assumptions, unchanged calculations and desktop/mobile flows.
 - [x] Audit reusable records and official issuer cashback/earning terms.
 - [x] Add searchable bank-grouped cards and spending-profile comparison modes.
 - [x] Apply verified conditional rules and rank supported alternatives transparently.
