@@ -167,15 +167,15 @@ export default function CashbackVsMiles() {
   return <><SiteHeader />
     <main>
       <section className="border-b border-border">
-        <div className="mx-auto max-w-[1200px] px-5 pb-10 pt-9 sm:px-6 md:px-12 md:pb-14 md:pt-14">
+        <div className="mx-auto max-w-[1000px] px-5 pb-6 pt-7 sm:px-6 md:px-12">
           <p className="eyebrow text-muted-foreground">Samral · Free calculator</p>
           <h1 className="mt-4 font-display text-4xl leading-tight text-foreground md:text-5xl">Cashback vs Miles Calculator</h1>
           <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">Which gives you more value? Compare your spending with a flight you’d actually take.</p>
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1200px] px-5 py-10 sm:px-6 md:px-12 md:py-14">
-        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-14">
+      <div className="mx-auto max-w-[1000px] px-5 py-7 sm:px-6 md:px-12">
+        <div className="grid items-start gap-7">
           <section aria-label="Comparison inputs" className="min-w-0">
             <div className="mb-5 flex items-center justify-between gap-4"><p className="text-sm font-medium">Your spending & travel</p><select aria-label="Country" className="min-h-9 rounded-md border border-input bg-background px-2 text-sm" value={country} onChange={e => selectCountry(e.target.value)}><option value="SG">Singapore</option><option value="MY">Malaysia</option></select></div>
             <div className="grid gap-5 sm:grid-cols-2">
@@ -248,25 +248,25 @@ export default function CashbackVsMiles() {
                 </div>
                 <p className="text-xs leading-relaxed text-muted-foreground">Dates only estimate your earning timeline. They do not check flights or availability. Existing miles must belong to the selected programme; they are not counted as newly earned rewards.</p>
                 <div className="grid grid-cols-2 gap-4">
-                  <NumberField label="Cashback card annual fee" value={cashFee} onChange={v => setCashFee(v ?? 0)} suffix={symbol} />
+                  {!selectedCashback && <NumberField label="Cashback card annual fee" value={cashFee} onChange={v => setCashFee(v ?? 0)} suffix={symbol} />}
                   <NumberField label="Miles card annual fee" value={milesFee} onChange={v => setMilesFee(v ?? 0)} suffix={symbol} />
-                  <NumberField label="Cashback minimum spend / month" value={cashMinimum} onChange={v => setCashMinimum(v ?? 0)} suffix={symbol} />
+                  {!selectedCashback && <><NumberField label="Cashback minimum spend / month" value={cashMinimum} onChange={v => setCashMinimum(v ?? 0)} suffix={symbol} />
                   <NumberField label="Quarterly cashback cap" value={quarterCap} onChange={setQuarterCap} suffix={symbol} optional />
-                  <NumberField label="Base cashback outside bonuses" value={cashFallback} onChange={v => setCashFallback(v ?? 0)} suffix="%" max={100} />
+                  <NumberField label="Base cashback outside bonuses" value={cashFallback} onChange={v => setCashFallback(v ?? 0)} suffix="%" max={100} /></>}
                   <NumberField label="One annual transfer fee" value={feeOverride ?? knownFee ?? (direct || !cardId ? 0 : undefined)} onChange={setFeeOverride} suffix={symbol} optional />
                   <NumberField label="Bonus earning spend cap / month" value={earnCap} onChange={setEarnCap} suffix={symbol} optional />
                   <NumberField label="Earning rate beyond bonus cap" value={earnFallback} onChange={v => setEarnFallback(v ?? 0)} />
                 </div>
                 <p className="text-xs leading-relaxed text-muted-foreground">Manual annual fees start at zero; enter any fee you actually pay. Fee overrides should include any tax. One bank-points transfer per year is assumed; additional transfers can cost more. A monthly transfer limit applies to that single transfer, not twelve transfers.</p>
-                <label className="flex items-center gap-2 text-sm"><input type="checkbox" className="h-4 w-4 accent-primary" checked={useCategories} onChange={e => setUseCategories(e.target.checked)} /> Add my spending categories</label>
+                <label className="flex items-center gap-2 text-sm"><input type="checkbox" className="h-4 w-4 accent-primary" checked={useCategories} onChange={e => setUseCategories(e.target.checked)} /> {selectedCashback ? "Add category miles earning assumptions" : "Add my spending categories"}</label>
                 {useCategories && <div className="space-y-5">
                   <p className="text-xs leading-relaxed text-muted-foreground">Optional user-entered rates, not verified card bonuses. Leave rates blank to use your main rate. Unallocated eligible spending uses the main rate. Category totals must not exceed eligible monthly spending.</p>
                   {categories.map(c => <fieldset key={c} className="border-t border-border pt-4"><legend className="pr-3 text-sm font-medium">{CATEGORY_LABELS[c]}</legend>
                     <div className="grid grid-cols-2 gap-3">
                       <NumberField label={`${CATEGORY_LABELS[c]} spending`} value={categoryInputs[c]?.monthlySpend ?? 0} onChange={v => updateCategory(c, "monthlySpend", v ?? 0)} suffix={symbol} />
-                      <NumberField label="Category cashback" value={categoryInputs[c]?.cashbackPercent} onChange={v => updateCategory(c, "cashbackPercent", v)} suffix="%" max={100} optional />
+                      {!selectedCashback && <><NumberField label="Category cashback" value={categoryInputs[c]?.cashbackPercent} onChange={v => updateCategory(c, "cashbackPercent", v)} suffix="%" max={100} optional />
                       <NumberField label="Category cashback cap / month" value={categoryInputs[c]?.cashbackMonthlyCap} onChange={v => updateCategory(c, "cashbackMonthlyCap", v)} suffix={symbol} optional />
-                      <NumberField label="Base cashback after category cap" value={categoryInputs[c]?.cashbackFallbackPercent} onChange={v => updateCategory(c, "cashbackFallbackPercent", v)} suffix="%" max={100} optional />
+                      <NumberField label="Base cashback after category cap" value={categoryInputs[c]?.cashbackFallbackPercent} onChange={v => updateCategory(c, "cashbackFallbackPercent", v)} suffix="%" max={100} optional /></>}
                       <NumberField label="Category earning rate" value={categoryInputs[c]?.milesRate} onChange={v => updateCategory(c, "milesRate", v)} optional />
                       <NumberField label="Category bonus spend cap" value={categoryInputs[c]?.milesBonusSpendCap} onChange={v => updateCategory(c, "milesBonusSpendCap", v)} suffix={symbol} optional />
                       <NumberField label="Base earning rate after cap" value={categoryInputs[c]?.milesFallbackRate} onChange={v => updateCategory(c, "milesFallbackRate", v)} optional />
