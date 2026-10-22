@@ -5,3 +5,4 @@
 - Keep illustrative flight scenarios in a separate data adapter with explicit hypothetical provenance; use published mileage only for exact itinerary matches so UI defaults cannot imply verified fares or availability.
 - Keep issuer spending terms in a country-aware catalogue referencing existing card IDs where available; evaluate conditional cashback and single-card rankings in a pure decimal module, excluding incomplete or stale terms from verified recommendations.
 - Keep provisional spending assumptions in the comparison presentation layer, clearly labelled and separate from verified ranking eligibility, so simpler initial estimates never weaken issuer-engine safeguards.
+- Gate main miles-card choices through complete, current earning profiles and supported conversion paths in the comparison adapter; keep comparison-specific fee evidence separate from the existing balance converter so manual fallback never implies verified earning terms.
