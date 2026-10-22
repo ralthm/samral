@@ -52,6 +52,21 @@ describe("usable miles-card catalogue", () => {
     expect(result.transferFee).toBe(27.25);
     expect(result.netMilesValue).toBe(560.86);
   });
+  it("DBS Altitude prorates 0.65 bank points, not 1.3 points, before 2:1 conversion", () => {
+    for (const id of ["sg-dbs-altitude-visa", "sg-dbs-altitude-amex"]) {
+      const terms = usableMilesTerms(id, "SG");
+      expect(terms?.ratePerDollar).toBe(0.65);
+      expect(terms?.annualFee).toBe(196.2);
+      const result = compareRewards({ monthlySpend: 3000, cashbackPercent: 1.7,
+        earningRate: terms?.ratePerDollar ?? 0, milesAnnualFee: terms?.annualFee,
+        annualTransferFee: terms?.transferFeeAmount, transfer: transferForCard(id, "krisflyer"),
+        ...rewardScenario("SG", "Tokyo", "Economy", "krisflyer") });
+      expect(result.rawAnnualRewards).toBe(23400);
+      expect(result.annualMiles).toBe(40000);
+      expect(result.untransferredRewards).toBe(3400);
+      expect(result.netMilesValue).toBe(560.86);
+    }
+  });
   it("stale terms cannot remain selectable", () => {
     vi.setSystemTime(new Date("2027-05-01T00:00:00Z"));
     expect(usableMilesTerms("sg-citi-premiermiles", "SG")).toBeUndefined();

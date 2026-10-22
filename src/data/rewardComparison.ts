@@ -69,7 +69,24 @@ export const milesEarningTerms: MilesEarningTerms[] = [{
     "Standard principal annual fee S$196.20 including GST is deducted once, with no waiver assumed. This compares new spending rewards only: 10,000 renewal miles conditional on fee payment and qualifying retail spend, welcome offers, Agoda and Kaligo bonuses are excluded. It is not a total card-benefits valuation.",
     "One standard points transfer at S$27.25 including GST; no instant-transfer waiver assumed. Transfers may take 14 business days and names must match. Refunds reverse earned miles.",
   ],
-}];
+}, ...["sg-dbs-altitude-visa", "sg-dbs-altitude-amex"].map((cardId): MilesEarningTerms => ({
+  cardId, units: "bank_points", ratePerDollar: 0.65, categories: [], annualFee: 196.2,
+  status: "verified", verifiedOn: "2026-10-22", supportedProgrammes: ["krisflyer", "asia-miles"], transferFeeAmount: 27.25,
+  sourceUrl: "https://www.dbs.com.sg/personal/cards/credit-cards/dbs-altitude-cards",
+  sourceUrls: ["https://www.dbs.com.sg/iwov-resources/pdf/cards/rewards_programme_tnc.pdf", "https://www.dbs.com.sg/personal/support/card-rewards-convert-dbs-points-to-frequent-flyer.html"],
+  exclusions: [
+    "Instalment-plan payments, interest, finance charges, cash advances/withdrawals, balance transfers, smart cash, AXS, SAM online and internet-banking bill payments, and all DBS fees",
+    "Excluded MCCs: 4784, 4829, 4900, 6010, 5047, 5199, 5960, 5993, 6011, 6012, 6050, 6051, 6211, 6300, 6381, 6399, 6513, 6529, 6530, 6534, 6540, 7523, 7349, 7511, 7995, 8062, 8211, 8220, 8241, 8244, 8299, 8398, 8651, 8661, 8699, 8999, 9211, 9222, 9223, 9311, 9399, 9402, 9405",
+    "Excluded transaction descriptions include AMAZE*, AXS*, AXS BizPay*, AXS PTE LTD*, BAGUS*, CANTINE*, EZLINK*, EZ-LINK*, PAYPAL *AXS PTE LTD*, RAZERPAY*, SAM -*, SAM PAYMENTS*, SEDAP*, SGEBIZ*, SHOPEEPAY*, SINGAPORE E-BUSINESS*, SINGTEL DASH*, SMOOVPAY*, TRANSIT 3*, YOUTRIP*. DBS’s list is non-exhaustive and subject to change.",
+  ],
+  assumptions: [
+    "Verified nominal local earning: 3.25 DBS Points per S$5 eligible SGD retail spending (up to 1.3 miles per S$1). This estimate prorates monthly eligible spending at 0.65 DBS Points per dollar, then applies published transfer blocks. It is not an exact statement-credit prediction.",
+    "Issuer terms award points per transaction, rounded down to whole DBS Points, with S$5 earning units. Monthly totals cannot reproduce individual transaction rounding and may overstate actual earnings. No local base-spending cap or minimum is stated in the checked schedule.",
+    "Eligible foreign-currency retail spending: 5.5 DBS Points per S$5 equivalent (up to 2.2 miles per S$1). Not applied to unknown category spending; foreign-currency charges and promotional bonuses are not modelled.",
+    "DBS Altitude Points do not expire. Convert 5,000 DBS Points into 10,000 KrisFlyer or Asia Miles, in published blocks, with S$27.25 including GST per redemption.",
+    "Standard principal annual fee S$196.20 including GST is deducted once, with no waiver assumed. This compares new spending rewards only and excludes the 5,000 DBS Points / 10,000 bonus miles associated with the annual fee. It is not a total card-benefits valuation. Confirm current waiver eligibility with DBS; fee waivers reverse the associated bonus points.",
+  ],
+}))];
 
 export const DESTINATIONS = [
   { name: "Tokyo", airports: ["NRT", "HND"] },
