@@ -1,11 +1,11 @@
 import { getCardById, getBankById } from "./milesCalculator";
 import type { ComparisonCountry } from "./rewardComparison";
 
-export type CashbackCategory = "dining" | "groceries" | "online" | "transport" | "travel" | "ewallet" | "autobilling" | "reduced" | "other";
+export type CashbackCategory = "dining" | "groceries" | "online" | "transport" | "travel" | "ewallet" | "autobilling" | "petrol" | "bills" | "cinema" | "overseas" | "weekend" | "contactless" | "reduced" | "other";
 /** Card-specific buckets: shown only for cards with a rule for them; never given another issuer's base rate. */
-export const CARD_SPECIFIC_CATEGORIES: CashbackCategory[] = ["ewallet", "autobilling", "reduced"];
+export const CARD_SPECIFIC_CATEGORIES: CashbackCategory[] = ["ewallet", "autobilling", "petrol", "bills", "cinema", "overseas", "weekend", "contactless", "reduced"];
 export const CASHBACK_CATEGORIES: Record<CashbackCategory, string> = {
-  dining: "Dining", groceries: "Groceries", online: "Online shopping", transport: "Transport", travel: "Travel", ewallet: "E-wallet transactions", autobilling: "Auto-billing", reduced: "UOB reduced-rate transactions", other: "Other eligible spending",
+  dining: "Dining", groceries: "Groceries", online: "Online shopping", transport: "Transport", travel: "Travel", ewallet: "E-wallet transactions", autobilling: "Auto-billing", petrol: "Petrol", bills: "Mobile & utility bills", cinema: "Cinema", overseas: "Overseas (foreign currency)", weekend: "Weekend (Sat–Sun)", contactless: "Contactless purchases of RM100+", reduced: "UOB reduced-rate transactions", other: "Other eligible spending",
 };
 export interface CashbackRule {
   categories: CashbackCategory[];
@@ -13,6 +13,10 @@ export interface CashbackRule {
   monthlyCap?: number;
   monthlySpendCap?: number;
   fallbackPercent: number;
+  /** Category earns nothing unless its own monthly spend reaches this amount. */
+  minimumCategorySpend?: number;
+  /** Rate chosen by total eligible monthly spend (highest tier reached); overrides ratePercent. */
+  tierRates?: { minimumMonthlySpend: number; ratePercent: number }[];
 }
 export interface CashbackProduct {
   id: string;
@@ -40,7 +44,7 @@ export interface CashbackProduct {
   sourceUrls: string[];
   verifiedOn?: string;
   reviewNotes?: string;
-  rounding: "monthly_cent_down" | "monthly_cent_nearest" | "category_cent_nearest" | "transaction_cent_down" | "transaction_cent_nearest";
+  rounding: "monthly_ringgit_down" | "monthly_cent_down" | "monthly_cent_nearest" | "category_cent_nearest" | "transaction_cent_down" | "transaction_cent_nearest";
   payoutNotes?: string;
 }
 

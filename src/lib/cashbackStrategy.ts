@@ -41,9 +41,13 @@ export function evaluateCashback(card: CashbackProduct, profile: SpendingProfile
       }, new Decimal(0));
       const bonusSpend = rule.monthlySpendCap === undefined ? ruleSpend : Decimal.min(ruleSpend, rule.monthlySpendCap);
       ruledSpend = ruledSpend.plus(ruleSpend);
-      let categoryReward = bonusSpend.mul(rule.ratePercent).div(100);
+      // Tiered rates follow total eligible spend; a missed category minimum earns nothing for that category.
+      const tier = rule.tierRates?.filter(t => eligible.gte(t.minimumMonthlySpend)).at(-1);
+      const rate = rule.tierRates ? tier?.ratePercent ?? 0 : rule.ratePercent;
+      const meetsMinimum = ruleSpend.gte(rule.minimumCategorySpend ?? 0);
+      let categoryReward = meetsMinimum ? bonusSpend.mul(rate).div(100) : new Decimal(0);
       if (rule.monthlyCap !== undefined) categoryReward = Decimal.min(categoryReward, rule.monthlyCap);
-      categoryReward = categoryReward.plus(ruleSpend.minus(bonusSpend).mul(rule.fallbackPercent).div(100));
+      if (meetsMinimum) categoryReward = categoryReward.plus(ruleSpend.minus(bonusSpend).mul(rule.fallbackPercent).div(100));
       roundedRules = roundedRules.plus(categoryReward.toDecimalPlaces(2, Decimal.ROUND_HALF_UP));
       reward = reward.minus(ruleSpend.mul(base).div(100)).plus(categoryReward);
     }
@@ -51,7 +55,7 @@ export function evaluateCashback(card: CashbackProduct, profile: SpendingProfile
   }
   if (!qualified && card.belowMinimumMonthlyCap !== undefined) reward = Decimal.min(reward, card.belowMinimumMonthlyCap);
   if (qualified && card.rounding === "category_cent_nearest") reward = eligible.minus(ruledSpend).mul(base).div(100).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).plus(roundedRules);
-  reward = reward.toDecimalPlaces(2, card.rounding === "monthly_cent_down" ? Decimal.ROUND_DOWN : Decimal.ROUND_HALF_UP);
+  reward = card.rounding === "monthly_ringgit_down" ? reward.floor() : reward.toDecimalPlaces(2, card.rounding === "monthly_cent_down" ? Decimal.ROUND_DOWN : Decimal.ROUND_HALF_UP);
   const gross = reward.mul(12);
   return { card, grossAnnual: gross.toNumber(), netAnnual: gross.minus(card.annualFee ?? 0).toDecimalPlaces(2).toNumber(), qualified,
     reason: qualified ? undefined : `Below the ${card.minimumMonthlySpend} monthly minimum; ${card.belowMinimumPercent ?? card.baseRatePercent}% applies.` };
