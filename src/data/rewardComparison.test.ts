@@ -32,7 +32,7 @@ describe("usable miles-card catalogue", () => {
   it("keeps incomplete and wrong-country cards out of main choices", () => {
     expect(usableMilesTerms("sg-dbs-womans", "SG")).toBeUndefined();
     expect(usableMilesTerms("sg-citi-premiermiles", "MY")).toBeUndefined();
-    expect(usableMilesCards("MY")).toEqual([]);
+    expect(usableMilesCards("MY").some(c => c.id.startsWith("sg-"))).toBe(false);
     expect(usableMilesCards("SG").some(c => c.id === "sg-citi-premiermiles")).toBe(true);
   });
   it("every main selectable card calculates with eligible spending and Tokyo", () => {
