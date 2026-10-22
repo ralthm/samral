@@ -20,7 +20,7 @@ describe("Malaysian cashback", () => {
     expect(evaluateCashback(ambank, profile(1400, { dining: 500 }), today).grossAnnual).toBe(33.6);
   });
   it("every listed Malaysian cashback card has complete current terms", () => {
-    for (const card of cashbackProducts.filter(c => c.country === "MY")) expect(completeCashbackTerms(card, today), card.id).toBe(true);
+    for (const card of cashbackProducts.filter(c => c.country === "MY" && !["my-maybank-fcb", "my-amex-cashback-gold", "my-cimb-petronas-vi", "my-cimb-petronas-vp"].includes(c.id))) expect(completeCashbackTerms(card, today), card.id).toBe(true);
   });
 });
 
@@ -130,3 +130,14 @@ describe("AmBank and AFFIN thresholds", () => {
   });
 });
 
+
+it("cards with unconfirmed terms never calculate", () => {
+  for (const id of ["my-maybank-fcb", "my-amex-cashback-gold", "my-cimb-petronas-vi", "my-cimb-petronas-vp"]) expect(annual(id, 3000)).toBeNull();
+});
+
+describe("UOB ONE (per-category caps, statement-month threshold)", () => {
+  it("Platinum below RM1,500: 0.2% on everything", () => expect(annual("my-uob-one-platinum", 1400, { petrol: 300 })).toBe(33.6));
+  it("Platinum caps each category at RM15; extra spend earns nothing", () => expect(annual("my-uob-one-platinum", 2000, { petrol: 300, dining: 100 })).toBe(337.2));
+  it("Classic threshold RM800 and RM10 caps", () => expect(annual("my-uob-one-classic", 1000, { grab: 200, groceries: 50 })).toBe(186));
+  it("e-wallet top-ups (other than GrabPay) are ineligible", () => expect(annual("my-uob-one-classic", 1000, { ewallet: 100 })).toBeNull());
+});
