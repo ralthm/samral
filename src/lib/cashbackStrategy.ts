@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 import { freshnessOf } from "./dataFreshness";
-import type { CashbackCategory, CashbackProduct } from "@/data/cashbackCards";
+import { CARD_SPECIFIC_CATEGORIES, type CashbackCategory, type CashbackProduct } from "@/data/cashbackCards";
 
 export interface SpendingProfile {
   monthlySpend: number;
@@ -25,7 +25,7 @@ export function evaluateCashback(card: CashbackProduct, profile: SpendingProfile
   if (!completeCashbackTerms(card, today)) reason = "Spending terms are incomplete or awaiting review.";
   else if (excluded.gt(spend) || allocated.gt(eligible)) reason = "Spending amounts exceed your monthly total.";
   else if (card.rules.length && !profile.categoriesConfirmed) reason = "Confirm your eligible spending breakdown.";
-  else if ((profile.categories.reduced ?? 0) > 0 && !card.rules.some(r => r.categories.includes("reduced"))) reason = "Reduced-rate transactions need issuer-specific eligibility mapping; this alternative is not ranked.";
+  else if (CARD_SPECIFIC_CATEGORIES.some(c => (profile.categories[c] ?? 0) > 0 && !card.rules.some(r => r.categories.includes(c)))) reason = "Some spending you entered (e-wallet, auto-billing or reduced-rate) has no verified rule for this card; remove it from the breakdown to compare.";
   else if (card.requirements.length && !profile.requirementsConfirmed) reason = "Confirm the card’s qualification requirements.";
   if (reason) return { card, netAnnual: null, grossAnnual: null, qualified: false, reason };
   const qualified = eligible.gte(card.minimumMonthlySpend ?? 0);
