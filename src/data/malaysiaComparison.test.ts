@@ -19,12 +19,8 @@ describe("Malaysian cashback", () => {
   it("AmBank pays only 0.2% below the RM1,500 threshold", () => {
     expect(evaluateCashback(ambank, profile(1400, { dining: 500 }), today).grossAnnual).toBe(33.6);
   });
-  it("incomplete Malaysian cards are listed but never calculated", () => {
-    for (const id of ["my-maybank-2-amex", "my-cimb-cash-rebate", "my-pb-quantum-visa", "my-rhb-shell-visa"]) {
-      const card = cashbackProducts.find(c => c.id === id)!;
-      expect(completeCashbackTerms(card, today)).toBe(false);
-      expect(evaluateCashback(card, profile(3000), today).grossAnnual).toBeNull();
-    }
+  it("every listed Malaysian cashback card has complete current terms", () => {
+    for (const card of cashbackProducts.filter(c => c.country === "MY")) expect(completeCashbackTerms(card, today), card.id).toBe(true);
   });
 });
 
@@ -97,5 +93,40 @@ describe("AFFIN DUO Visa Cash Back", () => {
   it("3% on online spending", () => expect(evaluateCashback(affin, profile(3000, { online: 500 }), today).grossAnnual).toBe(180));
   it("e-wallet sub-cap RM30 sits inside the RM30 overall cap", () => expect(evaluateCashback(affin, profile(3000, { online: 800, ewallet: 1500 }), today).grossAnnual).toBe(360));
   it("other issuers never give their base rate to e-wallet spending", () => expect(evaluateCashback(ambank, profile(2000, { ewallet: 300 }), today).grossAnnual).toBeNull());
+});
+
+const card = (id: string) => cashbackProducts.find(c => c.id === id)!;
+const annual = (id: string, spend: number, categories = {}) => evaluateCashback(card(id), profile(spend, categories), today).grossAnnual;
+describe("Maybank 2 American Express (weekend 5%, RM50 cap)", () => {
+  it("no weekend breakdown earns nothing", () => expect(annual("my-maybank-2-amex", 3000)).toBe(0));
+  it("5% on weekend spending", () => expect(annual("my-maybank-2-amex", 3000, { weekend: 600 })).toBe(360));
+  it("cap reached at RM1,000 weekend spend; beyond earns nothing", () => expect(annual("my-maybank-2-amex", 3000, { weekend: 1500 })).toBe(600));
+  it("e-wallet reloads are ineligible", () => expect(annual("my-maybank-2-amex", 3000, { ewallet: 200 })).toBeNull());
+});
+describe("CIMB Cash Rebate Platinum (2%/5%, shared RM30 cap, whole-ringgit rounding)", () => {
+  it("2% below RM3,000 plus 0.2% other, rounded down", () => expect(annual("my-cimb-cash-rebate", 2000, { groceries: 500, petrol: 300 })).toBe(216));
+  it("5% at RM3,000+ capped at RM30 across categories", () => expect(annual("my-cimb-cash-rebate", 3500, { groceries: 500, petrol: 300 })).toBe(420));
+  it("general spending only earns 0.2%", () => expect(annual("my-cimb-cash-rebate", 3500)).toBe(84));
+  it("dining has no bonus and earns 0.2%", () => expect(annual("my-cimb-cash-rebate", 2000, { dining: 1000 })).toBe(48));
+});
+describe("Public Bank Quantum Visa (1% contactless RM100+, RM20 cap)", () => {
+  it("other spending earns no cashback", () => expect(annual("my-pb-quantum-visa", 3000)).toBe(0));
+  it("1% on qualifying contactless", () => expect(annual("my-pb-quantum-visa", 3000, { contactless: 1000 })).toBe(120));
+  it("cap and beyond-cap spending", () => expect(annual("my-pb-quantum-visa", 3000, { contactless: 3000 })).toBe(240));
+  it("petrol is ineligible", () => expect(annual("my-pb-quantum-visa", 3000, { petrol: 100 })).toBeNull());
+});
+describe("RHB Shell Visa / Visa-i (tiered by total spend, category minimums and caps)", () => {
+  it("below RM1,000 earns nothing", () => expect(annual("my-rhb-shell-visa", 900, { petrol: 300 })).toBe(0));
+  it("tier 2: Shell 5%; groceries under RM250 minimum earn nothing; other 0.2%", () => expect(annual("my-rhb-shell-visa", 2500, { petrol: 300, groceries: 200 })).toBe(228));
+  it("tier 3 caps: Shell RM30, groceries RM10, online RM10", () => expect(annual("my-rhb-shell-visa", 3500, { petrol: 400, groceries: 300, online: 600 })).toBe(652.8));
+  it("other spending below its RM500 minimum earns nothing", () => expect(annual("my-rhb-shell-visa", 1200, { petrol: 800 })).toBe(288));
+  it("weekend split has no RHB rule", () => expect(annual("my-rhb-shell-visa", 2000, { weekend: 100 })).toBeNull());
+});
+describe("AmBank and AFFIN thresholds", () => {
+  it("AmBank spending beyond each RM100 bonus band earns 0.2%", () => expect(annual("my-ambank-cash-rebate", 1500, { dining: 1500 })).toBe(153.6));
+  it("annual figures are twelve months with no annual fee", () => {
+    const r = evaluateCashback(card("my-affin-duo-cashback"), profile(3000, { online: 500 }), today);
+    expect(r.grossAnnual).toBe(180); expect(r.grossAnnual).toBe((r.netAnnual ?? 0));
+  });
 });
 
