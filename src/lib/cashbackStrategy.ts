@@ -42,7 +42,8 @@ export function evaluateCashback(card: CashbackProduct, profile: SpendingProfile
       const bonusSpend = rule.monthlySpendCap === undefined ? ruleSpend : Decimal.min(ruleSpend, rule.monthlySpendCap);
       ruledSpend = ruledSpend.plus(ruleSpend);
       // Tiered rates follow total eligible spend; a missed category minimum earns nothing for that category.
-      const tier = rule.tierRates?.filter(t => eligible.gte(t.minimumMonthlySpend)).at(-1);
+      const reached = rule.tierRates?.filter(t => eligible.gte(t.minimumMonthlySpend)) ?? [];
+      const tier = reached[reached.length - 1];
       const rate = rule.tierRates ? tier?.ratePercent ?? 0 : rule.ratePercent;
       const meetsMinimum = ruleSpend.gte(rule.minimumCategorySpend ?? 0);
       let categoryReward = meetsMinimum ? bonusSpend.mul(rate).div(100) : new Decimal(0);
