@@ -1,6 +1,12 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterAll } from "vitest";
 import { calculateEntry } from "@/lib/milesCalculator";
 import { findApplicablePromotions, isPromotionActive, promotions } from "@/data/promotions";
+
+// Both legs ended (Cathay 31 Jul, CIMB 31 Aug 2026). Pin the clock inside the
+// documented campaign window so these campaign-maths tests stay meaningful.
+vi.useFakeTimers();
+vi.setSystemTime(new Date("2026-07-22T04:00:00Z"));
+afterAll(() => vi.useRealTimers());
 
 // The Cathay-funded 10% leg ends 31 July 2026 while the CIMB-funded 15% leg
 // runs to 31 August 2026, so expectations are derived from whether each leg
@@ -96,5 +102,13 @@ describe("CIMB × Cathay Asia Miles campaign", () => {
 
     const septemberNone = findApplicablePromotions("cimb", "asia-miles", "cg-cimb-bonus", "2026-09-01");
     expect(septemberNone).toEqual([]);
+  });
+
+  it("after both campaigns end, no expired bonus is applied", () => {
+    vi.setSystemTime(new Date("2026-10-22T04:00:00Z"));
+    const r = amResult(500_000, [CATHAY_PROMO]);
+    expect(r.bonusPartnerPoints).toBe(0);
+    expect(r.promotionalPartnerPoints).toBe(30_000);
+    vi.setSystemTime(new Date("2026-07-22T04:00:00Z"));
   });
 });
