@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { milesEarningTerms, usableMilesCards, usableMilesTerms, transferForCard } from "./rewardComparison";
+import { milesEarningTerms, usableMilesCards, usableMilesTerms, transferForCard, comparisonTargets, publishedEconomyReturnMiles } from "./rewardComparison";
 import { compareRewards } from "../lib/rewardComparison";
 import { rewardScenario } from "./rewardScenarios";
 
@@ -7,6 +7,20 @@ beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date("2026-10-22T12:
 afterEach(() => vi.useRealTimers());
 
 describe("usable miles-card catalogue", () => {
+  it("uses only matching published one-person return economy awards for flight coverage", () => {
+    const target = comparisonTargets("SG", "Tokyo", "Economy", "krisflyer")[0];
+    expect(publishedEconomyReturnMiles(target)).toBe(51000);
+    expect(publishedEconomyReturnMiles(target, true)).toBeUndefined();
+    expect(publishedEconomyReturnMiles(comparisonTargets("SG", "Tokyo", "Business", "krisflyer")[0])).toBeUndefined();
+    expect(publishedEconomyReturnMiles(comparisonTargets("SG", "Tokyo", "Economy", "asia-miles")[0])).toBeUndefined();
+  });
+  it("never labels secondary or observed award pricing as published flight coverage", () => {
+    const target = comparisonTargets("SG", "Tokyo", "Economy", "krisflyer")[0];
+    expect(target).toBeDefined();
+    if (!target) return;
+    expect(publishedEconomyReturnMiles({ ...target, source: { ...target.source, sourceType: "verified_secondary" } })).toBeUndefined();
+    expect(publishedEconomyReturnMiles({ ...target, verificationLevel: "observed-redemption-data" })).toBeUndefined();
+  });
   it("uses Citi's sourced 1.2 local rate, not 2.2 foreign or promotional bonuses", () => {
     const terms = usableMilesTerms("sg-citi-premiermiles", "SG");
     expect(terms?.ratePerDollar).toBe(1.2);

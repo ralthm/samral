@@ -9,7 +9,7 @@ import MilesCardPicker from "@/components/MilesCardPicker";
 import ComparisonCardDetails from "@/components/ComparisonCardDetails";
 import { CardArtwork } from "@/components/milesCalculator/CardArtwork";
 import { getProgrammeById, isDirectEarnCard, getCardById } from "@/data/milesCalculator";
-import { CATEGORY_LABELS, DESTINATIONS, cardProgrammes, comparisonTargets, earningUnit, usableMilesTerms, returnMiles, transferForCard, type ComparisonCountry, type SpendingCategory } from "@/data/rewardComparison";
+import { CATEGORY_LABELS, DESTINATIONS, cardProgrammes, comparisonTargets, earningUnit, usableMilesTerms, returnMiles, publishedEconomyReturnMiles, transferForCard, type ComparisonCountry, type SpendingCategory } from "@/data/rewardComparison";
 import { rewardScenario } from "@/data/rewardScenarios";
 import { type RewardCategory, type RewardComparisonInput } from "@/lib/rewardComparison";
 import { compareFeeScenarios, annualFlightCoverage, type AnnualFeeStatus } from "@/lib/rewardOutcomes";
@@ -141,10 +141,7 @@ export default function CashbackVsMiles() {
   const unresolvedFees = primaryScenario.cashback.basis === "unresolved" || primaryScenario.miles.basis === "unresolved";
   const conditionalFees = unresolvedFees || feeScenarios.length > 1;
   const feeBasis = (basis: string, amount: number) => basis === "unresolved" ? "annual fee unknown; no deduction modelled" : basis === "waived" ? "annual fee waived" : amount === 0 ? "zero annual fee entered or sourced" : "annual fee paid";
-  const publishedEconomyTarget = cabin === "Economy" && target && awardOverride === undefined
-    && ["official_airline", "official_loyalty_programme"].includes(target.source.sourceType)
-    && target.verificationLevel !== "observed-redemption-data" ? target : undefined;
-  const coverage = annualFlightCoverage(result.annualMiles, publishedEconomyTarget ? returnMiles(publishedEconomyTarget, 1) : undefined);
+  const coverage = annualFlightCoverage(result.annualMiles, publishedEconomyReturnMiles(target, awardOverride !== undefined));
 
   const resetFlight = () => { setAwardOverride(undefined); setTargetId(""); };
   const selectCountry = (value: string) => {
