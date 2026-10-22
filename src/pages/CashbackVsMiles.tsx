@@ -9,7 +9,7 @@ import MilesCardPicker from "@/components/MilesCardPicker";
 import ComparisonCardDetails from "@/components/ComparisonCardDetails";
 import { CardArtwork } from "@/components/milesCalculator/CardArtwork";
 import { getProgrammeById, isDirectEarnCard, getCardById } from "@/data/milesCalculator";
-import { DESTINATIONS, cardProgrammes, comparisonTargets, earningUnit, usableMilesTerms, returnMiles, publishedEconomyReturnMiles, transferForCard, type ComparisonCountry } from "@/data/rewardComparison";
+import { destinationsFor, cardProgrammes, comparisonTargets, earningUnit, usableMilesTerms, returnMiles, publishedEconomyReturnMiles, transferForCard, type ComparisonCountry } from "@/data/rewardComparison";
 import { rewardScenario } from "@/data/rewardScenarios";
 import { compareRewards, type RewardCategory, type RewardComparisonInput } from "@/lib/rewardComparison";
 import { annualFlightCoverage } from "@/lib/rewardOutcomes";
@@ -137,7 +137,7 @@ export default function CashbackVsMiles() {
 
   const resetFlight = () => { setAwardOverride(undefined); setTargetId(""); };
   const selectCountry = (value: string) => {
-    setCountry(value as ComparisonCountry); setCardId(""); setCashbackId(""); setProgramme(value === "MY" ? "enrich" : "krisflyer"); setExisting(0);
+    setCountry(value as ComparisonCountry); if (!destinationsFor(value as ComparisonCountry).some(d => d.name === city)) setCity("Tokyo"); setCardId(""); setCashbackId(""); setProgramme(value === "MY" ? "enrich" : "krisflyer"); setExisting(0);
     setCashbackPercent(1.7); setCashMinimum(0); setCashFallback(0); setEarnCap(undefined); setEarnFallback(0); setEarningRate(1.4); setFeeOverride(undefined); setFeeConfirmed(false); resetFlight();
     setMode("illustrative"); setCashFare(undefined); setTaxes(undefined);
     setCashbackCap(undefined); setQuarterCap(undefined);
@@ -204,7 +204,7 @@ export default function CashbackVsMiles() {
               <NumberField label="Monthly credit card spending" value={spend} onChange={setSpend} suffix={symbol} />
               <div className="grid min-w-0 gap-2 text-sm"><div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">Cashback card</span>{selectedCashback && <ComparisonCardDetails cashback={selectedCashback}>{calculationDetails}</ComparisonCardDetails>}</div><CashbackCardPicker cards={cashbackProducts.filter(c => c.country === country)} value={cashbackId} onChange={selectCashback} /></div>
               <div className="grid min-w-0 gap-2 text-sm"><div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">Miles card</span><ComparisonCardDetails cardId={cardId} programme={programme}>{calculationDetails}</ComparisonCardDetails></div><MilesCardPicker country={country} value={cardId} onChange={selectCard} rate={earningRate} /></div>
-              <SelectField label="Travel destination" value={city} onChange={v => { setCity(v); resetFlight(); setMode("illustrative"); }}>{DESTINATIONS.map(d => <option key={d.name}>{d.name}</option>)}</SelectField>
+              <SelectField label="Travel destination" value={city} onChange={v => { setCity(v); resetFlight(); setMode("illustrative"); }}>{destinationsFor(country).map(d => <option key={d.name}>{d.name}</option>)}</SelectField>
             </div>
           </section>
           <section aria-label="Your comparison" className="min-w-0">

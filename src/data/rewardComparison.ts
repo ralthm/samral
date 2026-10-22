@@ -96,7 +96,13 @@ export const DESTINATIONS = [
   { name: "Hong Kong", airports: ["HKG"] },
   { name: "Taipei", airports: ["TPE"] },
   { name: "London", airports: ["LHR"] },
+  { name: "Singapore", airports: ["SIN"], countries: ["MY"] as ComparisonCountry[] },
 ];
+
+/** Destinations shown for a market; a home-market city is never a destination. */
+export function destinationsFor(country: ComparisonCountry) {
+  return DESTINATIONS.filter(d => !("countries" in d) || d.countries?.includes(country));
+}
 
 export function comparisonCards(country: ComparisonCountry) {
   return cards.filter(c => getCountryForCard(c) === country && (isConversionEligibleCard(c) || isDirectEarnCard(c)));
