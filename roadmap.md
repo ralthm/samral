@@ -29,7 +29,9 @@
 - [x] Tests for MY caps/thresholds, conversions, ratio differences, fee-excluded break-even and country switching; browser check.
 
 - [x] Malaysian card audit: official-source verification, AFFIN DUO and Maybank Visa Infinite added, AmBank preview test, CIMB × Cathay test dates fixed.
-- Open (blocked on issuer documents): Maybank 2 Amex, CIMB Cash Rebate, PB Quantum Visa, RHB Shell cashback; CIMB Visa Infinite and HSBC Visa Signature miles; transfer minimums/charges for HSBC, UOB and Maybank; Maybank 2 KrisFlyer 10,000→500 block.
+- [x] All six listed Malaysian cashback cards verified, calculation-ready and preview-tested (tiered rates, category minimums, shared caps).
+- [x] Registry cashback cards audited: UOB ONE Platinum/Classic verified; FC Barcelona, Amex Cash Back Gold, CIMB PETRONAS VI-i/VP-i listed with exact gaps; Shopee (coins), Grab (discontinued), UOB Simple (finance-charge rebate), YOLO (unidentified) not cashback-on-spending.
+- Open (blocked on issuer documents): CIMB Visa Infinite and HSBC Visa Signature miles; transfer minimums/charges for HSBC, UOB and Maybank; Maybank 2 KrisFlyer 10,000→500 block.
 
 ## Verification and limitations
 - Experience repair: OCBC INFINITY has complete terms and the clean S$3,200 scenario already calculated; inherited hidden allocations could block it under a misleading generic heading. Allocation amounts are now shared and always editable in advanced settings; excess entry is limited with inline feedback, reducing spending flags existing excess, and unsupported reduced-rate mapping remains explicitly rejected. Default five inputs remain; discovery UI is removed but engine retained. Detailed methodology and issuer restrictions are in Card details. 88 focused regression tests pass; browser verifies S$614.40 gross / S$418.20 fee-paid cashback, S$1,054.12 illustrative miles value before the unknown miles fee, paid/waived outcomes, fallback, category recovery, original Miles Calculator and 638/390-width overflow checks without runtime errors. No financial engine or issuer records changed.

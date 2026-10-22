@@ -21,7 +21,7 @@ export default function CashbackCardPicker({ cards, value, onChange }: { cards: 
         <CommandEmpty>No matching cards. Use manual terms.</CommandEmpty>
         <CommandGroup><CommandItem onSelect={() => choose("")}>Manual / unsupported card{!value && <Check className="ml-auto h-4 w-4" />}</CommandItem></CommandGroup>
         {banks.map(bank => <CommandGroup key={bank} heading={bank}>{cards.filter(c => cashbackBank(c) === bank).map(c => <CommandItem key={c.id} value={`${bank} ${cashbackName(c)}`} onSelect={() => choose(c.id)}>
-          <span className="min-w-0">{cashbackName(c)}<span className="block text-xs text-muted-foreground">{completeCashbackTerms(c) ? "Verified ongoing-spend terms" : "Awaiting complete verification"}</span></span>{value === c.id && <Check className="ml-auto h-4 w-4 shrink-0" />}
+          <span className="min-w-0">{cashbackName(c)}{!completeCashbackTerms(c) && <span className="line-clamp-2 block text-xs text-muted-foreground">Not calculated: {c.reviewNotes ?? "official terms incomplete."}</span>}</span>{value === c.id && <Check className="ml-auto h-4 w-4 shrink-0" />}
         </CommandItem>)}</CommandGroup>)}
       </CommandList></Command>
     </PopoverContent></Popover>

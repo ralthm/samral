@@ -1,11 +1,11 @@
-import { getCardById, getBankById } from "./milesCalculator";
+import { getBankById } from "./milesCalculator";
 import type { ComparisonCountry } from "./rewardComparison";
 
-export type CashbackCategory = "dining" | "groceries" | "online" | "transport" | "travel" | "ewallet" | "autobilling" | "reduced" | "other";
+export type CashbackCategory = "dining" | "groceries" | "online" | "transport" | "travel" | "ewallet" | "autobilling" | "petrol" | "grab" | "bills" | "cinema" | "overseas" | "weekend" | "contactless" | "reduced" | "other";
 /** Card-specific buckets: shown only for cards with a rule for them; never given another issuer's base rate. */
-export const CARD_SPECIFIC_CATEGORIES: CashbackCategory[] = ["ewallet", "autobilling", "reduced"];
+export const CARD_SPECIFIC_CATEGORIES: CashbackCategory[] = ["ewallet", "autobilling", "petrol", "grab", "bills", "cinema", "overseas", "weekend", "contactless", "reduced"];
 export const CASHBACK_CATEGORIES: Record<CashbackCategory, string> = {
-  dining: "Dining", groceries: "Groceries", online: "Online shopping", transport: "Transport", travel: "Travel", ewallet: "E-wallet transactions", autobilling: "Auto-billing", reduced: "UOB reduced-rate transactions", other: "Other eligible spending",
+  dining: "Dining", groceries: "Groceries", online: "Online shopping", transport: "Transport", travel: "Travel", ewallet: "E-wallet transactions", autobilling: "Auto-billing", petrol: "Petrol", grab: "Grab app spending", bills: "Mobile & utility bills", cinema: "Cinema", overseas: "Overseas (foreign currency)", weekend: "Weekend (Sat–Sun)", contactless: "Contactless purchases of RM100+", reduced: "UOB reduced-rate transactions", other: "Other eligible spending",
 };
 export interface CashbackRule {
   categories: CashbackCategory[];
@@ -13,6 +13,10 @@ export interface CashbackRule {
   monthlyCap?: number;
   monthlySpendCap?: number;
   fallbackPercent: number;
+  /** Category earns nothing unless its own monthly spend reaches this amount. */
+  minimumCategorySpend?: number;
+  /** Rate chosen by total eligible monthly spend (highest tier reached); overrides ratePercent. */
+  tierRates?: { minimumMonthlySpend: number; ratePercent: number }[];
 }
 export interface CashbackProduct {
   id: string;
@@ -40,7 +44,7 @@ export interface CashbackProduct {
   sourceUrls: string[];
   verifiedOn?: string;
   reviewNotes?: string;
-  rounding: "monthly_cent_down" | "monthly_cent_nearest" | "category_cent_nearest" | "transaction_cent_down" | "transaction_cent_nearest";
+  rounding: "monthly_ringgit_down" | "monthly_cent_down" | "monthly_cent_nearest" | "category_cent_nearest" | "transaction_cent_down" | "transaction_cent_nearest";
   payoutNotes?: string;
 }
 
@@ -112,10 +116,26 @@ export const cashbackProducts: CashbackProduct[] = [
     verifiedOn: "2026-10-22", rounding: "category_cent_nearest",
     payoutNotes: "Terms effective 1 November 2025. With RM1,500+ eligible statement-cycle spending: 10% on online, dining (MCC 5811–5814), shopping & grocery and public transport (not online), each capped at RM10 cashback, then 0.2%. Other eligible spending 0.2%, unlimited. Below RM1,500 everything earns 0.2%. Statement cycles are approximated as calendar months. An online transaction with a dining, shopping & grocery or public transport merchant code earns only one 10% rebate: enter it in one category only. E-wallet and petrol spending are excluded, so leave them out of your monthly total.",
   },
-  { id: "my-maybank-2-amex", name: "Maybank 2 Gold/Platinum American Express", bankId: "maybank", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
-    sourceUrls: ["https://www.maybank2u.com.my/maybank2u/malaysia/en/personal/cards/credit/maybank_2_platinum_card.page"], reviewNotes: "Weekend 5% cashback (RM50 monthly cap) and 0% weekday cashback are published, but the full current terms could not be retrieved to confirm weekend dating and payout rules. Your weekday/weekend split would also be needed." },
-  { id: "my-cimb-cash-rebate", name: "CIMB Cash Rebate Platinum", bankId: "cimb", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
-    sourceUrls: ["https://www.cimb.com.my/en/personal/day-to-day-banking/cards/credit-card/cimb-cash-rebate-platinum-credit-card.html"], reviewNotes: "The 2%/5% tier depends on your statement balance, not spending, and the official terms both include and exclude recurring and e-wallet payments. The cap applies to all selected categories combined (RM30)." },
+  {
+    id: "my-maybank-2-amex", name: "Maybank 2 Gold/Platinum American Express", bankId: "maybank", country: "MY", status: "verified", availability: "open",
+    baseRatePercent: 0, minimumMonthlySpend: 0,
+    rules: [{ categories: ["weekend"], ratePercent: 5, monthlyCap: 50, fallbackPercent: 0 }],
+    exclusions: ["government bodies (MCC 9211, 9222, 9223, 9311, 9399, 9402, 9405), utilities (MCC 4900) and e-wallet reloads", "JomPAY, FPX and MyCDD", "EzyCash, EzyPay, EzyPay Plus, Cash Treats, cash advances, balance transfers and quasi-cash", "fees, profit and interest charges; refunded, disputed, unauthorised or fraudulent transactions; business spending"],
+    requirements: [],
+    sourceUrls: ["https://www.maybank2u.com.my/maybank2u/malaysia/en/personal/cards/credit/maybank_2_platinum_card.page", "https://www.maybank2u.com.my/iwov-resources/pdf/personal/cards/credit_cards/GRCC-CashBack-TnC.pdf", "https://www.maybank2u.com.my/iwov-resources/pdf/personal/cards/credit_cards/M2C-newbenefits_faq.pdf", "https://www.maybank2u.com.my/maybank2u/malaysia/en/personal/announcements/2026/january/tc-update-for-maybank-2-cards.page"],
+    verifiedOn: "2026-10-22", rounding: "monthly_cent_nearest",
+    payoutNotes: "5% cashback on eligible Saturday and Sunday spending, local or overseas, capped at RM50 per calendar month. No cashback on weekdays: weekday Amex spending earns TreatsPoints, which are not included here. No minimum spend; cashback is credited only once it reaches RM1. Enter weekend spending in the breakdown; without it the estimate is RM0. Earning rules unchanged in the January 2026 update. Weekend is judged by transaction date as described by Maybank; posting-date edge cases may differ.",
+  },
+  {
+    id: "my-cimb-cash-rebate", name: "CIMB Cash Rebate Platinum", bankId: "cimb", country: "MY", status: "verified", availability: "open",
+    baseRatePercent: 0.2, minimumMonthlySpend: 0,
+    rules: [{ categories: ["groceries", "petrol", "cinema", "bills"], ratePercent: 2, tierRates: [{ minimumMonthlySpend: 0, ratePercent: 2 }, { minimumMonthlySpend: 3000, ratePercent: 5 }], monthlyCap: 30, fallbackPercent: 0 }],
+    exclusions: ["instalment plans including CashLite, cash advances, balance transfers and conversions", "quasi-cash, betting and gaming; fees, late charges, reversals and fraudulent transactions", "charity (MCC 8398) and government (MCC 9211, 9222, 9223, 9311, 9399, 9402, 9405)", "JomPAY, FPX and DuitNow QR; general recurring payments and e-wallet MCC 6540 other than the petrol and bill payments the terms list as included", "business spending"],
+    requirements: [],
+    sourceUrls: ["https://www.cimb.com.my/en/personal/day-to-day-banking/cards/credit-card/cimb-cash-rebate-platinum-credit-card.html", "https://www.cimb.com.my/content/dam/cimb/personal/documents/tnc/cards/credit-card/conventional/cash-rebate-platinum-tnc.pdf"],
+    verifiedOn: "2026-10-22", rounding: "monthly_ringgit_down",
+    payoutNotes: "Terms version 18 September 2024. Groceries (MCC 5411/5422/5451), petrol (MCC 5541/5542, plus Setel), cinema (MCC 7832) and mobile/utility bills paid by standing instruction earn 2%, or 5% when the monthly statement balance is RM3,000 or more. The RM30 cap is shared by all four categories combined; spending beyond it earns nothing extra. Other eligible spending earns 0.2%, unlimited. Monthly cashback is rounded down to whole ringgit. Estimate assumption: your monthly spending stands in for your statement balance. The terms list recurring payments and e-wallet MCC 6540 as excluded but specifically include standing-instruction bills and Setel petrol; this estimate follows the specific inclusions.",
+  },
   {
     id: "my-affin-duo-cashback", name: "AFFIN DUO Visa Cash Back", bankId: "affin", country: "MY", status: "verified",
     baseRatePercent: 0, minimumMonthlySpend: 0, monthlyCap: 30,
@@ -129,14 +149,76 @@ export const cashbackProducts: CashbackProduct[] = [
     verifiedOn: "2026-10-22", rounding: "transaction_cent_down",
     payoutNotes: "Generic credit-card terms version 31 (1 February 2026). 3% on online/e-commerce, e-wallet and auto-billing transactions; 0% on all other spending. E-wallet cashback is capped at RM30 within the overall cap. Overall cap is RM30 when the Visa Cash Back card's previous statement balance is below RM3,000 and RM50 at RM3,000 or more; this estimate conservatively uses RM30. Per-transaction amounts are truncated to two decimals, which monthly totals only approximate.",
   },
-  { id: "my-pb-quantum-visa", name: "Public Bank Quantum Visa", bankId: "publicbank", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
-    sourceUrls: ["https://www.pbebank.com/en/cards/our-cards/pb-quantum-credit-cards-2/"], reviewNotes: "1% on contactless transactions of RM100 or more (RM20 cap) depends on individual transaction sizes, and no dedicated cashback terms document was found." },
-  { id: "my-rhb-shell-visa", name: "RHB Shell Visa / Visa-i", bankId: "rhb", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
-    sourceUrls: ["https://www.rhbgroup.com/personal/cards/credit-cards/rhb-shell-visa-credit-card/index.html"], reviewNotes: "The 2026 terms could not be read. Treatment below RM1,000, below category minimums and after caps, plus full exclusions, remain unconfirmed for both the Visa and Visa-i." },
+  {
+    id: "my-pb-quantum-visa", name: "Public Bank Quantum Visa", bankId: "publicbank", country: "MY", status: "verified", availability: "open",
+    baseRatePercent: 0, minimumMonthlySpend: 0,
+    rules: [{ categories: ["contactless"], ratePercent: 1, monthlyCap: 20, fallbackPercent: 0 }],
+    exclusions: ["e-wallet reloads, petrol (MCC 5541/5542/5172), insurance and takaful (MCC 5960/6300)", "casino (MCC 7995), quasi-cash (MCC 6050/6051), cash advances, balance transfers, Flexipay instalments and PB Easy Cash", "recurring payments, direct debits, Public Bank online/mobile-banking and ATM payments", "government (MCC 9211, 9222, 9223, 9311, 9399, 9402, 9405), charity (MCC 8398) and UTAR/TARC campus transactions"],
+    requirements: [],
+    sourceUrls: ["https://www.pbebank.com/en/cards/our-cards/pb-quantum-credit-cards-2/", "https://www.pbebank.com/media/rdvptenz/exclusion-list-for-card-rewards.pdf"],
+    verifiedOn: "2026-10-22", rounding: "monthly_cent_nearest",
+    payoutNotes: "1% cashback on eligible contactless transactions of at least RM100 each, capped at RM20 per statement cycle (principal and supplementary combined). Other spending earns VIP Points, not cashback, so it adds RM0 here. Enter only individual contactless purchases of RM100 or more in that category. Public Bank publishes no separate cashback rounding or refund rules; the rewards exclusion list (REV280725) applies.",
+  },
+  {
+    id: "my-rhb-shell-visa", name: "RHB Shell Visa / Visa-i", bankId: "rhb", country: "MY", status: "verified", availability: "open",
+    baseRatePercent: 0, minimumMonthlySpend: 1000, belowMinimumPercent: 0,
+    rules: [
+      { categories: ["petrol"], ratePercent: 3, tierRates: [{ minimumMonthlySpend: 1000, ratePercent: 3 }, { minimumMonthlySpend: 2000, ratePercent: 5 }, { minimumMonthlySpend: 3000, ratePercent: 12 }], monthlyCap: 30, fallbackPercent: 0 },
+      { categories: ["groceries"], ratePercent: 1, tierRates: [{ minimumMonthlySpend: 1000, ratePercent: 1 }, { minimumMonthlySpend: 2000, ratePercent: 2 }, { minimumMonthlySpend: 3000, ratePercent: 5 }], minimumCategorySpend: 250, monthlyCap: 10, fallbackPercent: 0 },
+      { categories: ["online", "ewallet"], ratePercent: 1, tierRates: [{ minimumMonthlySpend: 1000, ratePercent: 1 }, { minimumMonthlySpend: 2000, ratePercent: 2 }, { minimumMonthlySpend: 3000, ratePercent: 5 }], minimumCategorySpend: 500, monthlyCap: 10, fallbackPercent: 0 },
+      { categories: ["bills"], ratePercent: 1, tierRates: [{ minimumMonthlySpend: 1000, ratePercent: 1 }, { minimumMonthlySpend: 2000, ratePercent: 2 }, { minimumMonthlySpend: 3000, ratePercent: 5 }], minimumCategorySpend: 250, monthlyCap: 10, fallbackPercent: 0 },
+      { categories: ["overseas"], ratePercent: 1, tierRates: [{ minimumMonthlySpend: 1000, ratePercent: 1 }, { minimumMonthlySpend: 2000, ratePercent: 2 }, { minimumMonthlySpend: 3000, ratePercent: 5 }], minimumCategorySpend: 500, monthlyCap: 50, fallbackPercent: 0 },
+      { categories: ["other", "dining", "transport", "travel"], ratePercent: 0.2, minimumCategorySpend: 500, fallbackPercent: 0 },
+    ],
+    exclusions: ["CashXcess, balance transfers, Dial-An-Instalment, balance conversions, instalment plans, cash advances and quasi-cash (excluded from total spend)", "fees, profit/finance charges, late charges and taxes (excluded from total spend)", "JomPAY, DuitNow, FPX, non-Shell petrol, charity (MCC 8398) and government (MCC 9211, 9222, 9223, 9311, 9399, 9402, 9405): count toward your tier but earn no cashback", "recurring, auto-debit and mail/telephone-order transactions do not earn the online rate"],
+    requirements: [],
+    sourceUrls: ["https://www.rhbgroup.com/personal/cards/credit-cards/rhb-shell-visa-credit-card/index.html", "https://www.rhbgroup.com/-/media/Files/personal/cards/credit-cards/overview/RHB-Shell-Visa-Credit-Card_Terms.pdf", "https://www.rhbgroup.com/islamic/cards/credit-cards/rhb-shell-visa-credit-card-i/index.html", "https://www.rhbgroup.com/-/media/Files/personal/cards/credit-cards/overview/RHB_Shell_VISA_Credit_Card_i_Terms.pdf"],
+    verifiedOn: "2026-10-22", rounding: "category_cent_nearest",
+    payoutNotes: "Terms effective 27 January 2026; the Visa and Visa-i tables are identical. Your total monthly eligible spend sets the tier: RM1,000–1,999.99, RM2,000–2,999.99, or RM3,000+. Below RM1,000 there is no tier and no cashback. Shell petrol 3% / 5% / 12% (cap RM30). Groceries, e-wallet top-ups plus online (one shared allowance), and utilities 1% / 2% / 5%, each capped at RM10. Overseas 1% / 2% / 5%, capped at RM50. Other spending 0.2%, unlimited. Each category needs its own minimum (groceries and utilities RM250; online/e-wallet, overseas and other RM500) or earns nothing; capped spending earns nothing further. An online grocery purchase counts once, under groceries. Shell petrol only: enter other petrol as excluded spending. Utilities here means telecoms, pay-TV and electricity bills.",
+  },
+  {
+    id: "my-uob-one-platinum", existingCardId: "uob-one", name: "UOB ONE Platinum", bankId: "uob", country: "MY", status: "verified", availability: "open",
+    baseRatePercent: 0.2, minimumMonthlySpend: 1500, belowMinimumPercent: 0.2,
+    rules: [
+      { categories: ["petrol"], ratePercent: 10, monthlyCap: 15, fallbackPercent: 0 },
+      { categories: ["groceries"], ratePercent: 10, monthlyCap: 15, fallbackPercent: 0 },
+      { categories: ["dining"], ratePercent: 10, monthlyCap: 15, fallbackPercent: 0 },
+      { categories: ["grab"], ratePercent: 10, monthlyCap: 15, fallbackPercent: 0 },
+    ],
+    exclusions: ["government transactions including utility bills and postal services; JomPAY and Personal Internet Banking", "top-ups other than GrabPay (Setel Wallet top-ups excluded)", "alimony, bail, charity and religious transactions; balance transfers, cash withdrawals, Easi-Payment, Flexi Credit and instalment plans", "fees, interest and credit-shield premiums; Liberty insurance; refunded, disputed, unauthorised or fraudulent transactions"],
+    requirements: [],
+    sourceUrls: ["https://www.uob.com.my/personal/cards/credit-cards/uob-one-card.page", "https://www.uob.com.my/assets/web-resources/personal/pdf/announcement/credit-card/one-card-010926.pdf"],
+    verifiedOn: "2026-10-22", rounding: "category_cent_nearest",
+    payoutNotes: "Terms effective 1 September 2026. With RM1,500+ retail spend in the statement month (local and foreign currency), petrol (MCC 5541/5542, incl. Setel CardTerus), groceries, dining (MCC 5812/5814) and Grab app spending each earn 10%, capped at RM15 per category; the cap is the maximum rebate, so further spending in that category earns nothing extra. Other retail spending earns 0.2%, unlimited. Below RM1,500 everything earns 0.2%. Groceries means listed supermarkets only (AEON, Cold Storage, Econsave, Giant, Jaya Grocer, Lotus's, Mydin, Village Grocer and others in the terms); other grocery stores belong in other spending. Statement month approximated as a calendar month.",
+  },
+  {
+    id: "my-uob-one-classic", existingCardId: "uob-one", name: "UOB ONE Classic", bankId: "uob", country: "MY", status: "verified", availability: "open",
+    baseRatePercent: 0.2, minimumMonthlySpend: 800, belowMinimumPercent: 0.2,
+    rules: [
+      { categories: ["petrol"], ratePercent: 10, monthlyCap: 10, fallbackPercent: 0 },
+      { categories: ["groceries"], ratePercent: 10, monthlyCap: 10, fallbackPercent: 0 },
+      { categories: ["dining"], ratePercent: 10, monthlyCap: 10, fallbackPercent: 0 },
+      { categories: ["grab"], ratePercent: 10, monthlyCap: 10, fallbackPercent: 0 },
+    ],
+    exclusions: ["government transactions including utility bills and postal services; JomPAY and Personal Internet Banking", "top-ups other than GrabPay (Setel Wallet top-ups excluded)", "alimony, bail, charity and religious transactions; balance transfers, cash withdrawals, Easi-Payment, Flexi Credit and instalment plans", "fees, interest and credit-shield premiums; Liberty insurance; refunded, disputed, unauthorised or fraudulent transactions"],
+    requirements: [],
+    sourceUrls: ["https://www.uob.com.my/personal/cards/credit-cards/uob-one-card.page", "https://www.uob.com.my/assets/web-resources/personal/pdf/announcement/credit-card/one-card-010926.pdf"],
+    verifiedOn: "2026-10-22", rounding: "category_cent_nearest",
+    payoutNotes: "Terms effective 1 September 2026. With RM800+ retail spend in the statement month (local and foreign currency), petrol (MCC 5541/5542, incl. Setel CardTerus), groceries, dining (MCC 5812/5814) and Grab app spending each earn 10%, capped at RM10 per category; the cap is the maximum rebate, so further spending in that category earns nothing extra. Other retail spending earns 0.2%, unlimited. Below RM800 everything earns 0.2%. Groceries means listed supermarkets only (AEON, Cold Storage, Econsave, Giant, Jaya Grocer, Lotus's, Mydin, Village Grocer and others in the terms); other grocery stores belong in other spending. Statement month approximated as a calendar month.",
+  },
+  { id: "my-maybank-fcb", name: "Maybank FC Barcelona Visa Signature", bankId: "maybank", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
+    sourceUrls: ["https://www.maybank2u.com.my/maybank2u/malaysia/en/personal/cards/credit/maybank_fc_barcelona_visa_signature.page"], reviewNotes: "Product page says 1% with a RM50 monthly cap, but Maybank's only terms document still shows older 2%/10% rates, so the current controlling terms are unconfirmed." },
+  { id: "my-amex-cashback-gold", name: "American Express Cash Back Gold (Maybank)", bankId: "maybank", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
+    sourceUrls: ["https://www.maybank2u.com.my/maybank2u/malaysia/en/personal/cards/credit/amex_cash_back_gold.page"], reviewNotes: "1% local / 1.5% overseas is advertised, but the cashback terms document could not be retrieved to confirm caps, exclusions and the overseas definition." },
+  { id: "my-cimb-petronas-vi", name: "CIMB PETRONAS Visa Infinite-i", bankId: "cimb", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
+    sourceUrls: ["https://www.cimb.com.my/en/personal/day-to-day-banking/cards/credit-card/cimb-petronas-visa-infinite-i-credit-card.html"], reviewNotes: "Rates depend on statement balance (RM1,500 / RM4,000); cashback below RM1,500, the rate on other local spending and after-cap treatment are not published." },
+  { id: "my-cimb-petronas-vp", name: "CIMB PETRONAS Visa Platinum-i", bankId: "cimb", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
+    sourceUrls: ["https://www.cimb.com.my/en/personal/day-to-day-banking/cards/credit-card/cimb-petronas-visa-platinum-i-credit-card.html"], reviewNotes: "Only 'up to' rates are published; tier thresholds, lower-tier rates, caps and other-spending rates are not confirmed." },
 ];
 
 export function cashbackName(product: CashbackProduct) {
-  return (product.existingCardId ? getCardById(product.existingCardId)?.name : undefined) ?? product.name;
+  // Variant names (e.g. Classic vs Platinum) must stay distinct even when they share a registry card.
+  return product.name;
 }
 export function cashbackBank(product: CashbackProduct) {
   return getBankById(product.bankId)?.name ?? product.bankId;
