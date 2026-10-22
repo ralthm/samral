@@ -1,6 +1,6 @@
 # Cashback vs Miles Calculator
-- [ ] Repair immediate OCBC INFINITY comparison and retain explicit unknown-fee/manual safeguards.
-- [ ] Remove visible discovery modes, simplify advanced details and validate shared category allocations; regression/browser test the requested S$3,200 scenario.
+- [x] Repair immediate OCBC INFINITY comparison and retain explicit unknown-fee/manual safeguards.
+- [x] Remove visible discovery modes, simplify advanced details and validate shared category allocations; regression/browser test the requested S$3,200 scenario.
 - [x] Add optional paid/waived/unknown annual-fee scenarios and transparent reward breakdowns without changing default inputs.
 - [x] Add published-only theoretical annual economy flight coverage and regression/browser checks.
 - [x] Verify usable miles-card rules from official issuer sources and separate unsupported cards into manual entry.
@@ -12,7 +12,7 @@
 - [x] Add searchable bank-grouped cards and spending-profile comparison modes.
 - [x] Apply verified conditional rules and rank supported alternatives transparently.
 - [x] Test caps, thresholds, exclusions and categories; verify existing calculator safeguards.
-- [ ] Complete category-bonus coverage across DBS, HSBC, OCBC 365 and Maybank, Malaysia issuer coverage, and actual miles-card rankings — blocked on complete accessible issuer evidence and dated qualification models; never rank partial records.
+- Deferred, outside the repair scope: category-bonus and Malaysia issuer expansion and actual miles-card rankings require complete issuer evidence; no new cards or integrations are added.
 - [x] Simplify primary inputs and retain all advanced controls.
 - [x] Add labelled destination examples and automatic sourced award requirements.
 - [x] Run mathematical regressions and verify immediate results and quote overrides.
@@ -22,6 +22,7 @@
 - [x] Document assumptions and first-version limitations.
 
 ## Verification and limitations
+- Experience repair: OCBC INFINITY has complete terms and the clean S$3,200 scenario already calculated; inherited hidden allocations could block it under a misleading generic heading. Allocation amounts are now shared and always editable in advanced settings; excess entry is limited with inline feedback, reducing spending flags existing excess, and unsupported reduced-rate mapping remains explicitly rejected. Default five inputs remain; discovery UI is removed but engine retained. Detailed methodology and issuer restrictions are in Card details. 88 focused regression tests pass; browser verifies S$614.40 gross / S$418.20 fee-paid cashback, S$1,054.12 illustrative miles value before the unknown miles fee, paid/waived outcomes, fallback, category recovery, original Miles Calculator and 638/390-width overflow checks without runtime errors. No financial engine or issuer records changed.
 - Fee/outcome refinement: 203 targeted tests pass. Browser verified both paid/waived/unknown fee choices, all four known-fee combinations, explicit missing-fee warning, gross-to-net breakdowns, and published-only flight counts independent of travellers and existing balances. Manual, business-cabin, secondary/observed and unmatched award requirements cannot imply published economy coverage. Country resets, 638/390-width overflow checks and the original Miles Calculator pass with no runtime errors; preview build OK. Default inputs, comparison engine and payment flows unchanged. Earlier issuer-coverage expansion remains outside this refinement and blocked on evidence.
 - Miles selection fix: scoped eligible-local-spending profiles for Citi PremierMiles and DBS Altitude Visa/AMEX checked against official issuer sources on 22 October 2026. Main named choices all calculate; unsupported and Malaysian cards use separate manual entry. No bonus-category or FX earning is silently applied. Transaction rounding is approximate; standard annual fees are included but conditional annual-fee bonus miles are explicitly excluded from this spending-only comparison. Citi transfer increments retain the existing published-block assumption and require confirmation in the issuer app.
 - Latest verification: 137 targeted tests pass. Browser selected SC Simply Cash, all three supported miles cards, S$3,000 monthly spending and Tokyo; each returned 40,000 transferable miles and S$560.86 estimated net miles value. Named and unlisted manual fallback, official details links, 638/390 screen-bounded internally scrolling menus and original Miles Calculator route pass without runtime errors. Latest preview build OK. Existing engines and payment links unchanged.
