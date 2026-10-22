@@ -1,4 +1,6 @@
 # Cashback vs Miles Calculator
+- [ ] Repair immediate OCBC INFINITY comparison and retain explicit unknown-fee/manual safeguards.
+- [ ] Remove visible discovery modes, simplify advanced details and validate shared category allocations; regression/browser test the requested S$3,200 scenario.
 - [x] Add optional paid/waived/unknown annual-fee scenarios and transparent reward breakdowns without changing default inputs.
 - [x] Add published-only theoretical annual economy flight coverage and regression/browser checks.
 - [x] Verify usable miles-card rules from official issuer sources and separate unsupported cards into manual entry.
