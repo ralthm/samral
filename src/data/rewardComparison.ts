@@ -89,6 +89,53 @@ export const milesEarningTerms: MilesEarningTerms[] = [{
   ],
 }))];
 
+// Malaysian eligible-local-spend base profiles. Category bonuses with unconfirmed caps are NOT applied.
+const myVerified = "2026-10-22";
+milesEarningTerms.push({
+  cardId: "hsbc-travelone", units: "bank_points", ratePerDollar: 1, categories: [], status: "verified", verifiedOn: myVerified,
+  availability: "open", supportedProgrammes: ["enrich", "krisflyer", "asia-miles"],
+  sourceUrl: "https://www.hsbc.com.my/credit-cards/products/travelone/rewards/",
+  sourceUrls: ["https://www.hsbc.com.my/content/dam/hsbc/my/docs/TravelOne-rewards-credit-card-terms-and-conditions.pdf"],
+  exclusions: ["Cash advances, fees, interest, balance transfers and instalment plans", "Transactions excluded under HSBC's rewards terms and conditions"],
+  assumptions: [
+    "Base rate: 1 HSBC Reward Point per RM1 of other eligible local spending.",
+    "5 points per RM1 on local dining and travel is published, but its monthly cap was not confirmed, so this estimate does not apply it.",
+    "Transfer ratios differ by programme: 21 points → 1 Enrich point; 25 points → 1 KrisFlyer mile or Asia Mile. Points expire three years from the end of the month earned.",
+    "No published transfer charge was confirmed; it is not included. Enter one in the accuracy section if you know it.",
+  ],
+}, {
+  cardId: "uob-prvi-elite", units: "bank_points", ratePerDollar: 1, categories: [], status: "verified", verifiedOn: myVerified,
+  supportedProgrammes: ["enrich", "krisflyer", "asia-miles"],
+  sourceUrl: "https://www.uob.com.my/personal/cards/credit-cards/uob-prvi-miles-elite-card.page",
+  sourceUrls: ["https://www.uob.com.my/assets/web-resources/personal/images/card/credit-cards/uob-prvi-miles-elite-card/uob-prvi-miles-elite-terms-and-conditions.pdf", "https://www.uob.com.my/wealthbanking/banking/card-prvi-miles-elite.page"],
+  exclusions: ["Cash advances, fees, interest, balance transfers and instalment plans", "Transactions excluded under UOB's UNIRinggit terms"],
+  assumptions: [
+    "Base rate: 1 UNIRinggit (UNIRM) per RM1 of eligible local spending. 5 UNIRM per RM1 on airline spending in MYR is not applied to general spending.",
+    "12,000 UNIRM → 1,000 Enrich points, KrisFlyer miles or Asia Miles. UNIRM expire after three years at quarter-end.",
+    "No published transfer charge was confirmed; it is not included.",
+  ],
+}, {
+  cardId: "mbb-m2-platinum", units: "bank_points", ratePerDollar: 1, categories: [], status: "verified", verifiedOn: myVerified,
+  availability: "open", supportedProgrammes: ["enrich", "krisflyer", "asia-miles"],
+  sourceUrl: "https://www.maybank2u.com.my/maybank2u/malaysia/en/personal/cards/credit/maybank_2_platinum_card.page",
+  sourceUrls: ["https://www.maybank2u.com.my/maybank2u/malaysia/en/personal/announcements/2025/january/airmiles-revision.page"],
+  exclusions: ["Cash advances, fees, interest, balance transfers and instalment plans", "Transactions excluded under Maybank's TreatsPoints terms"],
+  assumptions: [
+    "Visa/Mastercard component only: 1 TreatsPoint per RM1 of eligible local spending. The American Express component's cashback is a separate card and not included here.",
+    "20,000 TreatsPoints → 1,000 Enrich points, KrisFlyer miles or Asia Miles. TreatsPoints expire after three years.",
+    "No published transfer charge was confirmed; it is not included.",
+  ],
+}, {
+  cardId: "hlb-infinite", units: "airline_miles", ratePerDollar: 1 / 6, categories: [], status: "verified", verifiedOn: myVerified,
+  supportedProgrammes: ["enrich"], transferFeeAmount: 0,
+  sourceUrl: "https://www.hlb.com.my/en/personal-banking/credit-cards/travel/infinite.html",
+  exclusions: ["Cash advances, fees, interest, balance transfers and instalment plans", "Transactions excluded under Hong Leong Bank's card terms"],
+  assumptions: [
+    "1 Enrich point per RM6 of other eligible spending, credited directly to Enrich; no bank-points transfer.",
+    "Dining (1 per RM1) and travel/specified retail (1 per RM4) bonuses are published but not applied unless you enter category rates.",
+  ],
+});
+
 export const DESTINATIONS = [
   { name: "Tokyo", airports: ["NRT", "HND"] },
   { name: "Bangkok", airports: ["BKK"] },
@@ -117,10 +164,12 @@ export function usableMilesTerms(cardId: string, country: ComparisonCountry) {
     || !terms.sourceUrl || !terms.verifiedOn || !terms.exclusions.length || !terms.assumptions?.length) return undefined;
   const age = (Date.now() - Date.parse(`${terms.verifiedOn}T00:00:00Z`)) / 86400000;
   if (!Number.isFinite(age) || age < 0 || age > 180) return undefined;
+  const card = cards.find(c => c.id === cardId);
+  if (card && isDirectEarnCard(card)) return terms.supportedProgrammes?.includes(getDirectEarnProgrammeId(card.cardGroupId) ?? "") ? terms : undefined;
   return terms.supportedProgrammes?.some(p => {
     const transfer = transferForCard(cardId, p);
-    return transfer && transfer.bankPointsPerBlock > 0 && transfer.partnerPointsPerBlock > 0
-      && (terms.transferFeeAmount !== undefined || transfer.transferFeeCurrency === (country === "SG" ? "SGD" : "MYR") && transfer.transferFeeAmount !== undefined);
+    // Transfer charges may be unpublished; the page labels them rather than assuming zero.
+    return transfer && transfer.bankPointsPerBlock > 0 && transfer.partnerPointsPerBlock > 0;
   }) ? terms : undefined;
 }
 
