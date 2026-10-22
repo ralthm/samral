@@ -32,7 +32,7 @@ function NumberField({ label, value, onChange, suffix, optional = false, max }: 
 
 function SelectField({ label, value, onChange, children }: { label: string; value: string; onChange: (s: string) => void; children: React.ReactNode }) {
   return <label className="grid min-w-0 gap-2 text-sm"><span className="text-muted-foreground">{label}</span>
-    <select className={inputClass} value={value} onChange={e => onChange(e.target.value)}>{children}</select>
+    <select aria-label={label} className={inputClass} value={value} onChange={e => onChange(e.target.value)}>{children}</select>
   </label>;
 }
 
