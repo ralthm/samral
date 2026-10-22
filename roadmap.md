@@ -21,6 +21,13 @@
 - [x] Test financial rules and verify new and existing calculator flows across screen sizes.
 - [x] Document assumptions and first-version limitations.
 
+## Fee removal and Malaysia support (Oct 2026)
+- [x] Remove annual card fees from page calculations, breakdowns, warnings and break-even; keep fee data as reference only.
+- [ ] Add verified Malaysian cashback cards (Maybank 2 Amex, CIMB Cash Rebate, AmBank Cash Rebate, AFFIN DUO, PB Quantum, RHB Shell).
+- [ ] Add verified Malaysian miles cards using existing transfer rules; incomplete cards go to the manual section.
+- [x] Malaysia-only Kuala Lumpur–Singapore destination; RM and KUL origin.
+- [ ] Tests for MY caps/thresholds, conversions, ratio differences, fee-excluded break-even and country switching; browser check.
+
 ## Verification and limitations
 - Experience repair: OCBC INFINITY has complete terms and the clean S$3,200 scenario already calculated; inherited hidden allocations could block it under a misleading generic heading. Allocation amounts are now shared and always editable in advanced settings; excess entry is limited with inline feedback, reducing spending flags existing excess, and unsupported reduced-rate mapping remains explicitly rejected. Default five inputs remain; discovery UI is removed but engine retained. Detailed methodology and issuer restrictions are in Card details. 88 focused regression tests pass; browser verifies S$614.40 gross / S$418.20 fee-paid cashback, S$1,054.12 illustrative miles value before the unknown miles fee, paid/waived outcomes, fallback, category recovery, original Miles Calculator and 638/390-width overflow checks without runtime errors. No financial engine or issuer records changed.
 - Fee/outcome refinement: 203 targeted tests pass. Browser verified both paid/waived/unknown fee choices, all four known-fee combinations, explicit missing-fee warning, gross-to-net breakdowns, and published-only flight counts independent of travellers and existing balances. Manual, business-cabin, secondary/observed and unmatched award requirements cannot imply published economy coverage. Country resets, 638/390-width overflow checks and the original Miles Calculator pass with no runtime errors; preview build OK. Default inputs, comparison engine and payment flows unchanged. Earlier issuer-coverage expansion remains outside this refinement and blocked on evidence.
