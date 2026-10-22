@@ -127,10 +127,10 @@ export default function CashbackVsMiles() {
     setUseCategories(false); setCategoryInputs({});
   };
   const selectCard = (value: string) => {
-    setCardId(value); setExisting(0); const available = value ? cardProgrammes(value).filter(id => getProgrammeById(id)?.programmeType === "airline_miles") : ["krisflyer"];
+    setCardId(value); setExisting(0); const available = value ? cardProgrammes(value).filter(id => getProgrammeById(id)?.programmeType === "airline_miles") : [country === "MY" ? "enrich" : "krisflyer"];
     setProgramme(available.includes(programme) ? programme : available[0] ?? "krisflyer");
     const verified = milesEarningTerms.find(t => t.cardId === value && t.status === "verified");
-    setEarningRate(value ? verified?.ratePerDollar : 1.4); setFeeConfirmed(false); setFeeOverride(undefined); resetFlight();
+    setEarningRate(value ? verified?.ratePerDollar : 1.4); setMilesFee(verified?.annualFee ?? 0); setFeeConfirmed(false); setFeeOverride(undefined); resetFlight();
   };
   const updateCategory = (category: SpendingCategory, key: keyof RewardCategory, value: number | undefined) => {
     setCategoryInputs(current => ({ ...current, [category]: { monthlySpend: 0, ...current[category], [key]: value } }));
@@ -167,9 +167,9 @@ export default function CashbackVsMiles() {
                 setCashbackId(value); const t = cashbackCardTerms.find(t => t.cardId === value);
                 if (!t) { setCashbackPercent(1.7); setCashbackCap(undefined); setQuarterCap(undefined); setCashMinimum(0); setCashFee(0); }
                 if (t) { setCashbackPercent(t.baseRatePercent); setCashbackCap(t.monthlyCap); setQuarterCap(t.quarterlyCap); setCashMinimum(t.minimumMonthlySpend ?? 0); setCashFee(t.annualFee ?? 0); }
-              }}><option value="">Illustrative cashback · 1.7%</option>{cashbackCardTerms.filter(t => t.country === country && t.status === "verified").map(t => <option key={t.cardId} value={t.cardId}>{getCardById(t.cardId)?.name}</option>)}</SelectField></div>
+              }}><option value="">Illustrative cashback · {cashbackPercent ?? "—"}%</option>{cashbackCardTerms.filter(t => t.country === country && t.status === "verified" && t.annualFee !== undefined).map(t => <option key={t.cardId} value={t.cardId}>{getCardById(t.cardId)?.name}</option>)}</SelectField></div>
               <div className="mt-4"><SelectField label="Miles card" value={cardId} onChange={selectCard}>
-                <option value="">Illustrative miles · 1.4 per dollar</option>{availableCards.filter(c => milesEarningTerms.some(t => t.cardId === c.id && t.status === "verified" && t.annualFee !== undefined)).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                <option value="">Illustrative miles · {cardId ? "manual" : earningRate ?? "—"} per dollar</option>{cardId && !milesEarningTerms.some(t => t.cardId === cardId && t.status === "verified" && t.annualFee !== undefined) && <option value={cardId}>{card?.name} · manual terms</option>}{availableCards.filter(c => milesEarningTerms.some(t => t.cardId === c.id && t.status === "verified" && t.annualFee !== undefined)).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </SelectField></div>
             </div>
             <p className="mt-3 text-xs leading-relaxed text-muted-foreground">Illustrative card choices, not issuer offers. Actual cards appear here only when complete spending terms are verified.</p>
