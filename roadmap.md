@@ -1,4 +1,7 @@
 # Cashback vs Miles Calculator
+- [ ] Simplify primary inputs and retain all advanced controls.
+- [ ] Add labelled destination examples and automatic sourced award requirements.
+- [ ] Run mathematical regressions and verify immediate results and quote overrides.
 - [x] Add deterministic comparison engine and transparent terms/data adapters.
 - [x] Add integrated calculator page and discreet discovery links.
 - [x] Test financial rules and verify new and existing calculator flows across screen sizes.
