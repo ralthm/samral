@@ -1,9 +1,11 @@
 import { getCardById, getBankById } from "./milesCalculator";
 import type { ComparisonCountry } from "./rewardComparison";
 
-export type CashbackCategory = "dining" | "groceries" | "online" | "transport" | "travel" | "reduced" | "other";
+export type CashbackCategory = "dining" | "groceries" | "online" | "transport" | "travel" | "ewallet" | "autobilling" | "reduced" | "other";
+/** Card-specific buckets: shown only for cards with a rule for them; never given another issuer's base rate. */
+export const CARD_SPECIFIC_CATEGORIES: CashbackCategory[] = ["ewallet", "autobilling", "reduced"];
 export const CASHBACK_CATEGORIES: Record<CashbackCategory, string> = {
-  dining: "Dining", groceries: "Groceries", online: "Online shopping", transport: "Transport", travel: "Travel", reduced: "UOB reduced-rate transactions", other: "Other eligible spending",
+  dining: "Dining", groceries: "Groceries", online: "Online shopping", transport: "Transport", travel: "Travel", ewallet: "E-wallet transactions", autobilling: "Auto-billing", reduced: "UOB reduced-rate transactions", other: "Other eligible spending",
 };
 export interface CashbackRule {
   categories: CashbackCategory[];
@@ -108,18 +110,29 @@ export const cashbackProducts: CashbackProduct[] = [
     requirements: [],
     sourceUrls: ["https://www.ambank.com.my/cards/credit-cards/ambank-cash-rebate-visa-platinum-card", "https://www.ambank.com.my/docs/ambankretaillibraries/terms-and-conditions/ambank-cash-rebate-platinum-card-tnc.pdf?sfvrsn=475f8553_1"],
     verifiedOn: "2026-10-22", rounding: "category_cent_nearest",
-    payoutNotes: "Terms effective 1 November 2025. With RM1,500+ eligible statement-cycle spending: 10% on online, dining (MCC 5811–5814), shopping & grocery and public transport (not online), each capped at RM10 cashback, then 0.2%. Other eligible spending 0.2%, unlimited. Below RM1,500 everything earns 0.2%. Statement cycles are approximated as calendar months.",
+    payoutNotes: "Terms effective 1 November 2025. With RM1,500+ eligible statement-cycle spending: 10% on online, dining (MCC 5811–5814), shopping & grocery and public transport (not online), each capped at RM10 cashback, then 0.2%. Other eligible spending 0.2%, unlimited. Below RM1,500 everything earns 0.2%. Statement cycles are approximated as calendar months. An online transaction with a dining, shopping & grocery or public transport merchant code earns only one 10% rebate: enter it in one category only. E-wallet and petrol spending are excluded, so leave them out of your monthly total.",
   },
   { id: "my-maybank-2-amex", name: "Maybank 2 Gold/Platinum American Express", bankId: "maybank", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
-    sourceUrls: ["https://www.maybank2u.com.my/maybank2u/malaysia/en/personal/cards/credit/maybank_2_platinum_card.page"], reviewNotes: "Weekend 5% cashback is capped at RM50 a month, but the weekday cashback rate and minimum-spend rule are not confirmed." },
+    sourceUrls: ["https://www.maybank2u.com.my/maybank2u/malaysia/en/personal/cards/credit/maybank_2_platinum_card.page"], reviewNotes: "Weekend 5% cashback (RM50 monthly cap) and 0% weekday cashback are published, but the full current terms could not be retrieved to confirm weekend dating and payout rules. Your weekday/weekend split would also be needed." },
   { id: "my-cimb-cash-rebate", name: "CIMB Cash Rebate Platinum", bankId: "cimb", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
-    sourceUrls: ["https://www.cimb.com.my/en/personal/day-to-day-banking/cards/credit-card/cimb-cash-rebate-platinum-credit-card.html"], reviewNotes: "Category caps, the lower-tier category rate and exclusions are not confirmed in official terms." },
-  { id: "my-affin-duo-cashback", name: "AFFIN DUO Visa Cash Back", bankId: "affin", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
-    sourceUrls: ["https://www.affinalways.com/en/affin-duo"], reviewNotes: "The cashback rate on non-category spending and any minimum spend are not confirmed." },
+    sourceUrls: ["https://www.cimb.com.my/en/personal/day-to-day-banking/cards/credit-card/cimb-cash-rebate-platinum-credit-card.html"], reviewNotes: "The 2%/5% tier depends on your statement balance, not spending, and the official terms both include and exclude recurring and e-wallet payments. The cap applies to all selected categories combined (RM30)." },
+  {
+    id: "my-affin-duo-cashback", name: "AFFIN DUO Visa Cash Back", bankId: "affin", country: "MY", status: "verified",
+    baseRatePercent: 0, minimumMonthlySpend: 0, monthlyCap: 30,
+    rules: [
+      { categories: ["online", "autobilling"], ratePercent: 3, fallbackPercent: 0 },
+      { categories: ["ewallet"], ratePercent: 3, monthlyCap: 30, fallbackPercent: 0 },
+    ],
+    exclusions: ["government payments (MCC 9211, 9222, 9223, 9311, 9399, 9402, 9405) and charity (MCC 8398)", "online banking, JomPAY, FPX and MOTO payments", "refunds; voided, reversed, disputed, unauthorised, fraudulent or unlawful transactions including illegal betting", "monthly instalments (EPP, CIP, BTiP, FPP), cash advances, fees, finance and late charges, taxes and card repayments"],
+    requirements: [],
+    sourceUrls: ["https://www.affinalways.com/affin-duo", "https://www.affinalways.com/storage/AffinAlways%20Collaterals/Personal%20Collaterals/Cards%20Conventional/TnC/AFFIN-CreditCard-Generic-TnC-ENG.pdf"],
+    verifiedOn: "2026-10-22", rounding: "transaction_cent_down",
+    payoutNotes: "Generic credit-card terms version 31 (1 February 2026). 3% on online/e-commerce, e-wallet and auto-billing transactions; 0% on all other spending. E-wallet cashback is capped at RM30 within the overall cap. Overall cap is RM30 when the Visa Cash Back card's previous statement balance is below RM3,000 and RM50 at RM3,000 or more; this estimate conservatively uses RM30. Per-transaction amounts are truncated to two decimals, which monthly totals only approximate.",
+  },
   { id: "my-pb-quantum-visa", name: "Public Bank Quantum Visa", bankId: "publicbank", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
-    sourceUrls: ["https://www.pbebank.com/en/cards/our-cards/pb-quantum-credit-cards-2/"], reviewNotes: "Cashback depends on contactless transactions of RM100 or more; exclusions and other-spend treatment are not confirmed." },
+    sourceUrls: ["https://www.pbebank.com/en/cards/our-cards/pb-quantum-credit-cards-2/"], reviewNotes: "1% on contactless transactions of RM100 or more (RM20 cap) depends on individual transaction sizes, and no dedicated cashback terms document was found." },
   { id: "my-rhb-shell-visa", name: "RHB Shell Visa / Visa-i", bankId: "rhb", country: "MY", status: "needs_review", rules: [], exclusions: [], requirements: [], rounding: "monthly_cent_nearest",
-    sourceUrls: ["https://www.rhbgroup.com/personal/cards/credit-cards/rhb-shell-visa-credit-card/index.html"], reviewNotes: "Treatment below RM1,000, below category minimums and after caps, plus full exclusions, are not confirmed." },
+    sourceUrls: ["https://www.rhbgroup.com/personal/cards/credit-cards/rhb-shell-visa-credit-card/index.html"], reviewNotes: "The 2026 terms could not be read. Treatment below RM1,000, below category minimums and after caps, plus full exclusions, remain unconfirmed for both the Visa and Visa-i." },
 ];
 
 export function cashbackName(product: CashbackProduct) {

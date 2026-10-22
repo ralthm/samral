@@ -15,7 +15,7 @@ import { compareRewards, type RewardCategory, type RewardComparisonInput } from 
 import { annualFlightCoverage } from "@/lib/rewardOutcomes";
 import { applySeoHead } from "@/lib/seoHead";
 import { track } from "@/lib/track";
-import { cashbackProducts, CASHBACK_CATEGORIES, type CashbackCategory } from "@/data/cashbackCards";
+import { cashbackProducts, CASHBACK_CATEGORIES, CARD_SPECIFIC_CATEGORIES, type CashbackCategory } from "@/data/cashbackCards";
 import { completeCashbackTerms, type SpendingProfile } from "@/lib/cashbackStrategy";
 import { boundedCategoryAmount, comparisonCashbackEstimate, spendingAllocation } from "@/lib/comparisonSpending";
 
@@ -285,7 +285,7 @@ export default function CashbackVsMiles() {
                   <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Without a breakdown, all spending is assumed to be other eligible purchases; no category bonuses are assumed. Enter each amount once for both cards.</p>
                   <p role="status" className={`mt-3 text-sm ${allocation.invalid ? "text-destructive" : "text-muted-foreground"}`}>Unallocated eligible spending: {cash(allocation.unallocated)} · allocated {cash(allocation.allocated)} of {cash(allocation.eligible)}.{allocation.invalid ? " Reduce category amounts or exclusions to restore the comparison." : " Unallocated spending uses the base rate."}</p>
                   {allocationFeedback && <p role="status" className="mt-2 text-sm text-destructive">{allocationFeedback}</p>}
-                  <div className="mt-4 grid grid-cols-2 gap-4">{categories.filter(c => c !== "reduced" || selectedCashback?.rules.some(r => r.categories.includes("reduced")) || (spendingProfile.categories.reduced ?? 0) > 0).map(c => <NumberField key={c} label={`${CASHBACK_CATEGORIES[c]} spending`} value={spendingProfile.categories[c] ?? 0} onChange={v => updateSpending(c, v)} suffix={symbol} />)}</div>
+                  <div className="mt-4 grid grid-cols-2 gap-4">{categories.filter(c => !CARD_SPECIFIC_CATEGORIES.includes(c) || selectedCashback?.rules.some(r => r.categories.includes(c)) || (spendingProfile.categories[c] ?? 0) > 0).map(c => <NumberField key={c} label={`${CASHBACK_CATEGORIES[c]} spending`} value={spendingProfile.categories[c] ?? 0} onChange={v => updateSpending(c, v)} suffix={symbol} />)}</div>
                   {!!selectedCashback?.requirements.length && <label className="mt-4 flex items-start gap-2 text-xs leading-relaxed text-muted-foreground"><input type="checkbox" className="mt-0.5 h-4 w-4 shrink-0 accent-primary" checked={spendingProfile.requirementsConfirmed} onChange={e => setSpendingProfile(p => ({ ...p, requirementsConfirmed: e.target.checked }))} />I meet this card’s requirements shown in Card details.</label>}
                 </fieldset>
                 <label className="flex items-center gap-2 text-sm"><input type="checkbox" className="h-4 w-4 accent-primary" checked={useCategories} onChange={e => setUseCategories(e.target.checked)} /> Add manual category reward rates</label>
