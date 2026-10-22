@@ -221,7 +221,7 @@ const clientResults: ClientResult[] = [
   },
   {
     id: "cpf-taiwan",
-    name: "Dr Wasu Kasimani",
+    name: "\n",
     title: "Senior General Manager",
     organisation: "Chau Yang Farm / Charoen Pokphand Foods",
     logo: cpfLogo,
