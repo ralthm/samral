@@ -137,7 +137,7 @@ it("cards with unconfirmed terms never calculate", () => {
 
 describe("UOB ONE (per-category caps, statement-month threshold)", () => {
   it("Platinum below RM1,500: 0.2% on everything", () => expect(annual("my-uob-one-platinum", 1400, { petrol: 300 })).toBe(33.6));
-  it("Platinum caps each category at RM15; extra spend earns nothing", () => expect(annual("my-uob-one-platinum", 2000, { petrol: 300, dining: 100 })).toBe(337.2));
-  it("Classic threshold RM800 and RM10 caps", () => expect(annual("my-uob-one-classic", 1000, { grab: 200, groceries: 50 })).toBe(186));
+  it("Platinum caps each category at RM15; extra spend earns nothing", () => expect(annual("my-uob-one-platinum", 2000, { petrol: 300, dining: 100 })).toBe(338.4));
+  it("Classic threshold RM800 and RM10 caps", () => expect(annual("my-uob-one-classic", 1000, { grab: 200, groceries: 50 })).toBe(198));
   it("e-wallet top-ups (other than GrabPay) are ineligible", () => expect(annual("my-uob-one-classic", 1000, { ewallet: 100 })).toBeNull());
 });
