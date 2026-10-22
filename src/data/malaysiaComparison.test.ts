@@ -20,7 +20,7 @@ describe("Malaysian cashback", () => {
     expect(evaluateCashback(ambank, profile(1400, { dining: 500 }), today).grossAnnual).toBe(33.6);
   });
   it("incomplete Malaysian cards are listed but never calculated", () => {
-    for (const id of ["my-maybank-2-amex", "my-cimb-cash-rebate", "my-affin-duo-cashback", "my-pb-quantum-visa", "my-rhb-shell-visa"]) {
+    for (const id of ["my-maybank-2-amex", "my-cimb-cash-rebate", "my-pb-quantum-visa", "my-rhb-shell-visa"]) {
       const card = cashbackProducts.find(c => c.id === id)!;
       expect(completeCashbackTerms(card, today)).toBe(false);
       expect(evaluateCashback(card, profile(3000), today).grossAnnual).toBeNull();
@@ -30,7 +30,7 @@ describe("Malaysian cashback", () => {
 
 describe("Malaysian miles", () => {
   it("only verified Malaysian cards appear in the main list", () => {
-    expect(usableMilesCards("MY").map(c => c.id).sort()).toEqual(["hlb-infinite", "hsbc-travelone", "mbb-m2-platinum", "uob-prvi-elite"]);
+    expect(usableMilesCards("MY").map(c => c.id).sort()).toEqual(["hlb-infinite", "hsbc-travelone", "mbb-m2-platinum", "mbb-visa-infinite", "uob-prvi-elite"]);
     expect(usableMilesTerms("hsbc-travelone", "SG")).toBeUndefined();
   });
   const miles = (id: string, programme: string) => compareRewards({ monthlySpend: 3000, cashbackPercent: 0.2, earningRate: usableMilesTerms(id, "MY")!.ratePerDollar,
@@ -60,3 +60,42 @@ describe("country switching and fee-excluded break-even", () => {
     expect(r.breakEvenCents).toBeCloseTo(1.214, 3);
   });
 });
+
+const run = (id: string, programme: string, monthlySpend: number) => compareRewards({ monthlySpend, cashbackPercent: 0.2, earningRate: usableMilesTerms(id, "MY")!.ratePerDollar,
+  transfer: transferForCard(id, programme), ...rewardScenario("MY", "Tokyo", "Economy", programme) });
+describe("realistic Malaysian spending: points → transferable miles → leftovers", () => {
+  it.each([
+    ["hsbc-travelone", "enrich", 3000, 36000, 1714, 6],
+    ["hsbc-travelone", "asia-miles", 3000, 36000, 1440, 0],
+    ["uob-prvi-elite", "enrich", 2500, 30000, 2000, 6000],
+    ["mbb-m2-platinum", "enrich", 3000, 36000, 1000, 16000],
+    ["mbb-visa-infinite", "krisflyer", 3000, 72000, 5000, 9500],
+  ])("%s → %s at RM%i/month", (id, programme, spend, raw, usable, left) => {
+    const r = run(id as string, programme as string, spend as number);
+    expect(r.rawAnnualRewards).toBe(raw);
+    expect(r.annualMiles).toBe(usable);
+    expect(r.untransferredRewards).toBe(left);
+    expect(r.grossMilesValue).toBeGreaterThan(0);
+  });
+  it("Hong Leong Infinite earns 6,000 Enrich points at RM3,000/month with nothing left over", () => {
+    const r = compareRewards({ monthlySpend: 3000, cashbackPercent: 0, earningRate: usableMilesTerms("hlb-infinite", "MY")!.ratePerDollar, ...rewardScenario("MY", "Tokyo", "Economy", "enrich") });
+    expect(r.annualMiles).toBeCloseTo(6000);
+    expect(r.untransferredRewards).toBe(0);
+  });
+  it("points below one transfer block are never usable miles", () => {
+    expect(run("mbb-m2-platinum", "enrich", 1500).annualMiles).toBe(0); // 18,000 < 20,000
+    expect(run("uob-prvi-elite", "enrich", 900).annualMiles).toBe(0); // 10,800 < 12,000
+  });
+  it("Maybank 2 Platinum does not offer KrisFlyer while its published block differs", () => {
+    expect(usableMilesTerms("mbb-m2-platinum", "MY")?.supportedProgrammes).toEqual(["enrich", "asia-miles"]);
+  });
+});
+
+describe("AFFIN DUO Visa Cash Back", () => {
+  const affin = cashbackProducts.find(c => c.id === "my-affin-duo-cashback")!;
+  it("earns nothing on uncategorised spending", () => expect(evaluateCashback(affin, profile(3000), today).grossAnnual).toBe(0));
+  it("3% on online spending", () => expect(evaluateCashback(affin, profile(3000, { online: 500 }), today).grossAnnual).toBe(180));
+  it("e-wallet sub-cap RM30 sits inside the RM30 overall cap", () => expect(evaluateCashback(affin, profile(3000, { online: 800, ewallet: 1500 }), today).grossAnnual).toBe(360));
+  it("other issuers never give their base rate to e-wallet spending", () => expect(evaluateCashback(ambank, profile(2000, { ewallet: 300 }), today).grossAnnual).toBeNull());
+});
+
