@@ -10,7 +10,7 @@ export interface SpendingProfile {
   requirementsConfirmed: boolean;
 }
 export function completeCashbackTerms(card: CashbackProduct, today?: string) {
-  return card.status === "verified" && card.baseRatePercent !== undefined && card.annualFee !== undefined
+  return card.status === "verified" && card.baseRatePercent !== undefined
     && !!card.verifiedOn && freshnessOf({ verifiedAt: card.verifiedOn }, today) === "current"
     && card.sourceUrls.length > 0 && card.exclusions.length > 0;
 }
@@ -28,8 +28,8 @@ export function evaluateCashback(card: CashbackProduct, profile: SpendingProfile
   else if ((profile.categories.reduced ?? 0) > 0 && !card.rules.some(r => r.categories.includes("reduced"))) reason = "Reduced-rate transactions need issuer-specific eligibility mapping; this alternative is not ranked.";
   else if (card.requirements.length && !profile.requirementsConfirmed) reason = "Confirm the card’s qualification requirements.";
   if (reason) return { card, netAnnual: null, grossAnnual: null, qualified: false, reason };
-  const base = card.baseRatePercent ?? 0;
   const qualified = eligible.gte(card.minimumMonthlySpend ?? 0);
+  const base = qualified ? card.baseRatePercent ?? 0 : card.belowMinimumPercent ?? card.baseRatePercent ?? 0;
   let reward = eligible.mul(base).div(100);
   let ruledSpend = new Decimal(0);
   let roundedRules = new Decimal(0);
@@ -49,11 +49,12 @@ export function evaluateCashback(card: CashbackProduct, profile: SpendingProfile
     }
     if (card.monthlyCap !== undefined) reward = Decimal.min(reward, card.monthlyCap);
   }
+  if (!qualified && card.belowMinimumMonthlyCap !== undefined) reward = Decimal.min(reward, card.belowMinimumMonthlyCap);
   if (qualified && card.rounding === "category_cent_nearest") reward = eligible.minus(ruledSpend).mul(base).div(100).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).plus(roundedRules);
   reward = reward.toDecimalPlaces(2, card.rounding === "monthly_cent_down" ? Decimal.ROUND_DOWN : Decimal.ROUND_HALF_UP);
   const gross = reward.mul(12);
   return { card, grossAnnual: gross.toNumber(), netAnnual: gross.minus(card.annualFee ?? 0).toDecimalPlaces(2).toNumber(), qualified,
-    reason: qualified ? undefined : `Below the ${card.minimumMonthlySpend} monthly minimum; base cashback only.` };
+    reason: qualified ? undefined : `Below the ${card.minimumMonthlySpend} monthly minimum; ${card.belowMinimumPercent ?? card.baseRatePercent}% applies.` };
 }
 
 export function rankCashback(cards: CashbackProduct[], profile: SpendingProfile, today?: string) {

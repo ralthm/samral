@@ -47,6 +47,7 @@ export interface MilesEarningTerms {
   assumptions?: string[];
   supportedProgrammes?: string[];
   transferFeeAmount?: number;
+  availability?: "open" | "existing_cardholders";
 }
 
 // Scoped ongoing eligible-local-spend profiles; never annualise promotions.
@@ -66,7 +67,7 @@ export const milesEarningTerms: MilesEarningTerms[] = [{
     "Eligible SGD retail spending: 1.2 Citi Miles per S$1, uncapped, no stated base-earning minimum. Each transaction is rounded down to a whole Citi Mile; monthly-total estimates can overstate actual credits.",
     "Eligible foreign-currency retail spending earns 2.2 Citi Miles per S$1 equivalent. Not applied to this local-spending estimate; foreign-currency charges are not modelled. No ordinary dining, grocery or online category bonus assumed.",
     "Citi Miles do not expire; they are bank rewards, not airline miles until transferred. Published schedule: 10,000 Citi Miles to 10,000 KrisFlyer or Asia Miles. This comparison uses existing transfer blocks; confirm current partner-specific minimums and increments in the Citi app.",
-    "Standard principal annual fee S$196.20 including GST is deducted once, with no waiver assumed. This compares new spending rewards only: 10,000 renewal miles conditional on fee payment and qualifying retail spend, welcome offers, Agoda and Kaligo bonuses are excluded. It is not a total card-benefits valuation.",
+    "Card annual fees are excluded from this rewards comparison. Spending rewards only: 10,000 renewal miles conditional on fee payment and qualifying retail spend, welcome offers, Agoda and Kaligo bonuses are excluded. It is not a total card-benefits valuation.",
     "One standard points transfer at S$27.25 including GST; no instant-transfer waiver assumed. Transfers may take 14 business days and names must match. Refunds reverse earned miles.",
   ],
 }, ...["sg-dbs-altitude-visa", "sg-dbs-altitude-amex"].map((cardId): MilesEarningTerms => ({
@@ -84,7 +85,7 @@ export const milesEarningTerms: MilesEarningTerms[] = [{
     "Issuer terms award points per transaction, rounded down to whole DBS Points, with S$5 earning units. Monthly totals cannot reproduce individual transaction rounding and may overstate actual earnings. No local base-spending cap or minimum is stated in the checked schedule.",
     "Eligible foreign-currency retail spending: 5.5 DBS Points per S$5 equivalent (up to 2.2 miles per S$1). Not applied to unknown category spending; foreign-currency charges and promotional bonuses are not modelled.",
     "DBS Altitude Points do not expire. Convert 5,000 DBS Points into 10,000 KrisFlyer or Asia Miles, in published blocks, with S$27.25 including GST per redemption.",
-    "Standard principal annual fee S$196.20 including GST is deducted once, with no waiver assumed. This compares new spending rewards only and excludes the 5,000 DBS Points / 10,000 bonus miles associated with the annual fee. It is not a total card-benefits valuation. Confirm current waiver eligibility with DBS; fee waivers reverse the associated bonus points.",
+    "Card annual fees are excluded from this rewards comparison. Spending rewards only; excludes the 5,000 DBS Points / 10,000 bonus miles associated with the annual fee. It is not a total card-benefits valuation. Confirm current waiver eligibility with DBS; fee waivers reverse the associated bonus points.",
   ],
 }))];
 
@@ -107,7 +108,6 @@ export function usableMilesTerms(cardId: string, country: ComparisonCountry) {
   const terms = milesEarningTerms.find(t => t.cardId === cardId && t.status === "verified");
   if (!terms || !comparisonCards(country).some(c => c.id === cardId)
     || !Number.isFinite(terms.ratePerDollar) || terms.ratePerDollar <= 0
-    || terms.annualFee === undefined || !Number.isFinite(terms.annualFee)
     || !terms.sourceUrl || !terms.verifiedOn || !terms.exclusions.length || !terms.assumptions?.length) return undefined;
   const age = (Date.now() - Date.parse(`${terms.verifiedOn}T00:00:00Z`)) / 86400000;
   if (!Number.isFinite(age) || age < 0 || age > 180) return undefined;
