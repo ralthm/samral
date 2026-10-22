@@ -9,7 +9,7 @@ import MilesCardPicker from "@/components/MilesCardPicker";
 import ComparisonCardDetails from "@/components/ComparisonCardDetails";
 import { CardArtwork } from "@/components/milesCalculator/CardArtwork";
 import { getProgrammeById, isDirectEarnCard, getCardById } from "@/data/milesCalculator";
-import { destinationsFor, cardProgrammes, comparisonTargets, earningUnit, usableMilesTerms, returnMiles, publishedEconomyReturnMiles, transferForCard, type ComparisonCountry } from "@/data/rewardComparison";
+import { destinationsFor, cardProgrammes, comparisonTargets, earningUnit, usableMilesTerms, returnMiles, publishedEconomyReturnMiles, transferForCard, implausibleEarningRate, type ComparisonCountry } from "@/data/rewardComparison";
 import { rewardScenario } from "@/data/rewardScenarios";
 import { compareRewards, type RewardCategory, type RewardComparisonInput } from "@/lib/rewardComparison";
 import { annualFlightCoverage } from "@/lib/rewardOutcomes";
@@ -109,7 +109,9 @@ export default function CashbackVsMiles() {
   const transferFee = feeOverride ?? knownFee ?? 0;
   const transferChargeUnpublished = !!terms && !direct && knownFee === undefined && feeOverride === undefined;
   const feeUnknown = !terms && !!card && !direct && knownFee === undefined && !transfer?.transferFeeSchedule && feeOverride === undefined;
-  const earningConfirmed = earningRate !== undefined && (cardId === "" || !!terms || feeConfirmed);
+  const implausibleRate = implausibleEarningRate(earningRate, transfer);
+  const customEarning = !!terms && earningRate !== undefined && earningRate !== terms.ratePerDollar;
+  const earningConfirmed = earningRate !== undefined && !implausibleRate && (cardId === "" || (!!terms && !customEarning) || feeConfirmed);
   const inputComplete = spend !== undefined && cashbackPercent !== undefined && earningRate !== undefined;
   const selectedCashback = cashbackProducts.find(c => c.id === cashbackId && c.country === country);
   const issuerProfile = { ...spendingProfile, monthlySpend: spend ?? 0, excludedMonthlySpend: excluded };
@@ -169,7 +171,7 @@ export default function CashbackVsMiles() {
     setCashbackCap(undefined); setQuarterCap(undefined); setCashMinimum(0); setCashFallback(0);
   };
 
-  let heading = allocation.invalid ? "Your spending breakdown exceeds the eligible monthly total." : !cashbackComplete ? issuerCashback?.reason ?? "This cashback card needs verified terms or a manual estimate." : !inputComplete ? "Enter your spending and earning rate to compare." : feeUnknown ? "Enter the transfer fee to complete your comparison." : !earningConfirmed ? "Enter and confirm your miles earning assumptions." : "Complete your flight fare and award requirement to compare.";
+  let heading = allocation.invalid ? "Your spending breakdown exceeds the eligible monthly total." : !cashbackComplete ? issuerCashback?.reason ?? "This cashback card needs verified terms or a manual estimate." : !inputComplete ? "Enter your spending and earning rate to compare." : feeUnknown ? "Enter the transfer fee to complete your comparison." : implausibleRate ? "This earning rate looks unrealistic for card spending." : !earningConfirmed ? "Enter and confirm your miles earning assumptions." : "Complete your flight fare and award requirement to compare.";
   if (result.winner === "miles") heading = `Miles could give you ${cash(result.difference)} more estimated value per year.`;
   if (result.winner === "cashback") heading = `Cashback could give you ${cash(Math.abs(result.difference ?? 0))} more value per year.`;
   if (result.winner === "close") heading = "It’s close. Cashback and miles offer similar estimated value.";
@@ -209,7 +211,7 @@ export default function CashbackVsMiles() {
             </div>
           </section>
           <section aria-label="Your comparison" className="min-w-0">
-            <p className="eyebrow text-muted-foreground">{provisionalCategories ? "Provisional spending estimate" : mode === "illustrative" ? "Illustrative estimate" : "Estimate using your inputs"}</p>
+            <p className="eyebrow text-muted-foreground">{customEarning ? "Custom earning assumption" : provisionalCategories ? "Provisional spending estimate" : mode === "illustrative" ? "Illustrative estimate" : "Estimate using your inputs"}</p>
             <h2 aria-live="polite" className="mt-3 font-display text-2xl leading-tight md:text-3xl">{heading}</h2>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <article className="rounded-md border border-border bg-card p-5"><h3 className="text-sm text-muted-foreground">Estimated annual cashback</h3><p className="mt-2 text-3xl font-medium tabular-nums">{inputComplete && cashbackComplete && !result.invalidCategories ? cash(result.netCashback) : "—"}</p>{inputComplete && cashbackComplete && !result.invalidCategories && <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Cashback earned before card annual fees.</p>}</article>
@@ -221,7 +223,7 @@ export default function CashbackVsMiles() {
             {terms && <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Provisional miles assumption: all eligible spending is in local currency at the base rate; no category, foreign-currency or promotional bonuses included. Monthly totals approximate transaction rounding. Annual-fee bonus miles excluded. {useCategories ? "Your manual category overrides are included, not verified issuer bonuses. " : ""}</p>}
             {selectedCashback && cashbackComplete && <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{provisionalCategories ? "Provisional assumption: all spending is other eligible purchases; reduced-rate spending is assumed zero. Adjust spending in the optional accuracy section." : "Issuer cashback rules applied to your entered eligible spending; actual credits may differ with exclusions and transaction rounding."}</p>}
             {selectedCashback && !completeCashbackTerms(selectedCashback) && <div className="mt-3 flex flex-wrap gap-2"><Button variant="outline" size="sm" onClick={() => { selectCashback(""); setAccuracyOpen(true); }}>Use a manual cashback estimate</Button>{cashbackProducts.filter(c => c.country === country && completeCashbackTerms(c)).slice(0, 1).map(c => <Button key={c.id} variant="outline" size="sm" onClick={() => selectCashback(c.id)}>Use verified {c.name}</Button>)}</div>}
-            {(!cashbackComplete || result.invalidCategories || feeUnknown || (cardId && !earningConfirmed) || (spend ?? 0) < excluded) && <p role="status" className="mt-3 text-sm text-destructive">{!cashbackComplete ? issuerCashback?.reason ?? "This cashback card’s complete terms are unavailable; use manual assumptions or another verified card." : result.invalidCategories || (spend ?? 0) < excluded ? "Spending amounts exceed your monthly total." : feeUnknown ? "Enter a checked transfer fee in the accuracy section." : "Enter and confirm this miles card’s earning terms in the accuracy section."}</p>}
+            {(!cashbackComplete || result.invalidCategories || feeUnknown || (cardId && !earningConfirmed) || (spend ?? 0) < excluded) && <p role="status" className="mt-3 text-sm text-destructive">{!cashbackComplete ? issuerCashback?.reason ?? "This cashback card’s complete terms are unavailable; use manual assumptions or another verified card." : result.invalidCategories || (spend ?? 0) < excluded ? "Spending amounts exceed your monthly total." : feeUnknown ? "Enter a checked transfer fee in the accuracy section." : implausibleRate ? "This rate implies more than 6 airline miles per dollar. Check whether it mixes bank points, miles, promotions or banking-relationship rewards." : customEarning ? "You changed the published rate. Confirm your custom earning assumption in the accuracy section." : "Enter and confirm this miles card’s earning terms in the accuracy section."}</p>}
           </section>
         </div>
             <details open={accuracyOpen} onToggle={e => setAccuracyOpen(e.currentTarget.open)} className="mt-7 border-y border-border py-5">
@@ -246,7 +248,7 @@ export default function CashbackVsMiles() {
                   {programmes.map(p => <option key={p} value={p}>{getProgrammeById(p)?.name ?? p}</option>)}
                 </SelectField>
               </div>
-              {cardId && !terms ? <label className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-muted-foreground"><input type="checkbox" checked={feeConfirmed} onChange={e => setFeeConfirmed(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-primary" />I’ve checked the earning rate and exclusions for my spending. Samral’s transfer data does not verify these earning terms.</label> : <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{terms ? `Earning terms checked ${terms.verifiedOn}.` : "1.4 miles per dollar is an illustrative starting point, not a verified card rate."}</p>}
+              {cardId && (!terms || customEarning) ? <label className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-muted-foreground"><input type="checkbox" checked={feeConfirmed} onChange={e => setFeeConfirmed(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-primary" />{customEarning ? `Use my custom earning assumption instead of the published ${terms?.ratePerDollar} per ${symbol}1 rate.` : "I’ve checked the earning rate and exclusions for my spending. Samral’s transfer data does not verify these earning terms."}</label> : <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{terms ? `Earning terms checked ${terms.verifiedOn}.` : "1.4 miles per dollar is an illustrative starting point, not a verified card rate."}</p>}
             </div>
 
             <div className="mt-7 border-t border-border pt-6">

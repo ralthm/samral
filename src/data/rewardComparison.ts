@@ -89,6 +89,22 @@ export const milesEarningTerms: MilesEarningTerms[] = [{
   ],
 }))];
 
+// Standard Chartered Priority Banking Visa Infinite: card-spend earning only.
+// 360° relationship points (deposits, mortgages, investments) are a separate source and never added here.
+milesEarningTerms.push({
+  cardId: "sg-sc-pb-visa-infinite", units: "bank_points", ratePerDollar: 2.5, categories: [], status: "verified", verifiedOn: "2026-10-22",
+  supportedProgrammes: ["krisflyer"], transferFeeAmount: 27.25,
+  sourceUrl: "https://www.sc.com/sg/credit-cards/priority-visa-infinite-card/",
+  sourceUrls: ["https://www.sc.com/sg/credit-cards/priority-visa-infinite-card/"],
+  exclusions: ["Cash advances, fees and finance charges are not card spending", "Standard Chartered’s official card page does not list a full exclusion list; check the 360° Rewards terms for transaction types that do not earn points"],
+  assumptions: [
+    "Standard card earning rate: 2.5 360° Rewards Points per S$1 charged (published as 1 air mile per S$1). No promotional or category multipliers are applied.",
+    "Banking-relationship points (current/savings accounts, fixed deposits, investments and mortgages) are a separate reward source and are not included in this card-spending estimate.",
+    "25,000 points → 10,000 KrisFlyer miles, converted in whole 25,000-point blocks; leftover points are not counted as miles. Points do not expire, per Standard Chartered.",
+    "A S$27.25 transfer charge from Samral’s existing transfer data is applied once per year. Card annual fees and welcome offers are excluded.",
+  ],
+});
+
 // Malaysian eligible-local-spend base profiles. Category bonuses with unconfirmed caps are NOT applied.
 const myVerified = "2026-10-22";
 milesEarningTerms.push({
@@ -236,3 +252,14 @@ export function publishedEconomyReturnMiles(target?: RedemptionTarget, hasManual
 export const CATEGORY_LABELS: Record<SpendingCategory, string> = {
   general: "Other eligible spending", dining: "Dining", groceries: "Groceries", online: "Online shopping", travel: "Travel",
 };
+/** Equivalent airline miles per currency unit implied by an earning rate. */
+export function impliedMilesPerDollar(rate: number, transfer?: { bankPointsPerBlock: number; partnerPointsPerBlock: number }) {
+  return transfer && transfer.bankPointsPerBlock > 0 ? rate * transfer.partnerPointsPerBlock / transfer.bankPointsPerBlock : rate;
+}
+
+/** Ordinary card spending does not earn more than ~6 airline miles per unit of currency;
+ * higher values usually confuse bank points, miles, promotions or relationship rewards. */
+export const MAX_PLAUSIBLE_MILES_PER_DOLLAR = 6;
+export function implausibleEarningRate(rate: number | undefined, transfer?: { bankPointsPerBlock: number; partnerPointsPerBlock: number }) {
+  return rate !== undefined && impliedMilesPerDollar(rate, transfer) > MAX_PLAUSIBLE_MILES_PER_DOLLAR;
+}
