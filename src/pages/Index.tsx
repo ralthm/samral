@@ -227,7 +227,7 @@ const clientResults: ClientResult[] = [
     logo: cpfLogo,
     logoAlt: "Charoen Pokphand Foods",
     headline: "Two return flights to Taiwan — without using any points.",
-    body: "I reviewed Dr Wasu’s existing card benefits and found an unused travel benefit that could be put toward his upcoming trip.",
+    body: "I reviewed existing card benefits and found an unused travel benefit that could be put toward his upcoming trip.",
     outcome: "2× RETURN FLIGHTS TO TAIWAN",
     detail: "0 POINTS REQUIRED",
   },
