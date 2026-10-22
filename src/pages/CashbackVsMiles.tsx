@@ -21,7 +21,7 @@ function NumberField({ label, value, onChange, suffix, optional = false, max }: 
   return <label className="grid min-w-0 gap-2 text-sm">
     <span className="text-muted-foreground">{label}</span>
     <div className="relative">
-      <input type="number" inputMode="decimal" min={0} max={max} step="any" value={value ?? ""} onChange={e => {
+      <input aria-label={label} type="number" inputMode="decimal" min={0} max={max} step="any" value={value ?? ""} onChange={e => {
         const n = e.target.value === "" ? undefined : Number(e.target.value);
         onChange(n === undefined ? undefined : Math.min(max ?? Infinity, Math.max(0, n)));
       }} placeholder={optional ? "Not entered" : "Enter amount"} className={`${inputClass} ${suffix ? "pr-20" : ""}`} />
