@@ -1,4 +1,4 @@
-import { getCardById, getBankById } from "./milesCalculator";
+import { getBankById } from "./milesCalculator";
 import type { ComparisonCountry } from "./rewardComparison";
 
 export type CashbackCategory = "dining" | "groceries" | "online" | "transport" | "travel" | "ewallet" | "autobilling" | "petrol" | "grab" | "bills" | "cinema" | "overseas" | "weekend" | "contactless" | "reduced" | "other";

@@ -30,7 +30,7 @@
 
 - [x] Malaysian card audit: official-source verification, AFFIN DUO and Maybank Visa Infinite added, AmBank preview test, CIMB × Cathay test dates fixed.
 - [x] All six listed Malaysian cashback cards verified, calculation-ready and preview-tested (tiered rates, category minimums, shared caps).
-- [ ] Research other Malaysian cashback cards in the registry (Maybank FC Barcelona, Amex Cash Back Gold, Grab, Shopee, CIMB PETRONAS, UOB ONE, UOB YOLO).
+- [x] Registry cashback cards audited: UOB ONE Platinum/Classic verified; FC Barcelona, Amex Cash Back Gold, CIMB PETRONAS VI-i/VP-i listed with exact gaps; Shopee (coins), Grab (discontinued), UOB Simple (finance-charge rebate), YOLO (unidentified) not cashback-on-spending.
 - Open (blocked on issuer documents): CIMB Visa Infinite and HSBC Visa Signature miles; transfer minimums/charges for HSBC, UOB and Maybank; Maybank 2 KrisFlyer 10,000→500 block.
 
 ## Verification and limitations
