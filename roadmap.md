@@ -1,4 +1,6 @@
 # Cashback vs Miles Calculator
+- [x] Verify usable miles-card rules from official issuer sources and separate unsupported cards into manual entry.
+- [x] Make the miles picker compact and scrollable; verify named-card comparisons, sources and existing calculator regressions.
 - [x] Simplify the initial screen to four inputs, immediate estimates and compact disclosures.
 - [x] Consolidate optional controls and methodology; add searchable miles selection and card-detail dialogs.
 - [x] Verify provisional category assumptions, unchanged calculations and desktop/mobile flows.
@@ -16,6 +18,8 @@
 - [x] Document assumptions and first-version limitations.
 
 ## Verification and limitations
+- Miles selection fix: scoped eligible-local-spending profiles for Citi PremierMiles and DBS Altitude Visa/AMEX checked against official issuer sources on 22 October 2026. Main named choices all calculate; unsupported and Malaysian cards use separate manual entry. No bonus-category or FX earning is silently applied. Transaction rounding is approximate; standard annual fees are included but conditional annual-fee bonus miles are explicitly excluded from this spending-only comparison. Citi transfer increments retain the existing published-block assumption and require confirmation in the issuer app.
+- Latest verification: 137 targeted tests pass. Browser selected SC Simply Cash, all three supported miles cards, S$3,000 monthly spending and Tokyo; each returned 40,000 transferable miles and S$560.86 estimated net miles value. Named and unlisted manual fallback, official details links, 638/390 screen-bounded internally scrolling menus and original Miles Calculator route pass without runtime errors. Latest preview build OK. Existing engines and payment links unchanged.
 - Actual-card extension: bank-grouped search covers seven Singapore issuers. Complete principal-card ongoing cashback terms enabled for UOB Absolute (including 0.3% reduced categories), SC Simply Cash, Citi Cash Back+ and OCBC INFINITY. Other products explicitly await review, not calculation. Monthly-total transaction-rounding approximations, standard ongoing fees and payout restrictions are disclosed. Malaysia retains manual mode using the same evaluator; no verified Malaysian spending records claimed.
 - Discovery ranks supported cashback alternatives against the current card with confirmed eligible spending; reduced transactions are not silently treated as eligible by other issuers. Actual miles alternatives are withheld: earning/transfer-fee evidence is incomplete. Existing IDs, transfer rules, destination examples and payment workflows are unchanged.
 - Browser checked actual SC/Citi/UOB values, stronger alternative, reduced rates, exclusions, actual-quote cashback winner, unknown-card safeguard, country reset and original calculator route. No runtime errors or horizontal overflow at 1280/638/390 widths. Targeted existing/new regression tests pass.
